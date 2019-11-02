@@ -1,6 +1,9 @@
 package ca.zyra.capacitor.stripe;
 
+import android.app.Activity;
 import android.content.Intent;
+
+import androidx.annotation.NonNull;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -8,11 +11,20 @@ import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
+import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentsClient;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.stripe.android.ApiResultCallback;
+import com.stripe.android.GooglePayConfig;
 import com.stripe.android.PaymentAuthConfig;
 import com.stripe.android.PaymentIntentResult;
 import com.stripe.android.Stripe;
@@ -28,6 +40,7 @@ import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
@@ -38,13 +51,11 @@ import java.util.List;
 public class StripePlugin extends Plugin {
     private Stripe stripeInstance;
     private String publishableKey;
-    private PaymentsClient paymentsClient;
-    private boolean googlePayReady;
-    private PaymentMethodTokenizationParameters googlePayParams;
     private final int LOAD_PAYMENT_DATA_REQUEST_CODE = 9972;
-    //    private CallbackContext googlePayCallbackContext;
     private boolean isTest = true;
     private PluginCall intentCall;
+    private PluginCall googlePayCall;
+    private PaymentData googlePayPaymentData;
 
     @PluginMethod()
     public void echo(PluginCall call) {
@@ -295,6 +306,19 @@ public class StripePlugin extends Plugin {
             params = ConfirmPaymentIntentParams.createWithPaymentMethodId(call.getString("paymentMethodId"), clientSecret, redirectUrl, saveMethod);
         } else if (call.hasOption("sourceId")) {
             params = ConfirmPaymentIntentParams.createWithSourceId(call.getString("sourceId"), clientSecret, redirectUrl, saveMethod);
+        } else if (call.getBoolean("fromGooglePay", false)) {
+            try {
+                final String js = googlePayPaymentData.toJson();
+                final JSONObject gpayObj = new JSObject(js);
+
+                googlePayPaymentData = null;
+
+                PaymentMethodCreateParams pmcp = PaymentMethodCreateParams.createFromGooglePay(gpayObj);
+                params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmcp, clientSecret, redirectUrl, saveMethod);
+            } catch (JSONException e) {
+                call.error("unable to parse json", e);
+                return;
+            }
         } else {
             params = ConfirmPaymentIntentParams.create(clientSecret, redirectUrl);
         }
@@ -431,9 +455,137 @@ public class StripePlugin extends Plugin {
                 .build());
     }
 
+    @PluginMethod()
+    public void isGooglePayAvailable(final PluginCall call) {
+        PaymentsClient paymentsClient = Wallet.getPaymentsClient(
+                getContext(),
+                new Wallet.WalletOptions
+                        .Builder()
+                        .setEnvironment(isTest ? WalletConstants.ENVIRONMENT_TEST : WalletConstants.ENVIRONMENT_PRODUCTION)
+                        .build()
+        );
+
+        final JSArray allowedAuthMethods = new JSArray();
+        allowedAuthMethods.put("PAN_ONLY");
+        allowedAuthMethods.put("CRYPTOGRAM_3DS");
+
+        final JSArray allowedCardNetworks = new JSArray();
+        allowedCardNetworks.put("AMEX");
+        allowedCardNetworks.put("DISCOVER");
+        allowedCardNetworks.put("JCB");
+        allowedCardNetworks.put("MASTERCARD");
+        allowedCardNetworks.put("VISA");
+
+        final JSObject isReadyToPayRequestJson = new JSObject();
+        isReadyToPayRequestJson.put("allowedAuthMethods", allowedAuthMethods);
+        isReadyToPayRequestJson.put("allowedCardNetworks", allowedCardNetworks);
+
+        IsReadyToPayRequest req = IsReadyToPayRequest.fromJson(isReadyToPayRequestJson.toString());
+        paymentsClient.isReadyToPay(req)
+                .addOnCompleteListener(new OnCompleteListener<Boolean>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Boolean> task) {
+                        JSObject obj = new JSObject();
+                        obj.put("available", task.isSuccessful());
+                        call.resolve(obj);
+                    }
+                });
+    }
+
+    @PluginMethod()
+    public void startGooglePayTransaction(final PluginCall call) {
+        PaymentsClient paymentsClient = Wallet.getPaymentsClient(
+                getContext(),
+                new Wallet.WalletOptions
+                        .Builder()
+                        .setEnvironment(isTest ? WalletConstants.ENVIRONMENT_TEST : WalletConstants.ENVIRONMENT_PRODUCTION)
+                        .build()
+        );
+
+        try {
+            final JSONObject tokenizationSpec = new GooglePayConfig(publishableKey).getTokenizationSpecification();
+            final JSObject cardPaymentMethod = new JSObject()
+                    .put("type", "CARD")
+                    .put("parameters", call.getObject("parameters"))
+                    .put("tokenizationSpecification", tokenizationSpec);
+
+            final String paymentDataReq = new JSObject()
+                    .put("apiVersion", 2)
+                    .put("apiVersionMinor", 0)
+                    .put(
+                            "allowedPaymentMethods",
+                            new JSArray()
+                                    .put(cardPaymentMethod)
+                    )
+                    .put(
+                            "transactionInfo",
+                            new JSObject()
+                                    .put("totalPrice", call.getFloat("totalPrice").toString())
+                                    .put("totalPriceStatus", call.getString("totalPriceStatus"))
+                                    .put("currencyCode", call.getString("currency"))
+                    )
+                    .put("merchantInfo", new JSObject().put("merchantName", call.getString("merchantName")))
+                    .put("emailRequired", call.getBoolean("emailRequired"))
+                    .toString();
+
+            PaymentDataRequest req = PaymentDataRequest.fromJson(paymentDataReq);
+
+            AutoResolveHelper.resolveTask(
+                    paymentsClient.loadPaymentData(req),
+                    getActivity(),
+                    LOAD_PAYMENT_DATA_REQUEST_CODE
+            );
+
+            googlePayCall = call;
+        } catch (JSONException e) {
+            call.error("json parsing error", e);
+        }
+    }
+
+    private void handleGooglePayActivityResult(int resultCode, Intent data) {
+        switch (resultCode) {
+            case Activity.RESULT_OK: {
+                if (data == null) {
+                    googlePayCall.error("an unexpected error occurred");
+                    return;
+                }
+
+                PaymentData paymentData = PaymentData.getFromIntent(data);
+
+                if (paymentData == null) {
+                    googlePayCall.error("an unexpected error occurred");
+                    return;
+                }
+
+                googlePayPaymentData = paymentData;
+
+                googlePayCall.resolve();
+                break;
+            }
+
+            case Activity.RESULT_CANCELED:
+            case AutoResolveHelper.RESULT_ERROR:
+                final Status status = AutoResolveHelper.getStatusFromIntent(data);
+                JSObject obj = new JSObject();
+                obj.put("canceled", status.isCanceled());
+                obj.put("interrupted", status.isInterrupted());
+                obj.put("success", status.isSuccess());
+                obj.put("code", status.getStatusCode());
+                obj.put("message", status.getStatusMessage());
+                obj.put("resolution", status.getResolution());
+                googlePayCall.resolve(obj);
+                break;
+        }
+    }
+
     @Override
     protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         super.handleOnActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
+            handleGooglePayActivityResult(resultCode, data);
+            return;
+        }
 
         final PluginCall call = intentCall;
 
