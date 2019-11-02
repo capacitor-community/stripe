@@ -1,5 +1,5 @@
 {
-  "name": "stripe",
+  "name": "capacitor-stripe",
   "version": "0.0.1",
   "description": "Stripe Mobile SDK Wrapper for Capacitor",
   "main": "dist/esm/index.js",
