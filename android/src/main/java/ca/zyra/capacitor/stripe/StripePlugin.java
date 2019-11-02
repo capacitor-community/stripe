@@ -3,8 +3,6 @@ package ca.zyra.capacitor.stripe;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
@@ -24,6 +22,7 @@ import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.stripe.android.ApiResultCallback;
+import com.stripe.android.CustomerSession;
 import com.stripe.android.GooglePayConfig;
 import com.stripe.android.PaymentAuthConfig;
 import com.stripe.android.PaymentIntentResult;
@@ -484,7 +483,7 @@ public class StripePlugin extends Plugin {
         paymentsClient.isReadyToPay(req)
                 .addOnCompleteListener(new OnCompleteListener<Boolean>() {
                     @Override
-                    public void onComplete(@NonNull Task<Boolean> task) {
+                    public void onComplete(@NotNull Task<Boolean> task) {
                         JSObject obj = new JSObject();
                         obj.put("available", task.isSuccessful());
                         call.resolve(obj);
@@ -540,6 +539,20 @@ public class StripePlugin extends Plugin {
         } catch (JSONException e) {
             call.error("json parsing error", e);
         }
+    }
+
+    @PluginMethod()
+    public void initCustomerSession(PluginCall call) {
+        String ephKey = call.getString("key");
+        EphKeyProvider.setKey(ephKey);
+        CustomerSession.initCustomerSession(getContext(), new EphKeyProvider());
+        call.resolve();
+    }
+
+    @PluginMethod()
+    public void onPaymentSessionDataChanged(PluginCall call) {
+        call.save();
+
     }
 
     private void handleGooglePayActivityResult(int resultCode, Intent data) {
