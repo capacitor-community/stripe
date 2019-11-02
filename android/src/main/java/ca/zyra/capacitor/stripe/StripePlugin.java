@@ -164,7 +164,7 @@ public class StripePlugin extends Plugin {
         SourceParams sourceParams;
 
         Integer sourceType = call.getInt("sourceType");
-        Long amount = call.getFloat("amount").longValue();
+        long amount = call.getFloat("amount").longValue();
         String currency = call.getString("currency");
         String returnURL = call.getString("returnURL");
         String card = call.getString("card");
@@ -300,8 +300,7 @@ public class StripePlugin extends Plugin {
         }
 
         stripeInstance.confirmPayment(getActivity(), params);
-
-        call.success();
+        intentCall = call;
     }
 
     @PluginMethod()
@@ -323,8 +322,7 @@ public class StripePlugin extends Plugin {
         }
 
         stripeInstance.confirmSetupIntent(getActivity(), params);
-
-        call.success();
+        intentCall = call;
     }
 
     @PluginMethod()
@@ -437,7 +435,7 @@ public class StripePlugin extends Plugin {
     protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         super.handleOnActivityResult(requestCode, resultCode, data);
 
-        final PluginCall call = intentCall; // TODO get saved call from other methods
+        final PluginCall call = intentCall;
 
         if (call == null) {
             return;
@@ -449,11 +447,13 @@ public class StripePlugin extends Plugin {
                 PaymentIntent pi = paymentIntentResult.getIntent();
                 JSObject res = paymentIntentToJSON(pi);
                 call.success(res);
+                intentCall = null;
             }
 
             @Override
             public void onError(@NotNull Exception e) {
                 call.error("unable to complete transaction", e);
+                intentCall = null;
             }
         });
     }
@@ -541,7 +541,7 @@ public class StripePlugin extends Plugin {
             }.getType();
             return new Gson().fromJson(obj.toString(), type);
         } else {
-            return new HashMap<String, Object>();
+            return new HashMap<>();
         }
     }
 }
