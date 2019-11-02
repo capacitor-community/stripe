@@ -35,8 +35,6 @@ export interface StripePluginPlugin {
   /* Google Pay */
   startGooglePayTransaction(): Promise<void>;
 
-  finalizeGooglePayTransaction(options: GooglePayOptions): Promise<TokenResponse>;
-
   /* Other tokens */
   createSourceToken(opts: {
     type: SourceType, params: SourceParams
