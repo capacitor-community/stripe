@@ -186,20 +186,6 @@ public class StripePlugin: CAPPlugin {
         call.error("invalid payment request")
     }
     
-    @objc func startApplePayTransaction(_ call: CAPPluginCall) {
-        if !ensurePluginInitialized(call) {
-            return
-        }
-        
-    }
-    
-    @objc func finalizeApplePayTransaction(_ call: CAPPluginCall) {
-        if !ensurePluginInitialized(call) {
-            return
-        }
-        
-    }
-    
     @objc func createSourceToken(_ call: CAPPluginCall) {
         if !ensurePluginInitialized(call) {
             return
