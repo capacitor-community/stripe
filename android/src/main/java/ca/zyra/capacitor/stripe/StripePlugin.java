@@ -46,11 +46,11 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 
-@NativePlugin()
+@NativePlugin(requestCodes = {9972, 50001})
 public class StripePlugin extends Plugin {
     private Stripe stripeInstance;
     private String publishableKey;
-    private final int LOAD_PAYMENT_DATA_REQUEST_CODE = 9972;
+    private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 9972;
     private boolean isTest = true;
     private PluginCall intentCall;
     private PluginCall googlePayCall;
