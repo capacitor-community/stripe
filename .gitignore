@@ -9,3 +9,5 @@ node_modules
 *.log
 log.txt
 npm-debug.log*
+
+!node_modules/@capacitor/android/
