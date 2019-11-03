@@ -4,8 +4,8 @@
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
         <option name="GRADLE_PROJECT_PATH" value=":stripe" />
-        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" value="3.3.2" />
-        <option name="LAST_KNOWN_AGP_VERSION" value="3.3.2" />
+        <option name="LAST_SUCCESSFUL_SYNC_AGP_VERSION" value="3.5.1" />
+        <option name="LAST_KNOWN_AGP_VERSION" value="3.5.1" />
       </configuration>
     </facet>
     <facet type="android" name="Android">
@@ -27,8 +27,8 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
-    <output url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes" />
-    <output-test url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/intermediates/javac/debugUnitTest/compileDebugUnitTestJavaWithJavac/classes" />
+    <output url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/intermediates/javac/debug/classes" />
+    <output-test url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/intermediates/javac/debugUnitTest/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$" />
     <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/aidl_source_output_dir/debug/compileDebugAidl/out">
@@ -36,6 +36,15 @@
     </content>
     <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/aidl_source_output_dir/debugAndroidTest/compileDebugAndroidTestAidl/out">
       <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/aidl_source_output_dir/debugAndroidTest/compileDebugAndroidTestAidl/out" isTestSource="true" generated="true" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/ap_generated_sources/debug/out">
+      <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/ap_generated_sources/debug/out" isTestSource="false" generated="true" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/ap_generated_sources/debugAndroidTest/out">
+      <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/ap_generated_sources/debugAndroidTest/out" isTestSource="true" generated="true" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/ap_generated_sources/debugUnitTest/out">
+      <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/ap_generated_sources/debugUnitTest/out" isTestSource="true" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/renderscript_source_output_dir/debug/compileDebugRenderscript/out">
       <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/renderscript_source_output_dir/debug/compileDebugRenderscript/out" isTestSource="false" generated="true" />
@@ -54,15 +63,6 @@
     </content>
     <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/res/rs/debug">
       <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/res/rs/debug" type="java-resource" generated="true" />
-    </content>
-    <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/apt/androidTest/debug">
-      <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/apt/androidTest/debug" isTestSource="true" generated="true" />
-    </content>
-    <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/apt/debug">
-      <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/apt/debug" isTestSource="false" generated="true" />
-    </content>
-    <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/apt/test/debug">
-      <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/apt/test/debug" isTestSource="true" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/buildConfig/androidTest/debug">
       <sourceFolder url="file://$MODULE_DIR$/../../reeco-app-v2/packages/user/node_modules/stripe/android/build/generated/source/buildConfig/androidTest/debug" isTestSource="true" generated="true" />
@@ -199,20 +199,19 @@
     <orderEntry type="jdk" jdkName="Android API 28 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12@jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.squareup:javawriter:2.1.1@jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: javax.inject:javax.inject:1@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-integration:1.3@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-library:1.3@jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.google.code.findbugs:jsr305:2.0.1@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: net.sf.kxml:kxml2:2.3.0@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.squareup:javawriter:2.1.1@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: javax.inject:javax.inject:1@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.google.code.findbugs:jsr305:2.0.1@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.test.ext:junit:1.1.1@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.test.espresso:espresso-core:3.1.0@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.test:runner:1.1.0@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.test:core:1.2.0@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.test:monitor:1.2.0@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.test.espresso:espresso-idling-resource:3.1.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.6@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.collection:collection:1.1.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.arch.core:core-common:2.1.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-common:2.1.0@jar" level="project" />
@@ -222,25 +221,19 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.50@jar" level="project" />
-    <orderEntry type="library" name="Gradle: org.bouncycastle:bcprov-jdk15on:1.61@jar" level="project" />
-    <orderEntry type="library" name="Gradle: com.nimbusds:nimbus-jose-jwt:7.9@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.50@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0@jar" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.stephenc.jcip:jcip-annotations:1.0-1@jar" level="project" />
-    <orderEntry type="library" name="Gradle: net.minidev:json-smart:2.3@jar" level="project" />
-    <orderEntry type="library" name="Gradle: net.minidev:accessors-smart:1.2@jar" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-wallet:18.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.6@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.stripe:stripe-android:12.2.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: com.stripe:stripe-3ds2-android:2.1.3@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.material:material:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.appcompat:appcompat:1.1.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-wallet:18.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-identity:17.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-maps:17.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-base:17.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-tasks:17.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-basement:17.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-extensions:2.1.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.legacy:legacy-support-v4:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.fragment:fragment:1.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.appcompat:appcompat-resources:1.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.recyclerview:recyclerview:1.0.0@aar" level="project" />
@@ -258,15 +251,14 @@
     <orderEntry type="library" name="Gradle: androidx.transition:transition:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.swiperefreshlayout:swiperefreshlayout:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.asynclayoutinflater:asynclayoutinflater:1.0.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.media:media:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.core:core:1.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.cursoradapter:cursoradapter:1.0.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.versionedparcelable:versionedparcelable:1.1.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.cardview:cardview:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-process:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-service:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime:2.1.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.cardview:cardview:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata-core:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.arch.core:core-runtime:2.1.0@aar" level="project" />
@@ -275,6 +267,7 @@
     <orderEntry type="library" name="Gradle: androidx.documentfile:documentfile:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.localbroadcastmanager:localbroadcastmanager:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.print:print:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: com.stripe:stripe-3ds2-android:2.1.3@aar" level="project" />
     <orderEntry type="module" module-name="capacitor-android" />
   </component>
 </module>
