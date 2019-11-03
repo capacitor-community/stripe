@@ -2,6 +2,9 @@ package ca.zyra.capacitor.stripe;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -26,6 +29,7 @@ import com.stripe.android.CustomerSession;
 import com.stripe.android.GooglePayConfig;
 import com.stripe.android.PaymentAuthConfig;
 import com.stripe.android.PaymentIntentResult;
+import com.stripe.android.SetupIntentResult;
 import com.stripe.android.Stripe;
 import com.stripe.android.model.AccountParams;
 import com.stripe.android.model.BankAccount;
@@ -34,6 +38,7 @@ import com.stripe.android.model.ConfirmPaymentIntentParams;
 import com.stripe.android.model.ConfirmSetupIntentParams;
 import com.stripe.android.model.PaymentIntent;
 import com.stripe.android.model.PaymentMethodCreateParams;
+import com.stripe.android.model.SetupIntent;
 import com.stripe.android.model.Source;
 import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
@@ -52,9 +57,8 @@ public class StripePlugin extends Plugin {
     private String publishableKey;
     private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 9972;
     private boolean isTest = true;
-    private PluginCall intentCall;
-    private PluginCall googlePayCall;
     private PaymentData googlePayPaymentData;
+    private static String TAG = "Capacitor:StripePlugin";
 
     @PluginMethod()
     public void echo(PluginCall call) {
@@ -105,6 +109,11 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod()
     public void createCardToken(@NotNull final PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         Card card = buildCard(call).build();
 
         if (!card.validateCard()) {
@@ -130,7 +139,7 @@ public class StripePlugin extends Plugin {
 
             @Override
             public void onError(@NotNull Exception e) {
-                call.error("unable to create token", e);
+                call.error("unable to create token: " + e.getLocalizedMessage(), e);
             }
         };
 
@@ -139,6 +148,11 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod()
     public void createBankAccountToken(final PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         BankAccount bankAccount = new BankAccount(
                 call.getString("account_number"),
                 call.getString("country"),
@@ -164,13 +178,18 @@ public class StripePlugin extends Plugin {
 
             @Override
             public void onError(@NotNull Exception e) {
-                call.error("unable to create bank account token", e);
+                call.error("unable to create bank account token: " + e.getLocalizedMessage(), e);
             }
         });
     }
 
     @PluginMethod()
     public void createSourceToken(final PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         SourceParams sourceParams;
 
         Integer sourceType = call.getInt("sourceType");
@@ -242,13 +261,18 @@ public class StripePlugin extends Plugin {
 
             @Override
             public void onError(@NotNull Exception e) {
-                call.error("unable to create source token", e);
+                call.error("unable to create source token: " + e.getLocalizedMessage(), e);
             }
         });
     }
 
     @PluginMethod()
     public void createAccountToken(final PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         final JSObject legalEntity = call.getObject("legalEntity");
         final String businessType = call.getString("businessType");
         final Boolean tosShownAndAccepted = call.getBoolean("tosShownAndAccepted");
@@ -265,13 +289,18 @@ public class StripePlugin extends Plugin {
 
             @Override
             public void onError(@NotNull Exception e) {
-                call.error("unable to create account token", e);
+                call.error("unable to create account token: " + e.getLocalizedMessage(), e);
             }
         });
     }
 
     @PluginMethod()
     public void createPiiToken(final PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         String pii = call.getString("pii");
         stripeInstance.createPiiToken(pii, new ApiResultCallback<Token>() {
             @Override
@@ -283,13 +312,18 @@ public class StripePlugin extends Plugin {
 
             @Override
             public void onError(@NotNull Exception e) {
-                call.error("unable to create pii token", e);
+                call.error("unable to create pii token: " + e.getLocalizedMessage(), e);
             }
         });
     }
 
     @PluginMethod()
     public void confirmPaymentIntent(PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         final String clientSecret = call.getString("clientSecret");
         final Boolean saveMethod = call.getBoolean("saveMethod");
         final String redirectUrl = call.getString("redirectUrl");
@@ -315,7 +349,7 @@ public class StripePlugin extends Plugin {
                 PaymentMethodCreateParams pmcp = PaymentMethodCreateParams.createFromGooglePay(gpayObj);
                 params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmcp, clientSecret, redirectUrl, saveMethod);
             } catch (JSONException e) {
-                call.error("unable to parse json", e);
+                call.error("unable to parse json: " + e.getLocalizedMessage(), e);
                 return;
             }
         } else {
@@ -323,11 +357,16 @@ public class StripePlugin extends Plugin {
         }
 
         stripeInstance.confirmPayment(getActivity(), params);
-        intentCall = call;
+        saveCall(call);
     }
 
     @PluginMethod()
     public void confirmSetupIntent(PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         final String clientSecret = call.getString("clientSecret");
         final String redirectUrl = call.getString("redirectUrl");
 
@@ -345,11 +384,16 @@ public class StripePlugin extends Plugin {
         }
 
         stripeInstance.confirmSetupIntent(getActivity(), params);
-        intentCall = call;
+        saveCall(call);
     }
 
     @PluginMethod()
     public void customizePaymentAuthUI(@NotNull PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         final PaymentAuthConfig.Stripe3ds2UiCustomization.Builder builder = new PaymentAuthConfig.Stripe3ds2UiCustomization.Builder();
 
         // TODO add the remaining options here
@@ -456,6 +500,11 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod()
     public void isGooglePayAvailable(final PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
         PaymentsClient paymentsClient = Wallet.getPaymentsClient(
                 getContext(),
                 new Wallet.WalletOptions
@@ -493,41 +542,102 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod()
     public void startGooglePayTransaction(final PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
+
+        final boolean isTest = this.isTest;
+        final int env = isTest ? WalletConstants.ENVIRONMENT_TEST : WalletConstants.ENVIRONMENT_PRODUCTION;
+
+        Log.d(TAG, "startGooglePayTransaction | isTest: " + (isTest ? "TRUE" : "FALSE") + " | env: " + (env == WalletConstants.ENVIRONMENT_TEST ? "TEST" : "PROD"));
+
         PaymentsClient paymentsClient = Wallet.getPaymentsClient(
                 getContext(),
                 new Wallet.WalletOptions
                         .Builder()
-                        .setEnvironment(isTest ? WalletConstants.ENVIRONMENT_TEST : WalletConstants.ENVIRONMENT_PRODUCTION)
+                        .setEnvironment(env)
                         .build()
         );
 
         try {
+            // PAN_ONLY, CRYPTOGRAM_3DS
+            final JSArray defaultAuthMethods = new JSArray();
+            defaultAuthMethods.put("PAN_ONLY");
+            defaultAuthMethods.put("CRYPTOGRAM_3DS");
+
+            final JSArray defaultCardNetworks = new JSArray();
+            defaultCardNetworks.put("AMEX");
+            defaultCardNetworks.put("DISCOVER");
+            defaultCardNetworks.put("JCB");
+            defaultCardNetworks.put("MASTERCARD");
+            defaultCardNetworks.put("VISA");
+
+            final String totalPrice = call.getString("totalPrice");
+            final String totalPriceStatus = call.getString("totalPriceStatus");
+            final String currencyCode = call.getString("currencyCode");
+            final String merchantName = call.getString("merchantName");
+
+            final Boolean emailRequired = call.getBoolean("emailRequired", false);
+            final Boolean billingAddressRequired = call.getBoolean("billingAddressRequired", false);
+            final Boolean allowPrepaidCards = call.getBoolean("allowPrepaidCards", true);
+            final Boolean shippingAddressRequired = call.getBoolean("shippingAddressRequired", false);
+
+            final JSArray authMethods = call.getArray("allowedAuthMethods", defaultAuthMethods);
+            final JSArray cardNetworks = call.getArray("allowedCardNetworks", defaultCardNetworks);
+
+            final JSObject billingAddressParams = call.getObject("billingAddressParams", new JSObject());
+
+            if (!billingAddressParams.has("format")) {
+                billingAddressParams.put("format", "MIN");
+            }
+
+            if (!billingAddressParams.has("phoneNumberRequired")) {
+                billingAddressParams.put("phoneNumberRequired", false);
+            }
+
+            final JSObject shippingAddressParams = call.getObject("shippingAddressParameters", new JSObject());
+
+            final JSObject params = new JSObject()
+                    .put("allowedAuthMethods", authMethods)
+                    .put("allowedCardNetworks", cardNetworks)
+                    .put("billingAddressRequired", billingAddressRequired)
+                    .put("allowPrepaidCards", allowPrepaidCards)
+                    .put("billingAddressParameters", billingAddressParams);
+
             final JSONObject tokenizationSpec = new GooglePayConfig(publishableKey).getTokenizationSpecification();
+
             final JSObject cardPaymentMethod = new JSObject()
                     .put("type", "CARD")
-                    .put("parameters", call.getObject("parameters"))
+                    .put("parameters", params)
                     .put("tokenizationSpecification", tokenizationSpec);
 
-            final String paymentDataReq = new JSObject()
+            final JSObject txInfo = new JSObject();
+            txInfo.put("totalPrice", totalPrice);
+            txInfo.put("totalPriceStatus", totalPriceStatus);
+            txInfo.put("currencyCode", currencyCode);
+
+            final JSObject paymentDataReq = new JSObject()
                     .put("apiVersion", 2)
                     .put("apiVersionMinor", 0)
-                    .put(
-                            "allowedPaymentMethods",
-                            new JSArray()
-                                    .put(cardPaymentMethod)
-                    )
-                    .put(
-                            "transactionInfo",
-                            new JSObject()
-                                    .put("totalPrice", call.getFloat("totalPrice").toString())
-                                    .put("totalPriceStatus", call.getString("totalPriceStatus"))
-                                    .put("currencyCode", call.getString("currency"))
-                    )
-                    .put("merchantInfo", new JSObject().put("merchantName", call.getString("merchantName")))
-                    .put("emailRequired", call.getBoolean("emailRequired"))
-                    .toString();
+                    .put("allowedPaymentMethods", new JSArray().put(cardPaymentMethod))
+                    .put("transactionInfo", txInfo)
+                    .put("emailRequired", emailRequired);
 
-            PaymentDataRequest req = PaymentDataRequest.fromJson(paymentDataReq);
+            if (merchantName != null) {
+                paymentDataReq.put("merchantInfo", new JSObject().put("merchantName", merchantName));
+            }
+
+            if (shippingAddressRequired) {
+                paymentDataReq.put("shippingAddressRequired", true);
+                paymentDataReq.put("shippingAddressParameters", shippingAddressParams);
+            }
+
+            final String paymentDataReqStr = paymentDataReq.toString();
+
+            Log.d(TAG, "payment data is: " + paymentDataReqStr);
+
+            PaymentDataRequest req = PaymentDataRequest.fromJson(paymentDataReqStr);
 
             AutoResolveHelper.resolveTask(
                     paymentsClient.loadPaymentData(req),
@@ -535,14 +645,18 @@ public class StripePlugin extends Plugin {
                     LOAD_PAYMENT_DATA_REQUEST_CODE
             );
 
-            googlePayCall = call;
+            saveCall(call);
         } catch (JSONException e) {
-            call.error("json parsing error", e);
+            call.error("json parsing error: " + e.getLocalizedMessage(), e);
         }
     }
 
     @PluginMethod()
     public void initCustomerSession(PluginCall call) {
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
+
         String ephKey = call.getString("key");
         EphKeyProvider.setKey(ephKey);
         CustomerSession.initCustomerSession(getContext(), new EphKeyProvider());
@@ -551,23 +665,52 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod()
     public void onPaymentSessionDataChanged(PluginCall call) {
-        call.save();
+        if (!ensurePluginInitialized(call)) {
+            return;
+        }
 
+        call.save();
     }
 
-    private void handleGooglePayActivityResult(int resultCode, Intent data) {
+    /**
+     * Ensures that setPublishableKey was called and stripeInstance exists.
+     * Rejects the call with an error and returns false if the plugin is not ready.
+     *
+     * @param call {PluginCall} current method call
+     * @return {boolean} returns true if the plugin is ready
+     */
+    private boolean ensurePluginInitialized(final PluginCall call) {
+        if (stripeInstance == null) {
+            call.error("you must call setPublishableKey to initialize the plugin before calling this method");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void handleGooglePayActivityResult(@NonNull int resultCode, Intent data) {
+        Log.v(TAG, "handleGooglePayActivityResult called with resultCode: " + resultCode);
+        final PluginCall googlePayCall = getSavedCall();
+
+        if (googlePayCall == null) {
+            Log.e(TAG, "no saved PluginCall was found");
+            return;
+        }
+
         switch (resultCode) {
             case Activity.RESULT_OK: {
                 if (data == null) {
                     googlePayCall.error("an unexpected error occurred");
-                    return;
+                    Log.e(TAG, "data is null");
+                    break;
                 }
 
                 PaymentData paymentData = PaymentData.getFromIntent(data);
 
                 if (paymentData == null) {
+                    Log.e(TAG, "paymentData is null");
                     googlePayCall.error("an unexpected error occurred");
-                    return;
+                    break;
                 }
 
                 googlePayPaymentData = paymentData;
@@ -580,45 +723,80 @@ public class StripePlugin extends Plugin {
             case AutoResolveHelper.RESULT_ERROR:
                 final Status status = AutoResolveHelper.getStatusFromIntent(data);
                 JSObject obj = new JSObject();
-                obj.put("canceled", status.isCanceled());
-                obj.put("interrupted", status.isInterrupted());
-                obj.put("success", status.isSuccess());
-                obj.put("code", status.getStatusCode());
-                obj.put("message", status.getStatusMessage());
-                obj.put("resolution", status.getResolution());
+
+                if (status != null) {
+                    obj.put("canceled", status.isCanceled());
+                    obj.put("interrupted", status.isInterrupted());
+                    obj.put("success", status.isSuccess());
+                    obj.put("code", status.getStatusCode());
+                    obj.put("message", status.getStatusMessage());
+                    obj.put("resolution", status.getResolution());
+                } else {
+                    obj.put("canceled", true);
+                }
+
                 googlePayCall.resolve(obj);
                 break;
         }
+
+
+        freeSavedCall();
     }
 
     @Override
     protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         super.handleOnActivityResult(requestCode, resultCode, data);
 
+        Log.d(TAG, "handleOnActivityResult called with request code: " + requestCode + " and resultCode: " + resultCode);
+
         if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
+            Log.d(TAG, "requestCode matches GooglePay, forwarding data to handleGooglePayActivityResult");
             handleGooglePayActivityResult(resultCode, data);
             return;
         }
 
-        final PluginCall call = intentCall;
+        final PluginCall call = getSavedCall();
 
         if (call == null) {
+            Log.d(TAG, "could not find a saved PluginCall, discarding activity result");
             return;
         }
+
+        Log.d(TAG, "passing activity result to stripe");
 
         stripeInstance.onPaymentResult(requestCode, data, new ApiResultCallback<PaymentIntentResult>() {
             @Override
             public void onSuccess(PaymentIntentResult paymentIntentResult) {
+                Log.d(TAG, "onPaymentResult.onSuccess called");
                 PaymentIntent pi = paymentIntentResult.getIntent();
                 JSObject res = paymentIntentToJSON(pi);
                 call.success(res);
-                intentCall = null;
+                freeSavedCall();
             }
 
             @Override
             public void onError(@NotNull Exception e) {
-                call.error("unable to complete transaction", e);
-                intentCall = null;
+                Log.d(TAG, "onPaymentResult.onError called");
+                call.error("unable to complete transaction: " + e.getLocalizedMessage(), e);
+                freeSavedCall();
+            }
+        });
+
+        stripeInstance.onSetupResult(requestCode, data, new ApiResultCallback<SetupIntentResult>() {
+            @Override
+            public void onSuccess(SetupIntentResult setupIntentResult) {
+                Log.d(TAG, "onSetupResult.onSuccess called");
+                SetupIntent si = setupIntentResult.getIntent();
+                JSObject res = setupIntentToJSON(si);
+                call.success(res);
+                freeSavedCall();
+            }
+
+            @Override
+            public void onError(@NotNull Exception e) {
+                Log.d(TAG, "onSetupResult.onError called");
+                call.error("unable to complete transaction: " + e.getLocalizedMessage(), e);
+                freeSavedCall();
             }
         });
     }
@@ -675,7 +853,27 @@ public class StripePlugin extends Plugin {
         return bankObject;
     }
 
-    private static JSObject paymentIntentToJSON(PaymentIntent pi) {
+    private static JSObject setupIntentToJSON(@NonNull final SetupIntent si) {
+        final JSObject res = new JSObject();
+
+        res.put("status", si.getStatus());
+        res.put("paymentMethodId", si.getPaymentMethodId());
+        res.put("cancellationReason", si.getCancellationReason());
+        res.put("created", si.getCreated());
+        res.put("description", si.getDescription());
+        res.put("id", si.getId());
+        res.put("isLiveMode", si.isLiveMode());
+
+        final SetupIntent.Usage u = si.getUsage();
+
+        if (u != null) {
+            res.put("usage", u.getCode());
+        }
+
+        return res;
+    }
+
+    private static JSObject paymentIntentToJSON(@NonNull final PaymentIntent pi) {
         final JSObject res = new JSObject();
         final PaymentIntent.Status status = pi.getStatus();
 
@@ -691,6 +889,7 @@ public class StripePlugin extends Plugin {
         res.put("id", pi.getId());
         res.put("lastPaymentError", pi.getLastPaymentError());
         res.put("paymentMethodId", pi.getPaymentMethodId());
+        res.put("isLiveMode", pi.isLiveMode());
 
         // TODO confirm whether we really need to check this since the SDK handles action/confirmation automatically
         res.put("success", status == PaymentIntent.Status.Succeeded);
