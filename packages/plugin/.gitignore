@@ -1,6 +1,8 @@
 node_modules
 .idea
 .DS_STORE
+.gradle
+build
 *~
 *.sw[mnpcod]
 .tmp

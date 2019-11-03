@@ -1,0 +1,8 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "stripe-test",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}

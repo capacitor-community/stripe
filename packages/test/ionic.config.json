@@ -1,0 +1,7 @@
+{
+  "name": "stripe-test",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
