@@ -12,4 +12,10 @@ build
 log.txt
 npm-debug.log*
 
+ios/Pods
+ios/build
+ios/public
+ios/Podfile.lock
+xcuserdata
+
 !./node_modules/@capacitor/android/

@@ -11,3 +11,5 @@ log.txt
 npm-debug.log*
 
 !node_modules/@capacitor/android/
+
+.DS_Store
