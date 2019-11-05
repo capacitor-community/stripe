@@ -63,6 +63,7 @@ extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
                         self.clearApplePay()
 
                     case .succeeded:
+                        self.applePayCtx!.completion = completion
                         callback.success(pi!.allResponseFields as! PluginResultData)
                     }
                 })
@@ -78,6 +79,7 @@ extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
                 }
 
                 callback.success(["token": t.tokenId])
+                self.applePayCtx!.completion = completion
             }
         }
     }

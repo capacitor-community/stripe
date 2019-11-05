@@ -99,24 +99,27 @@ public class StripePlugin: CAPPlugin {
     }
     
     @objc func payWithApplePay(_ call: CAPPluginCall) {
+        let paymentRequest: PKPaymentRequest!
+
         do {
-            let paymentRequest = try applePayOpts(call: call)
-            
-            if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
-                authCtrl.delegate = self
-                call.save()
-                self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .Token, completion: nil, clientSecret: nil)
-                
-                DispatchQueue.main.async {
-                    self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
-                }
-                return
-            }
-            
-            call.error("invalid payment request")
+            paymentRequest = try applePayOpts(call: call)
         } catch let err {
             call.error("unable to parse apple pay options: " + err.localizedDescription, err)
+            return
         }
+
+        if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
+            authCtrl.delegate = self
+            call.save()
+            self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .Token, completion: nil, clientSecret: nil)
+
+            DispatchQueue.main.async {
+                self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
+            }
+            return
+        }
+
+        call.error("invalid payment request")
     }
     
     @objc func cancelApplePay(_ call: CAPPluginCall) {
@@ -155,10 +158,12 @@ public class StripePlugin: CAPPlugin {
             }
             
             c(PKPaymentAuthorizationResult(status: s, errors: nil))
+            call.success()
+        } else {
+            call.error("unable to complete the payment")
         }
         
         self.clearApplePay()
-        call.success()
     }
     
     @objc func createSourceToken(_ call: CAPPluginCall) {
@@ -263,35 +268,39 @@ public class StripePlugin: CAPPlugin {
             return
         }
         
-        if call.hasOption("applePayOpts") {
+        if call.hasOption("applePayOptions") {
+            let paymentRequest: PKPaymentRequest!
+
             do {
-                let paymentRequest = try applePayOpts(call: call)
-                
-                if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
-                    authCtrl.delegate = self
-                    call.save()
-                    self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .PaymentIntent, completion: nil, clientSecret: clientSecret)
-                    
-                    DispatchQueue.main.async {
-                        self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
-                    }
-                    return
-                }
-                
-                call.error("invalid payment request")
+                paymentRequest = try applePayOpts(call: call)
             } catch let err {
                 call.error("unable to parse apple pay options: " + err.localizedDescription, err)
+                return
             }
+
+            if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
+                authCtrl.delegate = self
+                call.save()
+                self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .PaymentIntent, completion: nil, clientSecret: clientSecret)
+
+                DispatchQueue.main.async {
+                    self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
+                }
+                return
+            }
+
+            call.error("invalid payment request")
             return
         }
     
-        let saveMethod = call.getBool("saveMethod") ?? false
         //let redirectUrl = call.getString("redirectUrl") ?? ""
         let pip: STPPaymentIntentParams = STPPaymentIntentParams.init(clientSecret: clientSecret!)
-        
-        pip.savePaymentMethod = saveMethod ? 1 : 0
+
+        if let sm = call.getBool("saveMethod"), sm == true {
+            pip.savePaymentMethod = true
+        }
         //pip.returnURL = redirectUrl
-        
+
         if call.hasOption("card") {
             let bd = STPPaymentMethodBillingDetails()
             bd.address = address(addressDict(fromCall: call))
