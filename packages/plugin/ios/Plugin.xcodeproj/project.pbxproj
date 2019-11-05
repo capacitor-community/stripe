@@ -18,6 +18,7 @@
 		7054F00FD46CE3861E1D7E5C /* PKAuthViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7054F21B50DDF62F5D4A7479 /* PKAuthViewDelegate.swift */; };
 		7054F0DAE643987129FC75B0 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7054F7C9F53355AB70EBC0A6 /* Helper.swift */; };
 		7054F49EFDC690795A0A50CB /* STPAuthCtx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7054FB499E5CE83117F8A0A5 /* STPAuthCtx.swift */; };
+		7054FC37C606C921EBC7424B /* CustomerKeyProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7054FFB37D6B8A92B6563FF3 /* CustomerKeyProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		7054F21B50DDF62F5D4A7479 /* PKAuthViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKAuthViewDelegate.swift; sourceTree = "<group>"; };
 		7054F7C9F53355AB70EBC0A6 /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		7054FB499E5CE83117F8A0A5 /* STPAuthCtx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = STPAuthCtx.swift; sourceTree = "<group>"; };
+		7054FFB37D6B8A92B6563FF3 /* CustomerKeyProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerKeyProvider.swift; sourceTree = "<group>"; };
 		91781294A431A2A7CC6EB714 /* Pods-Plugin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plugin.release.xcconfig"; path = "Pods/Target Support Files/Pods-Plugin/Pods-Plugin.release.xcconfig"; sourceTree = "<group>"; };
 		96ED1B6440D6672E406C8D19 /* Pods-PluginTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F65BB2953ECE002E1EF3E424 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				7054F7C9F53355AB70EBC0A6 /* Helper.swift */,
 				7054F21B50DDF62F5D4A7479 /* PKAuthViewDelegate.swift */,
 				7054FB499E5CE83117F8A0A5 /* STPAuthCtx.swift */,
+				7054FFB37D6B8A92B6563FF3 /* CustomerKeyProvider.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				7054F0DAE643987129FC75B0 /* Helper.swift in Sources */,
 				7054F00FD46CE3861E1D7E5C /* PKAuthViewDelegate.swift in Sources */,
 				7054F49EFDC690795A0A50CB /* STPAuthCtx.swift in Sources */,
+				7054FC37C606C921EBC7424B /* CustomerKeyProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
