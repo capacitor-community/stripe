@@ -58,10 +58,10 @@ if (testIos) {
     app: process.env.IOS_IPA_PATH || './app.ipa',
     autoWebview: true,
     autoGrantPermissions: true,
-    phoneOnly: false,
-    tabletOnly: false,
-    privateDeviceOnly: false,
-    isHeadless: true,
+//    phoneOnly: false,
+//    tabletOnly: false,
+//    privateDeviceOnly: false,
+//    isHeadless: true,
   };
 
   if (CI) {
@@ -76,7 +76,7 @@ if (CI) {
     c.testobject_api_key = RD_KEY;
   });
 } else {
-  config.port = 4237;
+  config.port = 4723;
 }
 
 exports.config = config;
