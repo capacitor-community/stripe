@@ -13,6 +13,8 @@ CAP_PLUGIN(StripePlugin, "StripePlugin",
            CAP_PLUGIN_METHOD(createCardToken, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(createBankAccountToken, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(payWithApplePay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(cancelApplePay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(finalizeApplePayTransaction, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(createSourceToken, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(createPiiToken, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(createAccountToken, CAPPluginReturnPromise);
