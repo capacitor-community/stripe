@@ -352,7 +352,7 @@ export enum CardBrand {
   UNKNOWN = 'UNKNOWN'
 }
 
-const SourceTypeArray: SourceType[] = Object.keys(SourceType).map((key: any) => SourceType[key] as any as SourceType);
+// const SourceTypeArray: SourceType[] = Object.keys(SourceType).map((key: any) => SourceType[key] as any as SourceType);
 
 export interface Address {
   line1: string;

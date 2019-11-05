@@ -1,5 +1,5 @@
 node_modules
-.idea
+.idea/
 .DS_STORE
 *~
 *.sw[mnpcod]
@@ -9,7 +9,4 @@ node_modules
 *.log
 log.txt
 npm-debug.log*
-
-!node_modules/@capacitor/android/
-
 .DS_Store

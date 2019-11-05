@@ -1,0 +1,41 @@
+name: Test Android
+
+on:
+- push
+
+jobs:
+  default:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install node_modules
+      run:
+      - npm i
+      - npx lerna bootstrap
+
+    - name: Build Capacitor project
+      run:
+      - cd packages/plugin
+      - npm run build
+
+    - name: Build Test Ionic app
+      run:
+      - cd packages/test
+      - npm run build
+
+    - name: Build Test Android app
+      run:
+      - cd packages/test
+      - npx cap sync android
+      - cd android
+      - ./gradlew buildDebug
+
+    - name: Run Android Emulator on Docker
+      run:
+      - docker run -it --rm -d --name avd --privileged --network host budtmo/docker-android-x86-9.0
+
+    - name: Setup ADB
+      run:
+      -
+

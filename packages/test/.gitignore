@@ -29,5 +29,3 @@ npm-debug.log*
 /platforms
 /plugins
 /www
-
-!node_modules/@capacitor/android/
