@@ -18,7 +18,7 @@
   "devDependencies": {
     "typescript": "^3.2.4",
     "@capacitor/ios": "latest",
-    "@capacitor/android": "latest"
+    "@capacitor/android": "^1.3.0"
   },
   "files": [
     "dist/",
