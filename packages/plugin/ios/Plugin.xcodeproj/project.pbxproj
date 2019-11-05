@@ -15,8 +15,9 @@
 		50ADFFA42020D75100D50D53 /* Capacitor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50ADFFA52020D75100D50D53 /* Capacitor.framework */; };
 		50ADFFA82020EE4F00D50D53 /* Plugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFFA72020EE4F00D50D53 /* Plugin.m */; };
 		50E1A94820377CB70090CE1A /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E1A94720377CB70090CE1A /* Plugin.swift */; };
-		D482AC46236F56700098BDA2 /* StripePkPaymentAuthCtrlDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D482AC45236F56700098BDA2 /* StripePkPaymentAuthCtrlDelegate.swift */; };
-		D482AC48236F5CBB0098BDA2 /* StripeAuthContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D482AC47236F5CBB0098BDA2 /* StripeAuthContext.swift */; };
+		7054F00FD46CE3861E1D7E5C /* PKAuthViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7054F21B50DDF62F5D4A7479 /* PKAuthViewDelegate.swift */; };
+		7054F0DAE643987129FC75B0 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7054F7C9F53355AB70EBC0A6 /* Helper.swift */; };
+		7054F49EFDC690795A0A50CB /* STPAuthCtx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7054FB499E5CE83117F8A0A5 /* STPAuthCtx.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,10 +42,11 @@
 		50ADFFA72020EE4F00D50D53 /* Plugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Plugin.m; sourceTree = "<group>"; };
 		50E1A94720377CB70090CE1A /* Plugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plugin.swift; sourceTree = "<group>"; };
 		5E23F77F099397094342571A /* Pods-Plugin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plugin.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Plugin/Pods-Plugin.debug.xcconfig"; sourceTree = "<group>"; };
+		7054F21B50DDF62F5D4A7479 /* PKAuthViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKAuthViewDelegate.swift; sourceTree = "<group>"; };
+		7054F7C9F53355AB70EBC0A6 /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		7054FB499E5CE83117F8A0A5 /* STPAuthCtx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = STPAuthCtx.swift; sourceTree = "<group>"; };
 		91781294A431A2A7CC6EB714 /* Pods-Plugin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plugin.release.xcconfig"; path = "Pods/Target Support Files/Pods-Plugin/Pods-Plugin.release.xcconfig"; sourceTree = "<group>"; };
 		96ED1B6440D6672E406C8D19 /* Pods-PluginTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.debug.xcconfig"; sourceTree = "<group>"; };
-		D482AC45236F56700098BDA2 /* StripePkPaymentAuthCtrlDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripePkPaymentAuthCtrlDelegate.swift; sourceTree = "<group>"; };
-		D482AC47236F5CBB0098BDA2 /* StripeAuthContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeAuthContext.swift; sourceTree = "<group>"; };
 		F65BB2953ECE002E1EF3E424 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
 		F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PluginTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -98,8 +100,9 @@
 				50ADFF8B201F53D600D50D53 /* Plugin.h */,
 				50ADFFA72020EE4F00D50D53 /* Plugin.m */,
 				50ADFF8C201F53D600D50D53 /* Info.plist */,
-				D482AC45236F56700098BDA2 /* StripePkPaymentAuthCtrlDelegate.swift */,
-				D482AC47236F5CBB0098BDA2 /* StripeAuthContext.swift */,
+				7054F7C9F53355AB70EBC0A6 /* Helper.swift */,
+				7054F21B50DDF62F5D4A7479 /* PKAuthViewDelegate.swift */,
+				7054FB499E5CE83117F8A0A5 /* STPAuthCtx.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -310,9 +313,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				50E1A94820377CB70090CE1A /* Plugin.swift in Sources */,
-				D482AC48236F5CBB0098BDA2 /* StripeAuthContext.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* Plugin.m in Sources */,
-				D482AC46236F56700098BDA2 /* StripePkPaymentAuthCtrlDelegate.swift in Sources */,
+				7054F0DAE643987129FC75B0 /* Helper.swift in Sources */,
+				7054F00FD46CE3861E1D7E5C /* PKAuthViewDelegate.swift in Sources */,
+				7054F49EFDC690795A0A50CB /* STPAuthCtx.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
