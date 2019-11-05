@@ -38,8 +38,8 @@ public class StripePlugin: CAPPlugin {
     @objc func validateExpiryDate(_ call: CAPPluginCall) {
         call.success([
             "valid": STPCardValidator.validationState(
-              forExpirationYear: call.getString("expYear") ?? "",
-              inMonth: call.getString("expMonth") ?? ""
+              forExpirationYear: call.getString("exp_year") ?? "",
+              inMonth: call.getString("exp_month") ?? ""
             ) == STPCardValidationState.valid
         ])
     }
@@ -51,48 +51,6 @@ public class StripePlugin: CAPPlugin {
                 cardBrand: strToBrand(call.getString("brand"))
             ) == STPCardValidationState.valid
         ])
-    }
-    
-    @objc private func strToBrand(_ brand: String?) -> STPCardBrand {
-        switch brand {
-        case "AMERICAN_EXPRESS":
-            return STPCardBrand.amex
-        case "DISCOVER":
-            return STPCardBrand.discover
-        case "JCB":
-            return STPCardBrand.JCB
-        case "DINERS_CLUB":
-            return STPCardBrand.dinersClub
-        case "VISA":
-            return STPCardBrand.visa
-        case "MASTERCARD":
-            return STPCardBrand.masterCard
-        case "UNIONPAY":
-            return STPCardBrand.unionPay
-        default:
-            return STPCardBrand.unknown
-        }
-    }
-    
-    @objc private func brandToStr(_ brand: STPCardBrand) -> String {
-        switch brand {
-        case STPCardBrand.amex:
-            return "AMERICAN_EXPRESS"
-        case STPCardBrand.discover:
-            return "DISCOVER"
-        case STPCardBrand.JCB:
-            return "JCB"
-        case STPCardBrand.dinersClub:
-            return "DINERS_CLUB"
-        case STPCardBrand.visa:
-            return "VISA"
-        case STPCardBrand.masterCard:
-            return "MASTERCARD"
-        case STPCardBrand.unionPay:
-            return "UNIONPAY"
-        default:
-            return "UNKNOWN"
-        }
     }
     
     @objc func identifyCardBrand(_ call: CAPPluginCall) {
@@ -440,6 +398,48 @@ public class StripePlugin: CAPPlugin {
         call.error("Google Pay is not available")
     }
     
+    @objc private func strToBrand(_ brand: String?) -> STPCardBrand {
+        switch brand {
+        case "AMERICAN_EXPRESS":
+            return STPCardBrand.amex
+        case "DISCOVER":
+            return STPCardBrand.discover
+        case "JCB":
+            return STPCardBrand.JCB
+        case "DINERS_CLUB":
+            return STPCardBrand.dinersClub
+        case "VISA":
+            return STPCardBrand.visa
+        case "MASTERCARD":
+            return STPCardBrand.masterCard
+        case "UNIONPAY":
+            return STPCardBrand.unionPay
+        default:
+            return STPCardBrand.unknown
+        }
+    }
+    
+    @objc private func brandToStr(_ brand: STPCardBrand) -> String {
+        switch brand {
+        case STPCardBrand.amex:
+            return "AMERICAN_EXPRESS"
+        case STPCardBrand.discover:
+            return "DISCOVER"
+        case STPCardBrand.JCB:
+            return "JCB"
+        case STPCardBrand.dinersClub:
+            return "DINERS_CLUB"
+        case STPCardBrand.visa:
+            return "VISA"
+        case STPCardBrand.masterCard:
+            return "MASTERCARD"
+        case STPCardBrand.unionPay:
+            return "UNIONPAY"
+        default:
+            return "UNKNOWN"
+        }
+    }
+    
     @objc private func ensurePluginInitialized(_ call: CAPPluginCall) -> Bool {
         let key = Stripe.defaultPublishableKey()
         
@@ -457,7 +457,7 @@ public class StripePlugin: CAPPlugin {
         a.line2 = obj["address_line2"]
         a.city = obj["address_city"]
         a.state = obj["address_state"]
-        a.postalCode = obj["postalCode"]
+        a.postalCode = obj["address_zip"]
         a.country = obj["country"]
         return a
     }
@@ -472,7 +472,7 @@ public class StripePlugin: CAPPlugin {
             "address_line2": fromObj["address_line2"] as? String ?? "",
             "address_city": fromObj["address_city"] as? String ?? "",
             "address_state": fromObj["address_state"] as? String ?? "",
-            "postalCode": fromObj["postalCode"] as? String ?? "",
+            "address_zip": fromObj["address_zip"] as? String ?? "",
             "address_country": fromObj["address_country"] as? String ?? "",
         ]
     }
@@ -483,7 +483,7 @@ public class StripePlugin: CAPPlugin {
             "address_line2": fromCall.getString("address_line2") ?? "",
             "address_city": fromCall.getString("address_city") ?? "",
             "address_state": fromCall.getString("address_state") ?? "",
-            "postalCode": fromCall.getString("postalCode") ?? "",
+            "address_zip": fromCall.getString("address_zip") ?? "",
             "address_country": fromCall.getString("address_country") ?? "",
         ]
     }
@@ -494,16 +494,16 @@ public class StripePlugin: CAPPlugin {
         p.number = fromObj["number"] as? String ?? ""
         p.cvc = fromObj["cvc"] as? String ?? ""
         
-        if let expYearStr = fromObj["expYear"] as? String {
-            p.expYear = UInt(expYearStr) ?? 0
-        } else if let expYearInt = fromObj["expYear"] as? Int {
-            p.expYear = UInt(expYearInt)
+        if let exp_yearStr = fromObj["exp_year"] as? String {
+            p.expYear = UInt(exp_yearStr) ?? 0
+        } else if let exp_yearInt = fromObj["exp_year"] as? Int {
+            p.expYear = UInt(exp_yearInt)
         }
         
-        if let expMonthStr = fromObj["expMonth"] as? String {
-            p.expMonth = UInt(expMonthStr) ?? 0
-        } else if let expMonthInt = fromObj["expMonth"] as? Int {
-            p.expMonth = UInt(expMonthInt)
+        if let exp_monthStr = fromObj["exp_month"] as? String {
+            p.expMonth = UInt(exp_monthStr) ?? 0
+        } else if let exp_monthInt = fromObj["exp_month"] as? Int {
+            p.expMonth = UInt(exp_monthInt)
         }
         
         if let n = fromObj["name"] as? String, n != "" {
@@ -531,18 +531,18 @@ public class StripePlugin: CAPPlugin {
         var c = [
             "number": fromCall.getString("number"),
             "cvc": fromCall.getString("cvc"),
-            "expMonth": fromCall.getString("expMonth"),
-            "expYear": fromCall.getString("expYear"),
+            "exp_month": fromCall.getString("exp_month"),
+            "exp_year": fromCall.getString("exp_year"),
             "name": fromCall.getString("name"),
             "currency": fromCall.getString("currency")
         ]
         
-        if c["expMonth"] == nil, fromCall.hasOption("expMonth"), let em = fromCall.getInt("expMonth") {
-            c["expMonth"] = String(em)
+        if c["exp_month"] == nil, fromCall.hasOption("exp_month"), let em = fromCall.getInt("exp_month") {
+            c["exp_month"] = String(em)
         }
         
-        if c["expYear"] == nil, fromCall.hasOption("expYear"), let em = fromCall.getInt("expYear") {
-            c["expYear"] = String(em)
+        if c["exp_year"] == nil, fromCall.hasOption("exp_year"), let em = fromCall.getInt("exp_year") {
+            c["exp_year"] = String(em)
         }
         
         let a = addressDict(fromCall: fromCall)
