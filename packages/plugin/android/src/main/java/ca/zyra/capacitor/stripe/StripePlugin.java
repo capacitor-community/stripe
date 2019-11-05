@@ -91,25 +91,29 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod()
     public void identifyCardBrand(PluginCall call) {
-        Card card = Card.create(call.getString("number"), null, null, null);
         JSObject res = new JSObject();
-        res.put("brand", card.getBrand());
+        res.put("brand", buildCard(call).build().getBrand());
         call.success(res);
     }
 
     @PluginMethod()
     public void validateCardNumber(PluginCall call) {
-        Card card = Card.create(call.getString("number"), null, null, null);
         JSObject res = new JSObject();
-        res.put("valid", card.validateNumber());
+        res.put("valid", buildCard(call).build().validateNumber());
         call.success(res);
     }
 
     @PluginMethod()
     public void validateExpiryDate(PluginCall call) {
-        Card card = Card.create(null, call.getInt("expMonth"), call.getInt("expYear"), null);
         JSObject res = new JSObject();
-        res.put("valid", card.validateExpiryDate());
+        res.put("valid", buildCard(call).build().validateExpiryDate());
+        call.success(res);
+    }
+
+    @PluginMethod()
+    public void validateCVC(PluginCall call) {
+        JSObject res = new JSObject();
+        res.put("valid", buildCard(call).build().validateCVC());
         call.success(res);
     }
 
@@ -172,9 +176,12 @@ public class StripePlugin extends Plugin {
                 BankAccount bankAccount = token.getBankAccount();
 
                 JSObject tokenJs = new JSObject();
-                JSObject jsObj = bankAccountToJSON(bankAccount);
 
-                tokenJs.put("bankAccount", jsObj);
+                if (bankAccount != null) {
+                    JSObject jsObj = bankAccountToJSON(bankAccount);
+                    tokenJs.put("bankAccount", jsObj);
+                }
+
                 tokenJs.put("id", token.getId());
                 tokenJs.put("created", token.getCreated());
                 tokenJs.put("type", token.getType());
@@ -206,9 +213,9 @@ public class StripePlugin extends Plugin {
         String statementDescriptor = call.getString("statementDescriptor");
         String bank = call.getString("bank");
         String iban = call.getString("iban");
-        String addressLine1 = call.getString("addressLine1");
+        String addressLine1 = call.getString("address_line1");
         String city = call.getString("city");
-        String postalCode = call.getString("postalCode");
+        String zip  = call.getString("address_zip");
         String country = call.getString("country");
         String email = call.getString("email");
         String callId = call.getString("callId");
@@ -227,7 +234,7 @@ public class StripePlugin extends Plugin {
                 break;
 
             case 3:
-                sourceParams = SourceParams.createSepaDebitParams(name, iban, addressLine1, city, postalCode, country);
+                sourceParams = SourceParams.createSepaDebitParams(name, iban, addressLine1, city, zip, country);
                 break;
 
             case 4:
@@ -336,7 +343,7 @@ public class StripePlugin extends Plugin {
         ConfirmPaymentIntentParams params;
 
         if (call.hasOption("card")) {
-            Card.Builder cb = buildCard(call);
+            Card.Builder cb = buildCard(call); // TODO fix this, we need to pass call.getObject(card)xs
             PaymentMethodCreateParams.Card cardParams = cb.build().toPaymentMethodParamsCard();
             PaymentMethodCreateParams pmCreateParams = PaymentMethodCreateParams.create(cardParams);
             params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod);
@@ -807,20 +814,20 @@ public class StripePlugin extends Plugin {
     }
 
     private static Card.Builder buildCard(final PluginCall call) {
-        return Card
-                .create(
-                        call.getString("number"),
-                        call.getInt("expMonth"),
-                        call.getInt("expYear"),
-                        call.getString("cvc")
-                )
-                .toBuilder()
+        final Card.Builder builder = new Card.Builder(
+                call.getString("number"),
+                call.getInt("exp_month"),
+                call.getInt("exp_year"),
+                call.getString("cvc")
+        );
+
+        return builder
                 .name(call.getString("value"))
                 .addressLine1(call.getString("address_line1"))
                 .addressLine2(call.getString("address_line2"))
                 .addressCity(call.getString("address_city"))
                 .addressState(call.getString("address_state"))
-                .addressZip(call.getString("postalCode"))
+                .addressZip(call.getString("address_zip"))
                 .country(call.getString("address_country"))
                 .currency(call.getString("currency"));
     }

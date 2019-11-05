@@ -4,73 +4,127 @@ declare module '@capacitor/core' {
   }
 }
 
+export interface CommonIntentOptions {
+  clientSecret: string;
+  /**
+   * If provided, the payment intent will be confirmed using this card as a payment method.
+   */
+  card?: Card;
+  /**
+   * If provided, the payment intent will be confirmed using this payment method
+   */
+  paymentMethodId?: string;
+  redirectUrl: string;
+}
+
+export type ConfirmSetupIntentOptions = CommonIntentOptions;
+
+export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
+  /**
+   * Whether you intend to save the payment method to the customer's account after this payment
+   */
+  saveMethod?: boolean;
+  /**
+   * If provided, the payment intent will be confirmed using a card provided by Apple Pay
+   */
+  applePayOptions?: ApplePayOptions;
+}
+
+export type SetPublishableKeyOptions = {
+  key: string
+};
+
+export type ValidateCardNumberOptions = {
+  number: string
+};
+
+export type ValidateExpiryDateOptions = {
+  exp_month: number,
+  exp_year: number
+};
+
+export type ValidateCVCOptions = {
+  cvc: string
+};
+
+export type IdentifyCardBrandOptions = {
+  number: string
+};
+
+export type CreatePiiTokenOptions = {
+  pii: string
+};
+
+export type CreateSourceTokenOptions = {
+  type: SourceType,
+  params: SourceParams
+};
+
+export type FinalizeApplePayTransactionOptions = {
+  success: boolean
+};
+
+export type ValidityResponse = { valid: boolean }
+export type AvailabilityResponse = { available: boolean }
+
+type CardBrandResponse = { brand: CardBrand };
+
 export interface StripePluginPlugin {
   echo(options: { value: string }): Promise<{ value: string }>;
 
   /* Core */
-  setPublishableKey(opts: {
-    key: string
-  }): Promise<void>;
+
+  setPublishableKey(opts: SetPublishableKeyOptions): Promise<void>;
 
   createCardToken(card: CardTokenRequest): Promise<CardTokenResponse>;
 
   createBankAccountToken(bankAccount: BankAccountTokenRequest): Promise<BankAccountTokenResponse>;
 
   /* Payment Intents */
-  confirmPaymentIntent(opts: {
-    clientSecret: string;
-    saveMethod?: boolean;
-    card?: Card;
-    paymentMethodId?: string;
-    redirectUrl: string;
-  }): Promise<void>;
+  confirmPaymentIntent(opts: ConfirmPaymentIntentOptions): Promise<void>;
+
+  confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<void>;
 
   /* Apple Pay */
-  startApplyPayTransaction(options: ApplePayOptions): Promise<TokenResponse>;
+  payWithApplePay(options: ApplePayOptions): Promise<TokenResponse>;
 
-  finalizeApplePayTransaction(opts: {
-    paymentProcessed: boolean
-  }): Promise<void>;
+  cancelApplePay(): Promise<void>;
+
+  finalizeApplePayTransaction(opts: FinalizeApplePayTransactionOptions): Promise<void>;
 
   /* Google Pay */
   startGooglePayTransaction(): Promise<void>;
 
   /* Other tokens */
-  createSourceToken(opts: {
-    type: SourceType, params: SourceParams
-  }): Promise<TokenResponse>;
+  createSourceToken(opts: CreateSourceTokenOptions): Promise<TokenResponse>;
 
-  createPiiToken(opts: {
-    pii: string
-  }): Promise<TokenResponse>;
+  createPiiToken(opts: CreatePiiTokenOptions): Promise<TokenResponse>;
 
   createAccountToken(account: AccountParams): Promise<TokenResponse>;
 
   /* Helpers */
-  validateCardNumber(opts: {
-    cardNumber: string
-  }): Promise<boolean>;
+  customizePaymentAuthUI(opts: any): Promise<void>;
 
-  validateExpiryDate(opts: {
-    expMonth: number, expYear: number
-  }): Promise<boolean>;
+  isApplePayAvailable(): Promise<AvailabilityResponse>;
 
-  validateCVC(opts: {
-    cvc: string
-  }): Promise<boolean>;
+  isGooglePayAvailable(): Promise<AvailabilityResponse>;
 
-  identifyCardType(opts: {
-    cardNumber: string
-  }): Promise<string>;
+  validateCardNumber(opts: ValidateCardNumberOptions): Promise<ValidityResponse>;
+
+  validateExpiryDate(opts: ValidateExpiryDateOptions): Promise<ValidityResponse>;
+
+  validateCVC(opts: ValidateCVCOptions): Promise<ValidityResponse>;
+
+  identifyCardBrand(opts: IdentifyCardBrandOptions): Promise<CardBrandResponse>;
 }
 
 export enum UIButtonType {
-  SUBMIT = "submit",
-  CONTINUE = "continue",
-  NEXT = "next",
-  CANCEL = "cancel",
-  RESEND = "resend",
-  SELECT = "select"
+  SUBMIT = 'submit',
+  CONTINUE = 'continue',
+  NEXT = 'next',
+  CANCEL = 'cancel',
+  RESEND = 'resend',
+  SELECT = 'select'
 }
 
 export interface UIButtonCustomizationOptions {
@@ -112,7 +166,7 @@ export interface Card {
   address_state: any;
   address_zip: any;
   address_zip_check: any;
-  brand: string;
+  brand: CardBrand;
   country: string;
   cvc_check: any;
   dynamic_last4: any;
@@ -143,8 +197,8 @@ export interface BankAccountTokenResponse extends TokenResponse {
 
 export interface CardTokenRequest {
   number: string;
-  expMonth: number;
-  expYear: number;
+  exp_month: number;
+  exp_year: number;
   cvc: string;
   name?: string;
   address_line1?: string;
@@ -152,7 +206,7 @@ export interface CardTokenRequest {
   address_city?: string;
   address_state?: string;
   address_country?: string;
-  postal_code?: string;
+  address_zip?: string;
   currency?: string;
   /**
    * iOS only
@@ -285,6 +339,17 @@ export enum SourceType {
   AliPayReusable = 'alipayreusable',
   P24 = 'p24',
   VisaCheckout = 'visacheckout',
+}
+
+export enum CardBrand {
+  AMERICAN_EXPRESS = 'AMERICAN_EXPRESS',
+  DISCOVER = 'DISCOVER',
+  JCB = 'JCB',
+  DINERS_CLUB = 'DINERS_CLUB',
+  VISA = 'VISA',
+  MASTERCARD = 'MASTERCARD',
+  UNIONPAY = 'UNIONPAY',
+  UNKNOWN = 'UNKNOWN'
 }
 
 const SourceTypeArray: SourceType[] = Object.keys(SourceType).map((key: any) => SourceType[key] as any as SourceType);
