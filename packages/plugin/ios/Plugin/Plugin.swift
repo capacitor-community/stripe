@@ -4,8 +4,7 @@ import Stripe
 
 @objc(StripePlugin)
 public class StripePlugin: CAPPlugin {
-    var applePayCallbackId: String?
-    var applePaySucceeded: Bool?
+    var applePayCtx: ApplePayContext?
     
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
@@ -27,13 +26,12 @@ public class StripePlugin: CAPPlugin {
         call.success()
     }
     
-    
     @objc func validateCardNumber(_ call: CAPPluginCall) {
         call.success([
             "valid": STPCardValidator.validationState(
                 forNumber: call.getString("number"),
                 validatingCardBrand: false
-            )
+            ) == STPCardValidationState.valid
         ])
     }
     
@@ -42,7 +40,7 @@ public class StripePlugin: CAPPlugin {
             "valid": STPCardValidator.validationState(
               forExpirationYear: call.getString("expYear") ?? "",
               inMonth: call.getString("expMonth") ?? ""
-            )
+            ) == STPCardValidationState.valid
         ])
     }
     
@@ -51,7 +49,7 @@ public class StripePlugin: CAPPlugin {
             "valid": STPCardValidator.validationState(
                 forCVC: (call.getString("cvc")) ?? "",
                 cardBrand: strToBrand(call.getString("brand"))
-            )
+            ) == STPCardValidationState.valid
         ])
     }
     
@@ -143,47 +141,66 @@ public class StripePlugin: CAPPlugin {
     }
     
     @objc func payWithApplePay(_ call: CAPPluginCall) {
-        let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
-        let country = call.getString("country") ?? ""
-        let currency = call.getString("currency") ?? ""
-        let items = call.getArray("items", [String:Any].self, [])
-        
-        if merchantIdentifier == "" {
-            call.error("you must provide a valid merchant identifier")
-            return
-        }
-        
-        if country == "" {
-            call.error("you must provide a country")
-            return
-        }
-        
-        if currency == "" {
-            call.error("you must provide a currency")
-            return
-        }
-        
-        let paymentRequest = Stripe.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: country, currency: currency)
-    
-        paymentRequest.paymentSummaryItems = []
-        
-        for it in items! {
-            let label = it["label"] as? String ?? ""
-            let amount = it["amount"] as? NSDecimalNumber ?? 0
-            paymentRequest.paymentSummaryItems.append(
-                PKPaymentSummaryItem(label: label, amount: amount)
-            )
-        }
-        
-        if Stripe.canSubmitPaymentRequest(paymentRequest), let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
-            authCtrl.delegate = self.bridge.viewController as? PKPaymentAuthorizationViewControllerDelegate
+        do {
+            let paymentRequest = try applePayOpts(call: call)
             
-            self.bridge.viewController.present(authCtrl, animated: true)
-        
+            if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
+                authCtrl.delegate = self
+                call.save()
+                self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .Token, completion: nil, clientSecret: nil)
+                
+                DispatchQueue.main.async {
+                    self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
+                }
+                return
+            }
+            
+            call.error("invalid payment request")
+        } catch let err {
+            call.error("unable to parse apple pay options: " + err.localizedDescription, err)
+        }
+    }
+    
+    @objc func cancelApplePay(_ call: CAPPluginCall) {
+        guard let ctx = self.applePayCtx else {
+            call.error("there is no existing Apple Pay transaction to cancel")
             return
         }
         
-        call.error("invalid payment request")
+        if let c = ctx.completion {
+            c(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+        }
+        
+        if let oldCallback = self.bridge.getSavedCall(ctx.callbackId) {
+            self.bridge.releaseCall(oldCallback)
+        }
+        
+        self.applePayCtx = nil
+        call.success()
+    }
+    
+    @objc func finalizeApplePayTransaction(_ call: CAPPluginCall) {
+        guard let ctx = self.applePayCtx else {
+            call.error("there is no existing Apple Pay transaction to finalize")
+            return
+        }
+        
+        let success = call.getBool("success") ?? false
+        
+        if let c = ctx.completion {
+            let s: PKPaymentAuthorizationStatus
+            
+            if success {
+                s = .success
+            } else {
+                s = .failure
+            }
+            
+            c(PKPaymentAuthorizationResult(status: s, errors: nil))
+        }
+        
+        self.clearApplePay()
+        call.success()
     }
     
     @objc func createSourceToken(_ call: CAPPluginCall) {
@@ -245,8 +262,6 @@ public class StripePlugin: CAPPlugin {
         case .unknown:
             <#code#>
         }
-        
-        
        */
     }
     
@@ -289,8 +304,29 @@ public class StripePlugin: CAPPlugin {
             call.error("you must provide a client secret")
             return
         }
-    
         
+        if call.hasOption("applePayOpts") {
+            do {
+                let paymentRequest = try applePayOpts(call: call)
+                
+                if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
+                    authCtrl.delegate = self
+                    call.save()
+                    self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .PaymentIntent, completion: nil, clientSecret: clientSecret)
+                    
+                    DispatchQueue.main.async {
+                        self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
+                    }
+                    return
+                }
+                
+                call.error("invalid payment request")
+            } catch let err {
+                call.error("unable to parse apple pay options: " + err.localizedDescription, err)
+            }
+            return
+        }
+    
         let saveMethod = call.getBool("saveMethod") ?? false
         //let redirectUrl = call.getString("redirectUrl") ?? ""
         let pip: STPPaymentIntentParams = STPPaymentIntentParams.init(clientSecret: clientSecret!)
@@ -312,8 +348,6 @@ public class StripePlugin: CAPPlugin {
             pip.paymentMethodId = call.getString("paymentMethodId")
         } else if call.hasOption("sourceId") {
             pip.sourceId = call.getString("sourceId")
-        } else if call.getBool("fromApplePay", false) ?? false {
-            
         }
     
         let pm = STPPaymentHandler.shared()
@@ -332,7 +366,6 @@ public class StripePlugin: CAPPlugin {
                 
             case .succeeded:
                 call.success()
-
             }
         }
     }
@@ -473,8 +506,13 @@ public class StripePlugin: CAPPlugin {
             p.expMonth = UInt(expMonthInt)
         }
         
-        p.name = fromObj["name"] as? String ?? ""
-        p.currency = fromObj["currency"] as? String ?? ""
+        if let n = fromObj["name"] as? String, n != "" {
+            p.name = n
+        }
+        
+        if let c = fromObj["currency"] as? String, c != "" {
+            p.currency = c
+        }
         
         return p
     }
@@ -490,10 +528,202 @@ public class StripePlugin: CAPPlugin {
     }
     
     @objc private func cardParams(fromCall: CAPPluginCall) -> STPCardParams {
-        let c = fromCall.dictionaryWithValues(forKeys: [
-          "number", "cvc", "expMonth", "expYear", "name", "currency"
-        ])
+        var c = [
+            "number": fromCall.getString("number"),
+            "cvc": fromCall.getString("cvc"),
+            "expMonth": fromCall.getString("expMonth"),
+            "expYear": fromCall.getString("expYear"),
+            "name": fromCall.getString("name"),
+            "currency": fromCall.getString("currency")
+        ]
+        
+        if c["expMonth"] == nil, fromCall.hasOption("expMonth"), let em = fromCall.getInt("expMonth") {
+            c["expMonth"] = String(em)
+        }
+        
+        if c["expYear"] == nil, fromCall.hasOption("expYear"), let em = fromCall.getInt("expYear") {
+            c["expYear"] = String(em)
+        }
+        
         let a = addressDict(fromCall: fromCall)
-        return cardParams(fromObj: c, withAddress: a)
+        return cardParams(fromObj: c as [String : Any], withAddress: a)
     }
+    
+    @objc private func clearApplePay() {
+        guard let ctx = self.applePayCtx else {
+            return
+        }
+        
+        if let c = self.bridge.getSavedCall(ctx.callbackId) {
+            self.bridge.releaseCall(c)
+        }
+        
+        self.applePayCtx = nil
+    }
+    
+    private func applePayOpts(obj: [ String : Any ]) throws -> PKPaymentRequest {
+        let merchantId = obj["merchantIdentifier"] as? String ?? ""
+        let country = obj["country"] as? String ?? ""
+        let currency = obj["currency"] as? String ?? ""
+        let items = obj["items"] as? [[String:Any]] ?? []
+        
+        if merchantId == "" {
+            throw StripePluginError.InvalidApplePayRequest("you must provide a valid merchant identifier")
+        }
+        
+        if country == "" {
+            throw StripePluginError.InvalidApplePayRequest("you must provide a country")
+        }
+        
+        if currency == "" {
+            throw StripePluginError.InvalidApplePayRequest("you must provide a currency")
+        }
+        
+        if items.count == 0 {
+            throw StripePluginError.InvalidApplePayRequest("you must provide at least one item")
+        }
+        
+        let paymentRequest = Stripe.paymentRequest(withMerchantIdentifier: merchantId, country: country, currency: currency)
+        
+        paymentRequest.paymentSummaryItems = []
+        
+        for it in items {
+            let label = it["label"] as? String ?? ""
+            let amount = it["amount"] as? NSNumber
+            let amountD: NSDecimalNumber;
+            
+            if amount == nil {
+                if let a = it["amount"] as? String, let ad = Decimal(string: a) {
+                    amountD = NSDecimalNumber(decimal: ad)
+                }
+                
+                throw StripePluginError.InvalidApplePayRequest("each item must have an amount greater than 0")
+            } else {
+                amountD = NSDecimalNumber(decimal: amount!.decimalValue)
+            }
+            
+            paymentRequest.paymentSummaryItems.append(
+                PKPaymentSummaryItem(label: label, amount: amountD)
+            )
+        }
+        
+        if Stripe.canSubmitPaymentRequest(paymentRequest) {
+            return paymentRequest
+        } else {
+            throw StripePluginError.InvalidApplePayRequest("invalid request")
+        }
+    }
+    
+    private func applePayOpts(call: CAPPluginCall) throws -> PKPaymentRequest  {
+        let obj = call.getObject("applePayOptions")
+        
+        if obj == nil {
+            throw StripePluginError.InvalidApplePayRequest("you must provide applePayOptions")
+        }
+        
+        return try applePayOpts(obj: obj!)
+    }
+}
+
+extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
+    public func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+        controller.dismiss(animated: true, completion: nil)
+        
+        guard let ctx = self.applePayCtx else {
+            return
+        }
+        
+        if let c = self.bridge.getSavedCall(ctx.callbackId) {
+            c.error("payment timeout or user cancelled")
+        }
+        
+        self.clearApplePay()
+    }
+    
+    @available(iOS 11.0, *)
+    public func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
+        guard let ctx = self.applePayCtx, let callback = self.bridge.getSavedCall(ctx.callbackId) else {
+            completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+            self.clearApplePay()
+            return
+        }
+        
+        switch ctx.mode {
+        case .PaymentIntent:
+            guard let clientSecret = ctx.clientSecret else {
+                completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+                callback.error("unexpected error")
+                self.clearApplePay()
+                return
+            }
+            
+            STPAPIClient.shared().createPaymentMethod(with: payment) { (pm, err) in
+                guard let pm = pm else {
+                    completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+                    callback.error("unable to create payment method: " + err!.localizedDescription, err)
+                    self.clearApplePay()
+                    return
+                }
+                
+                let pip: STPPaymentIntentParams = STPPaymentIntentParams.init(clientSecret: clientSecret)
+                pip.paymentMethodId = pm.stripeId
+                
+                STPPaymentHandler.shared().confirmPayment(withParams: pip, authenticationContext: self, completion: { (status, pi, err) in
+                    switch status {
+                    case .failed:
+                        if err != nil {
+                            callback.error("payment failed: " + err!.localizedDescription, err)
+                        } else {
+                            callback.error("payment failed")
+                        }
+                        completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+                        self.clearApplePay()
+                        
+                    case .canceled:
+                        callback.error("user cancelled the transaction")
+                        completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+                        self.clearApplePay()
+                        
+                    case .succeeded:
+                        callback.success(pi!.allResponseFields as! PluginResultData)
+                    }
+                })
+            }
+            
+        case .Token:
+            STPAPIClient.shared().createToken(with: payment) { (t, err) in
+                guard let t = t else {
+                    completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+                    callback.error("unable to create token: " + err!.localizedDescription, err)
+                    self.clearApplePay()
+                    return
+                }
+                
+                callback.success(["token": t.tokenId])
+            }
+        }
+    }
+}
+
+extension StripePlugin : STPAuthenticationContext {
+    public func authenticationPresentingViewController() -> UIViewController {
+        return self.bridge?.bridgeDelegate as! UIViewController
+    }
+}
+
+
+enum StripePluginError : Error {
+    case InvalidApplePayRequest(String)
+}
+
+enum ApplePayMode {
+    case PaymentIntent
+    case Token
+}
+
+struct ApplePayContext {
+    var callbackId: String
+    var mode: ApplePayMode
+    var completion: ((PKPaymentAuthorizationResult) -> Void)?
+    var clientSecret: String?
 }
