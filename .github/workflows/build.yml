@@ -56,4 +56,4 @@ jobs:
         CI: 'true'
         ANDROID_PLATFORM_VERSION: '8'
       working-directory: ./packages/test
-      run: npx widio
+      run: npx wdio
