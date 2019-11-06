@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package ca.zyra.capacitor.stripetest;
 
 import android.os.Bundle;
 

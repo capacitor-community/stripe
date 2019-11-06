@@ -1,4 +1,4 @@
-package com.getcapacitor.myapp;
+package ca.zyra.capacitor.stripetest;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,4 +1,4 @@
-package com.getcapacitor.myapp;
+package ca.zyra.capacitor.stripetest;
 
 import org.junit.Test;
 
