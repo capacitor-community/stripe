@@ -42,7 +42,7 @@ jobs:
 
     - name: Build Android Debug APK
       working-directory: ./packages/test/android
-      run: ./gradlew buildDebug
+      run: ./gradlew assembleDebug
 
     - name: Upload Debug APK to Sauce Labs
       working-directory: ./packages/test
@@ -53,7 +53,7 @@ jobs:
         curl -u "${SAUCE_RD_API_USERNAME}:${SAUCE_RD_API_KEY}" \
             -X POST https://app.testobject.com:443/api/storage/upload \
             -H "Content-Type: application/octet-stream" \
-            --data-binary ./android/app/build/outputs/apk/debug/app-debug.apk
+            --data-binary @./android/app/build/outputs/apk/debug/app-debug.apk
 
     - name: Test Android app
       env:
