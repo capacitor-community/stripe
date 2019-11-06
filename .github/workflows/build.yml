@@ -48,8 +48,9 @@ jobs:
             -H "Content-Type: application/octet-stream" \
             --data-binary ./android/app/build/outputs/apk/debug/app-debug.apk
 
-    - name: Build Test Android app
+    - name: Test Android app
       env:
+        TEST_PLATFORM: 'android'
         SAUCE_ANDROID_API_KEY: ${{ secrets.SAUCE_RD_API_KEY }}
         STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
         STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
