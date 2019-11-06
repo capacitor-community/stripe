@@ -1,4 +1,4 @@
-const PUBLISHABLE_KEY = process.env.PUBLISHABLE_KEY;
+const PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY;
 
 describe('Init', () => {
   beforeAll(async () => {

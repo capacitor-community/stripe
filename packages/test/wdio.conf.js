@@ -33,7 +33,6 @@ if (testAndroid) {
   const c = {
     platformName: 'Android',
     platformVersion: process.env.ANDROID_PLATFORM_VERSION || '9.0',
-    deviceName: process.env.ANDROID_DEVICE_NAME,
     app: process.env.ANDROID_APK_PATH || './android/app/build/outputs/apk/debug/app-debug.apk',
     autoWebview: true,
     autoGrantPermissions: true,
@@ -45,6 +44,12 @@ if (testAndroid) {
 
   if (CI) {
     c.testobject_api_key = process.env.SAUCE_ANDROID_API_KEY;
+  }
+
+  const devName = process.env.ANDROID_DEVICE_NAME;
+
+  if (devName) {
+    c.deviceName = devName;
   }
 
   config.capabilities.push(c);
@@ -71,11 +76,7 @@ if (testIos) {
   config.capabilities.push(c);
 }
 
-if (CI) {
-  config.capabilities.forEach(c => {
-    c.testobject_api_key = RD_KEY;
-  });
-} else {
+if (!CI) {
   config.port = 4723;
 }
 

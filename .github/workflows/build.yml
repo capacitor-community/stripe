@@ -10,32 +10,38 @@ jobs:
 
     steps:
     - name: Install node_modules
-      run:
-      - npm i
-      - npx lerna bootstrap
+      run: |
+        npm i
+        npx lerna bootstrap
+
+    - name: Build Capacitor/Android
+      run: |
+        cd packages/android
+        ./gradlew clean build -b capacitor/build.gradle -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true
 
     - name: Build Capacitor project
-      run:
-      - cd packages/plugin
-      - npm run build
+      run: |
+        cd packages/plugin
+        npm run build
 
     - name: Build Test Ionic app
-      run:
-      - cd packages/test
-      - npm run build
+      run: |
+        cd packages/test
+        npm run build
 
     - name: Build Test Android app
-      run:
-      - cd packages/test
-      - npx cap sync android
-      - cd android
-      - ./gradlew buildDebug
+      env:
+        SAUCE_RD_API_USERNAME: ${{ secrets.SAUCE_RD_API_USERNAME }}
+        SAUCE_ANDROID_API_KEY: ${{ secrets.SAUCE_RD_API_KEY }}
+        STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        CI: 'true'
+        ANDROID_PLATFORM_VERSION: '8'
 
-    - name: Run Android Emulator on Docker
-      run:
-      - docker run -it --rm -d --name avd --privileged --network host budtmo/docker-android-x86-9.0
-
-    - name: Setup ADB
-      run:
-      -
-
+      run: |
+        cd packages/test
+        npx cap sync android
+        cd android
+        ./gradlew buildDebug
+        curl -u "${SAUCE_RD_API_USERNAME}:${SAUCE_RD_API_KEY}" -X POST https://app.testobject.com:443/api/storage/upload -H "Content-Type: application/octet-stream" --data-binary ./android/app/build/outputs/apk/debug/app-debug.apk
+        npx widio
