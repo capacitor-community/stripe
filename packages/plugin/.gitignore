@@ -18,3 +18,4 @@ ios/public
 ios/Podfile.lock
 xcuserdata
 
+dist

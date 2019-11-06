@@ -67,7 +67,7 @@ export type FinalizeApplePayTransactionOptions = {
 export type ValidityResponse = { valid: boolean }
 export type AvailabilityResponse = { available: boolean }
 
-type CardBrandResponse = { brand: CardBrand };
+export type CardBrandResponse = { brand: CardBrand };
 
 export interface StripePluginPlugin {
   echo(options: { value: string }): Promise<{ value: string }>;
@@ -399,8 +399,3 @@ export interface AccountParams {
 export interface Error {
   message: string;
 }
-
-export type BlankCallback = () => void;
-export type ErrorCallback = (error: Error) => void;
-export type CardTokenCallback = (token: CardTokenResponse) => void;
-export type BankAccountTokenCallback = (token: BankAccountTokenResponse) => void;
