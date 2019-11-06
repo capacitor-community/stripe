@@ -28,6 +28,11 @@ export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
    * If provided, the payment intent will be confirmed using a card provided by Apple Pay
    */
   applePayOptions?: ApplePayOptions;
+
+  /**
+   * If provided, the payment intent will be confirmed using a card provided by Google Pay
+   */
+  googlePayOptions?: GooglePayOptions;
 }
 
 export type SetPublishableKeyOptions = {
