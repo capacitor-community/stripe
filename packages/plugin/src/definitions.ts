@@ -246,8 +246,23 @@ export interface ApplePayOptions {
 }
 
 export interface GooglePayOptions {
-  amount: string;
+  allowedCardNetworks: CardBrand[];
+  allowedAuthMethods: Array<'PAN_ONLY' | 'CRYPTOGRAM_3DS'>;
+  totalPrice: string;
+  totalPriceStatus: 'final';
   currencyCode: string;
+  merchantName: string;
+  emailRequired?: boolean;
+  allowPrepaidCards?: boolean;
+  billingAddressRequired?: boolean;
+  billingAddressParams?: {
+    format?: 'MIN'; // TODO copy from google
+    phoneNumberRequired?: boolean;
+  }
+  shippingAddressRequired?: boolean;
+  shippingAddressParameters?: {
+    // TODO copy form google
+  };
 }
 
 export interface ThreeDeeSecureParams {

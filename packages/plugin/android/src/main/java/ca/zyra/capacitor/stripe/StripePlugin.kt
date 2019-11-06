@@ -5,18 +5,14 @@ import android.content.Intent
 import android.util.Log
 import com.getcapacitor.*
 import com.google.android.gms.wallet.*
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.stripe.android.*
 import com.stripe.android.model.*
 import org.json.JSONException
-import org.json.JSONObject
-import java.util.*
 
 @NativePlugin(requestCodes = [9972, 50000, 50001])
 class StripePlugin : Plugin() {
-    private var stripeInstance: Stripe? = null
-    private var publishableKey: String? = null
+    private lateinit var stripeInstance: Stripe
+    private lateinit var publishableKey: String
     private var isTest = true
     private var googlePayPaymentData: PaymentData? = null
 
@@ -25,7 +21,7 @@ class StripePlugin : Plugin() {
         val value = call.getString("value")
 
         val ret = JSObject()
-        ret.put("value", value)
+        ret.putOpt("value", value)
         call.success(ret)
     }
 
@@ -53,28 +49,28 @@ class StripePlugin : Plugin() {
     @PluginMethod
     fun identifyCardBrand(call: PluginCall) {
         val res = JSObject()
-        res.put("brand", buildCard(call).build().brand)
+        res.putOpt("brand", buildCard(call.data).build().brand)
         call.success(res)
     }
 
     @PluginMethod
     fun validateCardNumber(call: PluginCall) {
         val res = JSObject()
-        res.put("valid", buildCard(call).build().validateNumber())
+        res.putOpt("valid", buildCard(call.data).build().validateNumber())
         call.success(res)
     }
 
     @PluginMethod
     fun validateExpiryDate(call: PluginCall) {
         val res = JSObject()
-        res.put("valid", buildCard(call).build().validateExpiryDate())
+        res.putOpt("valid", buildCard(call.data).build().validateExpiryDate())
         call.success(res)
     }
 
     @PluginMethod
     fun validateCVC(call: PluginCall) {
         val res = JSObject()
-        res.put("valid", buildCard(call).build().validateCVC())
+        res.putOpt("valid", buildCard(call.data).build().validateCVC())
         call.success(res)
     }
 
@@ -84,8 +80,7 @@ class StripePlugin : Plugin() {
             return
         }
 
-
-        val card = buildCard(call).build()
+        val card = buildCard(call.data).build()
 
         if (!card.validateCard()) {
             call.error("invalid card information")
@@ -97,10 +92,10 @@ class StripePlugin : Plugin() {
                 val tokenJs = JSObject()
                 val cardJs = cardToJSON(result.card!!)
 
-                tokenJs.put("card", cardJs)
-                tokenJs.put("id", result.id)
-                tokenJs.put("created", result.created)
-                tokenJs.put("type", result.type)
+                tokenJs.putOpt("card", cardJs)
+                tokenJs.putOpt("id", result.id)
+                tokenJs.putOpt("created", result.created)
+                tokenJs.putOpt("type", result.type)
 
                 call.success(tokenJs)
             }
@@ -110,7 +105,7 @@ class StripePlugin : Plugin() {
             }
         }
 
-        stripeInstance!!.createToken(card, callback)
+        stripeInstance.createToken(card, callback)
     }
 
     @PluginMethod
@@ -127,18 +122,18 @@ class StripePlugin : Plugin() {
                 call.getString("routing_number")
         )
 
-        stripeInstance!!.createBankAccountToken(bankAccount, object : ApiResultCallback<Token> {
+        stripeInstance.createBankAccountToken(bankAccount, object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
                 val tokenJs = JSObject()
 
                 if (result.bankAccount != null) {
                     val jsObj = bankAccountToJSON(result.bankAccount!!)
-                    tokenJs.put("bankAccount", jsObj)
+                    tokenJs.putOpt("bankAccount", jsObj)
                 }
 
-                tokenJs.put("id", result.id)
-                tokenJs.put("created", result.created)
-                tokenJs.put("type", result.type)
+                tokenJs.putOpt("id", result.id)
+                tokenJs.putOpt("created", result.created)
+                tokenJs.putOpt("type", result.type)
 
                 call.success(tokenJs)
             }
@@ -195,12 +190,12 @@ class StripePlugin : Plugin() {
             else -> return
         }
 
-        stripeInstance!!.createSource(sourceParams, object : ApiResultCallback<Source> {
+        stripeInstance.createSource(sourceParams, object : ApiResultCallback<Source> {
             override fun onSuccess(result: Source) {
                 val tokenJs = JSObject()
-                tokenJs.put("id", result.id)
-                tokenJs.put("created", result.created)
-                tokenJs.put("type", result.type)
+                tokenJs.putOpt("id", result.id)
+                tokenJs.putOpt("created", result.created)
+                tokenJs.putOpt("type", result.type)
                 call.success(tokenJs)
             }
 
@@ -223,10 +218,10 @@ class StripePlugin : Plugin() {
         val bt = if (businessType == "company") AccountParams.BusinessType.Company else AccountParams.BusinessType.Individual
         val params = AccountParams.createAccountParams(tosShownAndAccepted!!, bt, jsonToHashMap(legalEntity))
 
-        stripeInstance!!.createAccountToken(params, object : ApiResultCallback<Token> {
+        stripeInstance.createAccountToken(params, object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
                 val res = JSObject()
-                res.put("token", result.id)
+                res.putOpt("token", result.id)
                 call.success(res)
             }
 
@@ -244,10 +239,10 @@ class StripePlugin : Plugin() {
 
 
         val pii = call.getString("pii")
-        stripeInstance!!.createPiiToken(pii, object : ApiResultCallback<Token> {
+        stripeInstance.createPiiToken(pii, object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
                 val res = JSObject()
-                res.put("token", result.id)
+                res.putOpt("id", result.id)
                 call.success(res)
             }
 
@@ -271,7 +266,7 @@ class StripePlugin : Plugin() {
         val params: ConfirmPaymentIntentParams
 
         if (call.hasOption("card")) {
-            val cb = buildCard(call) // TODO fix this, we need to pass call.getObject(card)xs
+            val cb = buildCard(call.getObject("card")) // TODO fix this, we need to pass call.getObject(card)xs
             val cardParams = cb.build().toPaymentMethodParamsCard()
             val pmCreateParams = PaymentMethodCreateParams.create(cardParams)
             params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod!!)
@@ -297,7 +292,7 @@ class StripePlugin : Plugin() {
             params = ConfirmPaymentIntentParams.create(clientSecret, redirectUrl)
         }
 
-        stripeInstance!!.confirmPayment(activity, params)
+        stripeInstance.confirmPayment(activity, params)
         saveCall(call)
     }
 
@@ -307,197 +302,35 @@ class StripePlugin : Plugin() {
             return
         }
 
-
         val clientSecret = call.getString("clientSecret")
         val redirectUrl = call.getString("redirectUrl")
 
         val params: ConfirmSetupIntentParams
 
-        if (call.hasOption("card")) {
-            val cb = buildCard(call)
-            val cardParams = cb.build().toPaymentMethodParamsCard()
-            val pmCreateParams = PaymentMethodCreateParams.create(cardParams)
-            params = ConfirmSetupIntentParams.create(pmCreateParams, clientSecret, redirectUrl)
-        } else if (call.hasOption("paymentMethodId")) {
-            params = ConfirmSetupIntentParams.create(call.getString("paymentMethodId"), clientSecret, redirectUrl)
-        } else {
-            params = ConfirmSetupIntentParams.createWithoutPaymentMethod(clientSecret, redirectUrl)
+        when {
+            call.hasOption("card") -> {
+                val cb = buildCard(call.getObject("card"))
+                val cardParams = cb.build().toPaymentMethodParamsCard()
+                val pmCreateParams = PaymentMethodCreateParams.create(cardParams)
+                params = ConfirmSetupIntentParams.create(pmCreateParams, clientSecret, redirectUrl)
+            }
+
+            call.hasOption("paymentMethodId") -> {
+                params = ConfirmSetupIntentParams.create(call.getString("paymentMethodId"), clientSecret, redirectUrl)
+            }
+
+            else -> {
+                params = ConfirmSetupIntentParams.createWithoutPaymentMethod(clientSecret, redirectUrl)
+            }
         }
 
-        stripeInstance!!.confirmSetupIntent(activity, params)
+        stripeInstance.confirmSetupIntent(activity, params)
         saveCall(call)
     }
 
     @PluginMethod
     fun customizePaymentAuthUI(call: PluginCall) {
-        stripeInstance = Stripe(context, "pk_test_wFMKbghjzLxlEDDjnM1aVTzE")
-        PaymentConfiguration.init(context, "pk_test_wFMKbghjzLxlEDDjnM1aVTzE")
-
-        val builder = PaymentAuthConfig.Stripe3ds2UiCustomization.Builder()
-        builder.setAccentColor("#533094")
-
-
-        val btnOptsBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
-                .setBackgroundColor("#533094")
-                .setTextColor("#ffffff")
-                .setCornerRadius(15)
-
-        builder.setButtonCustomization(btnOptsBuilder.build(), PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.SUBMIT)
-
-        val uiCustomization = builder.build()
-
-
-        PaymentAuthConfig.init(PaymentAuthConfig.Builder()
-                .set3ds2Config(PaymentAuthConfig.Stripe3ds2Config.Builder()
-                        .setUiCustomization(uiCustomization)
-                        .build())
-                .build())
-
-        EphKeyProvider.setKey("{\"id\":\"ephkey_1FbN35HKHDJSZCWCkbW1QKCi\",\"object\":\"ephemeral_key\",\"associated_objects\":[{\"type\":\"customer\",\"id\":\"cus_G6XAH5fZ6dUs77\"}],\"created\":1572941159,\"expires\":1572944759,\"livemode\":false,\"secret\":\"ek_test_YWNjdF8xRFk4eFBIS0hESlNaQ1dDLDNVM2JQekFVS2lVc0VDSDB5aTF5Mm0zZ0ZLUE52WHQ_00f1aV09jb\"}")
-        CustomerSession.initCustomerSession(context, EphKeyProvider())
-        val cs = CustomerSession.getInstance()
-
-
-        val ts = ArrayList<PaymentMethod.Type>()
-        ts.add(PaymentMethod.Type.Card)
-        ts.add(PaymentMethod.Type.Fpx)
-
-        val psc = PaymentSessionConfig.Builder()
-                .setShippingMethodsRequired(true)
-                .setShippingInfoRequired(true)
-                .setPaymentMethodTypes(ts)
-                .build()
-
-        val session = PaymentSession(activity)
-
-        session.setCartTotal(555)
-
-        session.init(object : PaymentSession.PaymentSessionListener {
-            override fun onCommunicatingStateChanged(isCommunicating: Boolean) {
-                Log.d(TAG, "onCommunicatingStateChanged")
-            }
-
-            override fun onError(errorCode: Int, errorMessage: String) {
-                Log.d(TAG, "onError")
-            }
-
-            override fun onPaymentSessionDataChanged(data: PaymentSessionData) {
-                Log.d(TAG, "onPaymentSessionDataChanged")
-            }
-        }, psc)
-
-        session.presentPaymentMethodSelection(true)
-
-        /*
-        if (!ensurePluginInitialized(call)) {
-            return;
-        }
-
-        final PaymentAuthConfig.Stripe3ds2UiCustomization.Builder builder = new PaymentAuthConfig.Stripe3ds2UiCustomization.Builder();
-
-        // TODO add the remaining options here
-
-        String accentColor = call.getString("accentColor");
-
-        if (accentColor != null) {
-            builder.setAccentColor(accentColor);
-        }
-
-        JSArray btnOpts = call.getArray("buttonCustomizations");
-
-        if (btnOpts != null) {
-            try {
-                List<JSObject> opts = btnOpts.toList();
-                String buttonType;
-                String backgroundColor;
-                String textColor;
-                String fontName;
-                Integer cornerRadius;
-                Integer fontSize;
-                PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType stripeBtnType;
-                PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder btnOptsBuilder;
-                PaymentAuthConfig.Stripe3ds2ButtonCustomization stripeBtnOpts;
-
-                for (JSObject opt : opts) {
-                    buttonType = opt.getString("type");
-                    backgroundColor = opt.getString("backgroundColor");
-                    textColor = opt.getString("textColor");
-                    fontName = opt.getString("fontName");
-                    cornerRadius = opt.getInteger("cornerRadius");
-                    fontSize = opt.getInteger("fontSize");
-
-                    switch (buttonType) {
-                        case "submit":
-                            stripeBtnType = PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.SUBMIT;
-                            break;
-
-                        case "continue":
-                            stripeBtnType = PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.CONTINUE;
-                            break;
-
-                        case "next":
-                            stripeBtnType = PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.NEXT;
-                            break;
-
-                        case "cancel":
-                            stripeBtnType = PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.CANCEL;
-                            break;
-
-                        case "resend":
-                            stripeBtnType = PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.RESEND;
-                            break;
-
-                        case "select":
-                            stripeBtnType = PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.SELECT;
-                            break;
-
-                        default:
-                            continue;
-                    }
-
-                    btnOptsBuilder = new PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder();
-
-                    if (backgroundColor != null) {
-                        btnOptsBuilder.setBackgroundColor(backgroundColor);
-                    }
-
-                    if (cornerRadius != null) {
-                        btnOptsBuilder.setCornerRadius(cornerRadius);
-                    }
-
-                    if (textColor != null) {
-                        btnOptsBuilder.setTextColor(textColor);
-                    }
-
-                    if (fontName != null) {
-                        btnOptsBuilder.setTextFontName(fontName);
-                    }
-
-                    if (fontSize != null) {
-                        btnOptsBuilder.setTextFontSize(fontSize);
-                    }
-
-                    stripeBtnOpts = btnOptsBuilder.build();
-
-                    builder.setButtonCustomization(stripeBtnOpts, stripeBtnType);
-                }
-            } catch (Exception e) {
-                //
-            }
-        }
-
-
-        final PaymentAuthConfig.Stripe3ds2UiCustomization uiCustomization = builder.build();
-
-        PaymentAuthConfig.init(new PaymentAuthConfig.Builder()
-                .set3ds2Config(new PaymentAuthConfig.Stripe3ds2Config.Builder()
-                        .setTimeout(5)
-                        .setUiCustomization(uiCustomization)
-                        .build())
-                .build());
-
-
- */
+        call.resolve()
     }
 
     @PluginMethod
@@ -526,14 +359,14 @@ class StripePlugin : Plugin() {
         allowedCardNetworks.put("VISA")
 
         val isReadyToPayRequestJson = JSObject()
-        isReadyToPayRequestJson.put("allowedAuthMethods", allowedAuthMethods)
-        isReadyToPayRequestJson.put("allowedCardNetworks", allowedCardNetworks)
+        isReadyToPayRequestJson.putOpt("allowedAuthMethods", allowedAuthMethods)
+        isReadyToPayRequestJson.putOpt("allowedCardNetworks", allowedCardNetworks)
 
         val req = IsReadyToPayRequest.fromJson(isReadyToPayRequestJson.toString())
         paymentsClient.isReadyToPay(req)
                 .addOnCompleteListener { task ->
                     val obj = JSObject()
-                    obj.put("available", task.isSuccessful)
+                    obj.putOpt("available", task.isSuccessful)
                     call.resolve(obj)
                 }
     }
@@ -586,48 +419,48 @@ class StripePlugin : Plugin() {
             val billingAddressParams = call.getObject("billingAddressParams", JSObject())
 
             if (!billingAddressParams.has("format")) {
-                billingAddressParams.put("format", "MIN")
+                billingAddressParams.putOpt("format", "MIN")
             }
 
             if (!billingAddressParams.has("phoneNumberRequired")) {
-                billingAddressParams.put("phoneNumberRequired", false)
+                billingAddressParams.putOpt("phoneNumberRequired", false)
             }
 
             val shippingAddressParams = call.getObject("shippingAddressParameters", JSObject())
 
             val params = JSObject()
-                    .put("allowedAuthMethods", authMethods)
-                    .put("allowedCardNetworks", cardNetworks)
-                    .put("billingAddressRequired", billingAddressRequired)
-                    .put("allowPrepaidCards", allowPrepaidCards)
-                    .put("billingAddressParameters", billingAddressParams)
+                    .putOpt("allowedAuthMethods", authMethods)
+                    .putOpt("allowedCardNetworks", cardNetworks)
+                    .putOpt("billingAddressRequired", billingAddressRequired)
+                    .putOpt("allowPrepaidCards", allowPrepaidCards)
+                    .putOpt("billingAddressParameters", billingAddressParams)
 
-            val tokenizationSpec = GooglePayConfig(publishableKey!!).tokenizationSpecification
+            val tokenizationSpec = GooglePayConfig(publishableKey).tokenizationSpecification
 
             val cardPaymentMethod = JSObject()
-                    .put("type", "CARD")
-                    .put("parameters", params)
-                    .put("tokenizationSpecification", tokenizationSpec)
+                    .putOpt("type", "CARD")
+                    .putOpt("parameters", params)
+                    .putOpt("tokenizationSpecification", tokenizationSpec)
 
             val txInfo = JSObject()
-            txInfo.put("totalPrice", totalPrice)
-            txInfo.put("totalPriceStatus", totalPriceStatus)
-            txInfo.put("currencyCode", currencyCode)
+            txInfo.putOpt("totalPrice", totalPrice)
+            txInfo.putOpt("totalPriceStatus", totalPriceStatus)
+            txInfo.putOpt("currencyCode", currencyCode)
 
             val paymentDataReq = JSObject()
-                    .put("apiVersion", 2)
-                    .put("apiVersionMinor", 0)
-                    .put("allowedPaymentMethods", JSArray().put(cardPaymentMethod))
-                    .put("transactionInfo", txInfo)
-                    .put("emailRequired", emailRequired)
+                    .putOpt("apiVersion", 2)
+                    .putOpt("apiVersionMinor", 0)
+                    .putOpt("allowedPaymentMethods", JSArray().put(cardPaymentMethod))
+                    .putOpt("transactionInfo", txInfo)
+                    .putOpt("emailRequired", emailRequired)
 
             if (merchantName != null) {
-                paymentDataReq.put("merchantInfo", JSObject().put("merchantName", merchantName))
+                paymentDataReq.putOpt("merchantInfo", JSObject().putOpt("merchantName", merchantName))
             }
 
             if (shippingAddressRequired!!) {
-                paymentDataReq.put("shippingAddressRequired", true)
-                paymentDataReq.put("shippingAddressParameters", shippingAddressParams)
+                paymentDataReq.putOpt("shippingAddressRequired", true)
+                paymentDataReq.putOpt("shippingAddressParameters", shippingAddressParams)
             }
 
             val paymentDataReqStr = paymentDataReq.toString()
@@ -678,7 +511,7 @@ class StripePlugin : Plugin() {
      * @return {boolean} returns true if the plugin is ready
      */
     private fun ensurePluginInitialized(call: PluginCall): Boolean {
-        if (stripeInstance == null) {
+        if (!::stripeInstance.isInitialized) {
             call.error("you must call setPublishableKey to initialize the plugin before calling this method")
             return false
         }
@@ -721,14 +554,14 @@ class StripePlugin : Plugin() {
                 val obj = JSObject()
 
                 if (status != null) {
-                    obj.put("canceled", status.isCanceled)
-                    obj.put("interrupted", status.isInterrupted)
-                    obj.put("success", status.isSuccess)
-                    obj.put("code", status.statusCode)
-                    obj.put("message", status.statusMessage)
-                    obj.put("resolution", status.resolution)
+                    obj.putOpt("canceled", status.isCanceled)
+                    obj.putOpt("interrupted", status.isInterrupted)
+                    obj.putOpt("success", status.isSuccess)
+                    obj.putOpt("code", status.statusCode)
+                    obj.putOpt("message", status.statusMessage)
+                    obj.putOpt("resolution", status.resolution)
                 } else {
-                    obj.put("canceled", true)
+                    obj.putOpt("canceled", true)
                 }
 
                 googlePayCall.resolve(obj)
@@ -759,7 +592,7 @@ class StripePlugin : Plugin() {
 
         Log.d(TAG, "passing activity result to stripe")
 
-        stripeInstance!!.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
+        stripeInstance.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
             override fun onSuccess(result: PaymentIntentResult) {
                 Log.d(TAG, "onPaymentResult.onSuccess called")
                 val pi = result.intent
@@ -775,7 +608,7 @@ class StripePlugin : Plugin() {
             }
         })
 
-        stripeInstance!!.onSetupResult(requestCode, data, object : ApiResultCallback<SetupIntentResult> {
+        stripeInstance.onSetupResult(requestCode, data, object : ApiResultCallback<SetupIntentResult> {
             override fun onSuccess(result: SetupIntentResult) {
                 Log.d(TAG, "onSetupResult.onSuccess called")
                 val si = result.intent
@@ -790,119 +623,5 @@ class StripePlugin : Plugin() {
                 freeSavedCall()
             }
         })
-    }
-
-    companion object {
-        private val LOAD_PAYMENT_DATA_REQUEST_CODE = 9972
-        private val TAG = "Capacitor:StripePlugin"
-
-        private fun buildCard(call: PluginCall): Card.Builder {
-            val builder = Card.Builder(
-                    call.getString("number"),
-                    call.getInt("exp_month"),
-                    call.getInt("exp_year"),
-                    call.getString("cvc")
-            )
-
-            return builder
-                    .name(call.getString("value"))
-                    .addressLine1(call.getString("address_line1"))
-                    .addressLine2(call.getString("address_line2"))
-                    .addressCity(call.getString("address_city"))
-                    .addressState(call.getString("address_state"))
-                    .addressZip(call.getString("address_zip"))
-                    .country(call.getString("address_country"))
-                    .currency(call.getString("currency"))
-        }
-
-        private fun cardToJSON(card: Card): JSObject {
-            val cardJs = JSObject()
-            cardJs.put("address_city", card.addressCity)
-            cardJs.put("address_country", card.addressCountry)
-            cardJs.put("address_state", card.addressState)
-            cardJs.put("address_line1", card.addressLine1)
-            cardJs.put("address_line2", card.addressLine2)
-            cardJs.put("address_zip", card.addressZip)
-            cardJs.put("brand", card.brand)
-            cardJs.put("country", card.addressCountry)
-            cardJs.put("cvc", card.cvc)
-            cardJs.put("exp_month", card.expMonth)
-            cardJs.put("exp_year", card.expYear)
-            cardJs.put("funding", card.funding)
-            cardJs.put("last4", card.last4)
-            cardJs.put("name", card.name)
-            return cardJs
-        }
-
-        private fun bankAccountToJSON(account: BankAccount): JSObject {
-            val bankObject = JSObject()
-
-            bankObject.put("account_holder_name", account.accountHolderName)
-            bankObject.put("account_holder_type", account.accountHolderType)
-            bankObject.put("bank_name", account.bankName)
-            bankObject.put("country", account.countryCode)
-            bankObject.put("currency", account.currency)
-            bankObject.put("last4", account.last4)
-            bankObject.put("routing_number", account.routingNumber)
-
-            return bankObject
-        }
-
-        private fun setupIntentToJSON(si: SetupIntent): JSObject {
-            val res = JSObject()
-
-            res.put("status", si.status)
-            res.put("paymentMethodId", si.paymentMethodId)
-            res.put("cancellationReason", si.cancellationReason)
-            res.put("created", si.created)
-            res.put("description", si.description)
-            res.put("id", si.id)
-            res.put("isLiveMode", si.isLiveMode)
-
-            val u = si.usage
-
-            if (u != null) {
-                res.put("usage", u.code)
-            }
-
-            return res
-        }
-
-        private fun paymentIntentToJSON(pi: PaymentIntent): JSObject {
-            val res = JSObject()
-            val status = pi.status
-
-            res.put("status", status)
-            res.put("amount", pi.amount)
-            res.put("canceledAt", pi.canceledAt)
-            res.put("cancellationReason", pi.cancellationReason)
-            res.put("captureMethod", pi.captureMethod)
-            res.put("confirmationMethod", pi.confirmationMethod)
-            res.put("created", pi.created)
-            res.put("currency", pi.currency)
-            res.put("description", pi.description)
-            res.put("id", pi.id)
-            res.put("lastPaymentError", pi.lastPaymentError)
-            res.put("paymentMethodId", pi.paymentMethodId)
-            res.put("isLiveMode", pi.isLiveMode)
-
-            // TODO confirm whether we really need to check this since the SDK handles action/confirmation automatically
-            res.put("success", status == StripeIntent.Status.Succeeded)
-            res.put("requiresAction", pi.requiresAction())
-            res.put("requiresConfirmation", pi.requiresConfirmation())
-
-            return res
-        }
-
-        private fun jsonToHashMap(obj: JSONObject?): HashMap<String, Any> {
-            if (obj != null && obj.length() > 0) {
-                val type = object : TypeToken<HashMap<String, Any>>() {
-
-                }.type
-                return Gson().fromJson(obj.toString(), type)
-            } else {
-                return HashMap()
-            }
-        }
     }
 }

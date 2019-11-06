@@ -4,7 +4,7 @@ import android.util.Log
 import com.stripe.android.PaymentSession
 import com.stripe.android.PaymentSessionData
 
-class StripeListener : PaymentSession.PaymentSessionListener {
+internal class StripeListener : PaymentSession.PaymentSessionListener {
     override fun onError(errorCode: Int, errorMessage: String) {
         Log.v("StripeListener", "onError")
     }
