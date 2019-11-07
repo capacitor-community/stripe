@@ -123,7 +123,9 @@ export interface StripePluginPlugin {
     apiVersion?: string;
   }): Promise<void>;
 
-  customerPaymentMethods(): Promise<PaymentMethod[]>;
+  customerPaymentMethods(): Promise<{
+    paymentMethods: PaymentMethod[]
+  }>;
 
   setCustomerDefaultSource(opts: {
     sourceId: string;

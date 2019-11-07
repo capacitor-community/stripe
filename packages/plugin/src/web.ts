@@ -243,7 +243,7 @@ export class StripePluginWeb extends WebPlugin implements StripePluginPlugin {
     return this.cs.addSrc(opts.sourceId, opts.type);
   }
 
-  customerPaymentMethods(): Promise<PaymentMethod[]> {
+  customerPaymentMethods(): Promise<{ paymentMethods: PaymentMethod[] }> {
     return this.cs.listPm();
   }
 
@@ -277,13 +277,17 @@ class CustomerSession {
     this.customerId = key.associated_objects[0].id;
   }
 
-  listPm(): Promise<PaymentMethod[]> {
-    return callStripeAPI('/v1/payment_methods', formBody({
+  async listPm(): Promise<{ paymentMethods: PaymentMethod[] }> {
+    const res = await callStripeAPI('/v1/payment_methods', formBody({
       customer: this.customerId,
       type: 'card',
     }), this.key.secret, {
       'Stripe-Version': this.key.apiVersion,
     });
+
+    return {
+      paymentMethods: res.data,
+    }
   }
 
   addSrc(id: string, type: string = 'card'): Promise<void> {
