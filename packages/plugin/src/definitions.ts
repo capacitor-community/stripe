@@ -28,6 +28,11 @@ export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
    * If provided, the payment intent will be confirmed using a card provided by Apple Pay
    */
   applePayOptions?: ApplePayOptions;
+
+  /**
+   * If provided, the payment intent will be confirmed using a card provided by Google Pay
+   */
+  googlePayOptions?: GooglePayOptions;
 }
 
 export type SetPublishableKeyOptions = {
@@ -67,7 +72,7 @@ export type FinalizeApplePayTransactionOptions = {
 export type ValidityResponse = { valid: boolean }
 export type AvailabilityResponse = { available: boolean }
 
-type CardBrandResponse = { brand: CardBrand };
+export type CardBrandResponse = { brand: CardBrand };
 
 export interface StripePluginPlugin {
   echo(options: { value: string }): Promise<{ value: string }>;
@@ -102,6 +107,36 @@ export interface StripePluginPlugin {
 
   createAccountToken(account: AccountParams): Promise<TokenResponse>;
 
+  /* Payment methods */
+
+  initCustomerSession(opts: {
+    id: string;
+    object: 'ephemeral_key';
+    associated_objects: Array<{
+      type: 'customer';
+      id: string;
+    }>;
+    created: number;
+    expires: number;
+    livemode: boolean;
+    secret: string;
+    apiVersion?: string;
+  }): Promise<void>;
+
+  customerPaymentMethods(): Promise<PaymentMethod[]>;
+
+  setCustomerDefaultSource(opts: {
+    sourceId: string;
+    type?: string;
+  }): Promise<void>;
+
+  addCustomerSource(opts: {
+    sourceId: string;
+    type?: string;
+  }): Promise<void>;
+
+  deleteCustomerSource(opts: { sourceId: string }): Promise<void>;
+
   /* Helpers */
   customizePaymentAuthUI(opts: any): Promise<void>;
 
@@ -116,6 +151,15 @@ export interface StripePluginPlugin {
   validateCVC(opts: ValidateCVCOptions): Promise<ValidityResponse>;
 
   identifyCardBrand(opts: IdentifyCardBrandOptions): Promise<CardBrandResponse>;
+}
+
+export interface PaymentMethod {
+  created?: number;
+  customerId?: string;
+  id?: string;
+  livemode: boolean;
+  type?: string;
+  card?: Card;
 }
 
 export enum UIButtonType {
@@ -241,8 +285,23 @@ export interface ApplePayOptions {
 }
 
 export interface GooglePayOptions {
-  amount: string;
+  allowedCardNetworks: CardBrand[];
+  allowedAuthMethods: Array<'PAN_ONLY' | 'CRYPTOGRAM_3DS'>;
+  totalPrice: string;
+  totalPriceStatus: 'final';
   currencyCode: string;
+  merchantName: string;
+  emailRequired?: boolean;
+  allowPrepaidCards?: boolean;
+  billingAddressRequired?: boolean;
+  billingAddressParams?: {
+    format?: 'MIN'; // TODO copy from google
+    phoneNumberRequired?: boolean;
+  }
+  shippingAddressRequired?: boolean;
+  shippingAddressParameters?: {
+    // TODO copy form google
+  };
 }
 
 export interface ThreeDeeSecureParams {
@@ -352,7 +411,7 @@ export enum CardBrand {
   UNKNOWN = 'UNKNOWN'
 }
 
-const SourceTypeArray: SourceType[] = Object.keys(SourceType).map((key: any) => SourceType[key] as any as SourceType);
+// const SourceTypeArray: SourceType[] = Object.keys(SourceType).map((key: any) => SourceType[key] as any as SourceType);
 
 export interface Address {
   line1: string;
@@ -399,8 +458,3 @@ export interface AccountParams {
 export interface Error {
   message: string;
 }
-
-export type BlankCallback = () => void;
-export type ErrorCallback = (error: Error) => void;
-export type CardTokenCallback = (token: CardTokenResponse) => void;
-export type BankAccountTokenCallback = (token: BankAccountTokenResponse) => void;

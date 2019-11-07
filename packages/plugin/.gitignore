@@ -1,5 +1,5 @@
-node_modules
-.idea
+node_modules/
+.idea/
 .DS_STORE
 .gradle
 build
@@ -18,4 +18,4 @@ ios/public
 ios/Podfile.lock
 xcuserdata
 
-!./node_modules/@capacitor/android/
+dist

@@ -10,8 +10,8 @@
     "module": "es2015",
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+//    "noUnusedLocals": true,
+//    "noUnusedParameters": true,
     "outDir": "dist/esm",
     "sourceMap": true,
     "target": "es2015"
