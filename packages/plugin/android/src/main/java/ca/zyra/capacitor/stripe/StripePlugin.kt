@@ -528,13 +528,25 @@ class StripePlugin : Plugin() {
                         val co = JSObject()
                         val c: PaymentMethod.Card = pm.card!!
                         co.putOpt("brand", c.brand)
-                        co.putOpt("checks", c.checks)
+
+                        if (c.checks != null) {
+                            co.putOpt("checks", JSObject()
+                                    .putOpt("address_line1_check", c.checks!!.addressLine1Check)
+                                    .putOpt("address_postal_code_check", c.checks!!.addressPostalCodeCheck)
+                                    .putOpt("cvc_check", c.checks!!.cvcCheck)
+                            )
+                        }
+
                         co.putOpt("country", c.country)
                         co.putOpt("exp_month", c.expiryMonth)
                         co.putOpt("exp_year", c.expiryYear)
                         co.putOpt("funding", c.funding)
                         co.putOpt("last4", c.last4)
-                        co.putOpt("threeDSecureUsage", c.threeDSecureUsage?.isSupported)
+
+                        if (c.threeDSecureUsage != null) {
+                            co.put("three_d_secure_usage", JSObject().putOpt("supported", c.threeDSecureUsage!!.isSupported))
+                        }
+
                         obj.put("card", co)
                     }
 
