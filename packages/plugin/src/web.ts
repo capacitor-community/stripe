@@ -15,6 +15,7 @@ import {
   CreateSourceTokenOptions,
   FinalizeApplePayTransactionOptions,
   IdentifyCardBrandOptions,
+  PaymentMethod,
   SetPublishableKeyOptions,
   StripePluginPlugin,
   TokenResponse,
@@ -41,7 +42,9 @@ function formBody(json: any, prefix?: string, omit?: string[]) {
   return str;
 }
 
-async function callStripeAPI(path: string, body: string, key: string) {
+async function callStripeAPI(path: string, body: string, key: string, extraHeaders?: any) {
+  extraHeaders = extraHeaders || {};
+
   const res = await fetch(`https://api.stripe.com${path}`, {
     body: body,
     method: 'POST',
@@ -49,6 +52,7 @@ async function callStripeAPI(path: string, body: string, key: string) {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
       'Authorization': `Basic ${btoa(`${key}:`)}`,
+      ...extraHeaders,
     },
     mode: 'no-cors',
   });
@@ -233,6 +237,71 @@ export class StripePluginWeb extends WebPlugin implements StripePluginPlugin {
     return {
       brand: CardBrand.UNKNOWN,
     };
+  }
+
+  addCustomerSource(opts: { sourceId: string; type?: string }): Promise<void> {
+    return this.cs.addSrc(opts.sourceId, opts.type);
+  }
+
+  customerPaymentMethods(): Promise<PaymentMethod[]> {
+    return this.cs.listPm();
+  }
+
+  deleteCustomerSource(opts: { sourceId: string }): Promise<void> {
+    return undefined;
+  }
+
+  private cs: CustomerSession;
+
+  async initCustomerSession(opts: { id: string; object: 'ephemeral_key'; associated_objects: Array<{ type: 'customer'; id: string }>; created: number; expires: number; livemode: boolean; secret: string }): Promise<void> {
+    this.cs = new CustomerSession(opts);
+  }
+
+  setCustomerDefaultSource(opts: { sourceId: string; type?: string }): Promise<void> {
+    return this.cs.setDefaultSrc(opts.sourceId, opts.type);
+  }
+}
+
+class CustomerSession {
+  private customerId: string;
+
+  constructor(private key: { secret?: string, associated_objects?: any[], apiVersion?: string }) {
+    if (!key.secret || !Array.isArray(key.associated_objects) || !key.associated_objects.length || !key.associated_objects[0].id) {
+      throw new Error('you must provide a valid configuration');
+    }
+
+    if (!key.apiVersion) {
+      throw new Error('the web implementation requires that you pass the API version used when generating this ephemeral token');
+    }
+
+    this.customerId = key.associated_objects[0].id;
+  }
+
+  listPm(): Promise<PaymentMethod[]> {
+    return callStripeAPI('/v1/payment_methods', formBody({
+      customer: this.customerId,
+      type: 'card',
+    }), this.key.secret, {
+      'Stripe-Version': this.key.apiVersion,
+    });
+  }
+
+  addSrc(id: string, type: string = 'card'): Promise<void> {
+    return callStripeAPI('/v1/customers/' + this.customerId, formBody({
+      source: id,
+      type,
+    }), this.key.secret, {
+      'Stripe-Version': this.key.apiVersion,
+    });
+  }
+
+
+  setDefaultSrc(id: string, type: string = 'card'): Promise<void> {
+    return callStripeAPI('/v1/customers/' + this.customerId, formBody({
+      default_source: id,
+    }), this.key.secret, {
+      'Stripe-Version': this.key.apiVersion,
+    });
   }
 }
 

@@ -120,6 +120,7 @@ export interface StripePluginPlugin {
     expires: number;
     livemode: boolean;
     secret: string;
+    apiVersion?: string;
   }): Promise<void>;
 
   customerPaymentMethods(): Promise<PaymentMethod[]>;
