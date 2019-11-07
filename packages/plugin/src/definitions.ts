@@ -107,6 +107,35 @@ export interface StripePluginPlugin {
 
   createAccountToken(account: AccountParams): Promise<TokenResponse>;
 
+  /* Payment methods */
+
+  initCustomerSession(opts: {
+    id: string;
+    object: 'ephemeral_key';
+    associated_objects: Array<{
+      type: 'customer';
+      id: string;
+    }>;
+    created: number;
+    expires: number;
+    livemode: boolean;
+    secret: string;
+  }): Promise<void>;
+
+  customerPaymentMethods(): Promise<PaymentMethod[]>;
+
+  setCustomerDefaultSource(opts: {
+    sourceId: string;
+    type?: string;
+  }): Promise<void>;
+
+  addCustomerSource(opts: {
+    sourceId: string;
+    type?: string;
+  }): Promise<void>;
+
+  deleteCustomerSource(opts: { sourceId: string }): Promise<void>;
+
   /* Helpers */
   customizePaymentAuthUI(opts: any): Promise<void>;
 
@@ -121,6 +150,15 @@ export interface StripePluginPlugin {
   validateCVC(opts: ValidateCVCOptions): Promise<ValidityResponse>;
 
   identifyCardBrand(opts: IdentifyCardBrandOptions): Promise<CardBrandResponse>;
+}
+
+export interface PaymentMethod {
+  created?: number;
+  customerId?: string;
+  id?: string;
+  livemode: boolean;
+  type?: string;
+  card?: Card;
 }
 
 export enum UIButtonType {

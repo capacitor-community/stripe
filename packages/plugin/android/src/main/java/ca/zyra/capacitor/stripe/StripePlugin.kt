@@ -518,11 +518,11 @@ class StripePlugin : Plugin() {
 
                 for (pm in paymentMethods) {
                     val obj = JSObject()
-                    obj.putOpt("", pm.created)
-                    obj.putOpt("", pm.customerId)
-                    obj.putOpt("", pm.id)
-                    obj.putOpt("", pm.liveMode)
-                    obj.putOpt("", pm.type)
+                    obj.putOpt("created", pm.created)
+                    obj.putOpt("customerId", pm.customerId)
+                    obj.putOpt("id", pm.id)
+                    obj.putOpt("livemode", pm.liveMode)
+                    obj.putOpt("type", pm.type)
 
                     if (pm.card != null) {
                         val co = JSObject()
