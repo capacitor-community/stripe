@@ -20,6 +20,15 @@ extension StripePlugin : STPPaymentContextDelegate {
 
     public func paymentContextDidChange(_ paymentContext: STPPaymentContext) {
         NSLog("something changed")
+
+        guard let opt = paymentContext.selectedPaymentOption else {
+            return
+        }
+
+        self.notifyListeners("paymentMethodSelect", data: [
+            "label": opt.label,
+            "reusable": opt.isReusable,
+        ])
     }
 
     public func paymentContext(_ paymentContext: STPPaymentContext,
