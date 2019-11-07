@@ -15,6 +15,7 @@ class StripePlugin : Plugin() {
     private lateinit var publishableKey: String
     private var isTest = true
     private var googlePayPaymentData: PaymentData? = null
+    private var customerSession: CustomerSession? = null
 
     @PluginMethod
     fun echo(call: PluginCall) {
@@ -488,19 +489,146 @@ class StripePlugin : Plugin() {
             return
         }
 
-        val ephKey = call.getString("key")
-        EphKeyProvider.setKey(ephKey)
-        CustomerSession.initCustomerSession(context, EphKeyProvider())
-        call.resolve()
+        try {
+            CustomerSession.initCustomerSession(context, EphKeyProvider(call.data.toString()))
+            customerSession = CustomerSession.getInstance()
+
+            call.resolve()
+        } catch (e: java.lang.Exception) {
+            call.reject("unable to init customer session: " + e.localizedMessage, e)
+        }
     }
 
     @PluginMethod
-    fun onPaymentSessionDataChanged(call: PluginCall) {
+    fun customerPaymentMethods(call: PluginCall) {
         if (!ensurePluginInitialized(call)) {
             return
         }
 
-        call.save()
+        val cs = customerSession
+
+        if (cs == null) {
+            call.reject("you must call initCustomerSession first")
+            return
+        }
+
+        val l = StripePaymentMethodsListener(callback = object : PaymentMethodsCallback() {
+            override fun onSuccess(paymentMethods: MutableList<PaymentMethod>) {
+                val arr = JSArray()
+
+                for (pm in paymentMethods) {
+                    val obj = JSObject()
+                    obj.putOpt("", pm.created)
+                    obj.putOpt("", pm.customerId)
+                    obj.putOpt("", pm.id)
+                    obj.putOpt("", pm.liveMode)
+                    obj.putOpt("", pm.type)
+
+                    if (pm.card != null) {
+                        val co = JSObject()
+                        val c: PaymentMethod.Card = pm.card!!
+                        co.putOpt("brand", c.brand)
+                        co.putOpt("checks", c.checks)
+                        co.putOpt("country", c.country)
+                        co.putOpt("exp_month", c.expiryMonth)
+                        co.putOpt("exp_year", c.expiryYear)
+                        co.putOpt("funding", c.funding)
+                        co.putOpt("last4", c.last4)
+                        co.putOpt("threeDSecureUsage", c.threeDSecureUsage?.isSupported)
+                        obj.put("card", co)
+                    }
+
+                    arr.put(obj)
+                }
+
+                val res = JSObject()
+                res.put("paymentMethods", arr)
+                call.success(res)
+            }
+
+            override fun onError(err: Exception) {
+                call.reject(err.localizedMessage, err)
+            }
+        })
+
+        cs.getPaymentMethods(PaymentMethod.Type.Card, l)
+    }
+
+    @PluginMethod
+    fun setCustomerDefaultSource(call: PluginCall) {
+        if (customerSession == null) {
+            call.reject("you must call initCustomerSession first")
+            return
+        }
+
+        val sourceId = call.getString("sourceId")
+        val type = call.getString("type", "card")
+
+        if (sourceId == null) {
+            call.reject("you must provide a sourceId")
+            return
+        }
+
+        customerSession!!.setCustomerDefaultSource(sourceId, type, object : CustomerSession.CustomerRetrievalListener {
+            override fun onCustomerRetrieved(customer: Customer) {
+                call.success()
+            }
+
+            override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
+                call.reject(errorMessage, java.lang.Exception(errorMessage))
+            }
+        })
+    }
+
+    @PluginMethod
+    fun addCustomerSource(call: PluginCall) {
+        if (customerSession == null) {
+            call.reject("you must call initCustomerSession first")
+            return
+        }
+
+        val sourceId = call.getString("sourceId")
+        val type = call.getString("type", "card")
+
+        if (sourceId == null) {
+            call.reject("you must provide a sourceId")
+            return
+        }
+
+        customerSession!!.addCustomerSource(sourceId, type, object : CustomerSession.SourceRetrievalListener {
+            override fun onSourceRetrieved(source: Source) {
+                call.success()
+            }
+
+            override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
+                call.reject(errorMessage, java.lang.Exception(errorMessage))
+            }
+        })
+    }
+
+    @PluginMethod
+    fun deleteCustomerSource(call: PluginCall) {
+        if (customerSession == null) {
+            call.reject("you must call initCustomerSession first")
+            return
+        }
+
+        val sourceId = call.getString("sourceId")
+
+        if (sourceId == null) {
+            call.reject("you must provide a sourceId")
+            return
+        }
+
+        customerSession!!.deleteCustomerSource(sourceId, object : CustomerSession.SourceRetrievalListener {
+            override fun onSourceRetrieved(source: Source) {
+                call.success()
+            }
+
+            override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
+                call.reject(errorMessage, java.lang.Exception(errorMessage))
+            }
+        })
     }
 
     /**

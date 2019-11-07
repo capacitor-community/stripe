@@ -31,6 +31,8 @@ internal fun buildCard(call: JSObject): Card.Builder {
 }
 
 internal fun cardToJSON(card: Card): JSObject {
+    card.toPaymentMethodParamsCard()
+
     val cardJs = JSObject()
     cardJs.putOpt("address_city", card.addressCity)
     cardJs.putOpt("address_country", card.addressCountry)
