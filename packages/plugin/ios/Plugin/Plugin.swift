@@ -393,17 +393,17 @@ public class StripePlugin: CAPPlugin {
 
     @objc func createCustomerContext(_ call: CAPPluginCall) {
         guard
-            let id = call.getString("id"),
-            let object = call.getString("object"),
-            let associatedObjects = call.getArray("associated_objects", [String:String].self),
-            let created = call.getInt("created"),
-            let expires = call.getInt("expires"),
-            let livemode = call.getBool("livemode"),
-            let secret = call.getString("secret") else {
-          call.error("invalid ephemeral options")
-                return
+                let id = call.getString("id"),
+                let object = call.getString("object"),
+                let associatedObjects = call.getArray("associated_objects", [String: String].self),
+                let created = call.getInt("created"),
+                let expires = call.getInt("expires"),
+                let livemode = call.getBool("livemode"),
+                let secret = call.getString("secret") else {
+            call.error("invalid ephemeral options")
+            return
         }
-        
+
         self.ephemeralKey = [
             "id": id,
             "object": object,
@@ -413,11 +413,11 @@ public class StripePlugin: CAPPlugin {
             "livemode": livemode,
             "secret": secret
         ]
-        
+
         let ctx = STPCustomerContext(keyProvider: self)
         let pCfg = STPPaymentConfiguration.shared()
-        
-        if let po = call.getObject("paymentOptions") as? [String:Bool] {
+
+        if let po = call.getObject("paymentOptions") as? [String: Bool] {
             if po["applePay"] ?? false {
                 pCfg.additionalPaymentOptions.insert(.applePay)
             }
@@ -428,9 +428,9 @@ public class StripePlugin: CAPPlugin {
                 pCfg.additionalPaymentOptions.insert(.default)
             }
         }
-        
+
         let rbaf = call.getString("requiredBillingAddressFields")
-        
+
         switch rbaf {
         case "full":
             pCfg.requiredBillingAddressFields = .full
@@ -449,53 +449,55 @@ public class StripePlugin: CAPPlugin {
         if let ac = call.getArray("availableCountries", String.self) {
             pCfg.availableCountries = Set(ac)
         }
-        
+
         if let cn = call.getString("companyName") {
             pCfg.companyName = cn
         }
-        
+
         if let amid = call.getString("appleMerchantIdentifier") {
             pCfg.appleMerchantIdentifier = amid
         }
-        
+
         self.customerCtx = ctx
         let theme = STPTheme.default()
         self.paymentCtx = STPPaymentContext(customerContext: ctx, configuration: pCfg, theme: theme)
         call.success()
     }
-    
+
     @objc func presentPaymentOptions(_ call: CAPPluginCall) {
         guard let pCtx = self.paymentCtx else {
-            call.reject("payment context does not exists")
+            call.error("you must call initPaymentSession first")
             return
         }
-        
+
         DispatchQueue.main.async {
             pCtx.delegate = self
             pCtx.hostViewController = self.bridge.viewController
             pCtx.presentPaymentOptionsViewController()
         }
+
+        call.success()
     }
-    
+
     @objc func presentShippingOptions(_ call: CAPPluginCall) {
         guard let pCtx = self.paymentCtx else {
             call.reject("payment context does not exists")
             return
         }
-        
+
         DispatchQueue.main.async {
             pCtx.delegate = self
             pCtx.hostViewController = self.bridge.viewController
             pCtx.presentShippingViewController()
         }
     }
-    
+
     @objc func presentPaymentRequest(_ call: CAPPluginCall) {
         guard let pCtx = self.paymentCtx else {
             call.reject("payment context does not exists")
             return
         }
-        
+
         DispatchQueue.main.async {
             pCtx.delegate = self
             pCtx.hostViewController = self.bridge.viewController
@@ -503,9 +505,153 @@ public class StripePlugin: CAPPlugin {
             pCtx.requestPayment()
         }
     }
-    
+
     @objc func customizePaymentAuthUI(_ call: CAPPluginCall) {
-       
+
+    }
+
+    @objc func initCustomerSession(_ call: CAPPluginCall) {
+        self.ephemeralKey = NSDictionary(dictionary: call.options)
+        self.customerCtx = STPCustomerContext(keyProvider: self)
+    }
+
+    @objc func initPaymentSession(_ call: CAPPluginCall) {
+        guard let ctx = self.customerCtx else {
+            call.error("you must call initCustomerSession first")
+            return
+        }
+
+        self.paymentCtx = STPPaymentContext(customerContext: ctx)
+        self.paymentCtx!.delegate = self
+        self.paymentCtx!.hostViewController = self.bridge.viewController
+
+        if let amount = call.getInt("paymentAmount") {
+            self.paymentCtx!.paymentAmount = amount
+        }
+
+        call.success()
+    }
+
+    @objc func customerPaymentMethods(_ call: CAPPluginCall) {
+        guard let ctx = self.customerCtx else {
+            call.error("you must call initCustomerSession first")
+            return
+        }
+
+        ctx.listPaymentMethodsForCustomer { methods, error in
+            guard let methods = methods else {
+                call.error(error?.localizedDescription ?? "unknown error")
+                return
+            }
+
+            var vals: [[String: Any]] = []
+
+            for m in methods {
+                var val: [String: Any] = [
+                    "id": m.stripeId,
+                    "livemode": m.liveMode,
+                    "type": m.type,
+                ]
+
+                if let cid = m.customerId {
+                    val["customerId"] = cid
+                }
+
+                if let c = m.created {
+                    val["created"] = c
+                }
+
+                if let c = m.card {
+                    var cval: [String: Any] = [
+                        "brand": brandToStr(c.brand),
+                        "exp_month": c.expMonth,
+                        "exp_year": c.expYear,
+                    ]
+
+                    if let c = c.country {
+                        cval["country"] = c
+                    }
+
+                    if let f = c.funding {
+                        cval["funding"] = f
+                    }
+
+                    if let l = c.last4 {
+                        cval["last4"] = l
+                    }
+
+                    if let t = c.threeDSecureUsage {
+                        cval["three_d_secure_usage"] = [
+                            "supported": t.supported
+                        ]
+                    }
+
+                    if let c = c.checks {
+                        // TODO convert enum values to strings
+                        cval["checks"] = [
+                            "address_line1_check": c.addressLine1Check,
+                            "address_postal_code_check": c.addressPostalCodeCheck,
+                            "cvc_check": c.cvcCheck
+                        ]
+                    }
+                }
+
+                vals.append(val)
+            }
+
+            call.success([
+                "paymentMethods": vals,
+            ])
+        }
+    }
+
+    @objc func setCustomerDefaultSource(_ call: CAPPluginCall) {
+        call.error("not implemented yet")
+        // TODO figure out how the SDK UI updates the API
+        /*
+        guard let sourceId = call.getString("sourceId") else {
+            call.error("you must provide a sourceId")
+            return
+        }
+
+        guard let ctx = self.customerCtx else {
+            call.error("you must call initCustomerSession first")
+            return
+        }
+
+        let type = call.getString("type") ?? "card"
+        */
+    }
+
+    @objc func addCustomerSource(_ call: CAPPluginCall) {
+        call.error("not implemented yet")
+        // TODO figure out how the SDK UI updates the API
+        //        guard let sourceId = call.getString("sourceId") else {
+        //            call.error("you must provide a sourceId")
+        //            return
+        //        }
+        //
+        //        guard let ctx = self.customerCtx else {
+        //            call.error("you must call initCustomerSession first")
+        //            return
+        //        }
+        //
+        //        let type = call.getString("type") ?? "card"
+        //
+        //        let m = STPPaymentMethod()
+        //        STPPaymentMethod()
+        //
+        //        STPAPIClient.shared().retrieveSource(withId: sourceId, clientSecret: "") { source, error in
+        //
+        //        }
+        //
+        //        ctx.attachPaymentMethod(toCustomer: m) { error in
+        //            if error != nil {
+        //                call.error(error!.localizedDescription, error)
+        //            } else {
+        //                call.success()
+        //            }
+        //        }
     }
 
     @objc func isApplePayAvailable(_ call: CAPPluginCall) {
