@@ -6,6 +6,7 @@ trigger:
   - push
   branch:
   - master
+name: default
 
 clone:
   depth: 1
@@ -32,6 +33,6 @@ steps:
     pages_directory: docs
 ---
 kind: signature
-hmac: 644d7246f4990c07120edb22619511153e927333e705ae8f3de8240ae3481b05
+hmac: f1d5bf6207377918cdbeab9081853fbc934480c13ce964d92ddda5cf3f50ba88
 
 ...
