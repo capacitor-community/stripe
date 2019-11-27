@@ -26,35 +26,46 @@ import {
 } from './definitions';
 
 
-function formBody(json: any, prefix?: string, omit?: string[]) {
-  let str = '';
-  for (const prop of Object.keys(json)) {
-    if (json.hasOwnProperty(prop) &&
-      typeof json[prop] !== 'undefined' &&
-      json[prop] !== null &&
-      (!Array.isArray(omit) || !omit.includes(prop))) {
-      const key = encodeURIComponent(prefix ? `${prefix}[${prop}]` : prop);
-      const val = encodeURIComponent(json[prop]);
+function flatten(json: any, prefix?: string, omit?: string[]): any {
+  let obj: any = {};
 
-      str += `${key}=${val}&`;
+  for (const prop of Object.keys(json)) {
+    if (typeof json[prop] !== 'undefined' && json[prop] !== null && (!Array.isArray(omit) || !omit.includes(prop))) {
+      if (typeof json[prop] === 'object') {
+        obj = {
+          ...obj,
+          ...flatten(json[prop], prefix ? `${prefix}[${prop}]` : prop),
+        };
+      } else {
+        const key = prefix ? `${prefix}[${prop}]` : prop;
+        obj[key] = json[prop];
+      }
     }
   }
+
+  return obj;
+}
+
+function stringify(json: any): string {
+  let str = '';
+  json = flatten(json);
+
+  for (const prop of Object.keys(json)) {
+    const key = encodeURIComponent(prop);
+    const val = encodeURIComponent(json[prop]);
+    str += `${key}=${val}&`;
+  }
+
   return str;
 }
 
-async function callStripeAPI(path: string, body: string, key: string, extraHeaders?: any) {
-  extraHeaders = extraHeaders || {};
+function formBody(json: any, prefix?: string, omit?: string[]): string {
+  json = flatten(json, prefix, omit);
+  return stringify(json);
+}
 
-  const res = await fetch(`https://api.stripe.com${path}`, {
-    body: body,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
-      'Authorization': `Basic ${btoa(`${key}:`)}`,
-      ...extraHeaders,
-    },
-  });
+async function _callStripeAPI(fetchUrl: string, fetchOpts: RequestInit) {
+  const res = await fetch(fetchUrl, fetchOpts);
 
   let parsed;
 
@@ -69,6 +80,34 @@ async function callStripeAPI(path: string, body: string, key: string, extraHeade
   } else {
     throw parsed && parsed.error && parsed.error.message ? parsed.error.message : parsed;
   }
+}
+
+async function _stripePost(path: string, body: string, key: string, extraHeaders?: any) {
+  extraHeaders = extraHeaders || {};
+
+  return _callStripeAPI(`https://api.stripe.com${path}`, {
+    body: body,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
+      'Authorization': `Basic ${btoa(`${key}:`)}`,
+      ...extraHeaders,
+    },
+  });
+}
+
+async function _stripeGet(path: string, key: string, extraHeaders?: any) {
+  extraHeaders = extraHeaders || {};
+
+  return _callStripeAPI(`https://api.stripe.com${path}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Basic ${btoa(`${key}:`)}`,
+      ...extraHeaders,
+    },
+  });
 }
 
 export class StripePluginWeb extends WebPlugin implements StripePlugin {
@@ -91,12 +130,12 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
 
   async createCardToken(card: CardTokenRequest): Promise<CardTokenResponse> {
     const body = formBody(card, 'card', ['phone', 'email']);
-    return callStripeAPI('/v1/tokens', body, this.publishableKey);
+    return _stripePost('/v1/tokens', body, this.publishableKey);
   }
 
   async createBankAccountToken(bankAccount: BankAccountTokenRequest): Promise<BankAccountTokenResponse> {
     const body = formBody(bankAccount, 'bank_account');
-    return callStripeAPI('/v1/tokens', body, this.publishableKey);
+    return _stripePost('/v1/tokens', body, this.publishableKey);
   }
 
   async confirmPaymentIntent(opts: ConfirmPaymentIntentOptions): Promise<void> {
@@ -145,7 +184,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
 
   async createPiiToken(opts: CreatePiiTokenOptions): Promise<TokenResponse> {
     const body = formBody({ id_number: opts.pii }, 'pii');
-    return callStripeAPI('/v1/tokens', body, this.publishableKey);
+    return _stripePost('/v1/tokens', body, this.publishableKey);
   }
 
   async createAccountToken(account: AccountParams): Promise<TokenResponse> {
@@ -153,18 +192,20 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
       return Promise.reject('you must provide a legal entity');
     }
 
-    switch (account.legalEntity.type) {
-      case 'company':
-        break;
+    let body: any = {};
 
-      case 'individual':
-        break;
-
-      default:
-        return Promise.reject('invalid entity type');
+    if (account.legalEntity.type === 'individual') {
+      body.business_type = 'individual';
+      body.individual = account.legalEntity;
+      body.tos_shown_and_accepted = account.tosShownAndAccepted;
+    } else {
+      body.business_type = 'company';
+      body.company = account.legalEntity;
     }
 
-    return;
+    delete account.legalEntity.type;
+
+    return _stripePost('/v1/tokens', formBody({ account: body }), this.publishableKey);
   }
 
   async customizePaymentAuthUI(opts: any): Promise<void> {
@@ -234,7 +275,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
   }
 
   addCustomerSource(opts: { sourceId: string; type?: string }): Promise<void> {
-    return this.cs.addSrc(opts.sourceId, opts.type);
+    return this.cs.addSrc(opts.sourceId);
   }
 
   customerPaymentMethods(): Promise<{ paymentMethods: PaymentMethod[] }> {
@@ -247,55 +288,49 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
 
   private cs: CustomerSession;
 
-  async initCustomerSession(opts: { id: string; object: 'ephemeral_key'; associated_objects: Array<{ type: 'customer'; id: string }>; created: number; expires: number; livemode: boolean; secret: string }): Promise<void> {
+  async initCustomerSession(opts: any | { id: string; object: 'ephemeral_key'; associated_objects: Array<{ type: 'customer'; id: string }>; created: number; expires: number; livemode: boolean; secret: string }): Promise<void> {
     this.cs = new CustomerSession(opts);
   }
 
   setCustomerDefaultSource(opts: { sourceId: string; type?: string }): Promise<void> {
-    return this.cs.setDefaultSrc(opts.sourceId, opts.type);
+    return this.cs.setDefaultSrc(opts.sourceId);
   }
 }
 
 class CustomerSession {
-  private customerId: string;
+  private readonly customerId: string;
 
-  constructor(private key: { secret?: string, associated_objects?: any[], apiVersion?: string }) {
+  constructor(private key: any) {
     if (!key.secret || !Array.isArray(key.associated_objects) || !key.associated_objects.length || !key.associated_objects[0].id) {
       throw new Error('you must provide a valid configuration');
     }
 
-    if (!key.apiVersion) {
-      throw new Error('the web implementation requires that you pass the API version used when generating this ephemeral token');
-    }
+    key.apiVersion = '2019-11-05';
 
     this.customerId = key.associated_objects[0].id;
   }
 
   async listPm(): Promise<{ paymentMethods: PaymentMethod[] }> {
-    const res = await callStripeAPI('/v1/payment_methods', formBody({
-      customer: this.customerId,
-      type: 'card',
-    }), this.key.secret, {
+    const res = await _stripeGet(`/v1/customers/${this.customerId}`, this.key.secret, {
       'Stripe-Version': this.key.apiVersion,
     });
 
     return {
-      paymentMethods: res.data,
-    }
+      paymentMethods: res.sources.data,
+    };
   }
 
-  addSrc(id: string, type: string = 'card'): Promise<void> {
-    return callStripeAPI('/v1/customers/' + this.customerId, formBody({
+  addSrc(id: string): Promise<void> {
+    return _stripePost('/v1/customers/' + this.customerId, formBody({
       source: id,
-      type,
     }), this.key.secret, {
       'Stripe-Version': this.key.apiVersion,
     });
   }
 
 
-  setDefaultSrc(id: string, type: string = 'card'): Promise<void> {
-    return callStripeAPI('/v1/customers/' + this.customerId, formBody({
+  setDefaultSrc(id: string): Promise<void> {
+    return _stripePost('/v1/customers/' + this.customerId, formBody({
       default_source: id,
     }), this.key.secret, {
       'Stripe-Version': this.key.apiVersion,
