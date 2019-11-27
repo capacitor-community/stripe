@@ -14,6 +14,7 @@ import {
   CreatePiiTokenOptions,
   CreateSourceTokenOptions,
   FinalizeApplePayTransactionOptions,
+  GooglePayOptions,
   IdentifyCardBrandOptions,
   PaymentMethod,
   SetPublishableKeyOptions,
@@ -162,7 +163,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     return Promise.resolve();
   }
 
-  async payWithApplePay(options: ApplePayOptions): Promise<TokenResponse> {
+  async payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<TokenResponse> {
     throw 'Apple Pay is not supported on web';
   }
 
@@ -174,7 +175,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     throw 'Apple Pay is not supported on web';
   }
 
-  async startGooglePayTransaction(): Promise<void> {
+  async payWithGooglePay(opts: { googlePayOptions: GooglePayOptions }): Promise<void> {
     throw 'Google Pay is not supported on web';
   }
 
