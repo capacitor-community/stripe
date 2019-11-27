@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/zyra/capacitor-stripe/compare/v0.3.0...v0.3.1) (2019-11-27)
+
+
+### Bug Fixes
+
+* **web:** update apple pay and google pay implementations ([bb9ba8b](https://github.com/zyra/capacitor-stripe/commit/bb9ba8bdc6fad7cc42fbdfc787ebdb6a9e6d13be))
+
 ## [0.3.0](https://github.com/zyra/capacitor-stripe/compare/v0.2.0...v0.3.0) (2019-11-27)
 
 
