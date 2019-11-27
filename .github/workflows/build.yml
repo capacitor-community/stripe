@@ -43,25 +43,3 @@ jobs:
     - name: Build Android Debug APK
       working-directory: ./packages/test/android
       run: ./gradlew assembleDebug
-
-    - name: Upload Debug APK to Sauce Labs
-      working-directory: ./packages/test
-      env:
-        SAUCE_RD_API_USERNAME: ${{ secrets.SAUCE_RD_API_USERNAME }}
-        SAUCE_ANDROID_API_KEY: ${{ secrets.SAUCE_RD_API_KEY }}
-      run: |
-        curl -u "${SAUCE_RD_API_USERNAME}:${SAUCE_RD_API_KEY}" \
-            -X POST https://app.testobject.com:443/api/storage/upload \
-            -H "Content-Type: application/octet-stream" \
-            --data-binary @./android/app/build/outputs/apk/debug/app-debug.apk
-
-    - name: Test Android app
-      env:
-        TEST_PLATFORM: 'android'
-        SAUCE_ANDROID_API_KEY: ${{ secrets.SAUCE_RD_API_KEY }}
-        STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
-        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-        CI: 'true'
-        ANDROID_PLATFORM_VERSION: '8'
-      working-directory: ./packages/test
-      run: npx wdio
