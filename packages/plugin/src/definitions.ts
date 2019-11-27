@@ -75,10 +75,7 @@ export type AvailabilityResponse = { available: boolean }
 export type CardBrandResponse = { brand: CardBrand };
 
 export interface StripePlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
-
   /* Core */
-
   setPublishableKey(opts: SetPublishableKeyOptions): Promise<void>;
 
   createCardToken(card: CardTokenRequest): Promise<CardTokenResponse>;

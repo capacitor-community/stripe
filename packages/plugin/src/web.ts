@@ -81,11 +81,6 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     });
   }
 
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
-  }
-
   async setPublishableKey(opts: SetPublishableKeyOptions): Promise<void> {
     if (typeof opts.key !== 'string' || opts.key.trim().length === 0 || opts.key.indexOf('pk') !== 0) {
       throw new Error('you must provide a valid key');
