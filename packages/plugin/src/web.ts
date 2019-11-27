@@ -54,7 +54,6 @@ async function callStripeAPI(path: string, body: string, key: string, extraHeade
       'Authorization': `Basic ${btoa(`${key}:`)}`,
       ...extraHeaders,
     },
-    mode: 'no-cors',
   });
 
   let parsed;
