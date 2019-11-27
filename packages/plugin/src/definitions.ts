@@ -74,6 +74,20 @@ export type AvailabilityResponse = { available: boolean }
 
 export type CardBrandResponse = { brand: CardBrand };
 
+
+export enum GooglePayAuthMethod {
+  /**
+   * This authentication method is associated with payment cards stored on file with the user's Google Account.
+   * Returned payment data includes personal account number (PAN) with the expiration month and the expiration year.
+   */
+  PAN_ONLY = 'PAN_ONLY',
+  /**
+   * This authentication method is associated with cards stored as Android device tokens.
+   * Returned payment data includes a 3-D Secure (3DS) cryptogram generated on the device.
+   */
+  CRYPTOGRAM_3DS = 'CRYPTOGRAM_3DS'
+}
+
 export interface StripePlugin {
   /* Core */
   setPublishableKey(opts: SetPublishableKeyOptions): Promise<void>;
@@ -88,14 +102,14 @@ export interface StripePlugin {
   confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<void>;
 
   /* Apple Pay */
-  payWithApplePay(options: ApplePayOptions): Promise<TokenResponse>;
+  payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<TokenResponse>;
 
   cancelApplePay(): Promise<void>;
 
   finalizeApplePayTransaction(opts: FinalizeApplePayTransactionOptions): Promise<void>;
 
   /* Google Pay */
-  startGooglePayTransaction(): Promise<void>;
+  payWithGooglePay(opts: { googlePayOptions: GooglePayOptions }): Promise<void>;
 
   /* Other tokens */
   createSourceToken(opts: CreateSourceTokenOptions): Promise<TokenResponse>;
@@ -283,24 +297,137 @@ export interface ApplePayOptions {
   items: ApplePayItem[];
 }
 
+export enum GooglePayPriceStatus {
+  /**
+   * Used for a capability check. Do not use this property if the transaction is processed in an EEA country.
+   */
+  NOT_CURRENTLY_KNOWN = 'NOT_CURRENTLY_KNOWN',
+  /**
+   * Total price may adjust based on the details of the response, such as sales tax collected based on a billing address.
+   */
+  ESTIMATED = 'ESTIMATED',
+  /**
+   * Total price doesn't change from the amount presented to the shopper.
+   */
+  FINAL = 'FINAL'
+}
+
+export enum GooglePayCheckoutOption {
+  /**
+   * Standard text applies for the given totalPriceStatus (default).
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * The selected payment method is charged immediately after the payer confirms their selections.
+   * This option is only available when `totalPriceStatus` is set to `FINAL`.
+   */
+  COMPLETE_IMMEDIATE_PURCHASE = 'COMPLETE_IMMEDIATE_PURCHASE'
+}
+
+export enum GooglePayBillingAddressFormat {
+  /**
+   * Name, country code, and postal code (default).
+   */
+  MIN = 'MIN',
+  /**
+   *  Name, street address, locality, region, country code, and postal code.
+   */
+  FULL = 'FULL'
+}
+
 export interface GooglePayOptions {
-  allowedCardNetworks: CardBrand[];
-  allowedAuthMethods: Array<'PAN_ONLY' | 'CRYPTOGRAM_3DS'>;
-  totalPrice: string;
-  totalPriceStatus: 'final';
+  /**
+   * Merchant name encoded as UTF-8.
+   * Merchant name is rendered in the payment sheet.
+   * In TEST environment, or if a merchant isn't recognized, a “Pay Unverified Merchant” message is displayed in the payment sheet.
+   */
+  merchantName?: string;
+
+  /**
+   * Total monetary value of the transaction with an optional decimal precision of two decimal places.
+   */
+  totalPrice: number;
+  /**
+   * The status of the total price used
+   */
+  totalPriceStatus: GooglePayPriceStatus;
+  /**
+   * Custom label for the total price within the display items.
+   */
+  totalPriceLabel?: string;
+  /**
+   * Affects the submit button text displayed in the Google Pay payment sheet.
+   */
+  checkoutOption?: string;
+  /**
+   * A unique ID that identifies a transaction attempt.
+   * Merchants may use an existing ID or generate a specific one for Google Pay transaction attempts.
+   * This field is required when you send callbacks to the Google Transaction Events API.
+   */
+  transactionId?: string;
+  /**
+   * ISO 4217 alphabetic currency code.
+   */
   currencyCode: string;
-  merchantName: string;
-  emailRequired?: boolean;
+  /**
+   * ISO 3166-1 alpha-2 country code where the transaction is processed.
+   * This is required for merchants based in European Economic Area (EEA) countries.
+   */
+  countryCode?: string;
+
+  /**
+   * Fields supported to authenticate a card transaction.
+   */
+  allowedAuthMethods: GooglePayAuthMethod[];
+  /**
+   * One or more card networks that you support, also supported by the Google Pay API.
+   */
+  allowedCardNetworks: CardBrand[];
+  /**
+   * Set to false if you don't support prepaid cards.
+   * Default: The prepaid card class is supported for the card networks specified.
+   */
   allowPrepaidCards?: boolean;
+
+  /**
+   * Set to true to request an email address.
+   */
+  emailRequired?: boolean;
+
+  /**
+   * Set to true if you require a billing address.
+   * A billing address should only be requested if it's required to process the transaction.
+   * Additional data requests can increase friction in the checkout process and lead to a lower conversion rate.
+   */
   billingAddressRequired?: boolean;
-  billingAddressParams?: {
-    format?: 'MIN'; // TODO copy from google
+
+  billingAddressParameters?: {
+    /**
+     * Billing address format required to complete the transaction.
+     */
+    format?: GooglePayBillingAddressFormat;
+    /**
+     * Set to true if a phone number is required to process the transaction.
+     */
     phoneNumberRequired?: boolean;
   }
+
+  /**
+   * Set to true to request a full shipping address.
+   */
   shippingAddressRequired?: boolean;
+
   shippingAddressParameters?: {
-    // TODO copy form google
-  };
+    /**
+     * ISO 3166-1 alpha-2 country code values of the countries where shipping is allowed.
+     * If this object isn't specified, all shipping address countries are allowed.
+     */
+    allowedCountryCodes?: string[];
+    /**
+     * Set to true if a phone number is required for the provided shipping address.
+     */
+    phoneNumberRequired?: boolean;
+  }
 }
 
 export interface ThreeDeeSecureParams {

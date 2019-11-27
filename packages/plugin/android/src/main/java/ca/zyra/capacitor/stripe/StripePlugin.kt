@@ -19,15 +19,6 @@ class Stripe : Plugin() {
     private var customerSession: CustomerSession? = null
 
     @PluginMethod
-    fun echo(call: PluginCall) {
-        val value = call.getString("value")
-
-        val ret = JSObject()
-        ret.putOpt("value", value)
-        call.success(ret)
-    }
-
-    @PluginMethod
     fun setPublishableKey(call: PluginCall) {
         try {
             val key = call.getString("key")
@@ -37,7 +28,7 @@ class Stripe : Plugin() {
                 return
             }
 
-            stripeInstance = Stripe(context, key)
+            stripeInstance = Stripe2(context, key)
             publishableKey = key
             isTest = key.contains("test")
 
@@ -374,16 +365,18 @@ class Stripe : Plugin() {
     }
 
     @PluginMethod
-    fun startGooglePayTransaction(call: PluginCall) {
+    fun payWithGooglePay(call: PluginCall) {
         if (!ensurePluginInitialized(call)) {
             return
         }
 
 
+        val opts = call.getObject("googlePayOptions")
+
         val isTest = this.isTest
         val env = if (isTest) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION
 
-        Log.d(TAG, "startGooglePayTransaction | isTest: " + (if (isTest) "TRUE" else "FALSE") + " | env: " + if (env == WalletConstants.ENVIRONMENT_TEST) "TEST" else "PROD")
+        Log.d(TAG, "payWithGooglePay | isTest: " + (if (isTest) "TRUE" else "FALSE") + " | env: " + if (env == WalletConstants.ENVIRONMENT_TEST) "TEST" else "PROD")
 
         val paymentsClient = Wallet.getPaymentsClient(
                 context,
@@ -394,41 +387,27 @@ class Stripe : Plugin() {
 
         try {
             // PAN_ONLY, CRYPTOGRAM_3DS
-            val defaultAuthMethods = JSArray()
-            defaultAuthMethods.put("PAN_ONLY")
-            defaultAuthMethods.put("CRYPTOGRAM_3DS")
+            val merchantName = opts.getString("merchantName")
 
-            val defaultCardNetworks = JSArray()
-            defaultCardNetworks.put("AMEX")
-            defaultCardNetworks.put("DISCOVER")
-            defaultCardNetworks.put("JCB")
-            defaultCardNetworks.put("MASTERCARD")
-            defaultCardNetworks.put("VISA")
+            val totalPrice = opts.getString("totalPrice")
+            val totalPriceStatus = opts.getString("totalPriceStatus")
+            val totalPriceLabel = opts.getString("totalPriceLabel")
+            val checkoutOption = opts.getString("checkoutOption")
+            val transactionId = opts.getString("transactionId")
+            val currencyCode = opts.getString("currencyCode")
+            val countryCode = opts.getString("countryCode")
 
-            val totalPrice = call.getString("totalPrice")
-            val totalPriceStatus = call.getString("totalPriceStatus")
-            val currencyCode = call.getString("currencyCode")
-            val merchantName = call.getString("merchantName")
+            val authMethods = opts.getJSONArray("allowedAuthMethods")
+            val cardNetworks = opts.getJSONArray("allowedCardNetworks")
 
-            val emailRequired = call.getBoolean("emailRequired", false)
-            val billingAddressRequired = call.getBoolean("billingAddressRequired", false)
-            val allowPrepaidCards = call.getBoolean("allowPrepaidCards", true)
-            val shippingAddressRequired = call.getBoolean("shippingAddressRequired", false)
+            val allowPrepaidCards = opts.getBoolean("allowPrepaidCards", true)
+            val emailRequired = opts.getBoolean("emailRequired", false)
+            val billingAddressRequired = opts.getBoolean("billingAddressRequired", false)
 
-            val authMethods = call.getArray("allowedAuthMethods", defaultAuthMethods)
-            val cardNetworks = call.getArray("allowedCardNetworks", defaultCardNetworks)
+            val shippingAddressRequired = opts.getBoolean("shippingAddressRequired", false)
 
-            val billingAddressParams = call.getObject("billingAddressParams", JSObject())
-
-            if (!billingAddressParams.has("format")) {
-                billingAddressParams.putOpt("format", "MIN")
-            }
-
-            if (!billingAddressParams.has("phoneNumberRequired")) {
-                billingAddressParams.putOpt("phoneNumberRequired", false)
-            }
-
-            val shippingAddressParams = call.getObject("shippingAddressParameters", JSObject())
+            val billingAddressParams = opts.getJSObject("billingAddressParams", JSObject())
+            val shippingAddressParams = opts.getJSObject("shippingAddressParameters", JSObject())
 
             val params = JSObject()
                     .putOpt("allowedAuthMethods", authMethods)
@@ -445,9 +424,13 @@ class Stripe : Plugin() {
                     .putOpt("tokenizationSpecification", tokenizationSpec)
 
             val txInfo = JSObject()
-            txInfo.putOpt("totalPrice", totalPrice)
-            txInfo.putOpt("totalPriceStatus", totalPriceStatus)
             txInfo.putOpt("currencyCode", currencyCode)
+            txInfo.putOpt("countryCode", countryCode)
+            txInfo.putOpt("transactionId", transactionId)
+            txInfo.putOpt("totalPriceStatus", totalPriceStatus)
+            txInfo.putOpt("totalPrice", totalPrice)
+            txInfo.putOpt("totalPriceLabel", totalPriceLabel)
+            txInfo.putOpt("checkoutOption", checkoutOption)
 
             val paymentDataReq = JSObject()
                     .putOpt("apiVersion", 2)
