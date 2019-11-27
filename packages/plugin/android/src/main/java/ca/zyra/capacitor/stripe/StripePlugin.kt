@@ -8,10 +8,11 @@ import com.google.android.gms.wallet.*
 import com.stripe.android.*
 import com.stripe.android.model.*
 import org.json.JSONException
+import com.stripe.android.Stripe as Stripe2
 
 @NativePlugin(requestCodes = [9972, 50000, 50001])
-class StripePlugin : Plugin() {
-    private lateinit var stripeInstance: Stripe
+class Stripe : Plugin() {
+    private lateinit var stripeInstance: Stripe2
     private lateinit var publishableKey: String
     private var isTest = true
     private var googlePayPaymentData: PaymentData? = null
