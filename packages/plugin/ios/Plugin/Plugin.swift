@@ -9,13 +9,6 @@ public class StripePlugin: CAPPlugin {
     internal var customerCtx: STPCustomerContext?
     internal var paymentCtx: STPPaymentContext?
 
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.success([
-            "value": value
-        ])
-    }
-
     @objc func setPublishableKey(_ call: CAPPluginCall) {
         let value = call.getString("key") ?? ""
 
@@ -391,7 +384,7 @@ public class StripePlugin: CAPPlugin {
         }
     }
 
-    @objc func createCustomerContext(_ call: CAPPluginCall) {
+    @objc func initCustomerSession(_ call: CAPPluginCall) {
         guard
                 let id = call.getString("id"),
                 let object = call.getString("object"),
@@ -510,10 +503,10 @@ public class StripePlugin: CAPPlugin {
 
     }
 
-    @objc func initCustomerSession(_ call: CAPPluginCall) {
-        self.ephemeralKey = NSDictionary(dictionary: call.options)
-        self.customerCtx = STPCustomerContext(keyProvider: self)
-    }
+//    @objc func initCustomerSession(_ call: CAPPluginCall) {
+//        self.ephemeralKey = NSDictionary(dictionary: call.options)
+//        self.customerCtx = STPCustomerContext(keyProvider: self)
+//    }
 
     @objc func initPaymentSession(_ call: CAPPluginCall) {
         guard let ctx = self.customerCtx else {
