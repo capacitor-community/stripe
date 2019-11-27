@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Installation</title>
+    <meta name="description" content="Stripe Mobile SDK bindings for Capcitor Apps">
+    <base href="http://localhost:3500" />
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/themes/prism-tomorrow.min.css" integrity="sha256-xevuwyBEb2ZYh4nDhj0g3Z/rDBnM569hg9Vq6gEw/Sg=" crossorigin="anonymous" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fafafa">
+    <style>
+    h1, h2, h3, h4, h5, h6, p, div, code {
+      -webkit-font-smoothing: auto;
+      -moz-osx-font-smoothing: auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      line-height: 3rem;
+      color: rgba(102, 126, 234, 0.6);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      line-height: 1.4rem;
+      text-transform: uppercase;
+      margin-top: 3rem;
+      font-weight: 600;
+      color: rgba(95, 128, 187, 0.8);
+    }
+
+    h4 {
+        font-size: 1rem;
+        line-height: 1.2rem;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        font-weight: 600;
+        color: rgba(63, 93, 150, 0.99);
+    }
+
+    h4 + p {
+      padding-top: 0.4rem;
+    }
+
+    p {
+      padding-top: 1rem;
+      font-size: 1rem;
+      line-height: 1.4rem;
+      letter-spacing: 0.07rem;
+      max-width: 600px;
+      text-align: justify;
+      color: rgba(0,0,0,0.87);
+    }
+
+    p code, table code {
+        background: rgb(45, 45, 45);
+        color: #ffb5b7;
+        padding: 2px 8px;
+        word-break: break-all;
+        letter-spacing: normal;
+        display: inline-block;
+    }
+
+    a {
+      color: #6470dc;
+    }
+
+    a:hover {
+      color: #4659ff;
+    }
+
+    table {
+        background: rgba(0,0,0,0.01);
+        margin: 1rem 0;
+        width: 100%;
+        max-width: 100%;
+        overflow-y: auto;
+    }
+
+    thead {
+
+    }
+
+    thead tr {
+
+    }
+
+    thead tr th {
+      padding: 1rem 0.5rem;
+      background: rgba(0,0,0,0.03);
+      color: rgba(0,0,0,0.67);
+    }
+
+    thead tr th:not(:last-child), tbody tr td:not(:last-child) {
+      border-right: 1px solid rgba(0,0,0,0.15);
+    }
+
+    thead tr, tbody tr:not(:last-child) {
+      border-bottom: 1px solid rgba(0,0,0,0.15);
+    }
+
+    tbody {
+
+    }
+
+    tbody tr {
+
+    }
+
+    tbody tr td {
+      padding: 0.5rem;
+    }
+
+    #graph, #graph + pre, #dependencies, #depends-on, #depends-on + ul {
+      display: none;
+    }
+
+    hr {
+      margin-top: 3rem;
+    }
+
+    #properties + table tbody tr td:nth-child(3) {
+      width: 40%;
+    }
+
+    #events + table tbody tr td:nth-child(2) {
+      width: 48%;
+    }
+
+    </style>
+</head>
+<body>
+<nav role="navigation">
+    <div class="container flex items-center justify-between flex-wrap p-6 mx-auto">
+        <div class="flex items-center flex-shrink-0 text-indigo-500 mr-6">
+            <span class="font-semibold text-xl tracking-tight">
+                Capacitor Stripe Plugin
+            </span>
+        </div>
+        <div class="block">
+            <button id="sidenav-open-button" class="inline lg:hidden flex items-center px-3 py-2 text-indigo-400 hover:text-indigo-500">
+                <svg class="fill-current h-5 w-5" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+            </button>
+            <button id="sidenav-close-button" class="flex items-center px-3 py-2 text-indigo-400 hover:text-indigo-500 hidden">
+                <svg class="fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"></path></svg>
+            </button>
+        </div>
+    </div>
+</nav>
+<div class="container mx-auto">
+    <div class="flex">
+        <nav class="w-full lg:w-1/4 p-6 hidden lg:block" id="sidenav" role="navigation">
+            <ul class="list-reset" role="none">
+				<li role="none" class="my-1">
+					<span class="font-semibold text-gray-400">Getting started</span>
+					<ul class="list-reset ml-1" role="none">
+							<li role="none">
+								<a href="installation" role="link" aria-label="Installation" class="block p-1 text-indigo-600">Installation</a>
+							</li>
+							<li role="none">
+								<a href="usage" role="link" aria-label="Usage Examples" class="block p-1 text-gray-600 hover:text-gray-700">Usage Examples</a>
+							</li>
+					</ul>
+				</li>
+            </ul>
+        </nav>
+        <div class="w-full lg:w-3/4 p-6" id="content-container">
+		<h1 id="installation">Installation</h1>
+
+<h2 id="basic-setup">Basic setup</h2>
+
+<p><br></p>
+
+<h4 id="1-install-the-plugin-from-npm">1. Install the plugin from NPM</h4>
+
+<pre><code class="language-shell">npm i -S capacitor-stripe
+</code></pre>
+
+<p><br></p>
+
+<h4 id="2-import-from-capacitor-core">2. Import from @capacitor/core</h4>
+
+<pre><code class="language-ts">import { Plugins } from '@capacitor/core';
+
+const { Stripe } = Plugins;
+</code></pre>
+
+<p><br><br></p>
+
+<h2 id="android-setup">Android Setup</h2>
+
+<p><br></p>
+
+<h4 id="requirements">Requirements</h4>
+
+<p>To use this plugin with your Android application, you must have Android X enabled. At this time Android X is not used
+by <code>@capacitor/android</code> (see <a href="https://github.com/ionic-team/capacitor/issues/1937">this PR</a> for updates). Follow the
+steps in <a href="https://github.com/zyra/capacitor-stripe/issues/1#issuecomment-555666767">this comment</a> for details on how to
+enable Android X in your app.</p>
+
+<p><br></p>
+
+<h4 id="basic-setup-1">Basic setup</h4>
+
+<p>Include the plugin in your app&rsquo;s <code>MainActivity.java</code> file:</p>
+
+<pre><code class="language-java">//
+// other imports
+// ...
+
+// 1. Import Stripe plugin
+import ca.zyra.capacitor.stripe.Stripe;
+
+public class MainActivity extends BridgeActivity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Initializes the Bridge
+        this.init(savedInstanceState, new ArrayList&lt;Class&lt;? extends Plugin&gt;&gt;() {{
+            //
+            // other plugins
+            // ...
+
+            // 2. Add Stripe plugin here
+            add(Stripe.class);
+        }});
+    }
+}
+</code></pre>
+
+<p><br></p>
+
+<h4 id="google-pay">Google Pay</h4>
+
+<p>To enable payments using Google Pay you must add the following <code>&lt;meta-data&gt;</code> tag to <code>AndroidManifest.xml</code> inside the<br />
+main <code>&lt;application /&gt;</code> tag:</p>
+
+<pre><code class="language-xml">&lt;application
+  ...
+  &lt;meta-data
+    android:name=&quot;com.google.android.gms.wallet.api.enabled&quot;
+    android:value=&quot;true&quot; /&gt;
+&lt;/application&gt;
+</code></pre>
+
+<p>There is no need to add any Gradle dependencies as they are already included with this plugin.</p>
+
+<p>Please review the steps outlined here for more details on <a href="https://stripe.com/docs/google-pay#going-live-with-google-pay">Going live with Google Pay</a>.</p>
+
+<p><br><br></p>
+
+<h2 id="ios-setup">iOS Setup</h2>
+
+<p>To enable payments using Apple Pay you must follow the first 3 steps in <a href="https://stripe.com/docs/apple-pay#native">this guide</a>:</p>
+
+<ul>
+<li>1. <a href="https://stripe.com/docs/apple-pay#merchantid">Register for Apple Merchant ID</a></li>
+<li>2. <a href="https://stripe.com/docs/apple-pay#csr">Create a new Apple Pay certificate</a></li>
+<li>3. <a href="https://stripe.com/docs/apple-pay#setup">Integrate with Xcode</a></li>
+</ul>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/prism.js" integrity="sha256-hFhFKoZ+mZTEMFJc8FQyuDDHVB1x9v+rJRu3DelyOHQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-typescript.js" integrity="sha256-pDpItYLMSApStvqbBe51zq9wIgBkVM81OWNH2pqL3mQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-shell-session.min.js" integrity="sha256-Jy8oX8yb4vOF1XXD4omkL5QRBb1wxSC8A0Ck9En8fa8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-bash.js" integrity="sha256-iAZZqWH4eVQeSza3X25jRVetUoFVIWqF/YYVyFJl9R0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-java.min.js" integrity="sha256-xkjfLarZfrNcxmgjDVE2XGj4/OIti0A0+HMRz8fg1rI=" crossorigin="anonymous"></script>
+<script>
+    (function () {
+        const openButton = document.getElementById('sidenav-open-button');
+        const closeButton  = document.getElementById('sidenav-close-button');
+        const sidenav = document.getElementById('sidenav');
+        const container = document.getElementById('content-container');
+
+        openButton.addEventListener('click', () => {
+            sidenav.classList.replace('hidden', 'block');
+            container.classList.add('hidden');
+            openButton.classList.add('hidden');
+            closeButton.classList.remove('hidden');
+        });
+
+        closeButton.addEventListener('click', () => {
+            sidenav.classList.replace('block', 'hidden');
+            container.classList.remove('hidden');
+            openButton.classList.remove('hidden');
+            closeButton.classList.add('hidden');
+        });
+    })();
+</script>
+</body>
+</html>

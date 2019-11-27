@@ -1,0 +1,36 @@
+siteTitle: Capacitor Stripe Plugin
+description: Stripe Mobile SDK bindings for Capcitor Apps
+repo: https://github.com/zyra/capacitor-stripe
+outDir: docs
+baseUrl: https://zyra.github.io/capacitor-stripe/
+
+pages:
+- name: home
+  title: Capacitor Stripe Plugin
+  path: /
+  source: .docs/pages/home.md
+  editOnGithub: true
+- name: install
+  title: Installation
+  path: installation
+  source: .docs/pages/install.md
+  editOnGithub: true
+  addToMenu: true
+  menuGroup: getting-started
+- name: usageg
+  title: Usage Examples
+  path: usage
+  source: .docs/pages/usage.md
+  editOnGithub: true
+  addToMenu: true
+  menuGroup: getting-started
+
+
+menuItems:
+- title: Getting started
+  name: getting-started
+  group: true
+
+templates:
+- name: base
+  source: .docs/template

@@ -1,0 +1,37 @@
+---
+kind: pipeline
+type: docker
+trigger:
+  event:
+  - push
+  branch:
+  - master
+
+clone:
+  depth: 1
+
+steps:
+- name: Generate docs
+  image: harbor.zyra.ca/public/zmdocs:v1.1.0
+  when:
+    branch:
+    - master
+  commands:
+  - zmdocs g
+
+- name: Publish docs
+  image: plugins/gh-pages
+  when:
+    branch:
+    - master
+  settings:
+    username:
+      from_secret: gh_user
+    password:
+      from_secret: gh_token
+    pages_directory: docs
+---
+kind: signature
+hmac: 644d7246f4990c07120edb22619511153e927333e705ae8f3de8240ae3481b05
+
+...
