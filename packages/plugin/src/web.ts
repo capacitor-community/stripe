@@ -17,7 +17,7 @@ import {
   IdentifyCardBrandOptions,
   PaymentMethod,
   SetPublishableKeyOptions,
-  StripePluginPlugin,
+  StripePlugin,
   TokenResponse,
   ValidateCardNumberOptions,
   ValidateCVCOptions,
@@ -72,12 +72,12 @@ async function callStripeAPI(path: string, body: string, key: string, extraHeade
   }
 }
 
-export class StripePluginWeb extends WebPlugin implements StripePluginPlugin {
+export class StripePluginWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string;
 
   constructor() {
     super({
-      name: 'StripePlugin',
+      name: 'Stripe',
       platforms: ['web'],
     });
   }
@@ -309,9 +309,8 @@ class CustomerSession {
   }
 }
 
-const StripePlugin = new StripePluginWeb();
+const StripePluginInstance = new StripePluginWeb();
 
-export { StripePlugin };
+export { StripePluginInstance };
 
-
-registerWebPlugin(StripePlugin);
+registerWebPlugin(StripePluginInstance);

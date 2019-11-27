@@ -1,6 +1,6 @@
 declare module '@capacitor/core' {
   interface PluginRegistry {
-    StripePlugin: StripePluginPlugin;
+    Stripe: StripePlugin;
   }
 }
 
@@ -74,7 +74,7 @@ export type AvailabilityResponse = { available: boolean }
 
 export type CardBrandResponse = { brand: CardBrand };
 
-export interface StripePluginPlugin {
+export interface StripePlugin {
   echo(options: { value: string }): Promise<{ value: string }>;
 
   /* Core */
