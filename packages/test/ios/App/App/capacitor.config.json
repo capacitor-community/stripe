@@ -1,8 +1,0 @@
-{
-  "appId": "ca.zyra.capacitor.stripetest",
-  "appName": "stripe-test",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www",
-  "cordova": {}
-}
