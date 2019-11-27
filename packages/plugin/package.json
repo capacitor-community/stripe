@@ -1,6 +1,6 @@
 {
   "name": "capacitor-stripe",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Stripe Mobile SDK Wrapper for Capacitor",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -27,6 +27,7 @@
     "btoa": "^1.2.1",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^24.9.0",
+    "standard-version": "^7.0.1",
     "stripe": "^7.14.0",
     "ts-jest": "^24.1.0",
     "typescript": "^3.2.4"
