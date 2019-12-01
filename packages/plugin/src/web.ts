@@ -9,8 +9,8 @@ import {
   CardBrandResponse,
   CardTokenRequest,
   CardTokenResponse,
-  CommonIntentOptions,
   ConfirmPaymentIntentOptions,
+  ConfirmSetupIntentOptions,
   CreatePiiTokenOptions,
   CreateSourceTokenOptions,
   FinalizeApplePayTransactionOptions,
@@ -92,7 +92,8 @@ async function _stripePost(path: string, body: string, key: string, extraHeaders
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
-      'Authorization': `Basic ${btoa(`${key}:`)}`,
+      'Authorization': `Bearer ${key}`,
+      'Stripe-version': '2019-11-05',
       ...extraHeaders,
     },
   });
@@ -105,7 +106,8 @@ async function _stripeGet(path: string, key: string, extraHeaders?: any) {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
-      'Authorization': `Basic ${btoa(`${key}:`)}`,
+      'Authorization': `Bearer ${key}`,
+      'Stripe-version': '2019-11-05',
       ...extraHeaders,
     },
   });
@@ -122,7 +124,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
   }
 
   async setPublishableKey(opts: SetPublishableKeyOptions): Promise<void> {
-    if (typeof opts.key !== 'string' || opts.key.trim().length === 0 || opts.key.indexOf('pk') !== 0) {
+    if (typeof opts.key !== 'string' || opts.key.trim().length === 0) {
       throw new Error('you must provide a valid key');
     }
 
@@ -155,7 +157,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     return Promise.resolve();
   }
 
-  async confirmSetupIntent(opts: CommonIntentOptions): Promise<void> {
+  async confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<void> {
     if (!opts.clientSecret) {
       return Promise.reject('you must provide a client secret');
     }
@@ -306,15 +308,11 @@ class CustomerSession {
       throw new Error('you must provide a valid configuration');
     }
 
-    key.apiVersion = '2019-11-05';
-
     this.customerId = key.associated_objects[0].id;
   }
 
   async listPm(): Promise<{ paymentMethods: PaymentMethod[] }> {
-    const res = await _stripeGet(`/v1/customers/${this.customerId}`, this.key.secret, {
-      'Stripe-Version': this.key.apiVersion,
-    });
+    const res = await _stripeGet(`/v1/customers/${this.customerId}`, this.key.secret);
 
     return {
       paymentMethods: res.sources.data,
@@ -324,18 +322,14 @@ class CustomerSession {
   addSrc(id: string): Promise<void> {
     return _stripePost('/v1/customers/' + this.customerId, formBody({
       source: id,
-    }), this.key.secret, {
-      'Stripe-Version': this.key.apiVersion,
-    });
+    }), this.key.secret);
   }
 
 
   setDefaultSrc(id: string): Promise<void> {
     return _stripePost('/v1/customers/' + this.customerId, formBody({
       default_source: id,
-    }), this.key.secret, {
-      'Stripe-Version': this.key.apiVersion,
-    });
+    }), this.key.secret);
   }
 }
 

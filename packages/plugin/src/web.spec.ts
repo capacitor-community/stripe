@@ -34,10 +34,6 @@ describe('Stripe Plugin', () => {
       await expect(s.setPublishableKey({ key: '' })).rejects.toThrowError();
     });
 
-    it('should throw error for invalid key', async () => {
-      await expect(s.setPublishableKey({ key: 'notavalidkey' })).rejects.toThrowError();
-    });
-
     it('should accept a valid key', async () => {
       await expect(s.setPublishableKey({ key: PUBLISHABLE_KEY })).resolves.not.toThrow();
     });

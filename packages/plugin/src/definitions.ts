@@ -17,7 +17,9 @@ export interface CommonIntentOptions {
   redirectUrl: string;
 }
 
-export type ConfirmSetupIntentOptions = CommonIntentOptions;
+export interface ConfirmSetupIntentOptions extends CommonIntentOptions {
+  id: string;
+}
 
 export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
   /**
