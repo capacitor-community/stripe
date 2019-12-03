@@ -9,7 +9,7 @@ export interface CommonIntentOptions {
   /**
    * If provided, the payment intent will be confirmed using this card as a payment method.
    */
-  card?: Card;
+  card?: CardTokenRequest;
   /**
    * If provided, the payment intent will be confirmed using this payment method
    */
