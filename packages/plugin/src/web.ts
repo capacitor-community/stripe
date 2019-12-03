@@ -115,6 +115,7 @@ async function _stripeGet(path: string, key: string, extraHeaders?: any) {
 
 export class StripePluginWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string;
+  private stripe: any;
 
   constructor() {
     super({
@@ -128,7 +129,27 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
       throw new Error('you must provide a valid key');
     }
 
+    const scriptEl: HTMLScriptElement = document.createElement('script');
+    scriptEl.src = 'https://js.stripe.com/v3/';
+    document.body.appendChild(scriptEl);
     this.publishableKey = opts.key;
+
+    return new Promise((resolve, reject) => {
+      scriptEl.addEventListener('error', (ev: ErrorEvent) => {
+        document.body.removeChild(scriptEl);
+        reject('Failed to load Stripe JS: ' + ev.message);
+      }, { once: true });
+
+      scriptEl.addEventListener('load', () => {
+        try {
+          this.stripe = new (window as any).Stripe(opts.key);
+          resolve();
+        } catch (err) {
+          document.body.removeChild(scriptEl);
+          reject(err);
+        }
+      }, { once: true });
+    });
   }
 
   async createCardToken(card: CardTokenRequest): Promise<CardTokenResponse> {
@@ -154,7 +175,25 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
       return Promise.reject('you must provide a client secret');
     }
 
-    return Promise.resolve();
+
+    let confirmOpts;
+
+    if (opts.paymentMethodId) {
+      confirmOpts = {
+        payment_method: opts.paymentMethodId,
+      };
+    } else if (opts.card) {
+      const token = await this.createCardToken(opts.card);
+      confirmOpts = {
+        payment_method: {
+          card: {
+            token: token.id,
+          },
+        },
+      };
+    }
+
+    await this.stripe.confirmCardPayment(opts.clientSecret, confirmOpts);
   }
 
   async confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<void> {
