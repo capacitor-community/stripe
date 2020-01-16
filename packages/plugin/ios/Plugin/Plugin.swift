@@ -83,7 +83,16 @@ public class StripePlugin: CAPPlugin {
         params.country = call.getString("country")
         params.currency = call.getString("currency")
         params.routingNumber = call.getString("routing_number")
-
+        params.accountHolderName = call.getString("account_holder_name")
+        
+        let accountHolderType = call.getString("account_holder_type")
+        
+        if accountHolderType == "individual" {
+            params.accountHolderType = STPBankAccountHolderType.individual
+        } else if accountHolderType == "company" {
+            params.accountHolderType = STPBankAccountHolderType.company
+        }
+        
         STPAPIClient.shared().createToken(withBankAccount: params) { (token, error) in
             guard let token = token else {
                 call.error("unable to create bank account token: " + error!.localizedDescription, error)
