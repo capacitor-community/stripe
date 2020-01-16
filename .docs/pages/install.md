@@ -16,6 +16,11 @@ import { Plugins } from '@capacitor/core';
 const { Stripe } = Plugins;
 ```
 
+#### 3. Provide your publishable key
+```ts
+Stripe.setPublishableKey({ key: 'Your key here' });
+```
+
 <br><br>
 
 ## Android Setup
