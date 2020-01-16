@@ -107,13 +107,26 @@ class Stripe : Plugin() {
             return
         }
 
+        val accountNumber = call.getString("account_number")
+        val accountHolderName = call.getString("account_holder_name")
+        val accountHolderType = call.getString("account_holder_type")
+        val country = call.getString("country")
+        val currency = call.getString("currency")
+        val routingNumber = call.getString("routing_number")
 
-        val bankAccount = BankAccount(
-                call.getString("account_number"),
-                call.getString("country"),
-                call.getString("currency"),
-                call.getString("routing_number")
-        )
+
+        val bankAccount = BankAccount(accountNumber, country, currency, routingNumber)
+                .copy(
+                        accountNumber,
+                        accountHolderName,
+                        accountHolderType,
+                        null,
+                        country,
+                        currency,
+                        null,
+                        null,
+                        routingNumber
+                )
 
         stripeInstance.createBankAccountToken(bankAccount, object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
