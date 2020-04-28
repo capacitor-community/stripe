@@ -1,6 +1,7 @@
 {
   "name": "@capacitor-stripe/source",
   "private": true,
+  "version": "0.0.1",
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/child-process-promise": "^2.2.1",
