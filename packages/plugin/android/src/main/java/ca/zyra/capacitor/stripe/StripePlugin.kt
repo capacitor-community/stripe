@@ -682,8 +682,11 @@ class Stripe : Plugin() {
                 }
 
                 googlePayPaymentData = paymentData
+                val js = googlePayPaymentData!!.toJson()
+                val gpayObj = JSObject(js)
+                val token = JSObject(gpayObj.getJSObject("paymentMethodData").getJSObject("tokenizationData").getString("token"))
 
-                googlePayCall.resolve()
+                googlePayCall.resolve(token)
             }
 
             Activity.RESULT_CANCELED, AutoResolveHelper.RESULT_ERROR -> {
