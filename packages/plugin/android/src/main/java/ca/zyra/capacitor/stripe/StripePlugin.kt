@@ -682,8 +682,11 @@ class Stripe : Plugin() {
                 }
 
                 googlePayPaymentData = paymentData
+                val js = googlePayPaymentData!!.toJson()
+                val gpayObj = JSObject(js)
+                val token = JSObject(gpayObj.getJSObject("paymentMethodData").getJSObject("tokenizationData").getString("token"))
 
-                googlePayCall.resolve()
+                googlePayCall.resolve(token)
             }
 
             Activity.RESULT_CANCELED, AutoResolveHelper.RESULT_ERROR -> {
@@ -709,7 +712,7 @@ class Stripe : Plugin() {
         freeSavedCall()
     }
 
-    override fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.handleOnActivityResult(requestCode, resultCode, data)
 
         Log.d(TAG, "handleOnActivityResult called with request code: $requestCode and resultCode: $resultCode")
