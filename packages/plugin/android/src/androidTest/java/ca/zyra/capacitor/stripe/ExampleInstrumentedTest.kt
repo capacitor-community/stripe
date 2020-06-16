@@ -21,6 +21,6 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().context
 
-        assertEquals("com.getcapacitor.android", appContext.packageName)
+        assertEquals("ca.zyra.capacitor.stripe", appContext.packageName)
     }
 }

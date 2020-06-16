@@ -1,18 +1,17 @@
 package ca.zyra.capacitor.stripe
 
-import org.junit.Test
+import org.junit.Test;
 
-import org.junit.Assert.*
+import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
- * @see [Testing documentation](http://d.android.com/tools/testing)
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-class ExampleUnitTest {
+public class ExampleUnitTest {
     @Test
-    @Throws(Exception::class)
-    fun addition_isCorrect() {
-        assertEquals(4, (2 + 2).toLong())
+    public void addition_isCorrect() throws Exception {
+        assertEquals(4, 2 + 2);
     }
 }
