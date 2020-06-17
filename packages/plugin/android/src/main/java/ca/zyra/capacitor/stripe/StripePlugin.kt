@@ -306,6 +306,11 @@ class Stripe : Plugin() {
 
             call.getBoolean("fromGooglePay", false)!! -> {
                 try {
+                    if (googlePayPaymentData == null) {
+                        call.error("you must successfully call payWithGooglePay first before confirming a payment intent using Google Pay")
+                        return
+                    }
+
                     val js = googlePayPaymentData!!.toJson()
                     val gpayObj = JSObject(js)
 
@@ -719,11 +724,11 @@ class Stripe : Plugin() {
                 }
 
                 googlePayPaymentData = paymentData
-                val js = googlePayPaymentData!!.toJson()
-                val gpayObj = JSObject(js)
-                val token = JSObject(gpayObj.getJSObject("paymentMethodData").getJSObject("tokenizationData").getString("token"))
-
-                googlePayCall.resolve(token)
+                val tokenJs = JSObject(paymentData.toJson())
+                val resJs = JSObject()
+                resJs.put("success", true)
+                resJs.put("token", tokenJs)
+                googlePayCall.resolve(resJs)
             }
 
             Activity.RESULT_CANCELED, AutoResolveHelper.RESULT_ERROR -> {
