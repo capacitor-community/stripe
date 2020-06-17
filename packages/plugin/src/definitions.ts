@@ -4,7 +4,15 @@ declare module '@capacitor/core' {
   }
 }
 
-export interface CommonIntentOptions {
+export type StripeAccountIdOpt = {
+  stripeAccountId?: string;
+}
+
+export type IdempotencyKeyOpt = {
+  idempotencyKey?: string;
+}
+
+export interface CommonIntentOptions extends StripeAccountIdOpt {
   clientSecret: string;
   /**
    * If provided, the payment intent will be confirmed using this card as a payment method.
@@ -32,9 +40,11 @@ export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
   applePayOptions?: ApplePayOptions;
 
   /**
-   * If provided, the payment intent will be confirmed using a card provided by Google Pay
+   * If set to true, it will use the saved Google Pay token to confirm this payment intent.
+   * A successful `payWithGooglePay` must have been called prior to this.
+   * Each successful `payWithGooglePay` call generates a token that can be used once only.
    */
-  googlePayOptions?: GooglePayOptions;
+  fromGooglePay?: boolean;
 }
 
 export type SetPublishableKeyOptions = {
@@ -60,7 +70,7 @@ export type IdentifyCardBrandOptions = {
 
 export type CreatePiiTokenOptions = {
   pii: string
-};
+} & StripeAccountIdOpt & IdempotencyKeyOpt ;
 
 export type CreateSourceTokenOptions = {
   type: SourceType,
@@ -89,6 +99,20 @@ export enum GooglePayAuthMethod {
    */
   CRYPTOGRAM_3DS = 'CRYPTOGRAM_3DS'
 }
+
+export type InitCustomerSessionParams = {
+  id: string;
+  object: 'ephemeral_key';
+  associated_objects: Array<{
+    type: 'customer';
+    id: string;
+  }>;
+  created: number;
+  expires: number;
+  livemode: boolean;
+  secret: string;
+  apiVersion?: string;
+} & StripeAccountIdOpt;
 
 export interface StripePlugin {
   /* Core */
@@ -122,19 +146,7 @@ export interface StripePlugin {
 
   /* Payment methods */
 
-  initCustomerSession(opts: {
-    id: string;
-    object: 'ephemeral_key';
-    associated_objects: Array<{
-      type: 'customer';
-      id: string;
-    }>;
-    created: number;
-    expires: number;
-    livemode: boolean;
-    secret: string;
-    apiVersion?: string;
-  }): Promise<void>;
+  initCustomerSession(opts: InitCustomerSessionParams): Promise<void>;
 
   customerPaymentMethods(): Promise<{
     paymentMethods: PaymentMethod[]
@@ -241,7 +253,7 @@ export interface Card {
   email: string;
 }
 
-export interface BankAccountTokenRequest {
+export interface BankAccountTokenRequest extends StripeAccountIdOpt, IdempotencyKeyOpt {
   country: string;
   currency: string;
   account_holder_name: string;
@@ -254,7 +266,7 @@ export interface BankAccountTokenResponse extends TokenResponse {
   bank_account: BankAccount;
 }
 
-export interface CardTokenRequest {
+export interface CardTokenRequest extends StripeAccountIdOpt, IdempotencyKeyOpt {
   number: string;
   exp_month: number;
   exp_year: number;
@@ -578,7 +590,7 @@ export interface LegalEntity {
   verification?: any;
 }
 
-export interface AccountParams {
+export interface AccountParams extends StripeAccountIdOpt, IdempotencyKeyOpt {
   tosShownAndAccepted: boolean;
   legalEntity: LegalEntity;
 }
