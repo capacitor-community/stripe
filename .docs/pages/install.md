@@ -28,10 +28,7 @@ Stripe.setPublishableKey({ key: 'Your key here' });
 <br>
 
 #### Requirements
-To use this plugin with your Android application, you must have Android X enabled. At this time Android X is not used
-by `@capacitor/android` (see [this PR](https://github.com/ionic-team/capacitor/issues/1937) for updates). Follow the 
-steps in [this comment](https://github.com/zyra/capacitor-stripe/issues/1#issuecomment-555666767) for details on how to 
-enable Android X in your app.
+This plugin requires `@capacitor/android@2.0.0` or higher as it relies on Android X support.
 
 <br>
 
