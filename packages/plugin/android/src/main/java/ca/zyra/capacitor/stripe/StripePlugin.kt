@@ -746,7 +746,7 @@ class Stripe : Plugin() {
         freeSavedCall()
     }
 
-    override fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.handleOnActivityResult(requestCode, resultCode, data)
 
         Log.d(TAG, "handleOnActivityResult called with request code: $requestCode and resultCode: $resultCode")
