@@ -80,6 +80,9 @@ class Stripe : Plugin() {
             return
         }
 
+        val idempotencyKey = call.getString("idempotencyKey")
+        val stripeAccountId = call.getString("stripeAccountId")
+
         val callback = object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
                 val tokenJs = JSObject()
@@ -98,7 +101,7 @@ class Stripe : Plugin() {
             }
         }
 
-        stripeInstance.createToken(card, callback)
+        stripeInstance.createCardToken(card, idempotencyKey, stripeAccountId, callback)
     }
 
     @PluginMethod
@@ -114,21 +117,18 @@ class Stripe : Plugin() {
         val currency = call.getString("currency")
         val routingNumber = call.getString("routing_number")
 
+        var stripeAccHolder = BankAccountTokenParams.Type.Individual
 
-        val bankAccount = BankAccount(accountNumber, country, currency, routingNumber)
-                .copy(
-                        accountNumber,
-                        accountHolderName,
-                        accountHolderType,
-                        null,
-                        country,
-                        currency,
-                        null,
-                        null,
-                        routingNumber
-                )
+        if (accountHolderType == "company") {
+            stripeAccHolder = BankAccountTokenParams.Type.Company
+        }
 
-        stripeInstance.createBankAccountToken(bankAccount, object : ApiResultCallback<Token> {
+        val bankAccount = BankAccountTokenParams(country, currency, accountNumber, stripeAccHolder, accountHolderName, routingNumber)
+
+        val idempotencyKey = call.getString("idempotencyKey")
+        val stripeAccountId = call.getString("stripeAccountId")
+
+        val callback = object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
                 val tokenJs = JSObject()
 
@@ -147,7 +147,9 @@ class Stripe : Plugin() {
             override fun onError(e: Exception) {
                 call.error("unable to create bank account token: " + e.localizedMessage, e)
             }
-        })
+        }
+
+        stripeInstance.createBankAccountToken(bankAccount, idempotencyKey, stripeAccountId, callback)
     }
 
     @PluginMethod
@@ -174,6 +176,9 @@ class Stripe : Plugin() {
         val email = call.getString("email")
         val callId = call.getString("callId")
 
+        val idempotencyKey = call.getString("idempotencyKey")
+        val stripeAccountId = call.getString("stripeAccountId")
+
         when (sourceType) {
             0 -> sourceParams = SourceParams.createThreeDSecureParams(amount, currency, returnURL, card)
 
@@ -196,7 +201,7 @@ class Stripe : Plugin() {
             else -> return
         }
 
-        stripeInstance.createSource(sourceParams, object : ApiResultCallback<Source> {
+        val callback = object : ApiResultCallback<Source> {
             override fun onSuccess(result: Source) {
                 val tokenJs = JSObject()
                 tokenJs.putOpt("id", result.id)
@@ -208,7 +213,9 @@ class Stripe : Plugin() {
             override fun onError(e: Exception) {
                 call.error("unable to create source token: " + e.localizedMessage, e)
             }
-        })
+        }
+
+        stripeInstance.createSource(sourceParams, idempotencyKey, stripeAccountId, callback)
     }
 
     @PluginMethod
@@ -222,9 +229,14 @@ class Stripe : Plugin() {
         val businessType = call.getString("businessType")
         val tosShownAndAccepted = call.getBoolean("tosShownAndAccepted")
         val bt = if (businessType == "company") AccountParams.BusinessType.Company else AccountParams.BusinessType.Individual
+
+        val idempotencyKey = call.getString("idempotencyKey")
+        val stripeAccountId = call.getString("stripeAccountId")
+
+
         val params = AccountParams.createAccountParams(tosShownAndAccepted!!, bt, jsonToHashMap(legalEntity))
 
-        stripeInstance.createAccountToken(params, object : ApiResultCallback<Token> {
+        val callback = object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
                 val res = JSObject()
                 res.putOpt("token", result.id)
@@ -234,7 +246,9 @@ class Stripe : Plugin() {
             override fun onError(e: Exception) {
                 call.error("unable to create account token: " + e.localizedMessage, e)
             }
-        })
+        }
+
+        stripeInstance.createAccountToken(params, idempotencyKey, stripeAccountId, callback)
     }
 
     @PluginMethod
@@ -245,7 +259,9 @@ class Stripe : Plugin() {
 
 
         val pii = call.getString("pii")
-        stripeInstance.createPiiToken(pii, object : ApiResultCallback<Token> {
+        val idempotencyKey = call.getString("idempotencyKey")
+        val stripeAccountId = call.getString("stripeAccountId")
+        val callback = object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
                 val res = JSObject()
                 res.putOpt("id", result.id)
@@ -255,7 +271,9 @@ class Stripe : Plugin() {
             override fun onError(e: Exception) {
                 call.error("unable to create pii token: " + e.localizedMessage, e)
             }
-        })
+        }
+
+        stripeInstance.createPiiToken(pii, idempotencyKey, stripeAccountId, callback)
     }
 
     @PluginMethod
@@ -264,41 +282,52 @@ class Stripe : Plugin() {
             return
         }
 
-
         val clientSecret = call.getString("clientSecret")
         val saveMethod = call.getBoolean("saveMethod", false)
         val redirectUrl = call.getString("redirectUrl", null)
 
         val params: ConfirmPaymentIntentParams
 
-        if (call.hasOption("card")) {
-            val cb = buildCard(call.getObject("card")) // TODO fix this, we need to pass call.getObject(card)xs
-            val cardParams = cb.build().toPaymentMethodParamsCard()
-            val pmCreateParams = PaymentMethodCreateParams.create(cardParams)
-            params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod!!)
-        } else if (call.hasOption("paymentMethodId")) {
-            params = ConfirmPaymentIntentParams.createWithPaymentMethodId(call.getString("paymentMethodId"), clientSecret, redirectUrl, saveMethod!!)
-        } else if (call.hasOption("sourceId")) {
-            params = ConfirmPaymentIntentParams.createWithSourceId(call.getString("sourceId"), clientSecret, redirectUrl, saveMethod!!)
-        } else if (call.getBoolean("fromGooglePay", false)!!) {
-            try {
-                val js = googlePayPaymentData!!.toJson()
-                val gpayObj = JSObject(js)
-
-                googlePayPaymentData = null
-
-                val pmcp = PaymentMethodCreateParams.createFromGooglePay(gpayObj)
-                params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmcp, clientSecret, redirectUrl, saveMethod!!)
-            } catch (e: JSONException) {
-                call.error("unable to parse json: " + e.localizedMessage, e)
-                return
+        when {
+            call.hasOption("card") -> {
+                val cb = buildCard(call.getObject("card")) // TODO fix this, we need to pass call.getObject(card)xs
+                val cardParams = cb.build().toPaymentMethodParamsCard()
+                val pmCreateParams = PaymentMethodCreateParams.create(cardParams)
+                params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod!!)
             }
 
-        } else {
-            params = ConfirmPaymentIntentParams.create(clientSecret, redirectUrl)
+            call.hasOption("paymentMethodId") -> {
+                params = ConfirmPaymentIntentParams.createWithPaymentMethodId(call.getString("paymentMethodId"), clientSecret, redirectUrl, saveMethod!!)
+            }
+
+            call.hasOption("sourceId") -> {
+                params = ConfirmPaymentIntentParams.createWithSourceId(call.getString("sourceId"), clientSecret, redirectUrl, saveMethod!!)
+            }
+
+            call.getBoolean("fromGooglePay", false)!! -> {
+                try {
+                    val js = googlePayPaymentData!!.toJson()
+                    val gpayObj = JSObject(js)
+
+                    googlePayPaymentData = null
+
+                    val pmcp = PaymentMethodCreateParams.createFromGooglePay(gpayObj)
+                    params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmcp, clientSecret, redirectUrl, saveMethod!!)
+                } catch (e: JSONException) {
+                    call.error("unable to parse json: " + e.localizedMessage, e)
+                    return
+                }
+
+            }
+
+            else -> {
+                params = ConfirmPaymentIntentParams.create(clientSecret, redirectUrl)
+            }
         }
 
-        stripeInstance.confirmPayment(activity, params)
+        val stripeAccountId = call.getString("stripeAccountId")
+
+        stripeInstance.confirmPayment(activity, params, stripeAccountId)
         saveCall(call)
     }
 
@@ -330,7 +359,9 @@ class Stripe : Plugin() {
             }
         }
 
-        stripeInstance.confirmSetupIntent(activity, params)
+        val stripeAccountId = call.getString("stripeAccountId")
+
+        stripeInstance.confirmSetupIntent(activity, params, stripeAccountId)
         saveCall(call)
     }
 
@@ -344,7 +375,6 @@ class Stripe : Plugin() {
         if (!ensurePluginInitialized(call)) {
             return
         }
-
 
         val paymentsClient = Wallet.getPaymentsClient(
                 context,
@@ -487,7 +517,8 @@ class Stripe : Plugin() {
         }
 
         try {
-            CustomerSession.initCustomerSession(context, EphKeyProvider(call.data.toString()))
+            val stripeAccountId = call.getString("stripeAccountId")
+            CustomerSession.initCustomerSession(context, EphKeyProvider(call.data.toString()), stripeAccountId)
             customerSession = CustomerSession.getInstance()
 
             call.resolve()
@@ -509,8 +540,8 @@ class Stripe : Plugin() {
             return
         }
 
-        val l = StripePaymentMethodsListener(callback = object : PaymentMethodsCallback() {
-            override fun onSuccess(paymentMethods: MutableList<PaymentMethod>) {
+        val callback = object : PaymentMethodsCallback() {
+            override fun onSuccess(paymentMethods: List<PaymentMethod>) {
                 val arr = JSArray()
 
                 for (pm in paymentMethods) {
@@ -558,7 +589,9 @@ class Stripe : Plugin() {
             override fun onError(err: Exception) {
                 call.reject(err.localizedMessage, err)
             }
-        })
+        }
+
+        val l = StripePaymentMethodsListener(callback = callback)
 
         cs.getPaymentMethods(PaymentMethod.Type.Card, l)
     }
@@ -604,7 +637,7 @@ class Stripe : Plugin() {
             return
         }
 
-        customerSession!!.addCustomerSource(sourceId, type, object : CustomerSession.SourceRetrievalListener {
+        val listener = object : CustomerSession.SourceRetrievalListener {
             override fun onSourceRetrieved(source: Source) {
                 call.success()
             }
@@ -612,7 +645,9 @@ class Stripe : Plugin() {
             override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
                 call.reject(errorMessage, java.lang.Exception(errorMessage))
             }
-        })
+        }
+
+        customerSession!!.addCustomerSource(sourceId, type, listener)
     }
 
     @PluginMethod
@@ -629,7 +664,7 @@ class Stripe : Plugin() {
             return
         }
 
-        customerSession!!.deleteCustomerSource(sourceId, object : CustomerSession.SourceRetrievalListener {
+        val listener = object : CustomerSession.SourceRetrievalListener {
             override fun onSourceRetrieved(source: Source) {
                 call.success()
             }
@@ -637,7 +672,9 @@ class Stripe : Plugin() {
             override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
                 call.reject(errorMessage, java.lang.Exception(errorMessage))
             }
-        })
+        }
+
+        customerSession!!.deleteCustomerSource(sourceId, listener)
     }
 
     /**
@@ -729,7 +766,7 @@ class Stripe : Plugin() {
 
         Log.d(TAG, "passing activity result to stripe")
 
-        stripeInstance.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
+        val paymentResultCallback = object : ApiResultCallback<PaymentIntentResult> {
             override fun onSuccess(result: PaymentIntentResult) {
                 Log.d(TAG, "onPaymentResult.onSuccess called")
                 val pi = result.intent
@@ -743,9 +780,9 @@ class Stripe : Plugin() {
                 call.error("unable to complete transaction: " + e.localizedMessage, e)
                 freeSavedCall()
             }
-        })
+        }
 
-        stripeInstance.onSetupResult(requestCode, data, object : ApiResultCallback<SetupIntentResult> {
+        val setupResultCallback = object : ApiResultCallback<SetupIntentResult> {
             override fun onSuccess(result: SetupIntentResult) {
                 Log.d(TAG, "onSetupResult.onSuccess called")
                 val si = result.intent
@@ -759,6 +796,9 @@ class Stripe : Plugin() {
                 call.error("unable to complete transaction: " + e.localizedMessage, e)
                 freeSavedCall()
             }
-        })
+        }
+
+        stripeInstance.onPaymentResult(requestCode, data, paymentResultCallback)
+        stripeInstance.onSetupResult(requestCode, data, setupResultCallback)
     }
 }
