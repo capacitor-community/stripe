@@ -21,16 +21,17 @@
     "@capacitor/ios": "~2.2.0",
     "@types/btoa": "^1.2.3",
     "@types/isomorphic-fetch": "0.0.35",
-    "@types/jest": "~24.0.23",
+    "@types/jest": "~26.0.0",
     "@types/node": "~14.0.13",
     "@types/stripe": "~7.13.23",
     "btoa": "^1.2.1",
-    "isomorphic-fetch": "^2.2.1",
-    "jest": "^24.9.0",
-    "standard-version": "^7.0.1",
+    "canvas": "^2.6.1",
+    "isomorphic-fetch": "~2.2.1",
+    "jest": "~26.0.1",
+    "standard-version": "^8.0.0",
     "stripe": "~8.63.0",
-    "ts-jest": "^24.1.0",
-    "typescript": "^3.2.4"
+    "ts-jest": "~26.1.0",
+    "typescript": "~3.8.3"
   },
   "files": [
     "dist/",
@@ -60,9 +61,12 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "setupFiles": [
       "<rootDir>/jest.setup.js"
-    ]
+    ],
+    "testEnvironmentOptions": {
+      "resources": "usable"
+    }
   }
 }

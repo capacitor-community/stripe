@@ -1,11 +1,11 @@
-import * as _Stripe from 'stripe';
+import { Stripe as _Stripe } from 'stripe';
 import { CardTokenRequest, CardTokenResponse } from './definitions';
 import { StripePluginWeb } from './web';
 
 
 let stripeServer: _Stripe;
 
-const apiVersion = '2019-11-05';
+const apiVersion = '2020-03-02';
 
 const SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY;
@@ -14,7 +14,9 @@ const sit = !SECRET_KEY ? it.skip : it;
 const sdescribe = !SECRET_KEY ? describe.skip : describe;
 
 if (!!SECRET_KEY) {
-  stripeServer = new _Stripe(SECRET_KEY, apiVersion);
+  stripeServer = new _Stripe(SECRET_KEY, {
+    apiVersion,
+  });
 }
 
 describe('Stripe Plugin', () => {
@@ -35,7 +37,9 @@ describe('Stripe Plugin', () => {
     });
 
     it('should accept a valid key', async () => {
-      await expect(s.setPublishableKey({ key: PUBLISHABLE_KEY })).resolves.not.toThrow();
+      const p = s.setPublishableKey({ key: PUBLISHABLE_KEY });
+
+      await expect(p).resolves.not.toThrow();
     });
   });
 
@@ -133,7 +137,7 @@ describe('Stripe Plugin', () => {
     it('should validate expiry date', async () => {
       let res = await s.validateExpiryDate({
         exp_month: 5,
-        exp_year: 20,
+        exp_year: 30,
       });
 
       expect(res).toBeTruthy();
@@ -166,7 +170,7 @@ describe('Stripe Plugin', () => {
   });
 
   sdescribe('Customer Session', () => {
-    let customer: _Stripe.customers.ICustomer;
+    let customer: _Stripe.Customer;
 
     beforeAll(async () => {
       customer = await stripeServer.customers.create({
@@ -186,7 +190,7 @@ describe('Stripe Plugin', () => {
     it('should init customer session', async () => {
       const ephKey = await stripeServer.ephemeralKeys.create(
         { customer: customer.id },
-        { stripe_version: apiVersion },
+        { apiVersion },
       );
 
       (ephKey as any).apiVersion = apiVersion;
@@ -240,7 +244,7 @@ describe('Stripe Plugin', () => {
           sourceId: card.card.id,
         })).resolves.not.toThrow();
 
-        customer = await stripeServer.customers.retrieve(customer.id);
+        customer = (await stripeServer.customers.retrieve(customer.id)) as unknown as _Stripe.Customer;
 
         expect(customer.default_source).toEqual(card.card.id);
       });
