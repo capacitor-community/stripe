@@ -8,6 +8,7 @@ import org.json.JSONObject
 import java.util.*
 
 internal const val LOAD_PAYMENT_DATA_REQUEST_CODE = 9972
+internal const val STRIPE_PAYMENT_METHODS_REQ_CODE = 6000
 internal const val STRIPE_GOOGLE_PAY_REQUEST_CODE = 50000
 internal const val TAG = "Capacitor:StripePlugin"
 
@@ -51,18 +52,21 @@ internal fun cardToJSON(card: Card): JSObject {
     return cardJs
 }
 
-internal fun bankAccountToJSON(account: BankAccount): JSObject {
-    val bankObject = JSObject()
+internal fun bankAccountToJSON(a: BankAccount): JSObject {
+    val obj = JSObject()
 
-    bankObject.putOpt("account_holder_name", account.accountHolderName)
-    bankObject.putOpt("account_holder_type", account.accountHolderType)
-    bankObject.putOpt("bank_name", account.bankName)
-    bankObject.putOpt("country", account.countryCode)
-    bankObject.putOpt("currency", account.currency)
-    bankObject.putOpt("last4", account.last4)
-    bankObject.putOpt("routing_number", account.routingNumber)
+    obj.putOpt("account_holder_name", a.accountHolderName)
+    obj.putOpt("account_holder_type", a.accountHolderType)
+    obj.putOpt("bank_name", a.bankName)
+    obj.putOpt("country", a.countryCode)
+    obj.putOpt("currency", a.currency)
+    obj.putOpt("last4", a.last4)
+    obj.putOpt("routing_number", a.routingNumber)
+    obj.putOpt("id", a.id)
+    obj.putOpt("object", "bank_account")
+    obj.putOpt("status", a.status.toString())
 
-    return bankObject
+    return obj
 }
 
 internal fun setupIntentToJSON(si: SetupIntent): JSObject {
@@ -114,4 +118,31 @@ internal fun jsonToHashMap(obj: JSONObject?): HashMap<String, Any> {
 
         false -> return HashMap()
     }
+}
+
+internal fun pmToJson(pm: PaymentMethod): JSObject {
+    val obj = JSObject()
+    obj.putOpt("created", pm.created)
+    obj.putOpt("customerId", pm.customerId)
+    obj.putOpt("id", pm.id)
+    obj.putOpt("livemode", pm.liveMode)
+    obj.putOpt("type", pm.type)
+
+    if (pm.card != null) {
+        val co = JSObject()
+        val c: PaymentMethod.Card = pm.card!!
+        co.putOpt("brand", c.brand)
+        co.putOpt("country", c.country)
+        co.putOpt("exp_month", c.expiryMonth)
+        co.putOpt("exp_year", c.expiryYear)
+        co.putOpt("funding", c.funding)
+        co.putOpt("last4", c.last4)
+
+        if (c.threeDSecureUsage != null) {
+            co.put("three_d_secure_usage", JSObject().putOpt("supported", c.threeDSecureUsage!!.isSupported))
+        }
+
+        obj.put("card", co)
+    }
+    return obj
 }

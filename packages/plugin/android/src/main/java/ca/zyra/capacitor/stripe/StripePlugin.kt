@@ -7,10 +7,12 @@ import com.getcapacitor.*
 import com.google.android.gms.wallet.*
 import com.stripe.android.*
 import com.stripe.android.model.*
+import com.stripe.android.view.BillingAddressFields
+import com.stripe.android.view.PaymentMethodsActivityStarter
 import org.json.JSONException
 import com.stripe.android.Stripe as Stripe2
 
-@NativePlugin(requestCodes = [9972, 50000, 50001])
+@NativePlugin(requestCodes = [9972, 50000, 50001, 6000])
 class Stripe : Plugin() {
     private lateinit var stripeInstance: Stripe2
     private lateinit var publishableKey: String
@@ -374,7 +376,22 @@ class Stripe : Plugin() {
     }
 
     @PluginMethod
-    fun customizePaymentAuthUI(call: PluginCall) {
+    fun presentPayment(call: PluginCall) {
+        PaymentConfiguration.init(context, publishableKey)
+
+        val activ = PaymentMethodsActivityStarter.Args.Builder()
+                .setPaymentConfiguration(PaymentConfiguration.getInstance(context))
+                .setPaymentMethodTypes(listOf(PaymentMethod.Type.Card))
+                .setBillingAddressFields(BillingAddressFields.PostalCode)
+                .setPaymentConfiguration(PaymentConfiguration.getInstance(context))
+                .setIsPaymentSessionActive(true)
+                .setShouldShowGooglePay(true)
+                .setCanDeletePaymentMethods(true)
+                .setIsPaymentSessionActive(false)
+                .build()
+
+        PaymentMethodsActivityStarter(activity).startForResult(activ)
+
         call.resolve()
     }
 
@@ -420,7 +437,6 @@ class Stripe : Plugin() {
         if (!ensurePluginInitialized(call)) {
             return
         }
-
 
         val opts = call.getObject("googlePayOptions")
 
@@ -553,40 +569,7 @@ class Stripe : Plugin() {
                 val arr = JSArray()
 
                 for (pm in paymentMethods) {
-                    val obj = JSObject()
-                    obj.putOpt("created", pm.created)
-                    obj.putOpt("customerId", pm.customerId)
-                    obj.putOpt("id", pm.id)
-                    obj.putOpt("livemode", pm.liveMode)
-                    obj.putOpt("type", pm.type)
-
-                    if (pm.card != null) {
-                        val co = JSObject()
-                        val c: PaymentMethod.Card = pm.card!!
-                        co.putOpt("brand", c.brand)
-
-                        if (c.checks != null) {
-                            co.putOpt("checks", JSObject()
-                                    .putOpt("address_line1_check", c.checks!!.addressLine1Check)
-                                    .putOpt("address_postal_code_check", c.checks!!.addressPostalCodeCheck)
-                                    .putOpt("cvc_check", c.checks!!.cvcCheck)
-                            )
-                        }
-
-                        co.putOpt("country", c.country)
-                        co.putOpt("exp_month", c.expiryMonth)
-                        co.putOpt("exp_year", c.expiryYear)
-                        co.putOpt("funding", c.funding)
-                        co.putOpt("last4", c.last4)
-
-                        if (c.threeDSecureUsage != null) {
-                            co.put("three_d_secure_usage", JSObject().putOpt("supported", c.threeDSecureUsage!!.isSupported))
-                        }
-
-                        obj.put("card", co)
-                    }
-
-                    arr.put(obj)
+                    arr.put(pmToJson(pm))
                 }
 
                 val res = JSObject()
@@ -772,6 +755,27 @@ class Stripe : Plugin() {
 
         if (call == null) {
             Log.d(TAG, "could not find a saved PluginCall, discarding activity result")
+            return
+        }
+
+        if (requestCode == PaymentMethodsActivityStarter.REQUEST_CODE) {
+            val res = PaymentMethodsActivityStarter.Result.fromIntent(data)
+
+            if (res == null) {
+                call.error("user cancelled")
+                freeSavedCall()
+                return
+            }
+
+            val js = JSObject()
+            js.put("useGooglePay", res.useGooglePay)
+
+            if (res.paymentMethod != null) {
+                js.put("paymentMethod", pmToJson(res.paymentMethod!!))
+            }
+
+            call.success(js)
+            freeSavedCall()
             return
         }
 
