@@ -130,18 +130,21 @@ class Stripe : Plugin() {
 
         val callback = object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
-                val tokenJs = JSObject()
+                val js = JSObject()
 
                 if (result.bankAccount != null) {
                     val jsObj = bankAccountToJSON(result.bankAccount!!)
-                    tokenJs.putOpt("bankAccount", jsObj)
+                    js.putOpt("bankAccount", jsObj)
                 }
 
-                tokenJs.putOpt("id", result.id)
-                tokenJs.putOpt("created", result.created)
-                tokenJs.putOpt("type", result.type)
+                js.put("id", result.id)
+                js.put("created", result.created.getTime())
+                js.put("type", result.type)
+                js.put("object", "token")
+                js.put("livemode", result.livemode)
+                js.put("used", result.used)
 
-                call.success(tokenJs)
+                call.success(js)
             }
 
             override fun onError(e: Exception) {
