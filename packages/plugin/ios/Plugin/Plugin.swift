@@ -8,6 +8,7 @@ public class StripePlugin: CAPPlugin {
     internal var ephemeralKey: NSDictionary?
     internal var customerCtx: STPCustomerContext?
     internal var paymentCtx: STPPaymentContext?
+    internal var pCfg: STPPaymentConfiguration?
 
     @objc func setPublishableKey(_ call: CAPPluginCall) {
         let value = call.getString("key") ?? ""
@@ -154,14 +155,7 @@ public class StripePlugin: CAPPlugin {
         let success = call.getBool("success") ?? false
 
         if let c = ctx.completion {
-            let s: PKPaymentAuthorizationStatus
-
-            if success {
-                s = .success
-            } else {
-                s = .failure
-            }
-
+            let s: PKPaymentAuthorizationStatus = success ? .success : .failure
             c(PKPaymentAuthorizationResult(status: s, errors: nil))
             call.success()
         } else {
@@ -226,9 +220,9 @@ public class StripePlugin: CAPPlugin {
         case .multibanco:
             <#code#>
         case .weChatPay:
-            <#code#>
+            
         case .unknown:
-            <#code#>
+            
         }
        */
     }
@@ -239,6 +233,7 @@ public class StripePlugin: CAPPlugin {
         }
 
         let pii = call.getString("pii") ?? ""
+        
         STPAPIClient.shared().createToken(withPersonalIDNumber: pii) { (token, error) in
             guard let token = token else {
                 call.error("unable to create token: " + error!.localizedDescription, error)
@@ -286,10 +281,15 @@ public class StripePlugin: CAPPlugin {
             if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
                 authCtrl.delegate = self
                 call.save()
-                self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .PaymentIntent, completion: nil, clientSecret: clientSecret)
+                self.applePayCtx = ApplePayContext(callbackId: call.callbackId,
+                                                   mode: .PaymentIntent,
+                                                   completion: nil,
+                                                   clientSecret: clientSecret)
 
                 DispatchQueue.main.async {
-                    self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
+                    self.bridge.viewController.present(authCtrl,
+                                                       animated: true,
+                                                       completion: nil)
                 }
                 return
             }
@@ -298,13 +298,13 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        //let redirectUrl = call.getString("redirectUrl") ?? ""
         let pip: STPPaymentIntentParams = STPPaymentIntentParams.init(clientSecret: clientSecret!)
 
         if let sm = call.getBool("saveMethod"), sm == true {
             pip.savePaymentMethod = true
         }
-        //pip.returnURL = redirectUrl
+        
+        // pip.returnURL =  call.getString("redirectUrl") ?? ""
 
         if call.hasOption("card") {
             let bd = STPPaymentMethodBillingDetails()
@@ -437,7 +437,7 @@ public class StripePlugin: CAPPlugin {
         case "full":
             pCfg.requiredBillingAddressFields = .full
         case "zip":
-            pCfg.requiredBillingAddressFields = .zip
+            pCfg.requiredBillingAddressFields = .postalCode
         case "name":
             pCfg.requiredBillingAddressFields = .name
         default:
@@ -461,31 +461,39 @@ public class StripePlugin: CAPPlugin {
         }
 
         self.customerCtx = ctx
-        let theme = STPTheme.default()
-        self.paymentCtx = STPPaymentContext(customerContext: ctx, configuration: pCfg, theme: theme)
+        self.pCfg = pCfg
+        
         call.success()
     }
 
     @objc func presentPaymentOptions(_ call: CAPPluginCall) {
-        guard let pCtx = self.paymentCtx else {
-            call.error("you must call initPaymentSession first")
+        guard let pCfg = self.pCfg, let ctx = self.customerCtx else {
+            call.error("you must call initCustomerSession first")
             return
         }
-
+        
+        let pCtx = STPPaymentContext(customerContext:  ctx,
+                                     configuration: pCfg,
+                                     theme: STPTheme.default())
+        
         DispatchQueue.main.async {
             pCtx.delegate = self
             pCtx.hostViewController = self.bridge.viewController
             pCtx.presentPaymentOptionsViewController()
         }
 
-        call.success()
+        call.save()
     }
 
     @objc func presentShippingOptions(_ call: CAPPluginCall) {
-        guard let pCtx = self.paymentCtx else {
-            call.reject("payment context does not exists")
+        guard let pCfg = self.pCfg, let ctx = self.customerCtx else {
+            call.error("you must call initCustomerSession first")
             return
         }
+        
+        let pCtx = STPPaymentContext(customerContext: ctx,
+                                     configuration: pCfg,
+                                     theme: STPTheme.default())
 
         DispatchQueue.main.async {
             pCtx.delegate = self
@@ -495,10 +503,14 @@ public class StripePlugin: CAPPlugin {
     }
 
     @objc func presentPaymentRequest(_ call: CAPPluginCall) {
-        guard let pCtx = self.paymentCtx else {
-            call.reject("payment context does not exists")
+        guard let pCfg = self.pCfg, let ctx = self.customerCtx else {
+            call.error("you must call initCustomerSession first")
             return
         }
+        
+        let pCtx = STPPaymentContext(customerContext: ctx,
+                                     configuration: pCfg,
+                                     theme: STPTheme.default())
 
         DispatchQueue.main.async {
             pCtx.delegate = self
@@ -509,13 +521,8 @@ public class StripePlugin: CAPPlugin {
     }
 
     @objc func customizePaymentAuthUI(_ call: CAPPluginCall) {
-
+        call.error("not implemented yet")
     }
-
-//    @objc func initCustomerSession(_ call: CAPPluginCall) {
-//        self.ephemeralKey = NSDictionary(dictionary: call.options)
-//        self.customerCtx = STPCustomerContext(keyProvider: self)
-//    }
 
     @objc func initPaymentSession(_ call: CAPPluginCall) {
         guard let ctx = self.customerCtx else {
@@ -552,7 +559,7 @@ public class StripePlugin: CAPPlugin {
                 var val: [String: Any] = [
                     "id": m.stripeId,
                     "livemode": m.liveMode,
-                    "type": m.type,
+                    "type": pmTypeToStr(m.type),
                 ]
 
                 if let cid = m.customerId {
@@ -560,7 +567,7 @@ public class StripePlugin: CAPPlugin {
                 }
 
                 if let c = m.created {
-                    val["created"] = c
+                    val["created"] = c.timeIntervalSince1970
                 }
 
                 if let c = m.card {
@@ -587,15 +594,8 @@ public class StripePlugin: CAPPlugin {
                             "supported": t.supported
                         ]
                     }
-
-                    if let c = c.checks {
-                        // TODO convert enum values to strings
-                        cval["checks"] = [
-                            "address_line1_check": c.addressLine1Check,
-                            "address_postal_code_check": c.addressPostalCodeCheck,
-                            "cvc_check": c.cvcCheck
-                        ]
-                    }
+                    
+                    val["card"] = cval
                 }
 
                 vals.append(val)
@@ -608,52 +608,11 @@ public class StripePlugin: CAPPlugin {
     }
 
     @objc func setCustomerDefaultSource(_ call: CAPPluginCall) {
-        call.error("not implemented yet")
-        // TODO figure out how the SDK UI updates the API
-        /*
-        guard let sourceId = call.getString("sourceId") else {
-            call.error("you must provide a sourceId")
-            return
-        }
-
-        guard let ctx = self.customerCtx else {
-            call.error("you must call initCustomerSession first")
-            return
-        }
-
-        let type = call.getString("type") ?? "card"
-        */
+        call.error("not supported on iOS")
     }
 
     @objc func addCustomerSource(_ call: CAPPluginCall) {
-        call.error("not implemented yet")
-        // TODO figure out how the SDK UI updates the API
-        //        guard let sourceId = call.getString("sourceId") else {
-        //            call.error("you must provide a sourceId")
-        //            return
-        //        }
-        //
-        //        guard let ctx = self.customerCtx else {
-        //            call.error("you must call initCustomerSession first")
-        //            return
-        //        }
-        //
-        //        let type = call.getString("type") ?? "card"
-        //
-        //        let m = STPPaymentMethod()
-        //        STPPaymentMethod()
-        //
-        //        STPAPIClient.shared().retrieveSource(withId: sourceId, clientSecret: "") { source, error in
-        //
-        //        }
-        //
-        //        ctx.attachPaymentMethod(toCustomer: m) { error in
-        //            if error != nil {
-        //                call.error(error!.localizedDescription, error)
-        //            } else {
-        //                call.success()
-        //            }
-        //        }
+        call.error("not supported on iOS")
     }
 
     @objc func isApplePayAvailable(_ call: CAPPluginCall) {
@@ -666,8 +625,8 @@ public class StripePlugin: CAPPlugin {
         call.success(["available": false])
     }
 
-    @objc func startGooglePayTransaction(_ call: CAPPluginCall) {
-        call.error("Google Pay is not available")
+    @objc func payWithGooglePay(_ call: CAPPluginCall) {
+        call.error("Google Pay is not available on iOS")
     }
 
     @objc internal func clearApplePay() {

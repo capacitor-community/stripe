@@ -63,8 +63,11 @@ extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
                         self.clearApplePay()
 
                     case .succeeded:
-                        self.applePayCtx!.completion = completion
-                        callback.success(pi!.allResponseFields as! PluginResultData)
+                        completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
+                        callback.success([
+                            "success": true
+                        ])
+                        self.clearApplePay()
                     }
                 })
             }

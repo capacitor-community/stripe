@@ -23,17 +23,17 @@ CAP_PLUGIN(StripePlugin, "Stripe",
            
            CAP_PLUGIN_METHOD(presentPaymentOptions, CAPPluginReturnPromise);
            
-           CAP_PLUGIN_METHOD(presentShippingOptions, CAPPluginReturnPromise);
+           // CAP_PLUGIN_METHOD(presentShippingOptions, CAPPluginReturnPromise);
            
-           CAP_PLUGIN_METHOD(presentShippingOptions, CAPPluginReturnPromise);
+           // CAP_PLUGIN_METHOD(presentShippingOptions, CAPPluginReturnPromise);
            
            CAP_PLUGIN_METHOD(initPaymentSession, CAPPluginReturnPromise);
            
            CAP_PLUGIN_METHOD(customerPaymentMethods, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setCustomerDefaultSource, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(addCustomerSource, CAPPluginReturnPromise);
-           CAP_PLUGIN_METHOD(customizePaymentAuthUI, CAPPluginReturnPromise);
+           // CAP_PLUGIN_METHOD(customizePaymentAuthUI, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(isApplePayAvailable, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(isGooglePayAvailable, CAPPluginReturnPromise);
-           CAP_PLUGIN_METHOD(startGooglePayTransaction, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(payWithGooglePay, CAPPluginReturnPromise);
 )

@@ -18,6 +18,32 @@ internal struct ApplePayContext {
     var clientSecret: String?
 }
 
+internal func pmTypeToStr(_ pmType: STPPaymentMethodType?) -> String {
+    switch pmType {
+    case .typeCard:
+        return "card"
+    case .typeCardPresent:
+        return "card_present"
+    case .typeFPX:
+        return "fpx"
+    case .typeiDEAL:
+        return "ideal"
+    // TODO add more types
+    default:
+        return "unknown"
+    }
+}
+
+internal func strToPmType(_ pmTypeStr: String?) -> STPPaymentMethodType {
+    switch pmTypeStr {
+    case "card":
+        return .typeCard
+    // TODO add more types
+    default:
+        return .typeUnknown
+    }
+}
+
 internal func strToBrand(_ brand: String?) -> STPCardBrand {
     switch brand {
     case "AMERICAN_EXPRESS":
@@ -170,7 +196,7 @@ internal func cardParams(fromCall: CAPPluginCall) -> STPCardParams {
 }
 
 internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
-    let merchantId = obj["merchantIdentifier"] as? String ?? ""
+    let merchantId = obj["merchantId"] as? String ?? ""
     let country = obj["country"] as? String ?? ""
     let currency = obj["currency"] as? String ?? ""
     let items = obj["items"] as? [[String: Any]] ?? []
