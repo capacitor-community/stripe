@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{- .Title }}</title>
+    <title>{{- if .Title }}{{- .Title }} | {{ end }}Capacitor Stripe Plugin</title>
     {{ if .Description }}<meta name="description" content="{{ .Description }}">{{ end }}
     {{ if .BaseURL }}<base href="{{ .BaseURL }}" />{{ end }}
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">

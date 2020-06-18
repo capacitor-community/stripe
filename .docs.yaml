@@ -6,19 +6,19 @@ baseUrl: https://zyra.github.io/capacitor-stripe/
 
 pages:
 - name: home
-  title: Capacitor Stripe Plugin
+  title:
   path: /
   source: .docs/pages/home.md
   editOnGithub: true
 - name: install
-  title: Installation | Capacitor Stripe Plugin
+  title: Installation
   path: installation
   source: .docs/pages/install.md
   editOnGithub: true
   addToMenu: true
   menuGroup: getting-started
 - name: usage
-  title: Usage Examples | Capacitor Stripe Plugin
+  title: Usage Examples
   path: usage
   source: .docs/pages/usage.md
   editOnGithub: true
