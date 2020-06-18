@@ -200,17 +200,17 @@
 {{- range $index, $element := .MenuItems }}
 	{{- if $element.Group }}
 				<li role="none" class="my-1">
-					<span class="font-semibold text-gray-400">{{ $element.Title }}</span>
-					<ul class="list-reset ml-1" role="none">
+					<span class="font-semibold text-gray-400 menu-heading">{{ $element.Title }}</span>
+					<ul class="list-reset ml-1 menu-list" role="none">
 						{{- range $ci, $ce := $element.Items }}
-							<li role="none">
+							<li role="none" class="menu-list-item">
 								<a href="{{ $ce.Link }}" role="link" aria-label="{{ $ce.Title }}" class="block p-1 {{ if $ce.Active }}text-indigo-600{{ else }}text-gray-600 hover:text-gray-700{{ end }}">{{ $ce.Title }}</a>
 							</li>
 						{{- end }}
 					</ul>
 				</li>
 	{{- else }}
-				<li role="none" class="my=1">
+				<li role="none" class="my-1">
 					<a href="{{ $element.Link }}" role="link" aria-label="{{ $element.Title }}" class="block py-1 pr-1 {{ if $element.Active }}text-indigo-600{{ else }}text-gray-600 hover:text-gray-700{{ end }}">{{ $element.Title }}</a>
 				</li>
 	{{- end }}
