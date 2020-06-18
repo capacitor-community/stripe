@@ -130,15 +130,59 @@
       width: 48%;
     }
 
+    .main-nav {
+      background: #060606;
+    }
+
+    .site-title {
+      color: white;
+      text-transform: uppercase;
+      font-size: 1rem;
+      letter-spacing: 0.08rem;
+      font-weight: 600;
+    }
+
+    .menu-heading {
+      color: #8c9bbd;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1rem;
+      border-left: 0.3rem solid black;
+      background: #f1f1f1;
+      padding: 0.8rem 0.6rem;
+      margin: 0;
+      box-sizing: content-box;
+    }
+
+    .menu-list {
+      border-left: 0.1rem solid #dedede;
+      box-sizing: content-box;
+      margin: 0;
+      padding-top: 1rem;
+      margin-left: 0.1rem;
+    }
+
+    .menu-list-item {
+      padding-left: 1rem;
+      font-weight: 600;
+    }
+
+    .text-indigo-600 {
+      color: #3946ef;
+    }
     </style>
 </head>
 <body>
-<nav role="navigation">
+<nav role="navigation" class="main-nav">
     <div class="container flex items-center justify-between flex-wrap p-6 mx-auto">
         <div class="flex items-center flex-shrink-0 text-indigo-500 mr-6">
-            <span class="font-semibold text-xl tracking-tight">
-                Capacitor Stripe Plugin
-            </span>
+            <a href="https://zyra.github.io/capacitor-stripe/">    background: #060606;
+
+              <span class="font-semibold text-xl tracking-tight site-title">
+                  Capacitor Stripe Plugin
+              </span>
+            </a>
         </div>
         <div class="block">
             <button id="sidenav-open-button" class="inline lg:hidden flex items-center px-3 py-2 text-indigo-400 hover:text-indigo-500">
@@ -158,10 +202,10 @@
 					<span class="font-semibold text-gray-400">Getting started</span>
 					<ul class="list-reset ml-1" role="none">
 							<li role="none">
-								<a href="installation" role="link" aria-label="Installation" class="block p-1 text-gray-600 hover:text-gray-700">Installation</a>
+								<a href="installation" role="link" aria-label="Installation | Capacitor Stripe Plugin" class="block p-1 text-gray-600 hover:text-gray-700">Installation | Capacitor Stripe Plugin</a>
 							</li>
 							<li role="none">
-								<a href="usage" role="link" aria-label="Usage Examples" class="block p-1 text-gray-600 hover:text-gray-700">Usage Examples</a>
+								<a href="usage" role="link" aria-label="Usage Examples | Capacitor Stripe Plugin" class="block p-1 text-gray-600 hover:text-gray-700">Usage Examples | Capacitor Stripe Plugin</a>
 							</li>
 					</ul>
 				</li>
