@@ -11,14 +11,14 @@ pages:
   source: .docs/pages/home.md
   editOnGithub: true
 - name: install
-  title: Installation
+  title: Installation | Capacitor Stripe Plugin
   path: installation
   source: .docs/pages/install.md
   editOnGithub: true
   addToMenu: true
   menuGroup: getting-started
-- name: usageg
-  title: Usage Examples
+- name: usage
+  title: Usage Examples | Capacitor Stripe Plugin
   path: usage
   source: .docs/pages/usage.md
   editOnGithub: true

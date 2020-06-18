@@ -82,6 +82,15 @@ await Stripe.confirmPaymentIntent({
   clientSecret,
   applePayOptions: {
     // options here
+    merchantId: 'merchant.company',
+    country: 'CA',
+    currency: 'CAD',
+    items: [
+      {
+        label: 'Some item',
+        amount: '50', // amount in dollars
+      }
+    ]
   },
 });
 
