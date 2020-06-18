@@ -4,13 +4,4 @@
     <string name="title_activity_main">stripe-test</string>
     <string name="package_name">ca.zyra.capacitor.stripetest</string>
     <string name="custom_url_scheme">ca.zyra.capacitor.stripetest</string>
-    <string name="payment_method_add_new_card">Testing string stuff</string>
-    <string name="acc_label_zip">Postal code</string>
-    <string name="acc_label_zip_short">ZIP</string>
-    <string name="address_label_zip_code">ZIP code</string>
-    <string name="address_label_zip_code_optional">ZIP code (optional)</string>
-    <string name="address_label_zip_postal_code">ZIP/Postal code</string>
-    <string name="address_label_zip_postal_code_optional">ZIP / Postal code (optional)</string>
-    <string name="address_zip_invalid">Your ZIP code is invalid.</string>
-    <string name="address_zip_postal_invalid">Your ZIP/Postal code is invalid</string>
 </resources>

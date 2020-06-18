@@ -17,6 +17,7 @@ import {
   GooglePayOptions,
   IdentifyCardBrandOptions,
   PaymentMethod,
+  PresentPaymentOptionsResponse,
   SetPublishableKeyOptions,
   StripePlugin,
   TokenResponse,
@@ -93,7 +94,7 @@ async function _stripePost(path: string, body: string, key: string, extraHeaders
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
       'Authorization': `Bearer ${key}`,
-      'Stripe-version': '2019-11-05',
+      'Stripe-version': '2020-03-02',
       ...extraHeaders,
     },
   });
@@ -107,7 +108,7 @@ async function _stripeGet(path: string, key: string, extraHeaders?: any) {
     headers: {
       'Accept': 'application/json',
       'Authorization': `Bearer ${key}`,
-      'Stripe-version': '2019-11-05',
+      'Stripe-version': '2020-03-02',
       ...extraHeaders,
     },
   });
@@ -167,7 +168,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
       throw 'Apple Pay is not supported on web';
     }
 
-    if (opts.googlePayOptions) {
+    if (opts.fromGooglePay) {
       throw 'Google Pay is not supported on web';
     }
 
@@ -251,6 +252,10 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
   }
 
   async customizePaymentAuthUI(opts: any): Promise<void> {
+    return;
+  }
+
+  async presentPaymentOptions(): Promise<PresentPaymentOptionsResponse> {
     return;
   }
 

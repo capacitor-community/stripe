@@ -5,11 +5,11 @@ declare module '@capacitor/core' {
 }
 
 export type StripeAccountIdOpt = {
-  stripeAccountId?: string;
+  stripeAccountId?: string; // android only
 }
 
 export type IdempotencyKeyOpt = {
-  idempotencyKey?: string;
+  idempotencyKey?: string; // android only
 }
 
 export interface CommonIntentOptions extends StripeAccountIdOpt {
@@ -114,6 +114,8 @@ export type InitCustomerSessionParams = {
   apiVersion?: string;
 } & StripeAccountIdOpt;
 
+export type PresentPaymentOptionsResponse = { useGooglePay?: boolean; useApplePay?: boolean; paymentMethod?: PaymentMethod; };
+
 export interface StripePlugin {
   /* Core */
   setPublishableKey(opts: SetPublishableKeyOptions): Promise<void>;
@@ -166,6 +168,8 @@ export interface StripePlugin {
 
   /* Helpers */
   customizePaymentAuthUI(opts: any): Promise<void>;
+
+  presentPaymentOptions(): Promise<PresentPaymentOptionsResponse>
 
   isApplePayAvailable(): Promise<AvailabilityResponse>;
 
