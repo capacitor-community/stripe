@@ -1,11 +1,9 @@
 # Capacitor Stripe SDK
-[WIP] Stripe Mobile SDK wrapper for Capacitor
+Stripe Mobile SDK wrapper for Capacitor
 
 Supports Android, iOS and Web <small>(*[see note #1](#notes)*)</small>
 
 [![Actions Status](https://github.com/zyra/capacitor-stripe/workflows/Build/badge.svg)](https://github.com/zyra/capacitor-stripe/actions)
-
-Apache Cordova version of this plugin can be found here: https://github.com/zyra/cordova-plugin-stripe
 
 ## Documentation
 https://zyra.github.io/capacitor-stripe
