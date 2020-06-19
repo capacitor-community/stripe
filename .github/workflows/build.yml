@@ -17,10 +17,6 @@ jobs:
         npm i
         npx lerna bootstrap
 
-    - name: Build Capacitor/Android
-      working-directory: ./packages/android
-      run: ./gradlew clean build -b capacitor/build.gradle -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true
-
     - name: Build Capacitor project
       working-directory: ./packages/plugin
       run: npm run build
@@ -43,3 +39,8 @@ jobs:
     - name: Build Android Debug APK
       working-directory: ./packages/test/android
       run: ./gradlew assembleDebug
+    
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./packages/test/android/app/build/outputs/apk/debug/app-debug.apk
