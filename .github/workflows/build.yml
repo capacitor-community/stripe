@@ -14,21 +14,21 @@ jobs:
 
     - name: Install node_modules
       run: |
-        npm i
+        npm ci
         npx lerna bootstrap
 
     - name: Build Capacitor project
       working-directory: ./packages/plugin
       run: npm run build
 
-    - name: Test web implementation
-      working-directory: ./packages/plugin
-      env:
-        STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
-        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      run: npm test
+    #- name: Test web implementation
+    #  working-directory: ./packages/plugin
+    #  env:
+    #    STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+    #    STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+    #  run: npm test
 
-    - name: Test Ionic app
+    - name: Build Ionic app
       working-directory: ./packages/test
       run: npm run build
 
