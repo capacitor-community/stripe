@@ -22,7 +22,7 @@ export interface CommonIntentOptions extends StripeAccountIdOpt {
    * If provided, the payment intent will be confirmed using this payment method
    */
   paymentMethodId?: string;
-  redirectUrl: string;
+  redirectUrl?: string;
 }
 
 export interface ConfirmSetupIntentOptions extends CommonIntentOptions {
