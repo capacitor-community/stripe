@@ -396,6 +396,11 @@ class Stripe : Plugin() {
     }
 
     @PluginMethod
+    fun isApplePayAvailable(call: PluginCall) {
+        call.resolve(JSObject().put("available", false))
+    }
+
+    @PluginMethod
     fun isGooglePayAvailable(call: PluginCall) {
         if (!ensurePluginInitialized(call)) {
             return
