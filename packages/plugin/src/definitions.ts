@@ -130,7 +130,7 @@ export type InitCustomerSessionParams = {
 
 export type PresentPaymentOptionsResponse = { useGooglePay?: boolean; useApplePay?: boolean; paymentMethod?: PaymentMethod; };
 
-type CustomerPaymentMethodsResponse = {
+export type CustomerPaymentMethodsResponse = {
   paymentMethods: PaymentMethod[]
 };
 

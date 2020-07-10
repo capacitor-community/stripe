@@ -13,10 +13,10 @@ import {
   ConfirmSetupIntentOptions,
   CreatePiiTokenOptions,
   CreateSourceTokenOptions,
+  CustomerPaymentMethodsResponse,
   FinalizeApplePayTransactionOptions,
   GooglePayOptions,
   IdentifyCardBrandOptions,
-  PaymentMethod,
   PresentPaymentOptionsResponse,
   SetPublishableKeyOptions,
   StripePlugin,
@@ -168,7 +168,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
       throw 'Apple Pay is not supported on web';
     }
 
-    if (opts.fromGooglePay) {
+    if (opts.googlePayOptions) {
       throw 'Google Pay is not supported on web';
     }
 
@@ -321,15 +321,15 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     };
   }
 
-  addCustomerSource(opts: { sourceId: string; type?: string }): Promise<void> {
+  addCustomerSource(opts: { sourceId: string; type?: string }): Promise<CustomerPaymentMethodsResponse> {
     return this.cs.addSrc(opts.sourceId);
   }
 
-  customerPaymentMethods(): Promise<{ paymentMethods: PaymentMethod[] }> {
+  customerPaymentMethods(): Promise<CustomerPaymentMethodsResponse> {
     return this.cs.listPm();
   }
 
-  deleteCustomerSource(opts: { sourceId: string }): Promise<void> {
+  deleteCustomerSource(opts: { sourceId: string }): Promise<CustomerPaymentMethodsResponse> {
     return undefined;
   }
 
@@ -339,7 +339,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     this.cs = new CustomerSession(opts);
   }
 
-  setCustomerDefaultSource(opts: { sourceId: string; type?: string }): Promise<void> {
+  setCustomerDefaultSource(opts: { sourceId: string; type?: string }): Promise<CustomerPaymentMethodsResponse> {
     return this.cs.setDefaultSrc(opts.sourceId);
   }
 }
@@ -355,7 +355,7 @@ class CustomerSession {
     this.customerId = key.associated_objects[0].id;
   }
 
-  async listPm(): Promise<{ paymentMethods: PaymentMethod[] }> {
+  async listPm(): Promise<CustomerPaymentMethodsResponse> {
     const res = await _stripeGet(`/v1/customers/${this.customerId}`, this.key.secret);
 
     return {
@@ -363,17 +363,21 @@ class CustomerSession {
     };
   }
 
-  addSrc(id: string): Promise<void> {
-    return _stripePost('/v1/customers/' + this.customerId, formBody({
+  async addSrc(id: string): Promise<CustomerPaymentMethodsResponse> {
+    await _stripePost('/v1/customers/' + this.customerId, formBody({
       source: id,
     }), this.key.secret);
+
+    return this.listPm();
   }
 
 
-  setDefaultSrc(id: string): Promise<void> {
-    return _stripePost('/v1/customers/' + this.customerId, formBody({
+  async setDefaultSrc(id: string): Promise<CustomerPaymentMethodsResponse> {
+    await _stripePost('/v1/customers/' + this.customerId, formBody({
       default_source: id,
     }), this.key.secret);
+
+    return await this.listPm();
   }
 }
 
