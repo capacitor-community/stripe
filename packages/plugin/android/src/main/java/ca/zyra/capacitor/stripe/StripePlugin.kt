@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import com.getcapacitor.*
-import com.google.android.gms.wallet.*
+import com.google.android.gms.wallet.AutoResolveHelper
+import com.google.android.gms.wallet.PaymentData
+import com.google.android.gms.wallet.PaymentDataRequest
 import com.stripe.android.*
 import com.stripe.android.model.*
 import com.stripe.android.view.BillingAddressFields
@@ -229,26 +231,89 @@ class Stripe : Plugin() {
             return
         }
 
-
         val legalEntity = call.getObject("legalEntity")
-        val businessType = call.getString("businessType")
         val tosShownAndAccepted = call.getBoolean("tosShownAndAccepted")
-        val bt = if (businessType == "company") AccountParams.BusinessType.Company else AccountParams.BusinessType.Individual
 
         val idempotencyKey = call.getString("idempotencyKey")
         val stripeAccountId = call.getString("stripeAccountId")
 
+        var address: Address? = null
 
-        val params = AccountParams.createAccountParams(tosShownAndAccepted!!, bt, jsonToHashMap(legalEntity))
+        if (legalEntity.has("address")) {
+            try {
+                val addressJson = legalEntity.getJSONObject("address")
+                address = Address.fromJson(addressJson)
+            } catch (err: JSONException) {
+                Log.w(TAG, "failed to parse address from legal entity object")
+                Log.w(TAG, err)
+                Log.w(TAG, "submitting request without an address")
+            }
+        }
+
+        var verifyFront: String? = null;
+        var verifyBack: String? = null;
+
+        if (legalEntity.has("verification")) {
+            val verifyObj = legalEntity.getJSObject("verification")
+            verifyFront = verifyObj.getString("front")
+            verifyBack = verifyObj.getString("back")
+        }
+
+        val params: AccountParams
+        val hasVerify = verifyFront != null || verifyBack != null
+
+        when (legalEntity.getString("businessType")) {
+            "company" -> {
+                val builder = AccountParams.BusinessTypeParams.Company.Builder()
+                        .setAddress(address)
+                        .setName(legalEntity.getString("name"))
+                        .setPhone(legalEntity.getString("phone"))
+
+                if (hasVerify) {
+                    val verifyDoc = AccountParams.BusinessTypeParams.Company.Document(verifyFront, verifyBack)
+                    val verify = AccountParams.BusinessTypeParams.Company.Verification(verifyDoc)
+                    builder.setVerification(verify)
+                }
+
+                params = AccountParams.create(tosShownAndAccepted, builder.build())
+                Log.d(TAG, "preparing account params for company")
+            }
+            "individual" -> {
+                val builder = AccountParams.BusinessTypeParams.Individual.Builder()
+                        .setFirstName(legalEntity.getString("first_name"))
+                        .setLastName(legalEntity.getString("last_name"))
+                        .setEmail(legalEntity.getString("email"))
+                        .setGender(legalEntity.getString("gender"))
+                        .setIdNumber(legalEntity.getString("id_number"))
+                        .setPhone(legalEntity.getString("phone"))
+                        .setSsnLast4(legalEntity.getString("ssn_last4"))
+                        .setAddress(address)
+
+                if (hasVerify) {
+                    val verifyDoc = AccountParams.BusinessTypeParams.Individual.Document(verifyFront, verifyBack)
+                    val verify = AccountParams.BusinessTypeParams.Individual.Verification(verifyDoc)
+                    builder.setVerification(verify)
+                }
+
+                params = AccountParams.create(tosShownAndAccepted, builder.build())
+                Log.d(TAG, "preparing account params for individual")
+            }
+            else -> {
+                params = AccountParams.create(tosShownAndAccepted)
+                Log.d(TAG, "preparing account param with no no details other than acceptance")
+            }
+        }
 
         val callback = object : ApiResultCallback<Token> {
             override fun onSuccess(result: Token) {
+                Log.d(TAG, "account token was successfully created")
                 val res = JSObject()
                 res.putOpt("token", result.id)
                 call.success(res)
             }
 
             override fun onError(e: Exception) {
+                Log.d(TAG, "failed to create account token")
                 call.error("unable to create account token: " + e.localizedMessage, e)
             }
         }
