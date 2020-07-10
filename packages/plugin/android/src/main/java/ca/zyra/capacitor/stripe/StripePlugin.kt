@@ -262,7 +262,6 @@ class Stripe : Plugin() {
             return
         }
 
-
         val pii = call.getString("pii")
         val idempotencyKey = call.getString("idempotencyKey")
         val stripeAccountId = call.getString("stripeAccountId")
@@ -295,7 +294,7 @@ class Stripe : Plugin() {
 
         when {
             call.hasOption("card") -> {
-                val cb = buildCard(call.getObject("card")) // TODO fix this, we need to pass call.getObject(card)xs
+                val cb = buildCard(call.getObject("card")) // TODO fix this, we need to pass call.getObject(card)
                 val cardParams = cb.build().toPaymentMethodParamsCard()
                 val pmCreateParams = PaymentMethodCreateParams.create(cardParams)
                 params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod!!)
@@ -406,29 +405,10 @@ class Stripe : Plugin() {
             return
         }
 
-        val paymentsClient = Wallet.getPaymentsClient(
-                context,
-                Wallet.WalletOptions.Builder()
-                        .setEnvironment(if (isTest) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION)
-                        .build()
-        )
+        val env = GetGooglePayEnv(isTest)
+        val paymentsClient = GooglePayPaymentsClient(context, env)
+        val req = GooglePayDummyRequest()
 
-        val allowedAuthMethods = JSArray()
-        allowedAuthMethods.put("PAN_ONLY")
-        allowedAuthMethods.put("CRYPTOGRAM_3DS")
-
-        val allowedCardNetworks = JSArray()
-        allowedCardNetworks.put("AMEX")
-        allowedCardNetworks.put("DISCOVER")
-        allowedCardNetworks.put("JCB")
-        allowedCardNetworks.put("MASTERCARD")
-        allowedCardNetworks.put("VISA")
-
-        val isReadyToPayRequestJson = JSObject()
-        isReadyToPayRequestJson.putOpt("allowedAuthMethods", allowedAuthMethods)
-        isReadyToPayRequestJson.putOpt("allowedCardNetworks", allowedCardNetworks)
-
-        val req = IsReadyToPayRequest.fromJson(isReadyToPayRequestJson.toString())
         paymentsClient.isReadyToPay(req)
                 .addOnCompleteListener { task ->
                     val obj = JSObject()
@@ -444,87 +424,20 @@ class Stripe : Plugin() {
         }
 
         val opts = call.getObject("googlePayOptions")
+        val env = GetGooglePayEnv(isTest)
 
-        val isTest = this.isTest
-        val env = if (isTest) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION
+        Log.d(TAG, "payWithGooglePay :: [Testing = $isTest] :: [ENV = $env]")
 
-        Log.d(TAG, "payWithGooglePay | isTest: " + (if (isTest) "TRUE" else "FALSE") + " | env: " + if (env == WalletConstants.ENVIRONMENT_TEST) "TEST" else "PROD")
-
-        val paymentsClient = Wallet.getPaymentsClient(
-                context,
-                Wallet.WalletOptions.Builder()
-                        .setEnvironment(env)
-                        .build()
-        )
+        val paymentsClient = GooglePayPaymentsClient(context, env)
 
         try {
-            // PAN_ONLY, CRYPTOGRAM_3DS
-            val merchantName = opts.getString("merchantName")
+            val paymentDataReq = GooglePayDataReq(publishableKey, opts)
 
-            val totalPrice = opts.getString("totalPrice")
-            val totalPriceStatus = opts.getString("totalPriceStatus")
-            val totalPriceLabel = opts.getString("totalPriceLabel")
-            val checkoutOption = opts.getString("checkoutOption")
-            val transactionId = opts.getString("transactionId")
-            val currencyCode = opts.getString("currencyCode")
-            val countryCode = opts.getString("countryCode")
-
-            val authMethods = opts.getJSONArray("allowedAuthMethods")
-            val cardNetworks = opts.getJSONArray("allowedCardNetworks")
-
-            val allowPrepaidCards = opts.getBoolean("allowPrepaidCards", true)
-            val emailRequired = opts.getBoolean("emailRequired", false)
-            val billingAddressRequired = opts.getBoolean("billingAddressRequired", false)
-
-            val shippingAddressRequired = opts.getBoolean("shippingAddressRequired", false)
-
-            val billingAddressParams = opts.getJSObject("billingAddressParams", JSObject())
-            val shippingAddressParams = opts.getJSObject("shippingAddressParameters", JSObject())
-
-            val params = JSObject()
-                    .putOpt("allowedAuthMethods", authMethods)
-                    .putOpt("allowedCardNetworks", cardNetworks)
-                    .putOpt("billingAddressRequired", billingAddressRequired)
-                    .putOpt("allowPrepaidCards", allowPrepaidCards)
-                    .putOpt("billingAddressParameters", billingAddressParams)
-
-            val tokenizationSpec = GooglePayConfig(publishableKey).tokenizationSpecification
-
-            val cardPaymentMethod = JSObject()
-                    .putOpt("type", "CARD")
-                    .putOpt("parameters", params)
-                    .putOpt("tokenizationSpecification", tokenizationSpec)
-
-            val txInfo = JSObject()
-            txInfo.putOpt("currencyCode", currencyCode)
-            txInfo.putOpt("countryCode", countryCode)
-            txInfo.putOpt("transactionId", transactionId)
-            txInfo.putOpt("totalPriceStatus", totalPriceStatus)
-            txInfo.putOpt("totalPrice", totalPrice)
-            txInfo.putOpt("totalPriceLabel", totalPriceLabel)
-            txInfo.putOpt("checkoutOption", checkoutOption)
-
-            val paymentDataReq = JSObject()
-                    .putOpt("apiVersion", 2)
-                    .putOpt("apiVersionMinor", 0)
-                    .putOpt("allowedPaymentMethods", JSArray().put(cardPaymentMethod))
-                    .putOpt("transactionInfo", txInfo)
-                    .putOpt("emailRequired", emailRequired)
-
-            if (merchantName != null) {
-                paymentDataReq.putOpt("merchantInfo", JSObject().putOpt("merchantName", merchantName))
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "payWithGooglePay :: [payment data = $paymentDataReq]")
             }
 
-            if (shippingAddressRequired!!) {
-                paymentDataReq.putOpt("shippingAddressRequired", true)
-                paymentDataReq.putOpt("shippingAddressParameters", shippingAddressParams)
-            }
-
-            val paymentDataReqStr = paymentDataReq.toString()
-
-            Log.d(TAG, "payment data is: $paymentDataReqStr")
-
-            val req = PaymentDataRequest.fromJson(paymentDataReqStr)
+            val req = PaymentDataRequest.fromJson(paymentDataReq)
 
             AutoResolveHelper.resolveTask(
                     paymentsClient.loadPaymentData(req),
@@ -546,8 +459,7 @@ class Stripe : Plugin() {
         }
 
         try {
-            val stripeAccountId = call.getString("stripeAccountId")
-            CustomerSession.initCustomerSession(context, EphKeyProvider(call.data.toString()), stripeAccountId)
+            CustomerSession.initCustomerSession(context, EphKeyProvider(call.data.toString()), true)
             customerSession = CustomerSession.getInstance()
 
             call.resolve()
@@ -681,10 +593,15 @@ class Stripe : Plugin() {
      * @return {boolean} returns true if the plugin is ready
      */
     private fun ensurePluginInitialized(call: PluginCall): Boolean {
+        Log.d(TAG, "checking if plugin was initialized")
+
         if (!::stripeInstance.isInitialized) {
+            Log.d(TAG, "plugin was not initialized, ending capacitor call here")
             call.error("you must call setPublishableKey to initialize the plugin before calling this method")
             return false
         }
+
+        Log.d(TAG, "plugin is initialized")
 
         return true
     }
