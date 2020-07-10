@@ -11,6 +11,9 @@ name: publish-docs
 clone:
   depth: 1
 
+image_pull_secrets:
+- zm_git_docker_public
+
 steps:
 - name: Generate docs
   image: docker.pkg.github.com/zyra/zmdocs/zmdocs:v1.1.1
@@ -33,6 +36,6 @@ steps:
     pages_directory: docs
 ---
 kind: signature
-hmac: c04616ba250107cfac1a2f3552c4df1350cf00e09f4a1e60a786a1b1e52a9932
+hmac: ee12c4bc40522482cb0c1cac667ba5ab8faba67e031865d75c96632ae29c41ae
 
 ...
