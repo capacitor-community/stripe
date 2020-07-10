@@ -180,7 +180,8 @@ internal func cardParams(fromCall: CAPPluginCall) -> STPCardParams {
         "exp_month": fromCall.getString("exp_month"),
         "exp_year": fromCall.getString("exp_year"),
         "name": fromCall.getString("name"),
-        "currency": fromCall.getString("currency")
+        "currency": fromCall.getString("currency"),
+        "country": fromCall.getString("country")
     ]
 
     if c["exp_month"] == nil, fromCall.hasOption("exp_month"), let em = fromCall.getInt("exp_month") {
@@ -256,4 +257,74 @@ internal func applePayOpts(call: CAPPluginCall) throws -> PKPaymentRequest {
     }
 
     return try applePayOpts(obj: obj!)
+}
+
+internal func pmCardToJSON(c: STPPaymentMethodCard) -> [String: Any] {
+    var cval: [String: Any] = [
+        "brand": brandToStr(c.brand),
+        "exp_month": c.expMonth,
+        "exp_year": c.expYear,
+    ]
+
+    if let c = c.country {
+        cval["country"] = c
+    }
+
+    if let f = c.funding {
+        cval["funding"] = f
+    }
+
+    if let l = c.last4 {
+        cval["last4"] = l
+    }
+
+    if let t = c.threeDSecureUsage {
+        cval["three_d_secure_usage"] = [
+            "supported": t.supported
+        ]
+    }
+    
+    return cval
+}
+
+internal func pmToJSON(m: STPPaymentMethod) -> [String: Any] {
+    var val: [String: Any] = [
+        "id": m.stripeId,
+        "livemode": m.liveMode,
+        "type": pmTypeToStr(m.type),
+    ]
+
+    if let cid = m.customerId {
+        val["customerId"] = cid
+    }
+
+    if let c = m.created {
+        val["created"] = c.timeIntervalSince1970
+    }
+    
+    if let c = m.card {
+        val["card"] = pmCardToJSON(c: c)
+    }
+
+    return val
+}
+
+internal func makeBankAccountParams(call: [AnyHashable: Any]!) -> STPBankAccountParams {
+    let params = STPBankAccountParams()
+    
+    params.accountNumber = call["account_number"] as? String ?? ""
+    params.country = call["country"] as? String ?? ""
+    params.currency = call["currency"] as? String ?? ""
+    params.routingNumber = call["routing_number"] as? String ?? ""
+    params.accountHolderName = call["account_holder_name"] as? String ?? ""
+        
+    let accountHolderType = call["account_holder_type"] as? String ?? ""
+    
+    if accountHolderType == "individual" {
+        params.accountHolderType = STPBankAccountHolderType.individual
+    } else if accountHolderType == "company" {
+        params.accountHolderType = STPBankAccountHolderType.company
+    }
+    
+    return params
 }
