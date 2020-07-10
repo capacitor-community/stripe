@@ -19,8 +19,8 @@ class Stripe : Plugin() {
     private lateinit var stripeInstance: Stripe2
     private lateinit var publishableKey: String
     private var isTest = true
-    private var googlePayPaymentData: PaymentData? = null
     private var customerSession: CustomerSession? = null
+    private var googlePayCallback: GooglePayCallback? = null
 
     @PluginMethod
     fun setPublishableKey(call: PluginCall) {
@@ -354,6 +354,7 @@ class Stripe : Plugin() {
         val clientSecret = call.getString("clientSecret")
         val saveMethod = call.getBoolean("saveMethod", false)
         val redirectUrl = call.getString("redirectUrl", null)
+        val stripeAccountId = call.getString("stripeAccountId")
 
         val params: ConfirmPaymentIntentParams
 
@@ -373,25 +374,34 @@ class Stripe : Plugin() {
                 params = ConfirmPaymentIntentParams.createWithSourceId(call.getString("sourceId"), clientSecret, redirectUrl, saveMethod!!)
             }
 
-            call.getBoolean("fromGooglePay", false)!! -> {
-                try {
-                    if (googlePayPaymentData == null) {
-                        call.error("you must successfully call payWithGooglePay first before confirming a payment intent using Google Pay")
-                        return
+            call.hasOption("googlePayOptions") -> {
+                val opts = call.getObject("googlePayOptions")
+                val cb = object : GooglePayCallback() {
+                    override fun onSuccess(res: JSObject) {
+                        try {
+                            val pmParams = PaymentMethodCreateParams.createFromGooglePay(res)
+                            val confirmParams = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmParams, clientSecret, redirectUrl, saveMethod)
+                            stripeInstance.confirmPayment(activity, confirmParams, stripeAccountId)
+                        } catch (e: JSONException) {
+                            savedCall?.error("unable to parse json: " + e.localizedMessage, e)
+                            freeSavedCall()
+                        }
                     }
 
-                    val js = googlePayPaymentData!!.toJson()
-                    val gpayObj = JSObject(js)
+                    override fun onError(err: Exception) {
+                        savedCall?.error(err.localizedMessage, err)
+                        freeSavedCall()
+                    }
 
-                    googlePayPaymentData = null
-
-                    val pmcp = PaymentMethodCreateParams.createFromGooglePay(gpayObj)
-                    params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmcp, clientSecret, redirectUrl, saveMethod!!)
-                } catch (e: JSONException) {
-                    call.error("unable to parse json: " + e.localizedMessage, e)
-                    return
                 }
+                saveCall(call)
+                processGooglePayTx(opts, cb)
+                return
+            }
 
+            call.hasOption("applePayOptions") -> {
+                call.error("ApplePay is not supported on Android")
+                return
             }
 
             else -> {
@@ -399,7 +409,6 @@ class Stripe : Plugin() {
             }
         }
 
-        val stripeAccountId = call.getString("stripeAccountId")
 
         stripeInstance.confirmPayment(activity, params, stripeAccountId)
         saveCall(call)
@@ -489,33 +498,18 @@ class Stripe : Plugin() {
         }
 
         val opts = call.getObject("googlePayOptions")
-        val env = GetGooglePayEnv(isTest)
 
-        Log.d(TAG, "payWithGooglePay :: [Testing = $isTest] :: [ENV = $env]")
-
-        val paymentsClient = GooglePayPaymentsClient(context, env)
-
-        try {
-            val paymentDataReq = GooglePayDataReq(publishableKey, opts)
-
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "payWithGooglePay :: [payment data = $paymentDataReq]")
+        val cb = object : GooglePayCallback() {
+            override fun onSuccess(res: JSObject) {
+                call.resolve(res)
             }
 
-            val req = PaymentDataRequest.fromJson(paymentDataReq)
-
-            AutoResolveHelper.resolveTask(
-                    paymentsClient.loadPaymentData(req),
-                    activity,
-                    LOAD_PAYMENT_DATA_REQUEST_CODE
-            )
-
-            saveCall(call)
-        } catch (e: JSONException) {
-            Log.e(TAG, "Failed to parse json object", e)
-            call.error("Failed to parse JSON object", e)
+            override fun onError(err: Exception) {
+                call.error(err.localizedMessage, err)
+            }
         }
 
+        processGooglePayTx(opts, cb)
     }
 
     @PluginMethod
@@ -682,58 +676,50 @@ class Stripe : Plugin() {
 
     private fun handleGooglePayActivityResult(resultCode: Int, data: Intent?) {
         Log.v(TAG, "handleGooglePayActivityResult called with resultCode: $resultCode")
-        val googlePayCall = savedCall
 
-        if (googlePayCall == null) {
-            Log.e(TAG, "no saved PluginCall was found")
+        if (googlePayCallback == null) {
+            Log.e(TAG, "GooglePay :: got a result but there is no callback saved")
             return
         }
+
+        val cb = googlePayCallback!!
+        googlePayCallback = null
 
         when (resultCode) {
             Activity.RESULT_OK -> {
                 if (data == null) {
-                    googlePayCall.error("an unexpected error occurred")
-                    Log.e(TAG, "data is null")
+                    Log.e(TAG, "GooglePay :: result was ok but data was null")
+                    cb.onError(Exception("unexpected error occurred"))
                     return
                 }
 
                 val paymentData = PaymentData.getFromIntent(data)
 
                 if (paymentData == null) {
-                    Log.e(TAG, "paymentData is null")
-                    googlePayCall.error("an unexpected error occurred")
+                    Log.e(TAG, "GooglePay :: result was ok but PaymentData was null")
+                    cb.onError(Exception("unexpected error occurred"))
                     return
                 }
 
-                googlePayPaymentData = paymentData
                 val tokenJs = JSObject(paymentData.toJson())
                 val resJs = JSObject()
+
                 resJs.put("success", true)
                 resJs.put("token", tokenJs)
-                googlePayCall.resolve(resJs)
+
+                cb.onSuccess(resJs)
             }
 
             Activity.RESULT_CANCELED, AutoResolveHelper.RESULT_ERROR -> {
                 val status = AutoResolveHelper.getStatusFromIntent(data)
-                val obj = JSObject()
 
                 if (status != null) {
-                    obj.putOpt("canceled", status.isCanceled)
-                    obj.putOpt("interrupted", status.isInterrupted)
-                    obj.putOpt("success", status.isSuccess)
-                    obj.putOpt("code", status.statusCode)
-                    obj.putOpt("message", status.statusMessage)
-                    obj.putOpt("resolution", status.resolution)
+                    cb.onError(Exception(status.statusMessage))
                 } else {
-                    obj.putOpt("canceled", true)
+                    cb.onError(Exception("transaction was cancelled"))
                 }
-
-                googlePayCall.resolve(obj)
             }
         }
-
-
-        freeSavedCall()
     }
 
     override fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -811,5 +797,34 @@ class Stripe : Plugin() {
 
         stripeInstance.onPaymentResult(requestCode, data, paymentResultCallback)
         stripeInstance.onSetupResult(requestCode, data, setupResultCallback)
+    }
+
+    private fun processGooglePayTx(opts: JSObject, callback: GooglePayCallback) {
+        val env = GetGooglePayEnv(isTest)
+
+        Log.d(TAG, "initGooglePay :: [Testing = $isTest] :: [ENV = $env]")
+
+        val paymentsClient = GooglePayPaymentsClient(context, env)
+
+        try {
+            val paymentDataReq = GooglePayDataReq(publishableKey, opts)
+
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "initGooglePay :: [payment data = $paymentDataReq]")
+            }
+
+            val req = PaymentDataRequest.fromJson(paymentDataReq)
+
+            googlePayCallback = callback
+
+            AutoResolveHelper.resolveTask(
+                    paymentsClient.loadPaymentData(req),
+                    activity,
+                    LOAD_PAYMENT_DATA_REQUEST_CODE
+            )
+        } catch (e: JSONException) {
+            Log.e(TAG, "Failed to parse json object", e)
+            callback.onError(e)
+        }
     }
 }

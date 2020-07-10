@@ -22,17 +22,20 @@ export type IdempotencyKeyOpt = {
 
 export interface CommonIntentOptions extends StripeAccountIdOpt {
   clientSecret: string;
+
   /**
    * If provided, the payment intent will be confirmed using this card as a payment method.
    */
   card?: CardTokenRequest;
+
   /**
    * If provided, the payment intent will be confirmed using this payment method
    */
   paymentMethodId?: string;
+
   /**
    * Optional
-   * Used on Android only
+   * Used for Webview based 3DS authentication
    */
   redirectUrl?: string;
 }
@@ -46,17 +49,16 @@ export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
    * Whether you intend to save the payment method to the customer's account after this payment
    */
   saveMethod?: boolean;
+
   /**
-   * If provided, the payment intent will be confirmed using a card provided by Apple Pay
+   * If provided, the payment intent will be confirmed using Apple Pay
    */
   applePayOptions?: ApplePayOptions;
 
   /**
-   * If set to true, it will use the saved Google Pay token to confirm this payment intent.
-   * A successful `payWithGooglePay` must have been called prior to this.
-   * Each successful `payWithGooglePay` call generates a token that can be used once only.
+   * If provided, the payment intent will be confirmed using Google Pay
    */
-  fromGooglePay?: boolean;
+  googlePayOptions?: GooglePayOptions;
 }
 
 export type SetPublishableKeyOptions = {
