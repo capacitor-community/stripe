@@ -535,19 +535,15 @@ class Stripe : Plugin() {
 
     @PluginMethod
     fun customerPaymentMethods(call: PluginCall) {
-        if (!ensurePluginInitialized(call)) {
-            return
-        }
-
-        val cs = customerSession
-
-        if (cs == null) {
-            call.reject("you must call initCustomerSession first")
+        if (customerSession == null) {
+            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
             return
         }
 
         val callback = object : PaymentMethodsCallback() {
             override fun onSuccess(paymentMethods: List<PaymentMethod>) {
+                Log.d(TAG, "Retrieved customer payment methods successfully")
+
                 val arr = JSArray()
 
                 for (pm in paymentMethods) {
@@ -560,33 +556,35 @@ class Stripe : Plugin() {
             }
 
             override fun onError(err: Exception) {
+                Log.e(TAG, "Failed to retrieve customer payment methods", err)
                 call.reject(err.localizedMessage, err)
             }
         }
 
-        val l = StripePaymentMethodsListener(callback = callback)
-
-        cs.getPaymentMethods(PaymentMethod.Type.Card, l)
+        customerSession!!.getPaymentMethods(
+                PaymentMethod.Type.Card,
+                StripePaymentMethodsListener(callback = callback)
+        )
     }
 
     @PluginMethod
     fun setCustomerDefaultSource(call: PluginCall) {
         if (customerSession == null) {
-            call.reject("you must call initCustomerSession first")
+            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
             return
         }
 
         val sourceId = call.getString("sourceId")
         val type = call.getString("type", "card")
 
-        if (sourceId == null) {
-            call.reject("you must provide a sourceId")
+        if (sourceId == null || sourceId.isEmpty()) {
+            call.reject("You must provide a value for sourceId")
             return
         }
 
         customerSession!!.setCustomerDefaultSource(sourceId, type, object : CustomerSession.CustomerRetrievalListener {
             override fun onCustomerRetrieved(customer: Customer) {
-                call.success()
+                customerPaymentMethods(call)
             }
 
             override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
@@ -598,7 +596,7 @@ class Stripe : Plugin() {
     @PluginMethod
     fun addCustomerSource(call: PluginCall) {
         if (customerSession == null) {
-            call.reject("you must call initCustomerSession first")
+            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
             return
         }
 
@@ -612,7 +610,7 @@ class Stripe : Plugin() {
 
         val listener = object : CustomerSession.SourceRetrievalListener {
             override fun onSourceRetrieved(source: Source) {
-                call.success()
+                customerPaymentMethods(call)
             }
 
             override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
@@ -626,7 +624,7 @@ class Stripe : Plugin() {
     @PluginMethod
     fun deleteCustomerSource(call: PluginCall) {
         if (customerSession == null) {
-            call.reject("you must call initCustomerSession first")
+            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
             return
         }
 
@@ -639,7 +637,7 @@ class Stripe : Plugin() {
 
         val listener = object : CustomerSession.SourceRetrievalListener {
             override fun onSourceRetrieved(source: Source) {
-                call.success()
+                customerPaymentMethods(call)
             }
 
             override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {

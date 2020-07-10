@@ -11,6 +11,7 @@ internal const val LOAD_PAYMENT_DATA_REQUEST_CODE = 9972
 internal const val STRIPE_PAYMENT_METHODS_REQ_CODE = 6000
 internal const val STRIPE_GOOGLE_PAY_REQUEST_CODE = 50000
 internal const val TAG = "Capacitor:StripePlugin"
+internal const val ERR_NO_ACTIVE_CUSTOMER_SESSION = "No active customer session was found. You must create one by calling initCustomerSession."
 
 internal fun buildCard(call: JSObject): Card.Builder {
     val builder = Card.Builder(
