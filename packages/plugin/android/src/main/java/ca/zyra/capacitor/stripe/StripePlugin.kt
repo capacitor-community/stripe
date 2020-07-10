@@ -512,7 +512,8 @@ class Stripe : Plugin() {
 
             saveCall(call)
         } catch (e: JSONException) {
-            call.error("json parsing error: " + e.localizedMessage, e)
+            Log.e(TAG, "Failed to parse json object", e)
+            call.error("Failed to parse JSON object", e)
         }
 
     }
@@ -535,8 +536,7 @@ class Stripe : Plugin() {
 
     @PluginMethod
     fun customerPaymentMethods(call: PluginCall) {
-        if (customerSession == null) {
-            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
+        if (!ensureCustomerSessionInitialized(call)) {
             return
         }
 
@@ -569,8 +569,7 @@ class Stripe : Plugin() {
 
     @PluginMethod
     fun setCustomerDefaultSource(call: PluginCall) {
-        if (customerSession == null) {
-            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
+        if (!ensureCustomerSessionInitialized(call)) {
             return
         }
 
@@ -595,8 +594,7 @@ class Stripe : Plugin() {
 
     @PluginMethod
     fun addCustomerSource(call: PluginCall) {
-        if (customerSession == null) {
-            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
+        if (!ensureCustomerSessionInitialized(call)) {
             return
         }
 
@@ -623,8 +621,7 @@ class Stripe : Plugin() {
 
     @PluginMethod
     fun deleteCustomerSource(call: PluginCall) {
-        if (customerSession == null) {
-            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
+        if (!ensureCustomerSessionInitialized(call)) {
             return
         }
 
@@ -660,11 +657,25 @@ class Stripe : Plugin() {
 
         if (!::stripeInstance.isInitialized) {
             Log.d(TAG, "plugin was not initialized, ending capacitor call here")
-            call.error("you must call setPublishableKey to initialize the plugin before calling this method")
+            call.error(ERR_STRIPE_NOT_INITIALIZED)
             return false
         }
 
         Log.d(TAG, "plugin is initialized")
+
+        return true
+    }
+
+    private fun ensureCustomerSessionInitialized(call: PluginCall): Boolean {
+        Log.d(TAG, "checking if customer session was initialized")
+
+        if (customerSession == null) {
+            Log.d(TAG, "customer session was not initialized, ending capacitor call here")
+            call.reject(ERR_NO_ACTIVE_CUSTOMER_SESSION)
+            return false
+        }
+
+        Log.d(TAG, "customer session is initialized")
 
         return true
     }
