@@ -14,7 +14,7 @@ internal const val TAG = "Capacitor:StripePlugin"
 internal const val ERR_NO_ACTIVE_CUSTOMER_SESSION = "No active customer session was found. You must create one by calling initCustomerSession."
 internal const val ERR_STRIPE_NOT_INITIALIZED = "This method requires authenticated access to the Stripe client. You must initialize it by calling setPublishableKey with a valid key."
 
-internal fun buildCard(call: JSObject): Card.Builder {
+internal fun buildCard(call: JSONObject): Card.Builder {
     val builder = Card.Builder(
             call.optString("number"),
             call.optInt("exp_month"),
@@ -23,14 +23,15 @@ internal fun buildCard(call: JSObject): Card.Builder {
     )
 
     return builder
-            .name(call.optString("value"))
+            .name(call.optString("name"))
             .addressLine1(call.optString("address_line1"))
             .addressLine2(call.optString("address_line2"))
             .addressCity(call.optString("address_city"))
             .addressState(call.optString("address_state"))
             .addressZip(call.optString("address_zip"))
-            .country(call.optString("address_country"))
+            .addressCountry(call.optString("address_country"))
             .currency(call.optString("currency"))
+            .addressCountry(call.optString("country"))
 }
 
 internal fun cardToJSON(card: Card): JSObject {
