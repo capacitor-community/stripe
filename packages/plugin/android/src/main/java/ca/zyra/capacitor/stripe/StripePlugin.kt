@@ -35,7 +35,7 @@ class Stripe : Plugin() {
             stripeInstance = Stripe2(context, key)
             publishableKey = key
             isTest = key.contains("test")
-
+            PaymentConfiguration.init(context, key)
             call.success()
         } catch (e: Exception) {
             call.error("unable to set publishable key: " + e.localizedMessage, e)
@@ -377,9 +377,9 @@ class Stripe : Plugin() {
             call.hasOption("googlePayOptions") -> {
                 val opts = call.getObject("googlePayOptions")
                 val cb = object : GooglePayCallback() {
-                    override fun onSuccess(res: JSObject) {
+                    override fun onSuccess(res: PaymentData) {
                         try {
-                            val pmParams = PaymentMethodCreateParams.createFromGooglePay(res)
+                            val pmParams = PaymentMethodCreateParams.createFromGooglePay(JSObject(res.toJson()))
                             val confirmParams = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmParams, clientSecret, redirectUrl, saveMethod)
                             stripeInstance.confirmPayment(activity, confirmParams, stripeAccountId)
                         } catch (e: JSONException) {
@@ -500,8 +500,13 @@ class Stripe : Plugin() {
         val opts = call.getObject("googlePayOptions")
 
         val cb = object : GooglePayCallback() {
-            override fun onSuccess(res: JSObject) {
-                call.resolve(res)
+            override fun onSuccess(res: PaymentData) {
+                val tokenJs = JSObject(res.toJson())
+                val resJs = JSObject()
+
+                resJs.put("success", true)
+                resJs.put("token", tokenJs)
+                call.resolve(resJs)
             }
 
             override fun onError(err: Exception) {
@@ -701,13 +706,7 @@ class Stripe : Plugin() {
                     return
                 }
 
-                val tokenJs = JSObject(paymentData.toJson())
-                val resJs = JSObject()
-
-                resJs.put("success", true)
-                resJs.put("token", tokenJs)
-
-                cb.onSuccess(resJs)
+                cb.onSuccess(paymentData)
             }
 
             Activity.RESULT_CANCELED, AutoResolveHelper.RESULT_ERROR -> {

@@ -51,7 +51,7 @@ internal fun GooglePayCardParams(opts: JSObject): JSONObject {
     val cardNetworks = opts.getJSONArray("allowedCardNetworks")
     val allowPrepaidCards = opts.getBoolean("allowPrepaidCards", true)
     val billingAddressRequired = opts.getBoolean("billingAddressRequired", false)
-    val billingAddressParams = opts.getJSObject("billingAddressParams", JSObject())
+    val billingAddressParams = opts.getJSObject("billingAddressParameters", JSObject())
 
     return JSObject()
             .putOpt("allowedAuthMethods", authMethods)
@@ -103,7 +103,7 @@ internal fun GooglePayDataReq(publishableKey: String, opts: JSObject): String {
             .putOpt("transactionInfo", txInfo)
             .putOpt("emailRequired", emailRequired)
 
-    if (merchantName != null) {
+    if (merchantName != null && merchantName.isNotEmpty()) {
         req.putOpt(
                 "merchantInfo",
                 JSObject().putOpt("merchantName", merchantName)

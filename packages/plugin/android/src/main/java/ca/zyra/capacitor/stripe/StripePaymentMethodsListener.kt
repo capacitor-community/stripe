@@ -1,6 +1,6 @@
 package ca.zyra.capacitor.stripe
 
-import com.getcapacitor.JSObject
+import com.google.android.gms.wallet.PaymentData
 import com.stripe.android.CustomerSession
 import com.stripe.android.StripeError
 import com.stripe.android.model.PaymentMethod
@@ -11,7 +11,7 @@ internal abstract class PaymentMethodsCallback {
 }
 
 internal abstract class GooglePayCallback {
-    abstract fun onSuccess(res: JSObject)
+    abstract fun onSuccess(res: PaymentData)
     abstract fun onError(err: Exception)
 }
 

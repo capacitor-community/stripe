@@ -134,6 +134,27 @@ export type CustomerPaymentMethodsResponse = {
   paymentMethods: PaymentMethod[]
 };
 
+export interface ConfirmSetupIntentResponse {
+  /**
+   * Unix timestamp representing creation time
+   */
+  created: number;
+  /**
+   * Setup intent ID
+   */
+  id: string;
+  /**
+   * Whether the setup intent was created in live mode
+   */
+  isLiveMode: boolean;
+  /**
+   * Payment method ID
+   */
+  paymentMethodId: string;
+  status: string;
+  usage: string;
+}
+
 export interface StripePlugin {
   /* Core */
   setPublishableKey(opts: SetPublishableKeyOptions): Promise<void>;
@@ -145,7 +166,7 @@ export interface StripePlugin {
   /* Payment Intents */
   confirmPaymentIntent(opts: ConfirmPaymentIntentOptions): Promise<void>;
 
-  confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<void>;
+  confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<ConfirmSetupIntentResponse>;
 
   /* Apple Pay */
   payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<TokenResponse>;
@@ -247,30 +268,36 @@ export interface BankAccount {
 }
 
 export interface Card {
-  id: string;
-  object: string;
-  address_city: any;
-  address_country: any;
-  address_line1: any;
-  address_line1_check: any;
-  address_line2: any;
-  address_state: any;
-  address_zip: any;
-  address_zip_check: any;
+  /**
+   * Id exists for cards but not payment methods
+   */
+  id?: string;
   brand: CardBrand;
   country: string;
   cvc_check: any;
-  dynamic_last4: any;
+  three_d_secure_usage?: {
+    supported: boolean;
+  }
+  last4: string;
+  funding?: string;
   exp_month: number;
   exp_year: number;
-  fingerprint: string;
-  funding: string;
-  last4: string;
-  metadata: any;
-  name: any;
-  tokenization_method: any;
-  phone: string;
-  email: string;
+  object?: string;
+  address_city?: string;
+  address_country?: string;
+  address_line1?: string;
+  address_line1_check?: string;
+  address_line2?: string;
+  address_state?: string;
+  address_zip?: string;
+  address_zip_check?: string;
+  dynamic_last4: any;
+  fingerprint?: string;
+  metadata?: any;
+  name?: string;
+  tokenization_method?: string;
+  phone?: string;
+  email?: string;
 }
 
 export interface BankAccountTokenRequest extends StripeAccountIdOpt, IdempotencyKeyOpt {
@@ -380,7 +407,7 @@ export interface GooglePayOptions {
   /**
    * Total monetary value of the transaction with an optional decimal precision of two decimal places.
    */
-  totalPrice: number;
+  totalPrice: string;
   /**
    * The status of the total price used
    */
@@ -392,7 +419,7 @@ export interface GooglePayOptions {
   /**
    * Affects the submit button text displayed in the Google Pay payment sheet.
    */
-  checkoutOption?: string;
+  checkoutOption?: 'DEFAULT' | 'COMPLETE_IMMEDIATE_PURCHASE';
   /**
    * A unique ID that identifies a transaction attempt.
    * Merchants may use an existing ID or generate a specific one for Google Pay transaction attempts.
@@ -413,10 +440,12 @@ export interface GooglePayOptions {
    * Fields supported to authenticate a card transaction.
    */
   allowedAuthMethods: GooglePayAuthMethod[];
+
   /**
    * One or more card networks that you support, also supported by the Google Pay API.
    */
-  allowedCardNetworks: CardBrand[];
+  allowedCardNetworks: Array<'AMEX' | 'DISCOVER' | 'INTERAC' | 'JCB' | 'MASTERCARD' | 'VISA'>;
+
   /**
    * Set to false if you don't support prepaid cards.
    * Default: The prepaid card class is supported for the card networks specified.
@@ -561,14 +590,14 @@ export enum SourceType {
 }
 
 export enum CardBrand {
-  AMERICAN_EXPRESS = 'AMERICAN_EXPRESS',
-  DISCOVER = 'DISCOVER',
+  AMERICAN_EXPRESS = 'American Express',
+  DISCOVER = 'Discover',
   JCB = 'JCB',
-  DINERS_CLUB = 'DINERS_CLUB',
-  VISA = 'VISA',
-  MASTERCARD = 'MASTERCARD',
-  UNIONPAY = 'UNIONPAY',
-  UNKNOWN = 'UNKNOWN'
+  DINERS_CLUB = 'Diners Club',
+  VISA = 'Visa',
+  MASTERCARD = 'MasterCard',
+  UNIONPAY = 'UnionPay',
+  UNKNOWN = 'Unknown'
 }
 
 // const SourceTypeArray: SourceType[] = Object.keys(SourceType).map((key: any) => SourceType[key] as any as SourceType);
