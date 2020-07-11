@@ -11,6 +11,7 @@ import {
   CardTokenResponse,
   ConfirmPaymentIntentOptions,
   ConfirmSetupIntentOptions,
+  ConfirmSetupIntentResponse,
   CreatePiiTokenOptions,
   CreateSourceTokenOptions,
   CustomerPaymentMethodsResponse,
@@ -197,12 +198,12 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     await this.stripe.confirmCardPayment(opts.clientSecret, confirmOpts);
   }
 
-  async confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<void> {
+  async confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<ConfirmSetupIntentResponse> {
     if (!opts.clientSecret) {
       return Promise.reject('you must provide a client secret');
     }
 
-    return Promise.resolve();
+    return Promise.reject('Not supported on web');
   }
 
   async payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<TokenResponse> {
