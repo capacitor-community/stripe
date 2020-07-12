@@ -46,19 +46,19 @@ internal func strToPmType(_ pmTypeStr: String?) -> STPPaymentMethodType {
 
 internal func strToBrand(_ brand: String?) -> STPCardBrand {
     switch brand {
-    case "AMERICAN_EXPRESS":
+    case "American Express":
         return STPCardBrand.amex
-    case "DISCOVER":
+    case "Discover":
         return STPCardBrand.discover
     case "JCB":
         return STPCardBrand.JCB
-    case "DINERS_CLUB":
+    case "Diners Club":
         return STPCardBrand.dinersClub
-    case "VISA":
+    case "Visa":
         return STPCardBrand.visa
-    case "MASTERCARD":
+    case "MasterCard":
         return STPCardBrand.masterCard
-    case "UNIONPAY":
+    case "UnionPay":
         return STPCardBrand.unionPay
     default:
         return STPCardBrand.unknown
@@ -68,21 +68,21 @@ internal func strToBrand(_ brand: String?) -> STPCardBrand {
 internal func brandToStr(_ brand: STPCardBrand) -> String {
     switch brand {
     case STPCardBrand.amex:
-        return "AMERICAN_EXPRESS"
+        return "American Express"
     case STPCardBrand.discover:
-        return "DISCOVER"
+        return "Discover"
     case STPCardBrand.JCB:
         return "JCB"
     case STPCardBrand.dinersClub:
-        return "DINERS_CLUB"
+        return "Diners Club"
     case STPCardBrand.visa:
-        return "VISA"
+        return "Visa"
     case STPCardBrand.masterCard:
-        return "MASTERCARD"
+        return "MasterCard"
     case STPCardBrand.unionPay:
-        return "UNIONPAY"
+        return "UnionPay"
     default:
-        return "UNKNOWN"
+        return "Unknown"
     }
 }
 
