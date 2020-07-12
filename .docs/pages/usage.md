@@ -103,7 +103,9 @@ await Stripe.confirmPaymentIntent({
 
 //
 // confirm with Google Pay
-await Stripe.payWithGooglePay({
+await Stripe.confirmPaymentIntent({
+  clientSecret,
+  fromGooglePay: true,
   googlePayOptions: { // just demo options
     currencyCode: 'CAD',
     totalPrice: 500.00,
@@ -111,11 +113,6 @@ await Stripe.payWithGooglePay({
     allowedAuthMethods: ['PAN_ONLY'],
     allowedCardNetworks: ['VISA'],
   },
-});
-
-await Stripe.confirmPaymentIntent({
-  clientSecret,
-  fromGooglePay: true,
 });
 ```
 
@@ -140,6 +137,7 @@ const token = 'tok_....'; // token from createCardToken
 await Stripe.addCustomerSource({ sourceId: token });
 
 // set payment method as default
+// (Android only)
 const sourceId = 'card_....';
 await Stripe.setCustomerDefaultSource({ sourceId });
 ```
