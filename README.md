@@ -6,7 +6,7 @@ Supports Android, iOS and Web <small>(*[see note #1](#notes)*)</small>
 [![Actions Status](https://github.com/zyra/capacitor-stripe/workflows/Build/badge.svg)](https://github.com/zyra/capacitor-stripe/actions)
 
 ## Documentation
-https://zyra.github.io/capacitor-stripe
+https://capacitor-community.github.io/stripe/
 
 ## Notes
 **1**. Web support is provided for development purposes.
