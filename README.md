@@ -1,5 +1,5 @@
-# Capacitor Stripe SDK
-Stripe Mobile SDK wrapper for Capacitor
+# Capacitor Stripe Plugin
+Stripe Mobile SDK bindings for Capacitor apps
 
 Supports Android, iOS and Web <small>(*[see note #1](#notes)*)</small>
 
