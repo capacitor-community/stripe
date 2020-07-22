@@ -1,8 +1,8 @@
 siteTitle: Capacitor Stripe Plugin
 description: Stripe Mobile SDK bindings for Capcitor Apps
-repo: https://github.com/zyra/capacitor-stripe
+repo: https://github.com/capacitor-community/stripe
 outDir: docs
-baseUrl: https://zyra.github.io/capacitor-stripe/
+baseUrl: https://capacitor-community.github.io/stripe/
 
 pages:
 - name: home
