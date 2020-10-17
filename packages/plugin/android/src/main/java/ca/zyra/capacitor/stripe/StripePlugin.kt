@@ -355,15 +355,32 @@ class Stripe : Plugin() {
         val saveMethod = call.getBoolean("saveMethod", false)
         val redirectUrl = call.getString("redirectUrl", null)
         val stripeAccountId = call.getString("stripeAccountId")
-
+        val session = if(call.getString("setupFutureUsage") == "on_session")  ConfirmPaymentIntentParams.SetupFutureUsage.OnSession  else ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
+        var setupFutureUsage = if(saveMethod!!) session else null
         val params: ConfirmPaymentIntentParams
 
         when {
             call.hasOption("card") -> {
-                val cb = buildCard(call.getObject("card")) // TODO fix this, we need to pass call.getObject(card)
-                val cardParams = cb.build().toPaymentMethodParamsCard()
-                val pmCreateParams = PaymentMethodCreateParams.create(cardParams)
-                params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod!!)
+                var card = call.getObject("card")
+                var address = Address.Builder()
+                        .setLine1(card.optString("address_line1"))
+                        .setLine2(card.optString("address_line2"))
+                        .setCity(card.optString("address_city"))
+                        .setState(card.optString("address_state"))
+                        .setCountry(card.optString("address_country"))
+                        .setPostalCode(card.optString("address_zip"))
+                        .build()
+                var billing_details = PaymentMethod.BillingDetails().toBuilder()
+                        .setEmail(card.optString("email"))
+                        .setName(card.optString("name"))
+                        .setPhone(card.optString("phone"))
+                        .setAddress(address)
+                        .build()
+                val cardParams = buildCard(card)
+                        .build()
+                        .toPaymentMethodParamsCard()
+                val pmCreateParams = PaymentMethodCreateParams.create(cardParams, billing_details)
+                params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod!!, setupFutureUsage=setupFutureUsage)
             }
 
             call.hasOption("paymentMethodId") -> {
