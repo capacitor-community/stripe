@@ -15,7 +15,7 @@ public class StripePlugin: CAPPlugin {
     internal var ERR_NO_ACTIVE_CUSTOMER_CTX = "No active customer session was found. You must crete one by calling initCustomerSession"
 
     @objc func setStripeAccount(_ call: CAPPluginCall) {
-        let value = call.getString("strip_account") ?? ""
+        let value = call.getString("stripe_account") ?? ""
 
         if value == "" {
             call.error("you must provide a valid stripe account id")
