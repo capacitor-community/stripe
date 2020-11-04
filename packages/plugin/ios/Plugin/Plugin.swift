@@ -326,6 +326,8 @@ public class StripePlugin: CAPPlugin {
         if call.hasOption("card") {
             let bd = STPPaymentMethodBillingDetails()
             bd.address = address(addressDict(fromCall: call))
+            bd.name = call.getString("name") ?? "";
+            bd.email = call.getString("email") ?? "";
 
             let cObj = call.getObject("card") ?? [:]
             let cpp = cardParams(fromObj: cObj)
