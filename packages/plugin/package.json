@@ -14,16 +14,16 @@
   "author": "Zyra Media Inc. <info@zyra.ca>",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/core": "latest"
+    "@capacitor/core": "^2.4.2"
   },
   "devDependencies": {
-    "@capacitor/android": "~2.2.0",
-    "@capacitor/ios": "~2.2.0",
+    "@capacitor/android": "^2.4.2",
+    "@capacitor/ios": "^2.4.2",
     "@types/btoa": "^1.2.3",
     "@types/isomorphic-fetch": "0.0.35",
     "@types/jest": "~26.0.0",
-    "@types/node": "~14.0.13",
-    "@types/stripe": "~7.13.23",
+    "@types/node": "^14.0.27",
+    "@types/stripe": "^7.13.25",
     "btoa": "^1.2.1",
     "canvas": "^2.6.1",
     "isomorphic-fetch": "~2.2.1",

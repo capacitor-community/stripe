@@ -10,7 +10,7 @@ def capacitor_pods
   # Automatic Capacitor Pod dependencies, do not delete
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
-  pod 'CapacitorStripe', :path => '../../../plugin'
+  pod 'CapacitorStripe', :path => '../../node_modules/capacitor-stripe'
   # Do not delete
 end
 
