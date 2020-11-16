@@ -134,6 +134,21 @@ export type CustomerPaymentMethodsResponse = {
   paymentMethods: PaymentMethod[]
 };
 
+export interface ConfirmPaymentIntentResponse {
+  amount: number;
+  capture_method: string;
+  client_secret: string;
+  confirmation_method: string;
+  created: number;
+  currency: string;
+  cad: string;
+  livemode: boolean;
+  object: string;
+  payment_method: PaymentMethod;
+  payment_method_types: string[];
+  status: string;
+}
+
 export interface ConfirmSetupIntentResponse {
   /**
    * Unix timestamp representing creation time
@@ -164,7 +179,7 @@ export interface StripePlugin {
   createBankAccountToken(bankAccount: BankAccountTokenRequest): Promise<BankAccountTokenResponse>;
 
   /* Payment Intents */
-  confirmPaymentIntent(opts: ConfirmPaymentIntentOptions): Promise<void>;
+  confirmPaymentIntent(opts: ConfirmPaymentIntentOptions): Promise<ConfirmPaymentIntentResponse>;
 
   confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<ConfirmSetupIntentResponse>;
 
