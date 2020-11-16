@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-stripe",
+  "name": "@capacitor-community/stripe",
   "version": "1.0.1",
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/esm/index.js",
