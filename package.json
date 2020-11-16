@@ -1,24 +1,72 @@
 {
-  "name": "@capacitor-stripe/source",
-  "private": true,
-  "version": "0.0.1",
-  "devDependencies": {
-    "@types/chalk": "^2.2.0",
-    "@types/child-process-promise": "^2.2.1",
-    "@types/commander": "^2.12.2",
-    "@types/node": "~14.0.13",
-    "@types/ora": "^3.2.0",
-    "@types/rimraf": "^2.0.3",
-    "chalk": "^2.4.2",
-    "child-process-promise": "^2.2.1",
-    "commander": "^4.0.0",
-    "lerna": "^3.22.1",
-    "ora": "^4.0.2",
-    "rimraf": "^3.0.0",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.8.3"
+  "name": "@capacitor-community/stripe",
+  "version": "1.0.0-beta.4",
+  "description": "Stripe SDK bindings for Capacitor Applications",
+  "main": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.plugin.json",
+    "clean": "rm -rf ./dist",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test": "jest"
   },
-  "bin": {
-    "cs": "./scripts/index.ts"
+  "author": "Zyra Media Inc. <info@zyra.ca>",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/core": "latest"
+  },
+  "devDependencies": {
+    "@capacitor/android": "~2.2.0",
+    "@capacitor/ios": "~2.2.0",
+    "@types/btoa": "^1.2.3",
+    "@types/isomorphic-fetch": "0.0.35",
+    "@types/jest": "~26.0.0",
+    "@types/node": "~14.0.13",
+    "@types/stripe": "~7.13.23",
+    "btoa": "^1.2.1",
+    "canvas": "^2.6.1",
+    "isomorphic-fetch": "~2.2.1",
+    "jest": "~26.0.1",
+    "standard-version": "^8.0.0",
+    "stripe": "~8.63.0",
+    "ts-jest": "~26.1.0",
+    "typescript": "~3.8.3"
+  },
+  "files": [
+    "dist/",
+    "ios/",
+    "android/",
+    "CapacitorStripe.podspec"
+  ],
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native"
+  ],
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zyra/capacitor-stripe"
+  },
+  "bugs": {
+    "url": "https://github.com/zyra/capacitor-stripe/issues"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testEnvironmentOptions": {
+      "resources": "usable"
+    }
   }
 }

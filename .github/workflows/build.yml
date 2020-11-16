@@ -13,12 +13,9 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Install node_modules
-      run: |
-        npm ci
-        npx lerna bootstrap
+      run: npm ci
 
     - name: Build Capacitor project
-      working-directory: ./packages/plugin
       run: npm run build
 
     #- name: Test web implementation
@@ -28,19 +25,23 @@ jobs:
     #    STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
     #  run: npm test
 
-    - name: Build Ionic app
-      working-directory: ./packages/test
+    - name: Install test app node_modules
+      working-directory: ./test
+      run: npm ci
+
+    - name: Build test app
+      working-directory: ./test
       run: npm run build
 
     - name: Update & Sync Capacitor Project
-      working-directory: ./packages/test
+      working-directory: ./test
       run: npx cap update android && npx cap sync android
 
     - name: Build Android Debug APK
-      working-directory: ./packages/test/android
+      working-directory: ./test/android
       run: ./gradlew assembleDebug
     
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
-        path: ./packages/test/android/app/build/outputs/apk/debug/app-debug.apk
+        path: ./test/android/app/build/outputs/apk/debug/app-debug.apk

@@ -1,7 +1,9 @@
 # Installation
 
 ## Basic setup
+
 <br>
+
 #### 1. Install the plugin from NPM
 
 ```shell
