@@ -23,7 +23,7 @@
     "@capacitor/core": "~2.2.0",
     "@capacitor/ios": "~2.2.0",
     "@ionic/angular": "~5.2.1",
-    "capacitor-stripe": "*",
+    "@capacitor-community/stripe": "../",
     "core-js": "~3.6.5",
     "rxjs": "~6.5.5",
     "tslib": "^1.13.0",
