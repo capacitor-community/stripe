@@ -7,7 +7,7 @@
 #### 1. Install the plugin from NPM
 
 ```shell
-npm i -S capacitor-stripe
+npm i -S @capacitor-community/stripe
 ```
 <br>
 

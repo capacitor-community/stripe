@@ -54,10 +54,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zyra/capacitor-stripe"
+    "url": "https://github.com/capacitor-community/stripe"
   },
   "bugs": {
-    "url": "https://github.com/zyra/capacitor-stripe/issues"
+    "url": "https://github.com/capacitor-community/stripe/issues"
   },
   "jest": {
     "preset": "ts-jest",

@@ -19,7 +19,7 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
-    "capacitor-stripe": "file:..",
+    "@capacitor-community/stripe": "file:..",
     "@capacitor/android": "~2.2.0",
     "@capacitor/core": "~2.2.0",
     "@capacitor/ios": "~2.2.0",
