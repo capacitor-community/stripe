@@ -1,6 +1,7 @@
 import Foundation
 import Stripe
 import Capacitor
+import PassKit
 
 internal enum StripePluginError : Error {
     case InvalidApplePayRequest(String)
@@ -20,13 +21,13 @@ internal struct ApplePayContext {
 
 internal func pmTypeToStr(_ pmType: STPPaymentMethodType?) -> String {
     switch pmType {
-    case .typeCard:
+    case .card:
         return "card"
-    case .typeCardPresent:
+    case .cardPresent:
         return "card_present"
-    case .typeFPX:
+    case .FPX:
         return "fpx"
-    case .typeiDEAL:
+    case .iDEAL:
         return "ideal"
     // TODO add more types
     default:
@@ -37,10 +38,10 @@ internal func pmTypeToStr(_ pmType: STPPaymentMethodType?) -> String {
 internal func strToPmType(_ pmTypeStr: String?) -> STPPaymentMethodType {
     switch pmTypeStr {
     case "card":
-        return .typeCard
+        return .card
     // TODO add more types
     default:
-        return .typeUnknown
+        return .unknown
     }
 }
 
@@ -57,7 +58,7 @@ internal func strToBrand(_ brand: String?) -> STPCardBrand {
     case "Visa":
         return STPCardBrand.visa
     case "MasterCard":
-        return STPCardBrand.masterCard
+        return STPCardBrand.mastercard
     case "UnionPay":
         return STPCardBrand.unionPay
     default:
@@ -77,7 +78,7 @@ internal func brandToStr(_ brand: STPCardBrand) -> String {
         return "Diners Club"
     case STPCardBrand.visa:
         return "Visa"
-    case STPCardBrand.masterCard:
+    case STPCardBrand.mastercard:
         return "MasterCard"
     case STPCardBrand.unionPay:
         return "UnionPay"
@@ -87,7 +88,7 @@ internal func brandToStr(_ brand: STPCardBrand) -> String {
 }
 
 internal func ensurePluginInitialized(_ call: CAPPluginCall) -> Bool {
-    let key = Stripe.defaultPublishableKey()
+    let key = StripeAPI.defaultPublishableKey
 
     if key == nil || key == "" {
         call.error("you must call setPublishableKey to initialize the plugin before calling this method")
