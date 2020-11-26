@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 import Stripe
+import PassKit
 
 
 
@@ -22,7 +23,7 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        Stripe.setDefaultPublishableKey(value)
+        StripeAPI.defaultPublishableKey = value
 
         call.success()
     }
@@ -75,7 +76,7 @@ public class StripePlugin: CAPPlugin {
 
         let params = cardParams(fromCall: call)
 
-        STPAPIClient.shared().createToken(withCard: params) { (token, error) in
+        STPAPIClient.shared.createToken(withCard: params) { (token, error) in
             guard let token = token else {
                 call.error("unable to create token: " + error!.localizedDescription, error)
                 return
@@ -91,7 +92,7 @@ public class StripePlugin: CAPPlugin {
 
         let params = makeBankAccountParams(call: call.options)
         
-        STPAPIClient.shared().createToken(withBankAccount: params) { (token, error) in
+        STPAPIClient.shared.createToken(withBankAccount: params) { (token, error) in
             guard let token = token else {
                 call.error("unable to create bank account token: " + error!.localizedDescription, error)
                 return
@@ -232,7 +233,7 @@ public class StripePlugin: CAPPlugin {
 
         let pii = call.getString("pii") ?? ""
         
-        STPAPIClient.shared().createToken(withPersonalIDNumber: pii) { (token, error) in
+        STPAPIClient.shared.createToken(withPersonalIDNumber: pii) { (token, error) in
             guard let token = token else {
                 call.error("unable to create token: " + error!.localizedDescription, error)
                 return
@@ -380,7 +381,7 @@ public class StripePlugin: CAPPlugin {
 
         let pm = STPPaymentHandler.shared()
 
-        pm.confirmSetupIntent(withParams: pip, authenticationContext: self) { (status, si, err) in
+        pm.confirmSetupIntent(pip, with: self) { (status, si, err) in
             switch status {
             case .failed:
                 if err != nil {
@@ -422,17 +423,20 @@ public class StripePlugin: CAPPlugin {
         ]
 
         let ctx = STPCustomerContext(keyProvider: self)
-        let pCfg = STPPaymentConfiguration.shared()
+        let pCfg = STPPaymentConfiguration.shared
 
         if let po = call.getObject("paymentOptions") as? [String: Bool] {
             if po["applePay"] ?? false {
-                pCfg.additionalPaymentOptions.insert(.applePay)
+                pCfg.applePayEnabled = true
             }
             if po["fpx"] ?? false {
-                pCfg.additionalPaymentOptions.insert(.FPX)
+                pCfg.fpxEnabled = true
             }
             if po["default"] ?? false {
-                pCfg.additionalPaymentOptions.insert(.default)
+                // TODO The additionalPaymentOptions is no longer an object, and has been deprecated
+                // There are clear alternatives for the other usages, but this does not seem to have a clear alternative.
+                // I believe that the alternative is to simply not do anything, but I cannot find any explanations of what this did before the switch to stripe 21
+             //   pCfg.additionalPaymentOptions.insert(.default)
             }
         }
 

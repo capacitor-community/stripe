@@ -1,6 +1,7 @@
 import Foundation
 import Stripe
 import Capacitor
+import PassKit
 
 
 extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
@@ -35,7 +36,7 @@ extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
                 return
             }
 
-            STPAPIClient.shared().createPaymentMethod(with: payment) { (pm, err) in
+            STPAPIClient.shared.createPaymentMethod(with: payment) { (pm, err) in
                 guard let pm = pm else {
                     completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
                     callback.error("unable to create payment method: " + err!.localizedDescription, err)
@@ -73,7 +74,7 @@ extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
             }
 
         case .Token:
-            STPAPIClient.shared().createToken(with: payment) { (t, err) in
+            STPAPIClient.shared.createToken(with: payment) { (t, err) in
                 guard let t = t else {
                     completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
                     callback.error("unable to create token: " + err!.localizedDescription, err)
