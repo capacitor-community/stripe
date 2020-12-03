@@ -1,22 +1,28 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2020",
-    "sourceMap": true,
-    "inlineSources": true,
-    "inlineSourceMap": true,
-    "declaration": false,
-    "baseUrl": ".",
-    "rootDir": "scripts",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    //    "noUnusedLocals": true,
+    //    "noUnusedParameters": true,
+    "outDir": "dist/esm",
+    "sourceMap": true,
+    "target": "es2015",
+    "baseUrl": ".",
+    "rootDir": "src"
   },
   "include": [
-    "scripts/**/*.ts"
+    "src/**.ts"
   ],
   "exclude": [
     "node_modules"
