@@ -19,6 +19,7 @@
   "devDependencies": {
     "@capacitor/android": "~2.2.0",
     "@capacitor/ios": "~2.2.0",
+    "@stripe/stripe-js": "^1.11.0",
     "@types/btoa": "^1.2.3",
     "@types/isomorphic-fetch": "0.0.35",
     "@types/jest": "~26.0.0",
