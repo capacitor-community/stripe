@@ -45,8 +45,10 @@ npm i -S @capacitor-community/stripe
 ###### 2. Import from @capacitor/core
 ```ts
 import { Plugins } from '@capacitor/core';
-
-const { Stripe } = Plugins;
+import '@capacitor-community/stripe'; // only if you want web support
+// Type Safe. Current capacitor 2 limitation
+import { StripePlugin } from '@capacitor-community/stripe';
+const Stripe = Plugins.Stripe as StripePlugin;
 ```
 
 ###### 3. Set your publishable key
