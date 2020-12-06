@@ -82,6 +82,20 @@ public class MainActivity extends BridgeActivity {
 }
 ```
 
+#### iOS Setup
+In file `ios/App/App/AppDelegate.swift` add your Stripe Publishable API key:
+
+```swift
+import Stripe
+[...]
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    StripeAPI.defaultPublishableKey = "pk_test_...."
+    return true
+  }
+```
+
+Its needed when you're getting `You did not provide an API key. You need to provide your API key in the Authorization header, using Bearer auth (e.g. 'Authorization: Bearer YOUR_SECRET_KEY').` errors.
+
 ## Configuration
 
 #### Google Pay
@@ -104,7 +118,6 @@ To enable payments using Apple Pay you must follow the first 3 steps in [this gu
 ###### 1. [Register for Apple Merchant ID](https://stripe.com/docs/apple-pay#merchantid)
 ###### 2. [Create a new Apple Pay certificate](https://stripe.com/docs/apple-pay#csr)
 ###### 3. [Integrate with Xcode](https://stripe.com/docs/apple-pay#setup)
-
 
 ## Documentation
 https://capacitor-community.github.io/stripe/
