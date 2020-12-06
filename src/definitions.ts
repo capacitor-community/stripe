@@ -184,7 +184,7 @@ export interface StripePlugin {
   confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<ConfirmSetupIntentResponse>;
 
   /* Apple Pay */
-  payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<TokenResponse>;
+  payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<{ token: string }>;
 
   cancelApplePay(): Promise<void>;
 
