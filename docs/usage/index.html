@@ -303,6 +303,66 @@ const sourceId = 'card_....';
 await Stripe.setCustomerDefaultSource({ sourceId });
 </code></pre>
 
+<h2 id="apple-pay">Apple Pay</h2>
+
+<pre><code class="language-ts">const { token } = await Stripe.payWithApplePay({
+  applePayOptions: {
+    merchantId: 'merchant.org.example',
+    country: 'US',
+    currency: 'USD',
+    items: [
+      {
+        label: 'MacBook',
+        amount: 2989,
+      },
+      {
+        label: 'Shipping',
+        amount: 4.99,
+      },
+      // The last item must be the final amount!
+      // See: https://developer.apple.com/documentation/apple_pay_on_the_web/applepaypaymentrequest/1916119-total
+      {
+        label: 'Merchant',
+        amount: 2993.99,
+      }
+    ],
+  },
+});
+// The dialog with Apple Pay is now visible to the customer
+try {
+  // Here you must confirming the payment intent (token is tok_...)
+  // When successful, you show SUCCESS to the client via following line:
+  await Stripe.finalizeApplePayTransaction({ success: true });
+} catch (e) {
+  // When confirming the payment intent fails you must inform the user, too:
+  await Stripe.finalizeApplePayTransaction({ success: false });
+}</code></pre>
+
+<h2 id="google-pay">Google Pay</h2>
+
+<pre><code class="language-ts">const { success, token } = await Stripe.payWithGooglePay({
+  googlePayOptions: {
+    merchantName: 'Merchant',
+    currencyCode: 'USD',
+    totalPrice: '2993.99',
+    totalPriceStatus: GooglePayPriceStatus.FINAL,
+    allowedAuthMethods: [
+      GooglePayAuthMethod.PAN_ONLY,
+      GooglePayAuthMethod.CRYPTOGRAM_3DS,
+    ],
+    allowedCardNetworks: ['AMEX', 'DISCOVER', 'MASTERCARD', 'VISA'],
+    billingAddressRequired: false,
+    shippingAddressRequired: false,
+    emailRequired: false,
+  },
+});
+if (success) {
+  const { id } = JSON.parse(
+    token.paymentMethodData.tokenizationData.token
+  ) as TokenResponse;
+  // Here you must confirming the payment intent (id is tok_...)
+}</code></pre>
+
         </div>
     </div>
 </div>

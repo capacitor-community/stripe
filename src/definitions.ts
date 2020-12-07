@@ -184,14 +184,14 @@ export interface StripePlugin {
   confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<ConfirmSetupIntentResponse>;
 
   /* Apple Pay */
-  payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<TokenResponse>;
+  payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<ApplePayResponse>;
 
   cancelApplePay(): Promise<void>;
 
   finalizeApplePayTransaction(opts: FinalizeApplePayTransactionOptions): Promise<void>;
 
   /* Google Pay */
-  payWithGooglePay(opts: { googlePayOptions: GooglePayOptions }): Promise<void>;
+  payWithGooglePay(opts: { googlePayOptions: GooglePayOptions }): Promise<GooglePayResponse>;
 
   /* Other tokens */
   createSourceToken(opts: CreateSourceTokenOptions): Promise<TokenResponse>;
@@ -361,6 +361,10 @@ export interface TokenResponse {
   created: Date;
 }
 
+export interface ApplePayResponse {
+  token: string;
+}
+
 export interface ApplePayItem {
   label: string;
   amount: number | string;
@@ -371,6 +375,89 @@ export interface ApplePayOptions {
   country: string;
   currency: string;
   items: ApplePayItem[];
+}
+
+export interface GooglePayResponse {
+  success: boolean;
+  token: {
+    apiVersionMinor: number;
+    apiVersion: number;
+    paymentMethodData: {
+      description: string;
+      tokenizationData: {
+        type: string;
+        /**
+         * The "token" is a JSON string of a TokenResponse.
+         * So please use `JSON.parse(token)`!
+         * {
+         *   "id": "tok_123...",
+         *   "object": "token",
+         *   "card": {
+         *     "id": "card_123...",
+         *     "object": "card",
+         *     "address_city": null,
+         *     "address_country": null,
+         *     "address_line1": null,
+         *     "address_line1_check": null,
+         *     "address_line2": null,
+         *     "address_state": null,
+         *     "address_zip": null,
+         *     "address_zip_check": null,
+         *     "brand": "MasterCard",
+         *     "country": "US",
+         *     "cvc_check": null,
+         *     "dynamic_last4": "4242",
+         *     "exp_month": 12,
+         *     "exp_year": 2025,
+         *     "funding": "credit",
+         *     "last4": "6933",
+         *     "metadata": {
+         *     },
+         *     "name": "Patrick ...",
+         *     "tokenization_method": "android_pay"
+         *   },
+         *   "client_ip": "123.123.123.123",
+         *   "created": 1234567890,
+         *   "livemode": false,
+         *   "type": "card",
+         *   "used": false
+         * }
+         */
+        token: string;
+      };
+      type: string;
+      info: {
+        cardNetwork: string;
+        cardDetails: string;
+        /**
+         * `billingAddress` is only set when `billingAddressRequired` was set to `true`
+         */
+        billingAddress?: {
+          countryCode: string;
+          postalCode: string;
+          name: string;
+        };
+      };
+    };
+    /**
+     * `shippingAddress` is only set when `shippingAddressRequired` was set to `true`
+     */
+    shippingAddress?: {
+      address3: string;
+      sortingCode: string;
+      address2: string;
+      countryCode: string;
+      address1: string;
+      postalCode: string;
+      name: string;
+      locality: string;
+      administrativeArea: string;
+    };
+    /**
+     * `email` is only set when `emailRequired` was set to `true`
+     */
+    email?: string;
+  };
 }
 
 export enum GooglePayPriceStatus {
