@@ -28,7 +28,7 @@ import {
   ValidateExpiryDateOptions,
   ValidityResponse,
 } from './definitions';
-
+import { ConfirmCardPaymentData, Stripe } from '@stripe/stripe-js'
 
 function flatten(json: any, prefix?: string, omit?: string[]): any {
   let obj: any = {};
@@ -118,7 +118,7 @@ async function _stripeGet(path: string, key: string, extraHeaders?: any) {
 
 export class StripePluginWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string;
-  private stripe: any;
+  private stripe: Stripe;
 
   constructor() {
     super({
@@ -178,7 +178,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
       return Promise.reject('you must provide a client secret');
     }
 
-    let confirmOpts;
+    let confirmOpts: ConfirmCardPaymentData;
 
     if (opts.paymentMethodId) {
       confirmOpts = {
@@ -187,15 +187,30 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     } else if (opts.card) {
       const token = await this.createCardToken(opts.card);
       confirmOpts = {
+        save_payment_method: opts.saveMethod,
+        setup_future_usage: opts.setupFutureUsage,
         payment_method: {
+
+          billing_details: {
+            email: opts.card.email,
+            name: opts.card.name,
+            phone: opts.card.phone,
+            address: {
+              line1: opts.card.address_line1,
+              line2: opts.card.address_line2,
+              city: opts.card.address_city,
+              state: opts.card.address_state,
+              country: opts.card.address_country,
+              postal_code: opts.card.address_zip
+            }
+          },
           card: {
             token: token.id,
           },
         },
       };
     }
-
-    return this.stripe.confirmCardPayment(opts.clientSecret, confirmOpts);
+    return this.stripe.confirmCardPayment(opts.clientSecret, confirmOpts).then(response=>(response.paymentIntent || {} as any));
   }
 
   async confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<ConfirmSetupIntentResponse> {
