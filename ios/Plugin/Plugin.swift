@@ -394,7 +394,9 @@ public class StripePlugin: CAPPlugin {
                 call.error("user cancelled the transaction")
 
             case .succeeded:
-                call.success()
+                call.success([
+                    "paymentMethodId": pip.paymentMethodID!
+                ])
             }
         }
     }
