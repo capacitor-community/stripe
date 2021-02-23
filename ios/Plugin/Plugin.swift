@@ -395,7 +395,7 @@ public class StripePlugin: CAPPlugin {
 
             case .succeeded:
                 call.success([
-                    "paymentMethodId": pip.paymentMethodID!
+                    "paymentMethodId": si?.paymentMethodID! ?? nil
                 ])
             }
         }
