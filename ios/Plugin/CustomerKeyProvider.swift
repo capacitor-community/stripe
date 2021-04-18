@@ -44,14 +44,14 @@ extension StripePlugin : STPPaymentContextDelegate {
         switch status {
         case .userCancellation:
             NSLog("User cancelled PaymentContext")
-            
+
         case .error:
             NSLog("Error occurred in PaymentContext")
-            
+
             if error != nil {
                 NSLog(error!.localizedDescription)
             }
-            
+
         case .success:
             NSLog("PaymentContext returned success status")
         }

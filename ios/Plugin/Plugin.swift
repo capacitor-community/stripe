@@ -12,8 +12,8 @@ public class StripePlugin: CAPPlugin {
     internal var customerCtx: STPCustomerContext?
     internal var paymentCtx: STPPaymentContext?
     internal var pCfg: STPPaymentConfiguration?
-    
-    internal var ERR_NO_ACTIVE_CUSTOMER_CTX = "No active customer session was found. You must crete one by calling initCustomerSession"
+
+    internal var ERR_NO_ACTIVE_CUSTOMER_CTX = "No active customer session was found. You must create one by calling initCustomerSession"
 
     @objc func setPublishableKey(_ call: CAPPluginCall) {
         let value = call.getString("key") ?? ""
@@ -33,7 +33,7 @@ public class StripePlugin: CAPPlugin {
                 forNumber: call.getString("number"),
                 validatingCardBrand: false
         )
-        
+
         call.success([
             "valid": state == STPCardValidationState.valid
         ])
@@ -44,7 +44,7 @@ public class StripePlugin: CAPPlugin {
                 forExpirationYear: call.getString("exp_year") ?? "",
                 inMonth: call.getString("exp_month") ?? ""
         )
-        
+
         call.success([
             "valid": state == STPCardValidationState.valid
         ])
@@ -55,7 +55,7 @@ public class StripePlugin: CAPPlugin {
                 forCVC: (call.getString("cvc")) ?? "",
                 cardBrand: strToBrand(call.getString("brand"))
         )
-        
+
         call.success([
             "valid": state == STPCardValidationState.valid
         ])
@@ -63,9 +63,9 @@ public class StripePlugin: CAPPlugin {
 
     @objc func identifyCardBrand(_ call: CAPPluginCall) {
         let val = STPCardValidator.brand(forNumber: call.getString("number") ?? "")
-        
+
         call.success([
-            "brand": brandToStr(val)
+            "brand": STPCardBrandUtilities.stringFrom(val) ?? "unknown"
         ])
     }
 
@@ -91,7 +91,7 @@ public class StripePlugin: CAPPlugin {
         }
 
         let params = makeBankAccountParams(call: call.options)
-        
+
         STPAPIClient.shared.createToken(withBankAccount: params) { (token, error) in
             guard let token = token else {
                 call.error("unable to create bank account token: " + error!.localizedDescription, error)
@@ -115,7 +115,7 @@ public class StripePlugin: CAPPlugin {
         if let authCtrl = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) {
             authCtrl.delegate = self
             call.save()
-            
+
             self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .Token, completion: nil, clientSecret: nil)
 
             DispatchQueue.main.async {
@@ -173,21 +173,21 @@ public class StripePlugin: CAPPlugin {
         // TODO implement
         /*
         let type = call.getInt("sourceType")
-        
+
         if type == nil {
             call.error("you must provide a source type")
             return
         }
-        
+
         let sourceType = STPSourceType.init(rawValue: type!)
-        
+
         if sourceType == nil {
             call.error("invalid source type")
             return
         }
-        
+
         let params: STPSourceParams
-        
+
         switch sourceType!
         {
         case .threeDSecure:
@@ -219,9 +219,9 @@ public class StripePlugin: CAPPlugin {
         case .multibanco:
             <#code#>
         case .weChatPay:
-            
+
         case .unknown:
-            
+
         }
        */
     }
@@ -232,7 +232,7 @@ public class StripePlugin: CAPPlugin {
         }
 
         let pii = call.getString("pii") ?? ""
-        
+
         STPAPIClient.shared.createToken(withPersonalIDNumber: pii) { (token, error) in
             guard let token = token else {
                 call.error("unable to create token: " + error!.localizedDescription, error)
@@ -267,7 +267,6 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        
         if call.hasOption("applePayOptions") {
             let paymentRequest: PKPaymentRequest!
 
@@ -301,26 +300,27 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        let pip: STPPaymentIntentParams = STPPaymentIntentParams.init(clientSecret: clientSecret!)
+        let pip: STPPaymentIntentParams = STPPaymentIntentParams(clientSecret: clientSecret!)
 
         if let sm = call.getBool("saveMethod"), sm == true {
             pip.savePaymentMethod = true
         }
-        
+
         if call.hasOption("redirectUrl") {
             pip.returnURL = call.getString("redirectUrl")
         }
-        
+
         if call.hasOption("card") {
             let bd = STPPaymentMethodBillingDetails()
-            bd.address = address(addressDict(fromCall: call))
+            let bda = address(fromCall: call)
+            bd.address = bda.map { STPPaymentMethodAddress(address: $0) }
 
-            let cObj = call.getObject("card") ?? [:]
-            let cpp = cardParams(fromObj: cObj)
-            cpp.address = STPAddress.init(paymentMethodBillingDetails: bd)
-            let pmp = STPPaymentMethodParams.init(card: STPPaymentMethodCardParams.init(cardSourceParams: cpp), billingDetails: bd, metadata: nil)
+            let cpp = cardParams(fromObj: call.getObject("card") ?? [:]) ?? STPCardParams()
+            if let bda = bda {
+                cpp.address = bda
+            }
+            let pmp = STPPaymentMethodParams(card: STPPaymentMethodCardParams(cardSourceParams: cpp), billingDetails: bd, metadata: nil)
             pip.paymentMethodParams = pmp
-
         } else if call.hasOption("paymentMethodId") {
             pip.paymentMethodId = call.getString("paymentMethodId")
         } else if call.hasOption("sourceId") {
@@ -329,7 +329,7 @@ public class StripePlugin: CAPPlugin {
 
         let pm = STPPaymentHandler.shared()
 
-        pm.confirmPayment(withParams: pip, authenticationContext: self) { (status, pi, err) in
+        pm.confirmPayment(pip, with: self) { (status, pi, err) in
             switch status {
             case .failed:
                 if err != nil {
@@ -359,22 +359,23 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        let pip: STPSetupIntentConfirmParams = STPSetupIntentConfirmParams.init(clientSecret: clientSecret!)
+        let pip: STPSetupIntentConfirmParams = STPSetupIntentConfirmParams(clientSecret: clientSecret!)
 
         if call.hasOption("redirectUrl") {
            pip.returnURL = call.getString("redirectUrl")
         }
-        
+
         if call.hasOption("card") {
             let bd = STPPaymentMethodBillingDetails()
-            bd.address = address(addressDict(fromCall: call))
+            let bda = address(fromCall: call)
+            bd.address = bda.map { STPPaymentMethodAddress(address: $0) }
 
-            let cObj = call.getObject("card") ?? [:]
-            let cpp = cardParams(fromObj: cObj)
-            cpp.address = STPAddress.init(paymentMethodBillingDetails: bd)
-            let pmp = STPPaymentMethodParams.init(card: STPPaymentMethodCardParams.init(cardSourceParams: cpp), billingDetails: bd, metadata: nil)
+            let cpp = cardParams(fromObj: call.getObject("card") ?? [:]) ?? STPCardParams()
+            if let bda = bda {
+                cpp.address = bda
+            }
+            let pmp = STPPaymentMethodParams(card: STPPaymentMethodCardParams(cardSourceParams: cpp), billingDetails: bd, metadata: nil)
             pip.paymentMethodParams = pmp
-
         } else if call.hasOption("paymentMethodId") {
             pip.paymentMethodID = call.getString("paymentMethodId")
         }
@@ -394,9 +395,7 @@ public class StripePlugin: CAPPlugin {
                 call.error("user cancelled the transaction")
 
             case .succeeded:
-                call.success([
-                    "paymentMethodId": si?.paymentMethodID! ?? nil
-                ])
+                call.success(si?.paymentMethodID.map { ["paymentMethodId": $0] } ?? [:])
             }
         }
     }
@@ -473,7 +472,7 @@ public class StripePlugin: CAPPlugin {
 
         self.customerCtx = ctx
         self.pCfg = pCfg
-        
+
         call.success()
     }
 
@@ -482,11 +481,11 @@ public class StripePlugin: CAPPlugin {
             call.error(ERR_NO_ACTIVE_CUSTOMER_CTX)
             return
         }
-        
+
         let pCtx = STPPaymentContext(customerContext:  ctx,
                                      configuration: pCfg,
-                                     theme: STPTheme.default())
-        
+                                     theme: STPTheme.defaultTheme)
+
         DispatchQueue.main.async {
             pCtx.delegate = self
             pCtx.hostViewController = self.bridge.viewController
@@ -501,10 +500,10 @@ public class StripePlugin: CAPPlugin {
             call.error(ERR_NO_ACTIVE_CUSTOMER_CTX)
             return
         }
-        
+
         let pCtx = STPPaymentContext(customerContext: ctx,
                                      configuration: pCfg,
-                                     theme: STPTheme.default())
+                                     theme: STPTheme.defaultTheme)
 
         DispatchQueue.main.async {
             pCtx.delegate = self
@@ -518,10 +517,10 @@ public class StripePlugin: CAPPlugin {
             call.error(ERR_NO_ACTIVE_CUSTOMER_CTX)
             return
         }
-        
+
         let pCtx = STPPaymentContext(customerContext: ctx,
                                      configuration: pCfg,
-                                     theme: STPTheme.default())
+                                     theme: STPTheme.defaultTheme)
 
         DispatchQueue.main.async {
             pCtx.delegate = self
@@ -586,7 +585,7 @@ public class StripePlugin: CAPPlugin {
             call.error(ERR_NO_ACTIVE_CUSTOMER_CTX)
             return
         }
-        
+
         guard let pm = STPPaymentMethod.decodedObject(fromAPIResponse: [
             "type": call.getString("type") as Any,
             "id": call.getString("sourceId") as Any,
@@ -594,43 +593,43 @@ public class StripePlugin: CAPPlugin {
             call.error("failed to decode object as a PaymentMethod")
             return
         }
-        
+
         ctx.attachPaymentMethod(toCustomer: pm, completion: { (err) in
             if (err != nil) {
                 call.error(err!.localizedDescription)
                 return
             }
-            
+
             self.customerPaymentMethods(call)
         })
     }
-    
+
     @objc func deleteCustomerSource(_ call: CAPPluginCall) {
         guard let ctx = self.customerCtx else {
             call.error(ERR_NO_ACTIVE_CUSTOMER_CTX)
             return
         }
-        
+
         guard let pm = STPPaymentMethod.decodedObject(fromAPIResponse: [
                    "id": call.getString("sourceId") as Any,
                ]) else {
                    call.error("failed to decode object as a PaymentMethod")
                    return
                }
-        
+
         ctx.detachPaymentMethod(fromCustomer: pm) { (err) in
             if (err != nil) {
                 call.error(err!.localizedDescription)
                 return
             }
-            
+
             self.customerPaymentMethods(call)
         }
     }
 
     @objc func isApplePayAvailable(_ call: CAPPluginCall) {
         call.success([
-            "available": Stripe.deviceSupportsApplePay()
+            "available": StripeAPI.deviceSupportsApplePay()
         ])
     }
 

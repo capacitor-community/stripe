@@ -3,6 +3,8 @@ import Stripe
 import Capacitor
 import PassKit
 
+
+
 internal enum StripePluginError : Error {
     case InvalidApplePayRequest(String)
 }
@@ -35,55 +37,24 @@ internal func pmTypeToStr(_ pmType: STPPaymentMethodType?) -> String {
     }
 }
 
-internal func strToPmType(_ pmTypeStr: String?) -> STPPaymentMethodType {
-    switch pmTypeStr {
-    case "card":
-        return .card
-    // TODO add more types
-    default:
-        return .unknown
-    }
-}
-
 internal func strToBrand(_ brand: String?) -> STPCardBrand {
     switch brand {
     case "American Express":
         return STPCardBrand.amex
+    case "Diners Club":
+        return STPCardBrand.dinersClub
     case "Discover":
         return STPCardBrand.discover
     case "JCB":
         return STPCardBrand.JCB
-    case "Diners Club":
-        return STPCardBrand.dinersClub
-    case "Visa":
-        return STPCardBrand.visa
     case "MasterCard":
         return STPCardBrand.mastercard
     case "UnionPay":
         return STPCardBrand.unionPay
+    case "Visa":
+        return STPCardBrand.visa
     default:
         return STPCardBrand.unknown
-    }
-}
-
-internal func brandToStr(_ brand: STPCardBrand) -> String {
-    switch brand {
-    case STPCardBrand.amex:
-        return "American Express"
-    case STPCardBrand.discover:
-        return "Discover"
-    case STPCardBrand.JCB:
-        return "JCB"
-    case STPCardBrand.dinersClub:
-        return "Diners Club"
-    case STPCardBrand.visa:
-        return "Visa"
-    case STPCardBrand.mastercard:
-        return "MasterCard"
-    case STPCardBrand.unionPay:
-        return "UnionPay"
-    default:
-        return "Unknown"
     }
 }
 
@@ -98,103 +69,74 @@ internal func ensurePluginInitialized(_ call: CAPPluginCall) -> Bool {
     return true
 }
 
-internal func address(_ obj: [String: String]) -> STPPaymentMethodAddress {
-    let a = STPPaymentMethodAddress()
-    a.line1 = obj["address_line1"]
-    a.line2 = obj["address_line2"]
-    a.city = obj["address_city"]
-    a.state = obj["address_state"]
-    a.postalCode = obj["address_zip"]
-    a.country = obj["country"]
-    return a
+// address(fromCall:) returns an STPAddress given a call containing address params. If no params are set, returns nil.
+internal func address(fromCall: CAPPluginCall) -> STPAddress? {
+    let a = STPAddress()
+    a.line1 = fromCall.getString("address_line1")
+    a.line2 = fromCall.getString("address_line2")
+    a.city = fromCall.getString("address_city")
+    a.state = fromCall.getString("address_state")
+    a.postalCode = fromCall.getString("address_zip")
+    a.country = fromCall.getString("country")
+    if a.line1 != nil || a.line2 != nil || a.city != nil || a.state != nil || a.postalCode != nil || a.country != nil {
+        return a
+    }
+    return nil
 }
 
-internal func address(fromObj: [String: Any]) -> STPPaymentMethodAddress {
-    return address(addressDict(fromObj: fromObj))
+// address(fromObj:) returns an STPAddress given an object containing address params. If no params are set, returns nil.
+internal func address(fromObj: [String: Any]) -> STPAddress? {
+    let a = STPAddress()
+    a.line1 = fromObj["address_line1"] as? String
+    a.line2 = fromObj["address_line2"] as? String
+    a.city = fromObj["address_city"] as? String
+    a.state = fromObj["address_state"] as? String
+    a.postalCode = fromObj["address_zip"] as? String
+    a.country = fromObj["country"] as? String
+    if a.line1 != nil || a.line2 != nil || a.city != nil || a.state != nil || a.postalCode != nil || a.country != nil {
+        return a
+    }
+    return nil
 }
 
-internal func addressDict(fromObj: [String: Any]) -> [String: String] {
-    return [
-        "address_line1": fromObj["address_line1"] as? String ?? "",
-        "address_line2": fromObj["address_line2"] as? String ?? "",
-        "address_city": fromObj["address_city"] as? String ?? "",
-        "address_state": fromObj["address_state"] as? String ?? "",
-        "address_zip": fromObj["address_zip"] as? String ?? "",
-        "address_country": fromObj["address_country"] as? String ?? "",
-    ]
-}
-
-internal func addressDict(fromCall: CAPPluginCall) -> [String: String] {
-    return [
-        "address_line1": fromCall.getString("address_line1") ?? "",
-        "address_line2": fromCall.getString("address_line2") ?? "",
-        "address_city": fromCall.getString("address_city") ?? "",
-        "address_state": fromCall.getString("address_state") ?? "",
-        "address_zip": fromCall.getString("address_zip") ?? "",
-        "address_country": fromCall.getString("address_country") ?? "",
-    ]
-}
-
-internal func cardParams(fromObj: [String: Any]) -> STPCardParams {
+// cardParams(fromCall:) returns an STPCardParams given a call containing card params. If address params are present an address will be added to the card. If no card params are set, returns nil.
+internal func cardParams(fromCall: CAPPluginCall) -> STPCardParams {
     let p = STPCardParams()
 
-    p.number = fromObj["number"] as? String ?? ""
-    p.cvc = fromObj["cvc"] as? String ?? ""
+    p.number = fromCall.getString("number")
+    p.cvc = fromCall.getString("cvc")
 
-    if let exp_yearStr = fromObj["exp_year"] as? String {
-        p.expYear = UInt(exp_yearStr) ?? 0
-    } else if let exp_yearInt = fromObj["exp_year"] as? Int {
-        p.expYear = UInt(exp_yearInt)
-    }
+    p.expYear = fromCall.getInt("exp_year").map { UInt($0) } ?? fromCall.getString("exp_year").flatMap { UInt($0) } ?? 0
+    p.expMonth = fromCall.getInt("exp_month").map { UInt($0) } ?? fromCall.getString("exp_month").flatMap { UInt($0) } ?? 0
 
-    if let exp_monthStr = fromObj["exp_month"] as? String {
-        p.expMonth = UInt(exp_monthStr) ?? 0
-    } else if let exp_monthInt = fromObj["exp_month"] as? Int {
-        p.expMonth = UInt(exp_monthInt)
-    }
+    p.name = fromCall.getString("name")
+    p.currency = fromCall.getString("currency")
 
-    if let n = fromObj["name"] as? String, n != "" {
-        p.name = n
-    }
-
-    if let c = fromObj["currency"] as? String, c != "" {
-        p.currency = c
+    if let a = address(fromCall: fromCall) {
+        p.address = a
     }
 
     return p
 }
 
-internal func cardParams(
-        fromObj: [String: Any],
-        withAddress: [String: String]) -> STPCardParams {
-    let p = cardParams(fromObj: fromObj)
-    let pmbd = STPPaymentMethodBillingDetails()
-    pmbd.address = address(withAddress)
-    p.address = STPAddress.init(paymentMethodBillingDetails: pmbd)
+// cardParams(fromObj:) returns an STPCardParams given an object containing card params. If address params are present an address will be added to the card. If no card params are set, returns nil.
+internal func cardParams(fromObj: [String: Any]) -> STPCardParams? {
+    let p = STPCardParams()
+
+    p.number = fromObj["number"] as? String
+    p.cvc = fromObj["cvc"] as? String
+
+    p.expYear = fromObj["exp_year"] as? UInt ?? (fromObj["exp_year"] as? String).flatMap { UInt($0) } ?? 0
+    p.expMonth = fromObj["exp_month"] as? UInt ?? (fromObj["exp_month"] as? String).flatMap { UInt($0) } ?? 0
+
+    p.name = fromObj["name"] as? String
+    p.currency = fromObj["currency"] as? String
+
+    if let a = address(fromObj: fromObj) {
+        p.address = a
+    }
+
     return p
-}
-
-internal func cardParams(fromCall: CAPPluginCall) -> STPCardParams {
-    var c = [
-        "number": fromCall.getString("number"),
-        "cvc": fromCall.getString("cvc"),
-        "exp_month": fromCall.getString("exp_month"),
-        "exp_year": fromCall.getString("exp_year"),
-        "name": fromCall.getString("name"),
-        "currency": fromCall.getString("currency"),
-        "country": fromCall.getString("country")
-    ]
-
-    if c["exp_month"] == nil, fromCall.hasOption("exp_month"), let em = fromCall.getInt("exp_month") {
-        c["exp_month"] = String(em)
-    }
-
-    if c["exp_year"] == nil, fromCall.hasOption("exp_year"), let em = fromCall.getInt("exp_year") {
-        c["exp_year"] = String(em)
-    }
-
-    let a = addressDict(fromCall: fromCall)
-    return cardParams(fromObj: c as [String: Any], withAddress: a)
 }
 
 internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
@@ -219,7 +161,7 @@ internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
         throw StripePluginError.InvalidApplePayRequest("you must provide at least one item")
     }
 
-    let paymentRequest = Stripe.paymentRequest(withMerchantIdentifier: merchantId, country: country, currency: currency)
+    let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantId, country: country, currency: currency)
 
     paymentRequest.paymentSummaryItems = []
 
@@ -243,7 +185,7 @@ internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
         )
     }
 
-    if Stripe.canSubmitPaymentRequest(paymentRequest) {
+    if StripeAPI.canSubmitPaymentRequest(paymentRequest) {
         return paymentRequest
     } else {
         throw StripePluginError.InvalidApplePayRequest("invalid request")
@@ -262,7 +204,7 @@ internal func applePayOpts(call: CAPPluginCall) throws -> PKPaymentRequest {
 
 internal func pmCardToJSON(c: STPPaymentMethodCard) -> [String: Any] {
     var cval: [String: Any] = [
-        "brand": brandToStr(c.brand),
+        "brand": STPCardBrandUtilities.stringFrom(c.brand) ?? "unknown",
         "exp_month": c.expMonth,
         "exp_year": c.expYear,
     ]
@@ -284,7 +226,7 @@ internal func pmCardToJSON(c: STPPaymentMethodCard) -> [String: Any] {
             "supported": t.supported
         ]
     }
-    
+
     return cval
 }
 
@@ -302,7 +244,7 @@ internal func pmToJSON(m: STPPaymentMethod) -> [String: Any] {
     if let c = m.created {
         val["created"] = c.timeIntervalSince1970
     }
-    
+
     if let c = m.card {
         val["card"] = pmCardToJSON(c: c)
     }
@@ -312,20 +254,20 @@ internal func pmToJSON(m: STPPaymentMethod) -> [String: Any] {
 
 internal func makeBankAccountParams(call: [AnyHashable: Any]!) -> STPBankAccountParams {
     let params = STPBankAccountParams()
-    
+
     params.accountNumber = call["account_number"] as? String ?? ""
     params.country = call["country"] as? String ?? ""
     params.currency = call["currency"] as? String ?? ""
     params.routingNumber = call["routing_number"] as? String ?? ""
     params.accountHolderName = call["account_holder_name"] as? String ?? ""
-        
+
     let accountHolderType = call["account_holder_type"] as? String ?? ""
-    
+
     if accountHolderType == "individual" {
         params.accountHolderType = STPBankAccountHolderType.individual
     } else if accountHolderType == "company" {
         params.accountHolderType = STPBankAccountHolderType.company
     }
-    
+
     return params
 }

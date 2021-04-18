@@ -15,4 +15,4 @@ target 'PluginTests' do
   capacitor_pods
 end
 
-pod 'Stripe', '~> 21.0.1'
+pod 'Stripe', '~> 21.4.0'
