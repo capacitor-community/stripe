@@ -14,11 +14,11 @@
   "author": "Zyra Media Inc. <info@zyra.ca>",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/core": "latest"
+    "@capacitor/core": "^2.0.0"
   },
   "devDependencies": {
-    "@capacitor/android": "~2.2.0",
-    "@capacitor/ios": "~2.2.0",
+    "@capacitor/android": "^2.0.0",
+    "@capacitor/ios": "^2.0.0",
     "@stripe/stripe-js": "^1.11.0",
     "@types/btoa": "^1.2.3",
     "@types/isomorphic-fetch": "0.0.35",

@@ -1,7 +1,7 @@
 import { registerWebPlugin, WebPlugin } from '@capacitor/core';
 import {
   AccountParams,
-  ApplePayOptions,
+  ApplePayOptions, ApplePayResponse,
   AvailabilityResponse,
   BankAccountTokenRequest,
   BankAccountTokenResponse,
@@ -17,7 +17,7 @@ import {
   CreateSourceTokenOptions,
   CustomerPaymentMethodsResponse,
   FinalizeApplePayTransactionOptions,
-  GooglePayOptions,
+  GooglePayOptions, GooglePayResponse,
   IdentifyCardBrandOptions,
   PresentPaymentOptionsResponse,
   SetPublishableKeyOptions,
@@ -221,7 +221,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     return Promise.reject('Not supported on web');
   }
 
-  async payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<TokenResponse> {
+  async payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<ApplePayResponse> {
     throw 'Apple Pay is not supported on web';
   }
 
@@ -233,7 +233,7 @@ export class StripePluginWeb extends WebPlugin implements StripePlugin {
     throw 'Apple Pay is not supported on web';
   }
 
-  async payWithGooglePay(opts: { googlePayOptions: GooglePayOptions }): Promise<void> {
+  async payWithGooglePay(opts: { googlePayOptions: GooglePayOptions }): Promise<GooglePayResponse> {
     throw 'Google Pay is not supported on web';
   }
 
