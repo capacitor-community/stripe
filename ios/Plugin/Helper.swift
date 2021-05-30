@@ -91,7 +91,7 @@ internal func ensurePluginInitialized(_ call: CAPPluginCall) -> Bool {
     let key = StripeAPI.defaultPublishableKey
 
     if key == nil || key == "" {
-        call.error("you must call setPublishableKey to initialize the plugin before calling this method")
+        call.reject("you must call setPublishableKey to initialize the plugin before calling this method")
         return false
     }
 

@@ -25,7 +25,7 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        STPAPIClient.shared().stripeAccount = value
+        STPAPIClient.shared.stripeAccount = value
 
         call.success()
     }
@@ -134,7 +134,7 @@ public class StripePlugin: CAPPlugin {
             self.applePayCtx = ApplePayContext(callbackId: call.callbackId, mode: .Token, completion: nil, clientSecret: nil)
 
             DispatchQueue.main.async {
-                self.bridge.viewController.present(authCtrl, animated: true, completion: nil)
+                self.bridge?.viewController?.present(authCtrl, animated: true, completion: nil)
             }
             return
         }
@@ -152,8 +152,8 @@ public class StripePlugin: CAPPlugin {
             c(PKPaymentAuthorizationResult(status: .failure, errors: nil))
         }
 
-        if let oldCallback = self.bridge.getSavedCall(ctx.callbackId) {
-            self.bridge.releaseCall(oldCallback)
+        if let oldCallback = self.bridge!.getSavedCall(ctx.callbackId) {
+            self.bridge?.releaseCall(oldCallback)
         }
 
         self.applePayCtx = nil
@@ -301,7 +301,7 @@ public class StripePlugin: CAPPlugin {
                                                    clientSecret: clientSecret)
 
                 DispatchQueue.main.async {
-                    self.bridge.viewController.present(authCtrl,
+                    self.bridge?.viewController?.present(authCtrl,
                                                        animated: true,
                                                        completion: nil)
                 }
@@ -505,7 +505,7 @@ public class StripePlugin: CAPPlugin {
 
         DispatchQueue.main.async {
             pCtx.delegate = self
-            pCtx.hostViewController = self.bridge.viewController
+            pCtx.hostViewController = self.bridge?.viewController
             pCtx.presentPaymentOptionsViewController()
         }
 
@@ -524,7 +524,7 @@ public class StripePlugin: CAPPlugin {
 
         DispatchQueue.main.async {
             pCtx.delegate = self
-            pCtx.hostViewController = self.bridge.viewController
+            pCtx.hostViewController = self.bridge?.viewController
             pCtx.presentShippingViewController()
         }
     }
@@ -541,7 +541,7 @@ public class StripePlugin: CAPPlugin {
 
         DispatchQueue.main.async {
             pCtx.delegate = self
-            pCtx.hostViewController = self.bridge.viewController
+            pCtx.hostViewController = self.bridge?.viewController
             pCtx.paymentAmount = 5151
             pCtx.requestPayment()
         }
@@ -559,7 +559,7 @@ public class StripePlugin: CAPPlugin {
 
         self.paymentCtx = STPPaymentContext(customerContext: ctx)
         self.paymentCtx!.delegate = self
-        self.paymentCtx!.hostViewController = self.bridge.viewController
+        self.paymentCtx!.hostViewController = self.bridge?.viewController
 
         if let amount = call.getInt("paymentAmount") {
             self.paymentCtx!.paymentAmount = amount
@@ -665,8 +665,8 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        if let c = self.bridge.getSavedCall(ctx.callbackId) {
-            self.bridge.releaseCall(c)
+        if let c = self.bridge?.getSavedCall(ctx.callbackId) {
+            self.bridge?.releaseCall(c)
         }
 
         self.applePayCtx = nil

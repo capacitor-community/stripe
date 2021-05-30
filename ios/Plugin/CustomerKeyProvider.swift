@@ -34,7 +34,7 @@ extension StripePlugin: STPPaymentContextDelegate {
     public func paymentContext(_ paymentContext: STPPaymentContext,
                                didCreatePaymentResult paymentResult: STPPaymentResult,
                                completion: @escaping STPPaymentStatusBlock) {
-        self.bridge.triggerJSEvent(eventName: "paymentCreate", target: "", data: "")
+        self.bridge?.triggerJSEvent(eventName: "paymentCreate", target: "", data: "")
         completion(STPPaymentStatus.success, nil)
     }
 

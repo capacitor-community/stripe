@@ -9,13 +9,17 @@
 /* Begin PBXBuildFile section */
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
-		2F98D68224C9AAE500613A4C /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F98D68124C9AAE400613A4C /* Stripe.swift */; };
 		50ADFF92201F53D600D50D53 /* Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50ADFF88201F53D600D50D53 /* Plugin.framework */; };
 		50ADFF97201F53D600D50D53 /* StripePluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFF96201F53D600D50D53 /* StripePluginTests.swift */; };
 		50ADFF99201F53D600D50D53 /* StripePlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ADFF8B201F53D600D50D53 /* StripePlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50ADFFA42020D75100D50D53 /* Capacitor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50ADFFA52020D75100D50D53 /* Capacitor.framework */; };
 		50ADFFA82020EE4F00D50D53 /* StripePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFFA72020EE4F00D50D53 /* StripePlugin.m */; };
 		50E1A94820377CB70090CE1A /* StripePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E1A94720377CB70090CE1A /* StripePlugin.swift */; };
+		DB15233A2663D401003F8BF2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DB1523352663D401003F8BF2 /* Info.plist */; };
+		DB15233B2663D401003F8BF2 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1523362663D401003F8BF2 /* Helper.swift */; };
+		DB15233C2663D401003F8BF2 /* CustomerKeyProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1523372663D401003F8BF2 /* CustomerKeyProvider.swift */; };
+		DB15233D2663D401003F8BF2 /* PKAuthViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1523382663D401003F8BF2 /* PKAuthViewDelegate.swift */; };
+		DB15233E2663D401003F8BF2 /* STPAuthCtx.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1523392663D401003F8BF2 /* STPAuthCtx.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,7 +33,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2F98D68124C9AAE400613A4C /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF8B201F53D600D50D53 /* StripePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StripePlugin.h; sourceTree = "<group>"; };
@@ -43,6 +46,11 @@
 		5E23F77F099397094342571A /* Pods-Plugin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plugin.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Plugin/Pods-Plugin.debug.xcconfig"; sourceTree = "<group>"; };
 		91781294A431A2A7CC6EB714 /* Pods-Plugin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plugin.release.xcconfig"; path = "Pods/Target Support Files/Pods-Plugin/Pods-Plugin.release.xcconfig"; sourceTree = "<group>"; };
 		96ED1B6440D6672E406C8D19 /* Pods-PluginTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.debug.xcconfig"; sourceTree = "<group>"; };
+		DB1523352663D401003F8BF2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DB1523362663D401003F8BF2 /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		DB1523372663D401003F8BF2 /* CustomerKeyProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomerKeyProvider.swift; sourceTree = "<group>"; };
+		DB1523382663D401003F8BF2 /* PKAuthViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKAuthViewDelegate.swift; sourceTree = "<group>"; };
+		DB1523392663D401003F8BF2 /* STPAuthCtx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = STPAuthCtx.swift; sourceTree = "<group>"; };
 		F65BB2953ECE002E1EF3E424 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
 		F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PluginTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -92,8 +100,12 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				DB1523372663D401003F8BF2 /* CustomerKeyProvider.swift */,
+				DB1523362663D401003F8BF2 /* Helper.swift */,
+				DB1523352663D401003F8BF2 /* Info.plist */,
+				DB1523382663D401003F8BF2 /* PKAuthViewDelegate.swift */,
+				DB1523392663D401003F8BF2 /* STPAuthCtx.swift */,
 				50E1A94720377CB70090CE1A /* StripePlugin.swift */,
-				2F98D68124C9AAE400613A4C /* Stripe.swift */,
 				50ADFF8B201F53D600D50D53 /* StripePlugin.h */,
 				50ADFFA72020EE4F00D50D53 /* StripePlugin.m */,
 				50ADFF8C201F53D600D50D53 /* Info.plist */,
@@ -230,6 +242,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB15233A2663D401003F8BF2 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,8 +320,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				50E1A94820377CB70090CE1A /* StripePlugin.swift in Sources */,
-				2F98D68224C9AAE500613A4C /* Stripe.swift in Sources */,
+				DB15233E2663D401003F8BF2 /* STPAuthCtx.swift in Sources */,
+				DB15233D2663D401003F8BF2 /* PKAuthViewDelegate.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* StripePlugin.m in Sources */,
+				DB15233C2663D401003F8BF2 /* CustomerKeyProvider.swift in Sources */,
+				DB15233B2663D401003F8BF2 /* Helper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
