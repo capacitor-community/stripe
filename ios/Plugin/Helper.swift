@@ -3,7 +3,7 @@ import Stripe
 import Capacitor
 import PassKit
 
-internal enum StripePluginError : Error {
+internal enum StripePluginError: Error {
     case InvalidApplePayRequest(String)
 }
 
@@ -120,7 +120,7 @@ internal func addressDict(fromObj: [String: Any]) -> [String: String] {
         "address_city": fromObj["address_city"] as? String ?? "",
         "address_state": fromObj["address_state"] as? String ?? "",
         "address_zip": fromObj["address_zip"] as? String ?? "",
-        "address_country": fromObj["address_country"] as? String ?? "",
+        "address_country": fromObj["address_country"] as? String ?? ""
     ]
 }
 
@@ -131,7 +131,7 @@ internal func addressDict(fromCall: CAPPluginCall) -> [String: String] {
         "address_city": fromCall.getString("address_city") ?? "",
         "address_state": fromCall.getString("address_state") ?? "",
         "address_zip": fromCall.getString("address_zip") ?? "",
-        "address_country": fromCall.getString("address_country") ?? "",
+        "address_country": fromCall.getString("address_country") ?? ""
     ]
 }
 
@@ -165,8 +165,8 @@ internal func cardParams(fromObj: [String: Any]) -> STPCardParams {
 }
 
 internal func cardParams(
-        fromObj: [String: Any],
-        withAddress: [String: String]) -> STPCardParams {
+    fromObj: [String: Any],
+    withAddress: [String: String]) -> STPCardParams {
     let p = cardParams(fromObj: fromObj)
     let pmbd = STPPaymentMethodBillingDetails()
     pmbd.address = address(withAddress)
@@ -221,43 +221,43 @@ internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
 
     let paymentRequest = Stripe.paymentRequest(withMerchantIdentifier: merchantId, country: country, currency: currency)
 
-    if ((obj["billingEmailAddress"] as? NSNumber) == 1) {
+    if (obj["billingEmailAddress"] as? NSNumber) == 1 {
         paymentRequest.requiredBillingContactFields.insert(PKContactField.emailAddress)
     }
 
-    if ((obj["billingName"] as? NSNumber) == 1) {
+    if (obj["billingName"] as? NSNumber) == 1 {
         paymentRequest.requiredBillingContactFields.insert(PKContactField.name)
     }
 
-    if ((obj["billingPhoneNumber"] as? NSNumber) == 1) {
+    if (obj["billingPhoneNumber"] as? NSNumber) == 1 {
         paymentRequest.requiredBillingContactFields.insert(PKContactField.phoneNumber)
     }
 
-    if ((obj["billingPhoneticName"] as? NSNumber) == 1) {
+    if (obj["billingPhoneticName"] as? NSNumber) == 1 {
         paymentRequest.requiredBillingContactFields.insert(PKContactField.phoneticName)
     }
 
-    if ((obj["billingPostalAddress"] as? NSNumber) == 1) {
+    if (obj["billingPostalAddress"] as? NSNumber) == 1 {
         paymentRequest.requiredBillingContactFields.insert(PKContactField.postalAddress)
     }
 
-    if ((obj["shippingEmailAddress"] as? NSNumber) == 1) {
+    if (obj["shippingEmailAddress"] as? NSNumber) == 1 {
         paymentRequest.requiredShippingContactFields.insert(PKContactField.emailAddress)
     }
 
-    if ((obj["shippingName"] as? NSNumber) == 1) {
+    if (obj["shippingName"] as? NSNumber) == 1 {
         paymentRequest.requiredShippingContactFields.insert(PKContactField.name)
     }
 
-    if ((obj["shippingPhoneNumber"] as? NSNumber) == 1) {
+    if (obj["shippingPhoneNumber"] as? NSNumber) == 1 {
         paymentRequest.requiredShippingContactFields.insert(PKContactField.phoneNumber)
     }
-    
-    if ((obj["shippingPhoneticName"] as? NSNumber) == 1) {
+
+    if (obj["shippingPhoneticName"] as? NSNumber) == 1 {
         paymentRequest.requiredShippingContactFields.insert(PKContactField.phoneticName)
     }
 
-    if ((obj["shippingPostalAddress"] as? NSNumber) == 1) {
+    if (obj["shippingPostalAddress"] as? NSNumber) == 1 {
         paymentRequest.requiredShippingContactFields.insert(PKContactField.postalAddress)
     }
 
@@ -266,7 +266,7 @@ internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
     for it in items {
         let label = it["label"] as? String ?? ""
         let amount = it["amount"] as? NSNumber
-        let amountD: NSDecimalNumber;
+        let amountD: NSDecimalNumber
 
         if amount == nil {
             if let a = it["amount"] as? String, let ad = Decimal(string: a) {
@@ -279,7 +279,7 @@ internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
         }
 
         paymentRequest.paymentSummaryItems.append(
-                PKPaymentSummaryItem(label: label, amount: amountD)
+            PKPaymentSummaryItem(label: label, amount: amountD)
         )
     }
 
@@ -304,7 +304,7 @@ internal func pmCardToJSON(c: STPPaymentMethodCard) -> [String: Any] {
     var cval: [String: Any] = [
         "brand": brandToStr(c.brand),
         "exp_month": c.expMonth,
-        "exp_year": c.expYear,
+        "exp_year": c.expYear
     ]
 
     if let c = c.country {
@@ -324,7 +324,7 @@ internal func pmCardToJSON(c: STPPaymentMethodCard) -> [String: Any] {
             "supported": t.supported
         ]
     }
-    
+
     return cval
 }
 
@@ -332,7 +332,7 @@ internal func pmToJSON(m: STPPaymentMethod) -> [String: Any] {
     var val: [String: Any] = [
         "id": m.stripeId,
         "livemode": m.liveMode,
-        "type": pmTypeToStr(m.type),
+        "type": pmTypeToStr(m.type)
     ]
 
     if let cid = m.customerId {
@@ -342,7 +342,7 @@ internal func pmToJSON(m: STPPaymentMethod) -> [String: Any] {
     if let c = m.created {
         val["created"] = c.timeIntervalSince1970
     }
-    
+
     if let c = m.card {
         val["card"] = pmCardToJSON(c: c)
     }
@@ -352,20 +352,20 @@ internal func pmToJSON(m: STPPaymentMethod) -> [String: Any] {
 
 internal func makeBankAccountParams(call: [AnyHashable: Any]!) -> STPBankAccountParams {
     let params = STPBankAccountParams()
-    
+
     params.accountNumber = call["account_number"] as? String ?? ""
     params.country = call["country"] as? String ?? ""
     params.currency = call["currency"] as? String ?? ""
     params.routingNumber = call["routing_number"] as? String ?? ""
     params.accountHolderName = call["account_holder_name"] as? String ?? ""
-        
+
     let accountHolderType = call["account_holder_type"] as? String ?? ""
-    
+
     if accountHolderType == "individual" {
         params.accountHolderType = STPBankAccountHolderType.individual
     } else if accountHolderType == "company" {
         params.accountHolderType = STPBankAccountHolderType.company
     }
-    
+
     return params
 }

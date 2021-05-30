@@ -3,8 +3,7 @@ import Stripe
 import Capacitor
 import PassKit
 
-
-extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
+extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
     public func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         controller.dismiss(animated: true, completion: nil)
 
@@ -47,7 +46,7 @@ extension StripePlugin : PKPaymentAuthorizationViewControllerDelegate {
                 let pip: STPPaymentIntentParams = STPPaymentIntentParams.init(clientSecret: clientSecret)
                 pip.paymentMethodId = pm.stripeId
 
-                STPPaymentHandler.shared().confirmPayment(withParams: pip, authenticationContext: self, completion: { (status, pi, err) in
+                STPPaymentHandler.shared().confirmPayment(withParams: pip, authenticationContext: self, completion: { (status, _, err) in
                     switch status {
                     case .failed:
                         if err != nil {

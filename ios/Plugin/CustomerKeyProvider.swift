@@ -8,11 +8,11 @@ import Stripe
 
 extension StripePlugin: STPCustomerEphemeralKeyProvider {
     public func createCustomerKey(withAPIVersion apiVersion: String, completion: @escaping STPJSONResponseCompletionBlock) {
-        completion(self.ephemeralKey! as? [AnyHashable : Any], nil)
+        completion(self.ephemeralKey! as? [AnyHashable: Any], nil)
     }
 }
 
-extension StripePlugin : STPPaymentContextDelegate {
+extension StripePlugin: STPPaymentContextDelegate {
     public func paymentContext(_ paymentContext: STPPaymentContext,
                                didFailToLoadWithError error: Error) {
         NSLog("failed with errors %s", error.localizedDescription)
@@ -27,7 +27,7 @@ extension StripePlugin : STPPaymentContextDelegate {
 
         self.notifyListeners("paymentMethodSelect", data: [
             "label": opt.label,
-            "reusable": opt.isReusable,
+            "reusable": opt.isReusable
         ])
     }
 
@@ -44,14 +44,14 @@ extension StripePlugin : STPPaymentContextDelegate {
         switch status {
         case .userCancellation:
             NSLog("User cancelled PaymentContext")
-            
+
         case .error:
             NSLog("Error occurred in PaymentContext")
-            
+
             if error != nil {
                 NSLog(error!.localizedDescription)
             }
-            
+
         case .success:
             NSLog("PaymentContext returned success status")
         }

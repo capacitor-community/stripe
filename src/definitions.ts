@@ -1,16 +1,10 @@
-declare module '@capacitor/core' {
-  interface PluginRegistry {
-    Stripe: StripePlugin;
-  }
-}
-
 export type StripeAccountIdOpt = {
   /**
    * Optional
    * Used on Android only
    */
   stripeAccountId?: string;
-}
+};
 
 export type IdempotencyKeyOpt = {
   /**
@@ -18,7 +12,7 @@ export type IdempotencyKeyOpt = {
    * Used on Android only
    */
   idempotencyKey?: string;
-}
+};
 
 export interface CommonIntentOptions extends StripeAccountIdOpt {
   clientSecret: string;
@@ -46,17 +40,17 @@ export interface ConfirmSetupIntentOptions extends CommonIntentOptions {
 
 export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
   /**
-     * Indicates that you intend to make future payments with this PaymentIntent's payment method.
-     *
-     * If present, the payment method used with this PaymentIntent can be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer, even after the transaction completes.
-     *
-     * Use `on_session` if you intend to only reuse the payment method when your customer is present in your checkout flow. Use `off_session` if your customer may or may not be in your checkout flow.
-     *
-     * Stripe uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules. For example, if your customer is impacted by [SCA](https://stripe.com/docs/strong-customer-authentication), using `off_session` will ensure that they are authenticated while processing this PaymentIntent. You will then be able to collect [off-session payments](https://stripe.com/docs/payments/cards/charging-saved-cards#off-session-payments-with-saved-cards) for this customer.
-     *
-     * If `setup_future_usage` is already set and you are performing a request using a publishable key, you may only update the value from `on_session` to `off_session`.
-     */
-  setupFutureUsage?: 'on_session' | 'off_session'
+   * Indicates that you intend to make future payments with this PaymentIntent's payment method.
+   *
+   * If present, the payment method used with this PaymentIntent can be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer, even after the transaction completes.
+   *
+   * Use `on_session` if you intend to only reuse the payment method when your customer is present in your checkout flow. Use `off_session` if your customer may or may not be in your checkout flow.
+   *
+   * Stripe uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules. For example, if your customer is impacted by [SCA](https://stripe.com/docs/strong-customer-authentication), using `off_session` will ensure that they are authenticated while processing this PaymentIntent. You will then be able to collect [off-session payments](https://stripe.com/docs/payments/cards/charging-saved-cards#off-session-payments-with-saved-cards) for this customer.
+   *
+   * If `setup_future_usage` is already set and you are performing a request using a publishable key, you may only update the value from `on_session` to `off_session`.
+   */
+  setupFutureUsage?: 'on_session' | 'off_session';
   /**
    * Whether you intend to save the payment method to the customer's account after this payment
    */
@@ -74,44 +68,44 @@ export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
 }
 
 export type SetPublishableKeyOptions = {
-  key: string
+  key: string;
 };
 
 export type ValidateCardNumberOptions = {
-  number: string
+  number: string;
 };
 
 export type ValidateExpiryDateOptions = {
-  exp_month: number,
-  exp_year: number
+  exp_month: number;
+  exp_year: number;
 };
 
 export type ValidateCVCOptions = {
-  cvc: string
+  cvc: string;
 };
 
 export type IdentifyCardBrandOptions = {
-  number: string
+  number: string;
 };
 
 export type CreatePiiTokenOptions = {
-  pii: string
-} & StripeAccountIdOpt & IdempotencyKeyOpt ;
+  pii: string;
+} & StripeAccountIdOpt &
+  IdempotencyKeyOpt;
 
 export type CreateSourceTokenOptions = {
-  type: SourceType,
-  params: SourceParams
+  type: SourceType;
+  params: SourceParams;
 };
 
 export type FinalizeApplePayTransactionOptions = {
-  success: boolean
+  success: boolean;
 };
 
-export type ValidityResponse = { valid: boolean }
-export type AvailabilityResponse = { available: boolean }
+export type ValidityResponse = { valid: boolean };
+export type AvailabilityResponse = { available: boolean };
 
 export type CardBrandResponse = { brand: CardBrand };
-
 
 export enum GooglePayAuthMethod {
   /**
@@ -123,16 +117,16 @@ export enum GooglePayAuthMethod {
    * This authentication method is associated with cards stored as Android device tokens.
    * Returned payment data includes a 3-D Secure (3DS) cryptogram generated on the device.
    */
-  CRYPTOGRAM_3DS = 'CRYPTOGRAM_3DS'
+  CRYPTOGRAM_3DS = 'CRYPTOGRAM_3DS',
 }
 
 export type InitCustomerSessionParams = {
   id: string;
   object: 'ephemeral_key';
-  associated_objects: Array<{
+  associated_objects: {
     type: 'customer';
     id: string;
-  }>;
+  }[];
   created: number;
   expires: number;
   livemode: boolean;
@@ -140,10 +134,14 @@ export type InitCustomerSessionParams = {
   apiVersion?: string;
 } & StripeAccountIdOpt;
 
-export type PresentPaymentOptionsResponse = { useGooglePay?: boolean; useApplePay?: boolean; paymentMethod?: PaymentMethod; };
+export type PresentPaymentOptionsResponse = {
+  useGooglePay?: boolean;
+  useApplePay?: boolean;
+  paymentMethod?: PaymentMethod;
+};
 
 export type CustomerPaymentMethodsResponse = {
-  paymentMethods: PaymentMethod[]
+  paymentMethods: PaymentMethod[];
 };
 
 export interface ConfirmPaymentIntentResponse {
@@ -188,22 +186,34 @@ export interface StripePlugin {
 
   createCardToken(card: CardTokenRequest): Promise<CardTokenResponse>;
 
-  createBankAccountToken(bankAccount: BankAccountTokenRequest): Promise<BankAccountTokenResponse>;
+  createBankAccountToken(
+    bankAccount: BankAccountTokenRequest,
+  ): Promise<BankAccountTokenResponse>;
 
   /* Payment Intents */
-  confirmPaymentIntent(opts: ConfirmPaymentIntentOptions): Promise<ConfirmPaymentIntentResponse>;
+  confirmPaymentIntent(
+    opts: ConfirmPaymentIntentOptions,
+  ): Promise<ConfirmPaymentIntentResponse>;
 
-  confirmSetupIntent(opts: ConfirmSetupIntentOptions): Promise<ConfirmSetupIntentResponse>;
+  confirmSetupIntent(
+    opts: ConfirmSetupIntentOptions,
+  ): Promise<ConfirmSetupIntentResponse>;
 
   /* Apple Pay */
-  payWithApplePay(options: { applePayOptions: ApplePayOptions }): Promise<ApplePayResponse>;
+  payWithApplePay(options: {
+    applePayOptions: ApplePayOptions;
+  }): Promise<ApplePayResponse>;
 
   cancelApplePay(): Promise<void>;
 
-  finalizeApplePayTransaction(opts: FinalizeApplePayTransactionOptions): Promise<void>;
+  finalizeApplePayTransaction(
+    opts: FinalizeApplePayTransactionOptions,
+  ): Promise<void>;
 
   /* Google Pay */
-  payWithGooglePay(opts: { googlePayOptions: GooglePayOptions }): Promise<GooglePayResponse>;
+  payWithGooglePay(opts: {
+    googlePayOptions: GooglePayOptions;
+  }): Promise<GooglePayResponse>;
 
   /* Other tokens */
   createSourceToken(opts: CreateSourceTokenOptions): Promise<TokenResponse>;
@@ -228,20 +238,26 @@ export interface StripePlugin {
     type?: string;
   }): Promise<CustomerPaymentMethodsResponse>;
 
-  deleteCustomerSource(opts: { sourceId: string }): Promise<CustomerPaymentMethodsResponse>;
+  deleteCustomerSource(opts: {
+    sourceId: string;
+  }): Promise<CustomerPaymentMethodsResponse>;
 
   /* Helpers */
   customizePaymentAuthUI(opts: any): Promise<void>;
 
-  presentPaymentOptions(): Promise<PresentPaymentOptionsResponse>
+  presentPaymentOptions(): Promise<PresentPaymentOptionsResponse>;
 
   isApplePayAvailable(): Promise<AvailabilityResponse>;
 
   isGooglePayAvailable(): Promise<AvailabilityResponse>;
 
-  validateCardNumber(opts: ValidateCardNumberOptions): Promise<ValidityResponse>;
+  validateCardNumber(
+    opts: ValidateCardNumberOptions,
+  ): Promise<ValidityResponse>;
 
-  validateExpiryDate(opts: ValidateExpiryDateOptions): Promise<ValidityResponse>;
+  validateExpiryDate(
+    opts: ValidateExpiryDateOptions,
+  ): Promise<ValidityResponse>;
 
   validateCVC(opts: ValidateCVCOptions): Promise<ValidityResponse>;
 
@@ -263,7 +279,7 @@ export enum UIButtonType {
   NEXT = 'next',
   CANCEL = 'cancel',
   RESEND = 'resend',
-  SELECT = 'select'
+  SELECT = 'select',
 }
 
 export interface UIButtonCustomizationOptions {
@@ -304,7 +320,7 @@ export interface Card {
   cvc_check: any;
   three_d_secure_usage?: {
     supported: boolean;
-  }
+  };
   last4: string;
   funding?: string;
   exp_month: number;
@@ -327,7 +343,9 @@ export interface Card {
   email?: string;
 }
 
-export interface BankAccountTokenRequest extends StripeAccountIdOpt, IdempotencyKeyOpt {
+export interface BankAccountTokenRequest
+  extends StripeAccountIdOpt,
+    IdempotencyKeyOpt {
   country: string;
   currency: string;
   account_holder_name: string;
@@ -340,7 +358,9 @@ export interface BankAccountTokenResponse extends TokenResponse {
   bank_account: BankAccount;
 }
 
-export interface CardTokenRequest extends StripeAccountIdOpt, IdempotencyKeyOpt {
+export interface CardTokenRequest
+  extends StripeAccountIdOpt,
+    IdempotencyKeyOpt {
   number: string;
   exp_month: number;
   exp_year: number;
@@ -496,7 +516,7 @@ export enum GooglePayPriceStatus {
   /**
    * Total price doesn't change from the amount presented to the shopper.
    */
-  FINAL = 'FINAL'
+  FINAL = 'FINAL',
 }
 
 export enum GooglePayCheckoutOption {
@@ -508,7 +528,7 @@ export enum GooglePayCheckoutOption {
    * The selected payment method is charged immediately after the payer confirms their selections.
    * This option is only available when `totalPriceStatus` is set to `FINAL`.
    */
-  COMPLETE_IMMEDIATE_PURCHASE = 'COMPLETE_IMMEDIATE_PURCHASE'
+  COMPLETE_IMMEDIATE_PURCHASE = 'COMPLETE_IMMEDIATE_PURCHASE',
 }
 
 export enum GooglePayBillingAddressFormat {
@@ -519,7 +539,7 @@ export enum GooglePayBillingAddressFormat {
   /**
    *  Name, street address, locality, region, country code, and postal code.
    */
-  FULL = 'FULL'
+  FULL = 'FULL',
 }
 
 export interface GooglePayOptions {
@@ -570,7 +590,14 @@ export interface GooglePayOptions {
   /**
    * One or more card networks that you support, also supported by the Google Pay API.
    */
-  allowedCardNetworks: Array<'AMEX' | 'DISCOVER' | 'INTERAC' | 'JCB' | 'MASTERCARD' | 'VISA'>;
+  allowedCardNetworks: (
+    | 'AMEX'
+    | 'DISCOVER'
+    | 'INTERAC'
+    | 'JCB'
+    | 'MASTERCARD'
+    | 'VISA'
+  )[];
 
   /**
    * Set to false if you don't support prepaid cards.
@@ -599,7 +626,7 @@ export interface GooglePayOptions {
      * Set to true if a phone number is required to process the transaction.
      */
     phoneNumberRequired?: boolean;
-  }
+  };
 
   /**
    * Set to true to request a full shipping address.
@@ -616,7 +643,7 @@ export interface GooglePayOptions {
      * Set to true if a phone number is required for the provided shipping address.
      */
     phoneNumberRequired?: boolean;
-  }
+  };
 }
 
 export interface ThreeDeeSecureParams {
@@ -693,7 +720,7 @@ export interface VisaCheckoutParams {
 }
 
 export type SourceParams =
-  ThreeDeeSecureParams
+  | ThreeDeeSecureParams
   | GiroPayParams
   | iDEALParams
   | SEPADebitParams
@@ -723,7 +750,7 @@ export enum CardBrand {
   VISA = 'Visa',
   MASTERCARD = 'MasterCard',
   UNIONPAY = 'UnionPay',
-  UNKNOWN = 'Unknown'
+  UNKNOWN = 'Unknown',
 }
 
 // const SourceTypeArray: SourceType[] = Object.keys(SourceType).map((key: any) => SourceType[key] as any as SourceType);
@@ -740,13 +767,39 @@ export interface Address {
 export interface IndividualVerificationDocument {
   front?: string;
   back?: string;
-  details_code: 'document_corrupt' | 'document_country_not_supported' | 'document_expired' | 'document_failed_copy' | 'document_failed_other' | 'document_failed_test_mode' | 'document_fraudulent' | 'document_failed_greyscale' | 'document_incomplete' | 'document_invalid' | 'document_manipulated' | 'document_missing_back' | 'document_missing_front' | 'document_not_readable' | 'document_not_uploaded' | 'document_photo_mismatch' | 'document_too_large' | 'document_type_not_supported'
+  details_code:
+    | 'document_corrupt'
+    | 'document_country_not_supported'
+    | 'document_expired'
+    | 'document_failed_copy'
+    | 'document_failed_other'
+    | 'document_failed_test_mode'
+    | 'document_fraudulent'
+    | 'document_failed_greyscale'
+    | 'document_incomplete'
+    | 'document_invalid'
+    | 'document_manipulated'
+    | 'document_missing_back'
+    | 'document_missing_front'
+    | 'document_not_readable'
+    | 'document_not_uploaded'
+    | 'document_photo_mismatch'
+    | 'document_too_large'
+    | 'document_type_not_supported';
 }
 
 export interface IndividualVerification {
   status: 'unverified' | 'pending' | 'verified';
   details: string;
-  details_code: 'document_address_mismatch' | 'document_dob_mismatch' | 'document_duplicate_type' | 'document_id_number_mismatch' | 'document_name_mismatch' | 'document_nationality_mismatch' | 'failed_keyed_identity' | 'failed_other';
+  details_code:
+    | 'document_address_mismatch'
+    | 'document_dob_mismatch'
+    | 'document_duplicate_type'
+    | 'document_id_number_mismatch'
+    | 'document_name_mismatch'
+    | 'document_nationality_mismatch'
+    | 'failed_keyed_identity'
+    | 'failed_other';
   document: IndividualVerificationDocument;
   additional_document?: IndividualVerificationDocument;
 }
@@ -755,7 +808,25 @@ export interface CompanyVerificationDocument {
   front?: string;
   back?: string;
   details: string;
-  details_code: 'document_corrupt' | 'document_country_not_supported' | 'document_expired' | 'document_failed_copy' | 'document_failed_other' | 'document_failed_test_mode' | 'document_fraudulent' | 'document_failed_greyscale' | 'document_incomplete' | 'document_invalid' | 'document_manipulated' | 'document_missing_back' | 'document_missing_front' | 'document_not_readable' | 'document_not_uploaded' | 'document_photo_mismatch' | 'document_too_large' | 'document_type_not_supported'
+  details_code:
+    | 'document_corrupt'
+    | 'document_country_not_supported'
+    | 'document_expired'
+    | 'document_failed_copy'
+    | 'document_failed_other'
+    | 'document_failed_test_mode'
+    | 'document_fraudulent'
+    | 'document_failed_greyscale'
+    | 'document_incomplete'
+    | 'document_invalid'
+    | 'document_manipulated'
+    | 'document_missing_back'
+    | 'document_missing_front'
+    | 'document_not_readable'
+    | 'document_not_uploaded'
+    | 'document_photo_mismatch'
+    | 'document_too_large'
+    | 'document_type_not_supported';
 }
 
 export interface CompanyVerification {
@@ -768,7 +839,7 @@ export interface LegalEntity {
     day: number;
     month: number;
     year: number;
-  },
+  };
   first_name?: string;
   last_name?: string;
   gender?: 'male' | 'female';
@@ -781,7 +852,7 @@ export interface LegalEntity {
   tos_acceptance?: {
     date: number;
     ip: string;
-  },
+  };
   personal_id_number_provided?: boolean;
   phone_number?: string;
   ssn_last_4_provided?: boolean;
@@ -792,7 +863,7 @@ export interface LegalEntity {
 }
 
 export interface LegalEntityParams {
-  type: 'individual' | 'company';
+  type?: 'individual' | 'company';
   address?: Address;
   phone?: string;
 }
@@ -840,7 +911,7 @@ export interface IndividualLegalEntityParams extends LegalEntityParams {
 }
 
 export interface CompanyLegalEntityParams extends LegalEntityParams {
-  type: 'company';
+  type?: 'company';
 
   /**
    * The company’s legal name.

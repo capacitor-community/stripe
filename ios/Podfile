@@ -1,4 +1,4 @@
-platform :ios, '11.0'
+platform :ios, '12.0'
 
 def capacitor_pods
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
@@ -9,10 +9,10 @@ end
 
 target 'Plugin' do
   capacitor_pods
+  pod 'Stripe', '~> 21.0.1'
 end
 
 target 'PluginTests' do
   capacitor_pods
+  pod 'Stripe', '~> 21.0.1'
 end
-
-pod 'Stripe', '~> 21.0.1'

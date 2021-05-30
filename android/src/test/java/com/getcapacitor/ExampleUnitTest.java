@@ -1,4 +1,4 @@
-package ca.zyra.capacitor.stripetest;
+package com.getcapacitor;
 
 import static org.junit.Assert.*;
 
