@@ -302,8 +302,8 @@ public class StripePlugin: CAPPlugin {
 
                 DispatchQueue.main.async {
                     self.bridge?.viewController?.present(authCtrl,
-                                                       animated: true,
-                                                       completion: nil)
+                                                         animated: true,
+                                                         completion: nil)
                 }
                 return
             }
