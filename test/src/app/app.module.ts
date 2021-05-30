@@ -14,11 +14,11 @@ import { AppComponent } from './app.component';
     BrowserModule,
     IonicModule.forRoot(),
     RouterModule.forRoot([
-      {
+    {
         path: '',
         component: AppComponent,
-      },
-    ]),
+    },
+], { relativeLinkResolution: 'legacy' }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
