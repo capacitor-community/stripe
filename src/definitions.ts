@@ -387,6 +387,18 @@ export interface ApplePayOptions {
   country: string;
   currency: string;
   items: ApplePayItem[];
+
+  billingEmailAddress?: boolean;
+  billingName?: boolean;
+  billingPhoneNumber?: boolean;
+  billingPhoneticName?: boolean;
+  billingPostalAddress?: boolean;
+
+  shippingEmailAddress?: boolean;
+  shippingName?: boolean;
+  shippingPhoneNumber?: boolean;
+  shippingPhoneticName?: boolean;
+  shippingPostalAddress?: boolean;
 }
 
 export interface GooglePayResponse {

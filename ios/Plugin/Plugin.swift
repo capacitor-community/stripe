@@ -15,6 +15,19 @@ public class StripePlugin: CAPPlugin {
     
     internal var ERR_NO_ACTIVE_CUSTOMER_CTX = "No active customer session was found. You must crete one by calling initCustomerSession"
 
+    @objc func setStripeAccount(_ call: CAPPluginCall) {
+        let value = call.getString("stripe_account") ?? ""
+
+        if value == "" {
+            call.error("you must provide a valid stripe account id")
+            return
+        }
+
+        STPAPIClient.shared().stripeAccount = value
+
+        call.success()
+    }
+
     @objc func setPublishableKey(_ call: CAPPluginCall) {
         let value = call.getString("key") ?? ""
 
@@ -314,6 +327,8 @@ public class StripePlugin: CAPPlugin {
         if call.hasOption("card") {
             let bd = STPPaymentMethodBillingDetails()
             bd.address = address(addressDict(fromCall: call))
+            bd.name = call.getString("name") ?? "";
+            bd.email = call.getString("email") ?? "";
 
             let cObj = call.getObject("card") ?? [:]
             let cpp = cardParams(fromObj: cObj)
