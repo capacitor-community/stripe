@@ -22,7 +22,11 @@ import org.json.JSONException
 import com.stripe.android.Stripe as Stripe2
 import android.Manifest;
 
-@CapacitorPlugin()
+@CapacitorPlugin(
+        permissions = [
+            Permission(alias = "location", strings = [ Manifest.permission.ACCESS_FINE_LOCATION ])
+        ]
+)
 class Stripe : Plugin() {
     private lateinit var stripeInstance: Stripe2
     private lateinit var publishableKey: String
