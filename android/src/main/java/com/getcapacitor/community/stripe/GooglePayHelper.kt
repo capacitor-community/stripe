@@ -1,4 +1,4 @@
-package ca.zyra.capacitor.stripe
+package com.getcapacitor.community.stripe;
 
 import android.content.Context
 import com.getcapacitor.JSArray

@@ -1,4 +1,4 @@
-package ca.zyra.capacitor.stripe
+package com.getcapacitor.community.stripe;
 
 import com.google.android.gms.wallet.PaymentData
 import com.stripe.android.CustomerSession

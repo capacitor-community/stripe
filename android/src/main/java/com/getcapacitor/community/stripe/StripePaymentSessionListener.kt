@@ -1,4 +1,4 @@
-package ca.zyra.capacitor.stripe
+package com.getcapacitor.community.stripe;
 
 import android.util.Log
 import com.stripe.android.CustomerSession

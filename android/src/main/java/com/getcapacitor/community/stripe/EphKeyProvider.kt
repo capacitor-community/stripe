@@ -1,4 +1,4 @@
-package ca.zyra.capacitor.stripe
+package com.getcapacitor.community.stripe;
 
 import com.stripe.android.EphemeralKeyProvider
 import com.stripe.android.EphemeralKeyUpdateListener

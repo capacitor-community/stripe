@@ -1,4 +1,4 @@
-package ca.zyra.capacitor.stripe
+package com.getcapacitor.community.stripe;
 
 import com.getcapacitor.JSObject
 import com.google.gson.Gson
