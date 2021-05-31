@@ -36,7 +36,7 @@ class Stripe : Plugin() {
 
     @PluginMethod
     fun setStripeAccount(call: PluginCall) {
-        call.success()
+        call.resolve()
     }
 
     @PluginMethod
@@ -45,7 +45,7 @@ class Stripe : Plugin() {
             val key = call.getString("key")
 
             if (key == null || key == "") {
-                call.error("you must provide a valid key")
+                call.reject("you must provide a valid key")
                 return
             }
 
@@ -53,9 +53,9 @@ class Stripe : Plugin() {
             publishableKey = key
             isTest = key.contains("test")
             PaymentConfiguration.init(context, key)
-            call.success()
+            call.resolve()
         } catch (e: Exception) {
-            call.error("unable to set publishable key: " + e.localizedMessage, e)
+            call.reject("unable to set publishable key: " + e.localizedMessage, e)
         }
 
     }
@@ -64,28 +64,28 @@ class Stripe : Plugin() {
     fun identifyCardBrand(call: PluginCall) {
         val res = JSObject()
         res.putOpt("brand", buildCard(call.data).build().brand)
-        call.success(res)
+        call.resolve(res)
     }
 
     @PluginMethod
     fun validateCardNumber(call: PluginCall) {
         val res = JSObject()
         res.putOpt("valid", buildCard(call.data).build().validateNumber())
-        call.success(res)
+        call.resolve(res)
     }
 
     @PluginMethod
     fun validateExpiryDate(call: PluginCall) {
         val res = JSObject()
         res.putOpt("valid", buildCard(call.data).build().validateExpiryDate())
-        call.success(res)
+        call.resolve(res)
     }
 
     @PluginMethod
     fun validateCVC(call: PluginCall) {
         val res = JSObject()
         res.putOpt("valid", buildCard(call.data).build().validateCVC())
-        call.success(res)
+        call.resolve(res)
     }
 
     @PluginMethod
@@ -97,7 +97,7 @@ class Stripe : Plugin() {
         val card = buildCard(call.data).build()
 
         if (!card.validateCard()) {
-            call.error("invalid card information")
+            call.reject("invalid card information")
             return
         }
 
@@ -114,11 +114,11 @@ class Stripe : Plugin() {
                 tokenJs.putOpt("created", result.created)
                 tokenJs.putOpt("type", result.type)
 
-                call.success(tokenJs)
+                call.resolve(tokenJs)
             }
 
             override fun onError(e: Exception) {
-                call.error("unable to create token: " + e.localizedMessage, e)
+                call.reject("unable to create token: " + e.localizedMessage, e)
             }
         }
 
@@ -165,11 +165,11 @@ class Stripe : Plugin() {
                 js.put("livemode", result.livemode)
                 js.put("used", result.used)
 
-                call.success(js)
+                call.resolve(js)
             }
 
             override fun onError(e: Exception) {
-                call.error("unable to create bank account token: " + e.localizedMessage, e)
+                call.reject("unable to create bank account token: " + e.localizedMessage, e)
             }
         }
 
@@ -231,11 +231,11 @@ class Stripe : Plugin() {
                 tokenJs.putOpt("id", result.id)
                 tokenJs.putOpt("created", result.created)
                 tokenJs.putOpt("type", result.type)
-                call.success(tokenJs)
+                call.resolve(tokenJs)
             }
 
             override fun onError(e: Exception) {
-                call.error("unable to create source token: " + e.localizedMessage, e)
+                call.reject("unable to create source token: " + e.localizedMessage, e)
             }
         }
 
@@ -326,12 +326,12 @@ class Stripe : Plugin() {
                 Log.d(TAG, "account token was successfully created")
                 val res = JSObject()
                 res.putOpt("token", result.id)
-                call.success(res)
+                call.resolve(res)
             }
 
             override fun onError(e: Exception) {
                 Log.d(TAG, "failed to create account token")
-                call.error("unable to create account token: " + e.localizedMessage, e)
+                call.reject("unable to create account token: " + e.localizedMessage, e)
             }
         }
 
@@ -351,11 +351,11 @@ class Stripe : Plugin() {
             override fun onSuccess(result: Token) {
                 val res = JSObject()
                 res.putOpt("id", result.id)
-                call.success(res)
+                call.resolve(res)
             }
 
             override fun onError(e: Exception) {
-                call.error("unable to create pii token: " + e.localizedMessage, e)
+                call.reject("unable to create pii token: " + e.localizedMessage, e)
             }
         }
 
@@ -434,7 +434,7 @@ class Stripe : Plugin() {
             }
 
             call.hasOption("applePayOptions") -> {
-                call.error("ApplePay is not supported on Android")
+                call.reject("ApplePay is not supported on Android")
                 return
             }
 
@@ -544,7 +544,7 @@ class Stripe : Plugin() {
             }
 
             override fun onError(err: Exception) {
-                call.error(err.localizedMessage, err)
+                call.reject(err.localizedMessage, err)
             }
         }
 
@@ -585,7 +585,7 @@ class Stripe : Plugin() {
 
                 val res = JSObject()
                 res.put("paymentMethods", arr)
-                call.success(res)
+                call.resolve(res)
             }
 
             override fun onError(err: Exception) {
@@ -690,7 +690,7 @@ class Stripe : Plugin() {
 
         if (!::stripeInstance.isInitialized) {
             Log.d(TAG, "plugin was not initialized, ending capacitor call here")
-            call.error(ERR_STRIPE_NOT_INITIALIZED)
+            call.reject(ERR_STRIPE_NOT_INITIALIZED)
             return false
         }
 
@@ -777,7 +777,7 @@ class Stripe : Plugin() {
             val res = PaymentMethodsActivityStarter.Result.fromIntent(data)
 
             if (res == null) {
-                call.error("user cancelled")
+                call.reject("user cancelled")
                 freeSavedCall()
                 return
             }
@@ -789,7 +789,7 @@ class Stripe : Plugin() {
                 js.put("paymentMethod", pmToJson(res.paymentMethod!!))
             }
 
-            call.success(js)
+            call.resolve(js)
             freeSavedCall()
             return
         }
@@ -801,13 +801,13 @@ class Stripe : Plugin() {
                 Log.d(TAG, "onPaymentResult.onSuccess called")
                 val pi = result.intent
                 val res = paymentIntentToJSON(pi)
-                call.success(res)
+                call.resolve(res)
                 freeSavedCall()
             }
 
             override fun onError(e: Exception) {
                 Log.d(TAG, "onPaymentResult.onError called")
-                call.error("unable to complete transaction: " + e.localizedMessage, e)
+                call.reject("unable to complete transaction: " + e.localizedMessage, e)
                 freeSavedCall()
             }
         }
@@ -817,13 +817,13 @@ class Stripe : Plugin() {
                 Log.d(TAG, "onSetupResult.onSuccess called")
                 val si = result.intent
                 val res = setupIntentToJSON(si)
-                call.success(res)
+                call.resolve(res)
                 freeSavedCall()
             }
 
             override fun onError(e: Exception) {
                 Log.d(TAG, "onSetupResult.onError called")
-                call.error("unable to complete transaction: " + e.localizedMessage, e)
+                call.reject("unable to complete transaction: " + e.localizedMessage, e)
                 freeSavedCall()
             }
         }
