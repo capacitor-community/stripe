@@ -12,6 +12,15 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v1
 
+    - name: Use cached node_modules
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-v1-dependencies-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-v1-dependencies-
+
     - name: Install node_modules
       run: npm ci
 
@@ -40,7 +49,7 @@ jobs:
     - name: Build Android Debug APK
       working-directory: ./test/android
       run: ./gradlew assembleDebug
-    
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
