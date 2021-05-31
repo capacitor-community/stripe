@@ -1,5 +1,5 @@
 import type {ApplePayOptions} from '../applepay';
-import type {CommonIntentOptions} from '../definitions';
+import type {CommonIntentOptions} from '../../definitions';
 import type {GooglePayOptions} from '../googlepay';
 
 export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {

@@ -1,24 +1,24 @@
-import type { ApplePayDefinitions } from './applepay';
-import type { GooglePayDefinitions } from './googlepay';
-import type { HelperDefinitions } from './helper';
-import type { IntentDefinitions } from './intent';
-import type { PaymentDefinitions } from './payment';
+import type { Card, BankAccount } from '@stripe/stripe-js'
+
+import type { ApplePayDefinitions } from './types/applepay';
+import type { GooglePayDefinitions } from './types/googlepay';
+import type { HelperDefinitions } from './types/helper';
+import type { IntentDefinitions } from './types/intent';
+import type { PaymentDefinitions } from './types/payment';
 import type {
-  BankAccount,
-  Card,
   IdempotencyKeyOpt,
   StripeAccountIdOpt,
   TokenResponse,
-} from './shared';
-import type { TokenDefinitions } from './token';
+} from './types/shared';
+import type { TokenDefinitions } from './types/token';
 
-export * from './applepay/index';
-export * from './googlepay/index';
-export * from './intent/index';
-export * from './token/index';
-export * from './payment/index';
-export * from './helper/index';
-export * from './shared/index';
+export * from './types/applepay/index';
+export * from './types/googlepay/index';
+export * from './types/intent/index';
+export * from './types/token/index';
+export * from './types/payment/index';
+export * from './types/helper/index';
+export * from './types/shared/index';
 
 type StripeDefinitions = TokenDefinitions &
   PaymentDefinitions &

@@ -1,4 +1,6 @@
-import type { CardBrand, PaymentMethod} from '../shared';
+import type { PaymentMethod } from '@stripe/stripe-js';
+
+import type { CardBrand} from '../shared';
 
 export interface HelperDefinitions {
 

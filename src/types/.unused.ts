@@ -1,4 +1,4 @@
-import type { Address } from './shared';
+import type { Address } from "@stripe/stripe-js";
 
 export interface LegalEntity {
   address?: Address;

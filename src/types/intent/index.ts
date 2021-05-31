@@ -1,4 +1,4 @@
-import type {CardTokenRequest} from '../definitions';
+import type {CardTokenRequest} from '../../definitions';
 import type {StripeAccountIdOpt} from '../shared';
 
 import type { ConfirmPaymentIntentOptions } from './confirm.interface'

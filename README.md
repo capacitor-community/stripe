@@ -397,40 +397,9 @@ createAccountToken(account: AccountParams) => Promise<TokenResponse>
 
 #### CardTokenResponse
 
-| Prop       | Type                                  |
-| ---------- | ------------------------------------- |
-| **`card`** | <code><a href="#card">Card</a></code> |
-
-
-#### Card
-
-| Prop                       | Type                                            | Description                                 |
-| -------------------------- | ----------------------------------------------- | ------------------------------------------- |
-| **`id`**                   | <code>string</code>                             | Id exists for cards but not payment methods |
-| **`brand`**                | <code><a href="#cardbrand">CardBrand</a></code> |                                             |
-| **`country`**              | <code>string</code>                             |                                             |
-| **`cvc_check`**            | <code>any</code>                                |                                             |
-| **`three_d_secure_usage`** | <code>{ supported: boolean; }</code>            |                                             |
-| **`last4`**                | <code>string</code>                             |                                             |
-| **`funding`**              | <code>string</code>                             |                                             |
-| **`exp_month`**            | <code>number</code>                             |                                             |
-| **`exp_year`**             | <code>number</code>                             |                                             |
-| **`object`**               | <code>string</code>                             |                                             |
-| **`address_city`**         | <code>string</code>                             |                                             |
-| **`address_country`**      | <code>string</code>                             |                                             |
-| **`address_line1`**        | <code>string</code>                             |                                             |
-| **`address_line1_check`**  | <code>string</code>                             |                                             |
-| **`address_line2`**        | <code>string</code>                             |                                             |
-| **`address_state`**        | <code>string</code>                             |                                             |
-| **`address_zip`**          | <code>string</code>                             |                                             |
-| **`address_zip_check`**    | <code>string</code>                             |                                             |
-| **`dynamic_last4`**        | <code>any</code>                                |                                             |
-| **`fingerprint`**          | <code>string</code>                             |                                             |
-| **`metadata`**             | <code>any</code>                                |                                             |
-| **`name`**                 | <code>string</code>                             |                                             |
-| **`tokenization_method`**  | <code>string</code>                             |                                             |
-| **`phone`**                | <code>string</code>                             |                                             |
-| **`email`**                | <code>string</code>                             |                                             |
+| Prop       | Type              |
+| ---------- | ----------------- |
+| **`card`** | <code>Card</code> |
 
 
 #### CardTokenRequest
@@ -455,26 +424,9 @@ createAccountToken(account: AccountParams) => Promise<TokenResponse>
 
 #### BankAccountTokenResponse
 
-| Prop               | Type                                                |
-| ------------------ | --------------------------------------------------- |
-| **`bank_account`** | <code><a href="#bankaccount">BankAccount</a></code> |
-
-
-#### BankAccount
-
-| Prop                      | Type                |
-| ------------------------- | ------------------- |
-| **`id`**                  | <code>string</code> |
-| **`object`**              | <code>string</code> |
-| **`account_holder_name`** | <code>string</code> |
-| **`account_holder_type`** | <code>string</code> |
-| **`bank_name`**           | <code>string</code> |
-| **`country`**             | <code>string</code> |
-| **`currency`**            | <code>string</code> |
-| **`fingerprint`**         | <code>string</code> |
-| **`last4`**               | <code>string</code> |
-| **`routing_number`**      | <code>string</code> |
-| **`status`**              | <code>string</code> |
+| Prop               | Type                     |
+| ------------------ | ------------------------ |
+| **`bank_account`** | <code>BankAccount</code> |
 
 
 #### BankAccountTokenRequest
@@ -554,34 +506,22 @@ createAccountToken(account: AccountParams) => Promise<TokenResponse>
 | **`shippingAddressParameters`** | <code>{ allowedCountryCodes?: string[]; phoneNumberRequired?: boolean; }</code>                                                      |                                                                                                                                                                                                                                                   |
 
 
-#### PaymentMethod
-
-| Prop             | Type                                  |
-| ---------------- | ------------------------------------- |
-| **`created`**    | <code>number</code>                   |
-| **`customerId`** | <code>string</code>                   |
-| **`id`**         | <code>string</code>                   |
-| **`livemode`**   | <code>boolean</code>                  |
-| **`type`**       | <code>string</code>                   |
-| **`card`**       | <code><a href="#card">Card</a></code> |
-
-
 #### ConfirmPaymentIntentResponse
 
-| Prop                       | Type                                                    |
-| -------------------------- | ------------------------------------------------------- |
-| **`amount`**               | <code>number</code>                                     |
-| **`capture_method`**       | <code>string</code>                                     |
-| **`client_secret`**        | <code>string</code>                                     |
-| **`confirmation_method`**  | <code>string</code>                                     |
-| **`created`**              | <code>number</code>                                     |
-| **`currency`**             | <code>string</code>                                     |
-| **`cad`**                  | <code>string</code>                                     |
-| **`livemode`**             | <code>boolean</code>                                    |
-| **`object`**               | <code>string</code>                                     |
-| **`payment_method`**       | <code><a href="#paymentmethod">PaymentMethod</a></code> |
-| **`payment_method_types`** | <code>string[]</code>                                   |
-| **`status`**               | <code>string</code>                                     |
+| Prop                       | Type                       |
+| -------------------------- | -------------------------- |
+| **`amount`**               | <code>number</code>        |
+| **`capture_method`**       | <code>string</code>        |
+| **`client_secret`**        | <code>string</code>        |
+| **`confirmation_method`**  | <code>string</code>        |
+| **`created`**              | <code>number</code>        |
+| **`currency`**             | <code>string</code>        |
+| **`cad`**                  | <code>string</code>        |
+| **`livemode`**             | <code>boolean</code>       |
+| **`object`**               | <code>string</code>        |
+| **`payment_method`**       | <code>PaymentMethod</code> |
+| **`payment_method_types`** | <code>string[]</code>      |
+| **`status`**               | <code>string</code>        |
 
 
 #### ConfirmPaymentIntentOptions
@@ -680,7 +620,7 @@ Enables basic storage and retrieval of dates and times.
 | **`amount`**    | <code>number</code> | Amount                                                   |
 | **`currency`**  | <code>string</code> | Currency code                                            |
 | **`returnURL`** | <code>string</code> | URL to redirect to after successfully verifying the card |
-| **`card`**      | <code>string</code> | <a href="#card">Card</a> source ID                       |
+| **`card`**      | <code>string</code> | Card source ID                                           |
 
 
 #### GiroPayParams
@@ -818,7 +758,7 @@ Enables basic storage and retrieval of dates and times.
 
 #### PresentPaymentOptionsResponse
 
-<code>{ useGooglePay?: boolean; useApplePay?: boolean; paymentMethod?: <a href="#paymentmethod">PaymentMethod</a>; }</code>
+<code>{ useGooglePay?: boolean; useApplePay?: boolean; paymentMethod?: PaymentMethod; }</code>
 
 
 #### ValidityResponse
@@ -889,20 +829,6 @@ Enables basic storage and retrieval of dates and times.
 ### Enums
 
 
-#### CardBrand
-
-| Members                | Value                           |
-| ---------------------- | ------------------------------- |
-| **`AMERICAN_EXPRESS`** | <code>'American Express'</code> |
-| **`DISCOVER`**         | <code>'Discover'</code>         |
-| **`JCB`**              | <code>'JCB'</code>              |
-| **`DINERS_CLUB`**      | <code>'Diners Club'</code>      |
-| **`VISA`**             | <code>'Visa'</code>             |
-| **`MASTERCARD`**       | <code>'MasterCard'</code>       |
-| **`UNIONPAY`**         | <code>'UnionPay'</code>         |
-| **`UNKNOWN`**          | <code>'Unknown'</code>          |
-
-
 #### GooglePayPriceStatus
 
 | Members                   | Value                              | Description                                                                                                          |
@@ -926,6 +852,20 @@ Enables basic storage and retrieval of dates and times.
 | ---------- | ------------------- | ---------------------------------------------------------------------- |
 | **`MIN`**  | <code>'MIN'</code>  | Name, country code, and postal code (default).                         |
 | **`FULL`** | <code>'FULL'</code> | Name, street address, locality, region, country code, and postal code. |
+
+
+#### CardBrand
+
+| Members                | Value                           |
+| ---------------------- | ------------------------------- |
+| **`AMERICAN_EXPRESS`** | <code>'American Express'</code> |
+| **`DISCOVER`**         | <code>'Discover'</code>         |
+| **`JCB`**              | <code>'JCB'</code>              |
+| **`DINERS_CLUB`**      | <code>'Diners Club'</code>      |
+| **`VISA`**             | <code>'Visa'</code>             |
+| **`MASTERCARD`**       | <code>'MasterCard'</code>       |
+| **`UNIONPAY`**         | <code>'UnionPay'</code>         |
+| **`UNKNOWN`**          | <code>'Unknown'</code>          |
 
 
 #### SourceType

@@ -1,4 +1,4 @@
-import type {CommonIntentOptions} from '../definitions';
+import type {CommonIntentOptions} from '../../definitions';
 
 export interface ConfirmSetupIntentOptions extends CommonIntentOptions {
   id: string;

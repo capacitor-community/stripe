@@ -1,4 +1,4 @@
-import type {PaymentMethod} from '../shared';
+import type { PaymentMethod } from '@stripe/stripe-js';
 
 export interface ConfirmPaymentIntentResponse {
   amount: number;

@@ -1,7 +1,10 @@
-import type {Address,
+import type { Address } from "@stripe/stripe-js";
+
+import type {
   TokenResponse,
   IdempotencyKeyOpt,
   StripeAccountIdOpt} from '../shared';
+
 
 import type {SourceType} from './enum';
 
@@ -234,6 +237,7 @@ export interface IndividualLegalEntityParams extends LegalEntityParams {
 
 export interface LegalEntityParams {
   type?: 'individual' | 'company';
-  address?: Address;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  address?: Address,
   phone?: string;
 }
