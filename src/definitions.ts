@@ -1,3 +1,25 @@
+import type {
+  ApplePayOptions,
+  ApplePayResponse,
+  FinalizeApplePayTransactionOptions,
+} from './applepay';
+import type { GooglePayOptions, GooglePayResponse } from './googlepay';
+import type {
+  ConfirmPaymentIntentResponse,
+  ConfirmPaymentIntentOptions,
+  ConfirmSetupIntentOptions,
+  ConfirmSetupIntentResponse,
+} from './intent';
+import type {
+  CompanyVerification,
+  IndividualVerification,
+} from './verification';
+
+export * from './applepay';
+export * from './googlepay';
+export * from './verification';
+export * from './intent';
+
 export type StripeAccountIdOpt = {
   /**
    * Optional
@@ -13,59 +35,6 @@ export type IdempotencyKeyOpt = {
    */
   idempotencyKey?: string;
 };
-
-export interface CommonIntentOptions extends StripeAccountIdOpt {
-  clientSecret: string;
-
-  /**
-   * If provided, the payment intent will be confirmed using this card as a payment method.
-   */
-  card?: CardTokenRequest;
-
-  /**
-   * If provided, the payment intent will be confirmed using this payment method
-   */
-  paymentMethodId?: string;
-
-  /**
-   * Optional
-   * Used for Webview based 3DS authentication
-   */
-  redirectUrl?: string;
-}
-
-export interface ConfirmSetupIntentOptions extends CommonIntentOptions {
-  id: string;
-}
-
-export interface ConfirmPaymentIntentOptions extends CommonIntentOptions {
-  /**
-   * Indicates that you intend to make future payments with this PaymentIntent's payment method.
-   *
-   * If present, the payment method used with this PaymentIntent can be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer, even after the transaction completes.
-   *
-   * Use `on_session` if you intend to only reuse the payment method when your customer is present in your checkout flow. Use `off_session` if your customer may or may not be in your checkout flow.
-   *
-   * Stripe uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules. For example, if your customer is impacted by [SCA](https://stripe.com/docs/strong-customer-authentication), using `off_session` will ensure that they are authenticated while processing this PaymentIntent. You will then be able to collect [off-session payments](https://stripe.com/docs/payments/cards/charging-saved-cards#off-session-payments-with-saved-cards) for this customer.
-   *
-   * If `setup_future_usage` is already set and you are performing a request using a publishable key, you may only update the value from `on_session` to `off_session`.
-   */
-  setupFutureUsage?: 'on_session' | 'off_session';
-  /**
-   * Whether you intend to save the payment method to the customer's account after this payment
-   */
-  saveMethod?: boolean;
-
-  /**
-   * If provided, the payment intent will be confirmed using Apple Pay
-   */
-  applePayOptions?: ApplePayOptions;
-
-  /**
-   * If provided, the payment intent will be confirmed using Google Pay
-   */
-  googlePayOptions?: GooglePayOptions;
-}
 
 export type SetPublishableKeyOptions = {
   key: string;
@@ -98,27 +67,10 @@ export type CreateSourceTokenOptions = {
   params: SourceParams;
 };
 
-export type FinalizeApplePayTransactionOptions = {
-  success: boolean;
-};
-
 export type ValidityResponse = { valid: boolean };
 export type AvailabilityResponse = { available: boolean };
 
 export type CardBrandResponse = { brand: CardBrand };
-
-export enum GooglePayAuthMethod {
-  /**
-   * This authentication method is associated with payment cards stored on file with the user's Google Account.
-   * Returned payment data includes personal account number (PAN) with the expiration month and the expiration year.
-   */
-  PAN_ONLY = 'PAN_ONLY',
-  /**
-   * This authentication method is associated with cards stored as Android device tokens.
-   * Returned payment data includes a 3-D Secure (3DS) cryptogram generated on the device.
-   */
-  CRYPTOGRAM_3DS = 'CRYPTOGRAM_3DS',
-}
 
 export type InitCustomerSessionParams = {
   id: string;
@@ -143,42 +95,6 @@ export type PresentPaymentOptionsResponse = {
 export type CustomerPaymentMethodsResponse = {
   paymentMethods: PaymentMethod[];
 };
-
-export interface ConfirmPaymentIntentResponse {
-  amount: number;
-  capture_method: string;
-  client_secret: string;
-  confirmation_method: string;
-  created: number;
-  currency: string;
-  cad: string;
-  livemode: boolean;
-  object: string;
-  payment_method: PaymentMethod;
-  payment_method_types: string[];
-  status: string;
-}
-
-export interface ConfirmSetupIntentResponse {
-  /**
-   * Unix timestamp representing creation time
-   */
-  created: number;
-  /**
-   * Setup intent ID
-   */
-  id: string;
-  /**
-   * Whether the setup intent was created in live mode
-   */
-  isLiveMode: boolean;
-  /**
-   * Payment method ID
-   */
-  paymentMethodId: string;
-  status: string;
-  usage: string;
-}
 
 export interface StripePlugin {
   /* Core */
@@ -393,259 +309,6 @@ export interface TokenResponse {
   created: Date;
 }
 
-export interface ApplePayResponse {
-  token: string;
-}
-
-export interface ApplePayItem {
-  label: string;
-  amount: number | string;
-}
-
-export interface ApplePayOptions {
-  merchantId: string;
-  country: string;
-  currency: string;
-  items: ApplePayItem[];
-
-  billingEmailAddress?: boolean;
-  billingName?: boolean;
-  billingPhoneNumber?: boolean;
-  billingPhoneticName?: boolean;
-  billingPostalAddress?: boolean;
-
-  shippingEmailAddress?: boolean;
-  shippingName?: boolean;
-  shippingPhoneNumber?: boolean;
-  shippingPhoneticName?: boolean;
-  shippingPostalAddress?: boolean;
-}
-
-export interface GooglePayResponse {
-  success: boolean;
-  token: {
-    apiVersionMinor: number;
-    apiVersion: number;
-    paymentMethodData: {
-      description: string;
-      tokenizationData: {
-        type: string;
-        /**
-         * The "token" is a JSON string of a TokenResponse.
-         * So please use `JSON.parse(token)`!
-         * {
-         *   "id": "tok_123...",
-         *   "object": "token",
-         *   "card": {
-         *     "id": "card_123...",
-         *     "object": "card",
-         *     "address_city": null,
-         *     "address_country": null,
-         *     "address_line1": null,
-         *     "address_line1_check": null,
-         *     "address_line2": null,
-         *     "address_state": null,
-         *     "address_zip": null,
-         *     "address_zip_check": null,
-         *     "brand": "MasterCard",
-         *     "country": "US",
-         *     "cvc_check": null,
-         *     "dynamic_last4": "4242",
-         *     "exp_month": 12,
-         *     "exp_year": 2025,
-         *     "funding": "credit",
-         *     "last4": "6933",
-         *     "metadata": {
-         *     },
-         *     "name": "Patrick ...",
-         *     "tokenization_method": "android_pay"
-         *   },
-         *   "client_ip": "123.123.123.123",
-         *   "created": 1234567890,
-         *   "livemode": false,
-         *   "type": "card",
-         *   "used": false
-         * }
-         */
-        token: string;
-      };
-      type: string;
-      info: {
-        cardNetwork: string;
-        cardDetails: string;
-        /**
-         * `billingAddress` is only set when `billingAddressRequired` was set to `true`
-         */
-        billingAddress?: {
-          countryCode: string;
-          postalCode: string;
-          name: string;
-        };
-      };
-    };
-    /**
-     * `shippingAddress` is only set when `shippingAddressRequired` was set to `true`
-     */
-    shippingAddress?: {
-      address3: string;
-      sortingCode: string;
-      address2: string;
-      countryCode: string;
-      address1: string;
-      postalCode: string;
-      name: string;
-      locality: string;
-      administrativeArea: string;
-    };
-    /**
-     * `email` is only set when `emailRequired` was set to `true`
-     */
-    email?: string;
-  };
-}
-
-export enum GooglePayPriceStatus {
-  /**
-   * Used for a capability check. Do not use this property if the transaction is processed in an EEA country.
-   */
-  NOT_CURRENTLY_KNOWN = 'NOT_CURRENTLY_KNOWN',
-  /**
-   * Total price may adjust based on the details of the response, such as sales tax collected based on a billing address.
-   */
-  ESTIMATED = 'ESTIMATED',
-  /**
-   * Total price doesn't change from the amount presented to the shopper.
-   */
-  FINAL = 'FINAL',
-}
-
-export enum GooglePayCheckoutOption {
-  /**
-   * Standard text applies for the given totalPriceStatus (default).
-   */
-  DEFAULT = 'DEFAULT',
-  /**
-   * The selected payment method is charged immediately after the payer confirms their selections.
-   * This option is only available when `totalPriceStatus` is set to `FINAL`.
-   */
-  COMPLETE_IMMEDIATE_PURCHASE = 'COMPLETE_IMMEDIATE_PURCHASE',
-}
-
-export enum GooglePayBillingAddressFormat {
-  /**
-   * Name, country code, and postal code (default).
-   */
-  MIN = 'MIN',
-  /**
-   *  Name, street address, locality, region, country code, and postal code.
-   */
-  FULL = 'FULL',
-}
-
-export interface GooglePayOptions {
-  /**
-   * Merchant name encoded as UTF-8.
-   * Merchant name is rendered in the payment sheet.
-   * In TEST environment, or if a merchant isn't recognized, a “Pay Unverified Merchant” message is displayed in the payment sheet.
-   */
-  merchantName?: string;
-
-  /**
-   * Total monetary value of the transaction with an optional decimal precision of two decimal places.
-   */
-  totalPrice: string;
-  /**
-   * The status of the total price used
-   */
-  totalPriceStatus: GooglePayPriceStatus;
-  /**
-   * Custom label for the total price within the display items.
-   */
-  totalPriceLabel?: string;
-  /**
-   * Affects the submit button text displayed in the Google Pay payment sheet.
-   */
-  checkoutOption?: 'DEFAULT' | 'COMPLETE_IMMEDIATE_PURCHASE';
-  /**
-   * A unique ID that identifies a transaction attempt.
-   * Merchants may use an existing ID or generate a specific one for Google Pay transaction attempts.
-   * This field is required when you send callbacks to the Google Transaction Events API.
-   */
-  transactionId?: string;
-  /**
-   * ISO 4217 alphabetic currency code.
-   */
-  currencyCode: string;
-  /**
-   * ISO 3166-1 alpha-2 country code where the transaction is processed.
-   * This is required for merchants based in European Economic Area (EEA) countries.
-   */
-  countryCode?: string;
-
-  /**
-   * Fields supported to authenticate a card transaction.
-   */
-  allowedAuthMethods: GooglePayAuthMethod[];
-
-  /**
-   * One or more card networks that you support, also supported by the Google Pay API.
-   */
-  allowedCardNetworks: (
-    | 'AMEX'
-    | 'DISCOVER'
-    | 'INTERAC'
-    | 'JCB'
-    | 'MASTERCARD'
-    | 'VISA'
-  )[];
-
-  /**
-   * Set to false if you don't support prepaid cards.
-   * Default: The prepaid card class is supported for the card networks specified.
-   */
-  allowPrepaidCards?: boolean;
-
-  /**
-   * Set to true to request an email address.
-   */
-  emailRequired?: boolean;
-
-  /**
-   * Set to true if you require a billing address.
-   * A billing address should only be requested if it's required to process the transaction.
-   * Additional data requests can increase friction in the checkout process and lead to a lower conversion rate.
-   */
-  billingAddressRequired?: boolean;
-
-  billingAddressParameters?: {
-    /**
-     * Billing address format required to complete the transaction.
-     */
-    format?: GooglePayBillingAddressFormat;
-    /**
-     * Set to true if a phone number is required to process the transaction.
-     */
-    phoneNumberRequired?: boolean;
-  };
-
-  /**
-   * Set to true to request a full shipping address.
-   */
-  shippingAddressRequired?: boolean;
-
-  shippingAddressParameters?: {
-    /**
-     * ISO 3166-1 alpha-2 country code values of the countries where shipping is allowed.
-     * If this object isn't specified, all shipping address countries are allowed.
-     */
-    allowedCountryCodes?: string[];
-    /**
-     * Set to true if a phone number is required for the provided shipping address.
-     */
-    phoneNumberRequired?: boolean;
-  };
-}
-
 export interface ThreeDeeSecureParams {
   /**
    * Amount
@@ -762,75 +425,6 @@ export interface Address {
   postal_code: string;
   state: string;
   country: string;
-}
-
-export interface IndividualVerificationDocument {
-  front?: string;
-  back?: string;
-  details_code:
-    | 'document_corrupt'
-    | 'document_country_not_supported'
-    | 'document_expired'
-    | 'document_failed_copy'
-    | 'document_failed_other'
-    | 'document_failed_test_mode'
-    | 'document_fraudulent'
-    | 'document_failed_greyscale'
-    | 'document_incomplete'
-    | 'document_invalid'
-    | 'document_manipulated'
-    | 'document_missing_back'
-    | 'document_missing_front'
-    | 'document_not_readable'
-    | 'document_not_uploaded'
-    | 'document_photo_mismatch'
-    | 'document_too_large'
-    | 'document_type_not_supported';
-}
-
-export interface IndividualVerification {
-  status: 'unverified' | 'pending' | 'verified';
-  details: string;
-  details_code:
-    | 'document_address_mismatch'
-    | 'document_dob_mismatch'
-    | 'document_duplicate_type'
-    | 'document_id_number_mismatch'
-    | 'document_name_mismatch'
-    | 'document_nationality_mismatch'
-    | 'failed_keyed_identity'
-    | 'failed_other';
-  document: IndividualVerificationDocument;
-  additional_document?: IndividualVerificationDocument;
-}
-
-export interface CompanyVerificationDocument {
-  front?: string;
-  back?: string;
-  details: string;
-  details_code:
-    | 'document_corrupt'
-    | 'document_country_not_supported'
-    | 'document_expired'
-    | 'document_failed_copy'
-    | 'document_failed_other'
-    | 'document_failed_test_mode'
-    | 'document_fraudulent'
-    | 'document_failed_greyscale'
-    | 'document_incomplete'
-    | 'document_invalid'
-    | 'document_manipulated'
-    | 'document_missing_back'
-    | 'document_missing_front'
-    | 'document_not_readable'
-    | 'document_not_uploaded'
-    | 'document_photo_mismatch'
-    | 'document_too_large'
-    | 'document_type_not_supported';
-}
-
-export interface CompanyVerification {
-  document: CompanyVerificationDocument;
 }
 
 export interface LegalEntity {
