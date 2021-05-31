@@ -3,6 +3,10 @@ import type {Address,
   IdempotencyKeyOpt,
   StripeAccountIdOpt} from '../shared';
 
+import type {SourceType} from './enum';
+
+export * from './enum'
+
 export interface TokenDefinitions {
   createSourceToken(opts: CreateSourceTokenOptions): Promise<TokenResponse>;
 
@@ -26,17 +30,6 @@ export interface AccountParams extends StripeAccountIdOpt, IdempotencyKeyOpt {
   legalEntity: CompanyLegalEntityParams | IndividualLegalEntityParams;
 }
 
-export enum SourceType {
-  ThreeDeeSecure = '3ds',
-  GiroPay = 'giropay',
-  iDEAL = 'ideal',
-  SEPADebit = 'sepadebit',
-  Sofort = 'sofort',
-  AliPay = 'alipay',
-  AliPayReusable = 'alipayreusable',
-  P24 = 'p24',
-  VisaCheckout = 'visacheckout',
-}
 
 export type SourceParams =
   | ThreeDeeSecureParams
