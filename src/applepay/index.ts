@@ -1,4 +1,22 @@
+import type {AvailabilityResponse} from '../shared';
+
+import type {FinalizeApplePayTransactionOptions} from './enum';
+
 export * from './enum'
+
+export interface ApplePayDefinitions {
+  isApplePayAvailable(): Promise<AvailabilityResponse>;
+
+  payWithApplePay(options: {
+    applePayOptions: ApplePayOptions;
+  }): Promise<ApplePayResponse>;
+
+  cancelApplePay(): Promise<void>;
+
+  finalizeApplePayTransaction(
+    opts: FinalizeApplePayTransactionOptions,
+  ): Promise<void>;
+}
 
 export interface ApplePayResponse {
   token: string;
@@ -27,3 +45,5 @@ export interface ApplePayOptions {
   shippingPhoneticName?: boolean;
   shippingPostalAddress?: boolean;
 }
+
+

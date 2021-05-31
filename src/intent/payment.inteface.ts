@@ -1,4 +1,4 @@
-import type { PaymentMethod } from '../definitions';
+import type {PaymentMethod} from '../shared';
 
 export interface ConfirmPaymentIntentResponse {
   amount: number;

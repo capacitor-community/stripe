@@ -5,7 +5,6 @@ import type {
   AccountParams,
   ApplePayOptions,
   ApplePayResponse,
-  AvailabilityResponse,
   BankAccountTokenRequest,
   BankAccountTokenResponse,
   CardBrandResponse,
@@ -32,6 +31,7 @@ import type {
   ValidityResponse,
 } from './definitions';
 import { CardBrand } from './definitions';
+import type { AvailabilityResponse } from './shared';
 
 function flatten(json: any, prefix?: string, omit?: string[]): any {
   let obj: any = {};

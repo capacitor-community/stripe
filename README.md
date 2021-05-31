@@ -16,29 +16,30 @@ npx cap sync
 * [`setPublishableKey(...)`](#setpublishablekey)
 * [`createCardToken(...)`](#createcardtoken)
 * [`createBankAccountToken(...)`](#createbankaccounttoken)
-* [`confirmPaymentIntent(...)`](#confirmpaymentintent)
-* [`confirmSetupIntent(...)`](#confirmsetupintent)
+* [`isApplePayAvailable()`](#isapplepayavailable)
 * [`payWithApplePay(...)`](#paywithapplepay)
 * [`cancelApplePay()`](#cancelapplepay)
 * [`finalizeApplePayTransaction(...)`](#finalizeapplepaytransaction)
+* [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`payWithGooglePay(...)`](#paywithgooglepay)
-* [`createSourceToken(...)`](#createsourcetoken)
-* [`createPiiToken(...)`](#createpiitoken)
-* [`createAccountToken(...)`](#createaccounttoken)
+* [`customizePaymentAuthUI(...)`](#customizepaymentauthui)
+* [`presentPaymentOptions()`](#presentpaymentoptions)
+* [`validateCardNumber(...)`](#validatecardnumber)
+* [`validateExpiryDate(...)`](#validateexpirydate)
+* [`validateCVC(...)`](#validatecvc)
+* [`identifyCardBrand(...)`](#identifycardbrand)
+* [`confirmPaymentIntent(...)`](#confirmpaymentintent)
+* [`confirmSetupIntent(...)`](#confirmsetupintent)
 * [`initCustomerSession(...)`](#initcustomersession)
 * [`customerPaymentMethods()`](#customerpaymentmethods)
 * [`setCustomerDefaultSource(...)`](#setcustomerdefaultsource)
 * [`addCustomerSource(...)`](#addcustomersource)
 * [`deleteCustomerSource(...)`](#deletecustomersource)
-* [`customizePaymentAuthUI(...)`](#customizepaymentauthui)
-* [`presentPaymentOptions()`](#presentpaymentoptions)
-* [`isApplePayAvailable()`](#isapplepayavailable)
-* [`isGooglePayAvailable()`](#isgooglepayavailable)
-* [`validateCardNumber(...)`](#validatecardnumber)
-* [`validateExpiryDate(...)`](#validateexpirydate)
-* [`validateCVC(...)`](#validatecvc)
-* [`identifyCardBrand(...)`](#identifycardbrand)
+* [`createSourceToken(...)`](#createsourcetoken)
+* [`createPiiToken(...)`](#createpiitoken)
+* [`createAccountToken(...)`](#createaccounttoken)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 * [Enums](#enums)
 
 </docgen-index>
@@ -52,9 +53,9 @@ npx cap sync
 setPublishableKey(opts: SetPublishableKeyOptions) => Promise<void>
 ```
 
-| Param      | Type                          |
-| ---------- | ----------------------------- |
-| **`opts`** | <code>{ key: string; }</code> |
+| Param      | Type                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#setpublishablekeyoptions">SetPublishableKeyOptions</a></code> |
 
 --------------------
 
@@ -89,32 +90,13 @@ createBankAccountToken(bankAccount: BankAccountTokenRequest) => Promise<BankAcco
 --------------------
 
 
-### confirmPaymentIntent(...)
+### isApplePayAvailable()
 
 ```typescript
-confirmPaymentIntent(opts: ConfirmPaymentIntentOptions) => Promise<ConfirmPaymentIntentResponse>
+isApplePayAvailable() => Promise<AvailabilityResponse>
 ```
 
-| Param      | Type                                                                                |
-| ---------- | ----------------------------------------------------------------------------------- |
-| **`opts`** | <code><a href="#confirmpaymentintentoptions">ConfirmPaymentIntentOptions</a></code> |
-
-**Returns:** <code>Promise&lt;<a href="#confirmpaymentintentresponse">ConfirmPaymentIntentResponse</a>&gt;</code>
-
---------------------
-
-
-### confirmSetupIntent(...)
-
-```typescript
-confirmSetupIntent(opts: ConfirmSetupIntentOptions) => Promise<ConfirmSetupIntentResponse>
-```
-
-| Param      | Type                                                                            |
-| ---------- | ------------------------------------------------------------------------------- |
-| **`opts`** | <code><a href="#confirmsetupintentoptions">ConfirmSetupIntentOptions</a></code> |
-
-**Returns:** <code>Promise&lt;<a href="#confirmsetupintentresponse">ConfirmSetupIntentResponse</a>&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#availabilityresponse">AvailabilityResponse</a>&gt;</code>
 
 --------------------
 
@@ -149,9 +131,20 @@ cancelApplePay() => Promise<void>
 finalizeApplePayTransaction(opts: FinalizeApplePayTransactionOptions) => Promise<void>
 ```
 
-| Param      | Type                               |
-| ---------- | ---------------------------------- |
-| **`opts`** | <code>{ success: boolean; }</code> |
+| Param      | Type                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#finalizeapplepaytransactionoptions">FinalizeApplePayTransactionOptions</a></code> |
+
+--------------------
+
+
+### isGooglePayAvailable()
+
+```typescript
+isGooglePayAvailable() => Promise<AvailabilityResponse>
+```
+
+**Returns:** <code>Promise&lt;<a href="#availabilityresponse">AvailabilityResponse</a>&gt;</code>
 
 --------------------
 
@@ -167,120 +160,6 @@ payWithGooglePay(opts: { googlePayOptions: GooglePayOptions; }) => Promise<Googl
 | **`opts`** | <code>{ googlePayOptions: <a href="#googlepayoptions">GooglePayOptions</a>; }</code> |
 
 **Returns:** <code>Promise&lt;<a href="#googlepayresponse">GooglePayResponse</a>&gt;</code>
-
---------------------
-
-
-### createSourceToken(...)
-
-```typescript
-createSourceToken(opts: CreateSourceTokenOptions) => Promise<TokenResponse>
-```
-
-| Param      | Type                                                     |
-| ---------- | -------------------------------------------------------- |
-| **`opts`** | <code>{ type: SourceType; params: SourceParams; }</code> |
-
-**Returns:** <code>Promise&lt;<a href="#tokenresponse">TokenResponse</a>&gt;</code>
-
---------------------
-
-
-### createPiiToken(...)
-
-```typescript
-createPiiToken(opts: CreatePiiTokenOptions) => Promise<TokenResponse>
-```
-
-| Param      | Type                                                                   |
-| ---------- | ---------------------------------------------------------------------- |
-| **`opts`** | <code>{ pii: string; } & StripeAccountIdOpt & IdempotencyKeyOpt</code> |
-
-**Returns:** <code>Promise&lt;<a href="#tokenresponse">TokenResponse</a>&gt;</code>
-
---------------------
-
-
-### createAccountToken(...)
-
-```typescript
-createAccountToken(account: AccountParams) => Promise<TokenResponse>
-```
-
-| Param         | Type                                                    |
-| ------------- | ------------------------------------------------------- |
-| **`account`** | <code><a href="#accountparams">AccountParams</a></code> |
-
-**Returns:** <code>Promise&lt;<a href="#tokenresponse">TokenResponse</a>&gt;</code>
-
---------------------
-
-
-### initCustomerSession(...)
-
-```typescript
-initCustomerSession(opts: InitCustomerSessionParams) => Promise<void>
-```
-
-| Param      | Type                                                                                                                                                                                                                          |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`opts`** | <code>{ id: string; object: "ephemeral_key"; associated_objects: { type: "customer"; id: string; }[]; created: number; expires: number; livemode: boolean; secret: string; apiVersion?: string; } & StripeAccountIdOpt</code> |
-
---------------------
-
-
-### customerPaymentMethods()
-
-```typescript
-customerPaymentMethods() => Promise<CustomerPaymentMethodsResponse>
-```
-
-**Returns:** <code>Promise&lt;CustomerPaymentMethodsResponse&gt;</code>
-
---------------------
-
-
-### setCustomerDefaultSource(...)
-
-```typescript
-setCustomerDefaultSource(opts: { sourceId: string; type?: string; }) => Promise<CustomerPaymentMethodsResponse>
-```
-
-| Param      | Type                                              |
-| ---------- | ------------------------------------------------- |
-| **`opts`** | <code>{ sourceId: string; type?: string; }</code> |
-
-**Returns:** <code>Promise&lt;CustomerPaymentMethodsResponse&gt;</code>
-
---------------------
-
-
-### addCustomerSource(...)
-
-```typescript
-addCustomerSource(opts: { sourceId: string; type?: string; }) => Promise<CustomerPaymentMethodsResponse>
-```
-
-| Param      | Type                                              |
-| ---------- | ------------------------------------------------- |
-| **`opts`** | <code>{ sourceId: string; type?: string; }</code> |
-
-**Returns:** <code>Promise&lt;CustomerPaymentMethodsResponse&gt;</code>
-
---------------------
-
-
-### deleteCustomerSource(...)
-
-```typescript
-deleteCustomerSource(opts: { sourceId: string; }) => Promise<CustomerPaymentMethodsResponse>
-```
-
-| Param      | Type                               |
-| ---------- | ---------------------------------- |
-| **`opts`** | <code>{ sourceId: string; }</code> |
-
-**Returns:** <code>Promise&lt;CustomerPaymentMethodsResponse&gt;</code>
 
 --------------------
 
@@ -304,29 +183,7 @@ customizePaymentAuthUI(opts: any) => Promise<void>
 presentPaymentOptions() => Promise<PresentPaymentOptionsResponse>
 ```
 
-**Returns:** <code>Promise&lt;PresentPaymentOptionsResponse&gt;</code>
-
---------------------
-
-
-### isApplePayAvailable()
-
-```typescript
-isApplePayAvailable() => Promise<AvailabilityResponse>
-```
-
-**Returns:** <code>Promise&lt;AvailabilityResponse&gt;</code>
-
---------------------
-
-
-### isGooglePayAvailable()
-
-```typescript
-isGooglePayAvailable() => Promise<AvailabilityResponse>
-```
-
-**Returns:** <code>Promise&lt;AvailabilityResponse&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#presentpaymentoptionsresponse">PresentPaymentOptionsResponse</a>&gt;</code>
 
 --------------------
 
@@ -337,11 +194,11 @@ isGooglePayAvailable() => Promise<AvailabilityResponse>
 validateCardNumber(opts: ValidateCardNumberOptions) => Promise<ValidityResponse>
 ```
 
-| Param      | Type                             |
-| ---------- | -------------------------------- |
-| **`opts`** | <code>{ number: string; }</code> |
+| Param      | Type                                                                            |
+| ---------- | ------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#validatecardnumberoptions">ValidateCardNumberOptions</a></code> |
 
-**Returns:** <code>Promise&lt;ValidityResponse&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#validityresponse">ValidityResponse</a>&gt;</code>
 
 --------------------
 
@@ -352,11 +209,11 @@ validateCardNumber(opts: ValidateCardNumberOptions) => Promise<ValidityResponse>
 validateExpiryDate(opts: ValidateExpiryDateOptions) => Promise<ValidityResponse>
 ```
 
-| Param      | Type                                                  |
-| ---------- | ----------------------------------------------------- |
-| **`opts`** | <code>{ exp_month: number; exp_year: number; }</code> |
+| Param      | Type                                                                            |
+| ---------- | ------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#validateexpirydateoptions">ValidateExpiryDateOptions</a></code> |
 
-**Returns:** <code>Promise&lt;ValidityResponse&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#validityresponse">ValidityResponse</a>&gt;</code>
 
 --------------------
 
@@ -367,11 +224,11 @@ validateExpiryDate(opts: ValidateExpiryDateOptions) => Promise<ValidityResponse>
 validateCVC(opts: ValidateCVCOptions) => Promise<ValidityResponse>
 ```
 
-| Param      | Type                          |
-| ---------- | ----------------------------- |
-| **`opts`** | <code>{ cvc: string; }</code> |
+| Param      | Type                                                              |
+| ---------- | ----------------------------------------------------------------- |
+| **`opts`** | <code><a href="#validatecvcoptions">ValidateCVCOptions</a></code> |
 
-**Returns:** <code>Promise&lt;ValidityResponse&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#validityresponse">ValidityResponse</a>&gt;</code>
 
 --------------------
 
@@ -382,11 +239,155 @@ validateCVC(opts: ValidateCVCOptions) => Promise<ValidityResponse>
 identifyCardBrand(opts: IdentifyCardBrandOptions) => Promise<CardBrandResponse>
 ```
 
-| Param      | Type                             |
-| ---------- | -------------------------------- |
-| **`opts`** | <code>{ number: string; }</code> |
+| Param      | Type                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#identifycardbrandoptions">IdentifyCardBrandOptions</a></code> |
 
-**Returns:** <code>Promise&lt;CardBrandResponse&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#cardbrandresponse">CardBrandResponse</a>&gt;</code>
+
+--------------------
+
+
+### confirmPaymentIntent(...)
+
+```typescript
+confirmPaymentIntent(opts: ConfirmPaymentIntentOptions) => Promise<ConfirmPaymentIntentResponse>
+```
+
+| Param      | Type                                                                                |
+| ---------- | ----------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#confirmpaymentintentoptions">ConfirmPaymentIntentOptions</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#confirmpaymentintentresponse">ConfirmPaymentIntentResponse</a>&gt;</code>
+
+--------------------
+
+
+### confirmSetupIntent(...)
+
+```typescript
+confirmSetupIntent(opts: ConfirmSetupIntentOptions) => Promise<ConfirmSetupIntentResponse>
+```
+
+| Param      | Type                                                                            |
+| ---------- | ------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#confirmsetupintentoptions">ConfirmSetupIntentOptions</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#confirmsetupintentresponse">ConfirmSetupIntentResponse</a>&gt;</code>
+
+--------------------
+
+
+### initCustomerSession(...)
+
+```typescript
+initCustomerSession(opts: InitCustomerSessionParams) => Promise<void>
+```
+
+| Param      | Type                                                                            |
+| ---------- | ------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#initcustomersessionparams">InitCustomerSessionParams</a></code> |
+
+--------------------
+
+
+### customerPaymentMethods()
+
+```typescript
+customerPaymentMethods() => Promise<CustomerPaymentMethodsResponse>
+```
+
+**Returns:** <code>Promise&lt;<a href="#customerpaymentmethodsresponse">CustomerPaymentMethodsResponse</a>&gt;</code>
+
+--------------------
+
+
+### setCustomerDefaultSource(...)
+
+```typescript
+setCustomerDefaultSource(opts: { sourceId: string; type?: string; }) => Promise<CustomerPaymentMethodsResponse>
+```
+
+| Param      | Type                                              |
+| ---------- | ------------------------------------------------- |
+| **`opts`** | <code>{ sourceId: string; type?: string; }</code> |
+
+**Returns:** <code>Promise&lt;<a href="#customerpaymentmethodsresponse">CustomerPaymentMethodsResponse</a>&gt;</code>
+
+--------------------
+
+
+### addCustomerSource(...)
+
+```typescript
+addCustomerSource(opts: { sourceId: string; type?: string; }) => Promise<CustomerPaymentMethodsResponse>
+```
+
+| Param      | Type                                              |
+| ---------- | ------------------------------------------------- |
+| **`opts`** | <code>{ sourceId: string; type?: string; }</code> |
+
+**Returns:** <code>Promise&lt;<a href="#customerpaymentmethodsresponse">CustomerPaymentMethodsResponse</a>&gt;</code>
+
+--------------------
+
+
+### deleteCustomerSource(...)
+
+```typescript
+deleteCustomerSource(opts: { sourceId: string; }) => Promise<CustomerPaymentMethodsResponse>
+```
+
+| Param      | Type                               |
+| ---------- | ---------------------------------- |
+| **`opts`** | <code>{ sourceId: string; }</code> |
+
+**Returns:** <code>Promise&lt;<a href="#customerpaymentmethodsresponse">CustomerPaymentMethodsResponse</a>&gt;</code>
+
+--------------------
+
+
+### createSourceToken(...)
+
+```typescript
+createSourceToken(opts: CreateSourceTokenOptions) => Promise<TokenResponse>
+```
+
+| Param      | Type                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#createsourcetokenoptions">CreateSourceTokenOptions</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#tokenresponse">TokenResponse</a>&gt;</code>
+
+--------------------
+
+
+### createPiiToken(...)
+
+```typescript
+createPiiToken(opts: CreatePiiTokenOptions) => Promise<TokenResponse>
+```
+
+| Param      | Type                                                                    |
+| ---------- | ----------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#createpiitokenoptions">CreatePiiTokenOptions</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#tokenresponse">TokenResponse</a>&gt;</code>
+
+--------------------
+
+
+### createAccountToken(...)
+
+```typescript
+createAccountToken(account: AccountParams) => Promise<TokenResponse>
+```
+
+| Param         | Type                                                    |
+| ------------- | ------------------------------------------------------- |
+| **`account`** | <code><a href="#accountparams">AccountParams</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#tokenresponse">TokenResponse</a>&gt;</code>
 
 --------------------
 
@@ -488,44 +489,11 @@ identifyCardBrand(opts: IdentifyCardBrandOptions) => Promise<CardBrandResponse>
 | **`account_number`**      | <code>string</code> |
 
 
-#### ConfirmPaymentIntentResponse
+#### ApplePayResponse
 
-| Prop                       | Type                                                    |
-| -------------------------- | ------------------------------------------------------- |
-| **`amount`**               | <code>number</code>                                     |
-| **`capture_method`**       | <code>string</code>                                     |
-| **`client_secret`**        | <code>string</code>                                     |
-| **`confirmation_method`**  | <code>string</code>                                     |
-| **`created`**              | <code>number</code>                                     |
-| **`currency`**             | <code>string</code>                                     |
-| **`cad`**                  | <code>string</code>                                     |
-| **`livemode`**             | <code>boolean</code>                                    |
-| **`object`**               | <code>string</code>                                     |
-| **`payment_method`**       | <code><a href="#paymentmethod">PaymentMethod</a></code> |
-| **`payment_method_types`** | <code>string[]</code>                                   |
-| **`status`**               | <code>string</code>                                     |
-
-
-#### PaymentMethod
-
-| Prop             | Type                                  |
-| ---------------- | ------------------------------------- |
-| **`created`**    | <code>number</code>                   |
-| **`customerId`** | <code>string</code>                   |
-| **`id`**         | <code>string</code>                   |
-| **`livemode`**   | <code>boolean</code>                  |
-| **`type`**       | <code>string</code>                   |
-| **`card`**       | <code><a href="#card">Card</a></code> |
-
-
-#### ConfirmPaymentIntentOptions
-
-| Prop                   | Type                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ---------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`setupFutureUsage`** | <code>"on_session" \| "off_session"</code>                    | Indicates that you intend to make future payments with this PaymentIntent's payment method. If present, the payment method used with this PaymentIntent can be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer, even after the transaction completes. Use `on_session` if you intend to only reuse the payment method when your customer is present in your checkout flow. Use `off_session` if your customer may or may not be in your checkout flow. Stripe uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules. For example, if your customer is impacted by [SCA](https://stripe.com/docs/strong-customer-authentication), using `off_session` will ensure that they are authenticated while processing this PaymentIntent. You will then be able to collect [off-session payments](https://stripe.com/docs/payments/cards/charging-saved-cards#off-session-payments-with-saved-cards) for this customer. If `setup_future_usage` is already set and you are performing a request using a publishable key, you may only update the value from `on_session` to `off_session`. |
-| **`saveMethod`**       | <code>boolean</code>                                          | Whether you intend to save the payment method to the customer's account after this payment                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| **`applePayOptions`**  | <code><a href="#applepayoptions">ApplePayOptions</a></code>   | If provided, the payment intent will be confirmed using Apple Pay                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| **`googlePayOptions`** | <code><a href="#googlepayoptions">GooglePayOptions</a></code> | If provided, the payment intent will be confirmed using Google Pay                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Prop        | Type                |
+| ----------- | ------------------- |
+| **`token`** | <code>string</code> |
 
 
 #### ApplePayOptions
@@ -556,6 +524,14 @@ identifyCardBrand(opts: IdentifyCardBrandOptions) => Promise<CardBrandResponse>
 | **`amount`** | <code>string \| number</code> |
 
 
+#### GooglePayResponse
+
+| Prop          | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`success`** | <code>boolean</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **`token`**   | <code>{ apiVersionMinor: number; apiVersion: number; paymentMethodData: { description: string; tokenizationData: { type: string; token: string; }; type: string; info: { cardNetwork: string; cardDetails: string; billingAddress?: { countryCode: string; postalCode: string; name: string; }; }; }; shippingAddress?: { address3: string; sortingCode: string; address2: string; countryCode: string; address1: string; postalCode: string; name: string; locality: string; administrativeArea: string; }; email?: string; }</code> |
+
+
 #### GooglePayOptions
 
 | Prop                            | Type                                                                                                                                 | Description                                                                                                                                                                                                                                       |
@@ -564,18 +540,58 @@ identifyCardBrand(opts: IdentifyCardBrandOptions) => Promise<CardBrandResponse>
 | **`totalPrice`**                | <code>string</code>                                                                                                                  | Total monetary value of the transaction with an optional decimal precision of two decimal places.                                                                                                                                                 |
 | **`totalPriceStatus`**          | <code><a href="#googlepaypricestatus">GooglePayPriceStatus</a></code>                                                                | The status of the total price used                                                                                                                                                                                                                |
 | **`totalPriceLabel`**           | <code>string</code>                                                                                                                  | Custom label for the total price within the display items.                                                                                                                                                                                        |
-| **`checkoutOption`**            | <code>"DEFAULT" \| "COMPLETE_IMMEDIATE_PURCHASE"</code>                                                                              | Affects the submit button text displayed in the Google Pay payment sheet.                                                                                                                                                                         |
+| **`checkoutOption`**            | <code>'DEFAULT' \| 'COMPLETE_IMMEDIATE_PURCHASE'</code>                                                                              | Affects the submit button text displayed in the Google Pay payment sheet.                                                                                                                                                                         |
 | **`transactionId`**             | <code>string</code>                                                                                                                  | A unique ID that identifies a transaction attempt. Merchants may use an existing ID or generate a specific one for Google Pay transaction attempts. This field is required when you send callbacks to the Google Transaction Events API.          |
 | **`currencyCode`**              | <code>string</code>                                                                                                                  | ISO 4217 alphabetic currency code.                                                                                                                                                                                                                |
 | **`countryCode`**               | <code>string</code>                                                                                                                  | ISO 3166-1 alpha-2 country code where the transaction is processed. This is required for merchants based in European Economic Area (EEA) countries.                                                                                               |
 | **`allowedAuthMethods`**        | <code>GooglePayAuthMethod[]</code>                                                                                                   | Fields supported to authenticate a card transaction.                                                                                                                                                                                              |
-| **`allowedCardNetworks`**       | <code>("AMEX" \| "DISCOVER" \| "INTERAC" \| "JCB" \| "MASTERCARD" \| "VISA")[]</code>                                                | One or more card networks that you support, also supported by the Google Pay API.                                                                                                                                                                 |
+| **`allowedCardNetworks`**       | <code>('AMEX' \| 'DISCOVER' \| 'INTERAC' \| 'JCB' \| 'MASTERCARD' \| 'VISA')[]</code>                                                | One or more card networks that you support, also supported by the Google Pay API.                                                                                                                                                                 |
 | **`allowPrepaidCards`**         | <code>boolean</code>                                                                                                                 | Set to false if you don't support prepaid cards. Default: The prepaid card class is supported for the card networks specified.                                                                                                                    |
 | **`emailRequired`**             | <code>boolean</code>                                                                                                                 | Set to true to request an email address.                                                                                                                                                                                                          |
 | **`billingAddressRequired`**    | <code>boolean</code>                                                                                                                 | Set to true if you require a billing address. A billing address should only be requested if it's required to process the transaction. Additional data requests can increase friction in the checkout process and lead to a lower conversion rate. |
 | **`billingAddressParameters`**  | <code>{ format?: <a href="#googlepaybillingaddressformat">GooglePayBillingAddressFormat</a>; phoneNumberRequired?: boolean; }</code> |                                                                                                                                                                                                                                                   |
 | **`shippingAddressRequired`**   | <code>boolean</code>                                                                                                                 | Set to true to request a full shipping address.                                                                                                                                                                                                   |
 | **`shippingAddressParameters`** | <code>{ allowedCountryCodes?: string[]; phoneNumberRequired?: boolean; }</code>                                                      |                                                                                                                                                                                                                                                   |
+
+
+#### PaymentMethod
+
+| Prop             | Type                                  |
+| ---------------- | ------------------------------------- |
+| **`created`**    | <code>number</code>                   |
+| **`customerId`** | <code>string</code>                   |
+| **`id`**         | <code>string</code>                   |
+| **`livemode`**   | <code>boolean</code>                  |
+| **`type`**       | <code>string</code>                   |
+| **`card`**       | <code><a href="#card">Card</a></code> |
+
+
+#### ConfirmPaymentIntentResponse
+
+| Prop                       | Type                                                    |
+| -------------------------- | ------------------------------------------------------- |
+| **`amount`**               | <code>number</code>                                     |
+| **`capture_method`**       | <code>string</code>                                     |
+| **`client_secret`**        | <code>string</code>                                     |
+| **`confirmation_method`**  | <code>string</code>                                     |
+| **`created`**              | <code>number</code>                                     |
+| **`currency`**             | <code>string</code>                                     |
+| **`cad`**                  | <code>string</code>                                     |
+| **`livemode`**             | <code>boolean</code>                                    |
+| **`object`**               | <code>string</code>                                     |
+| **`payment_method`**       | <code><a href="#paymentmethod">PaymentMethod</a></code> |
+| **`payment_method_types`** | <code>string[]</code>                                   |
+| **`status`**               | <code>string</code>                                     |
+
+
+#### ConfirmPaymentIntentOptions
+
+| Prop                   | Type                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`setupFutureUsage`** | <code>'on_session' \| 'off_session'</code>                    | Indicates that you intend to make future payments with this PaymentIntent's payment method. If present, the payment method used with this PaymentIntent can be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer, even after the transaction completes. Use `on_session` if you intend to only reuse the payment method when your customer is present in your checkout flow. Use `off_session` if your customer may or may not be in your checkout flow. Stripe uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules. For example, if your customer is impacted by [SCA](https://stripe.com/docs/strong-customer-authentication), using `off_session` will ensure that they are authenticated while processing this PaymentIntent. You will then be able to collect [off-session payments](https://stripe.com/docs/payments/cards/charging-saved-cards#off-session-payments-with-saved-cards) for this customer. If `setup_future_usage` is already set and you are performing a request using a publishable key, you may only update the value from `on_session` to `off_session`. |
+| **`saveMethod`**       | <code>boolean</code>                                          | Whether you intend to save the payment method to the customer's account after this payment                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **`applePayOptions`**  | <code><a href="#applepayoptions">ApplePayOptions</a></code>   | If provided, the payment intent will be confirmed using Apple Pay                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **`googlePayOptions`** | <code><a href="#googlepayoptions">GooglePayOptions</a></code> | If provided, the payment intent will be confirmed using Google Pay                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 
 #### ConfirmSetupIntentResponse
@@ -595,21 +611,6 @@ identifyCardBrand(opts: IdentifyCardBrandOptions) => Promise<CardBrandResponse>
 | Prop     | Type                |
 | -------- | ------------------- |
 | **`id`** | <code>string</code> |
-
-
-#### ApplePayResponse
-
-| Prop        | Type                |
-| ----------- | ------------------- |
-| **`token`** | <code>string</code> |
-
-
-#### GooglePayResponse
-
-| Prop          | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`success`** | <code>boolean</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **`token`**   | <code>{ apiVersionMinor: number; apiVersion: number; paymentMethodData: { description: string; tokenizationData: { type: string; token: string; }; type: string; info: { cardNetwork: string; cardDetails: string; billingAddress?: { countryCode: string; postalCode: string; name: string; }; }; }; shippingAddress?: { address3: string; sortingCode: string; address2: string; countryCode: string; address1: string; postalCode: string; name: string; locality: string; administrativeArea: string; }; email?: string; }</code> |
 
 
 #### TokenResponse
@@ -672,6 +673,94 @@ Enables basic storage and retrieval of dates and times.
 | **toJSON**             | (key?: any) =&gt; string                                                                                     | Used by the JSON.stringify method to enable the transformation of an object's data for JavaScript Object Notation (JSON) serialization. |
 
 
+#### ThreeDeeSecureParams
+
+| Prop            | Type                | Description                                              |
+| --------------- | ------------------- | -------------------------------------------------------- |
+| **`amount`**    | <code>number</code> | Amount                                                   |
+| **`currency`**  | <code>string</code> | Currency code                                            |
+| **`returnURL`** | <code>string</code> | URL to redirect to after successfully verifying the card |
+| **`card`**      | <code>string</code> | <a href="#card">Card</a> source ID                       |
+
+
+#### GiroPayParams
+
+| Prop                      | Type                |
+| ------------------------- | ------------------- |
+| **`amount`**              | <code>number</code> |
+| **`name`**                | <code>string</code> |
+| **`returnURL`**           | <code>string</code> |
+| **`statementDescriptor`** | <code>string</code> |
+
+
+#### iDEALParams
+
+| Prop                      | Type                |
+| ------------------------- | ------------------- |
+| **`amount`**              | <code>number</code> |
+| **`name`**                | <code>string</code> |
+| **`returnURL`**           | <code>string</code> |
+| **`statementDescriptor`** | <code>string</code> |
+| **`bank`**                | <code>string</code> |
+
+
+#### SEPADebitParams
+
+| Prop               | Type                |
+| ------------------ | ------------------- |
+| **`name`**         | <code>string</code> |
+| **`iban`**         | <code>string</code> |
+| **`addressLine1`** | <code>string</code> |
+| **`city`**         | <code>string</code> |
+| **`postalCode`**   | <code>string</code> |
+| **`country`**      | <code>string</code> |
+
+
+#### SofortParams
+
+| Prop                      | Type                |
+| ------------------------- | ------------------- |
+| **`amount`**              | <code>number</code> |
+| **`returnURL`**           | <code>string</code> |
+| **`country`**             | <code>string</code> |
+| **`statementDescriptor`** | <code>string</code> |
+
+
+#### AlipayParams
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`amount`**    | <code>number</code> |
+| **`currency`**  | <code>string</code> |
+| **`returnURL`** | <code>string</code> |
+
+
+#### AlipayReusableParams
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`currency`**  | <code>string</code> |
+| **`returnURL`** | <code>string</code> |
+
+
+#### P24Params
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`amount`**    | <code>number</code> |
+| **`currency`**  | <code>string</code> |
+| **`email`**     | <code>string</code> |
+| **`name`**      | <code>string</code> |
+| **`returnURL`** | <code>string</code> |
+
+
+#### VisaCheckoutParams
+
+| Prop         | Type                |
+| ------------ | ------------------- |
+| **`callId`** | <code>string</code> |
+
+
 #### AccountParams
 
 | Prop                      | Type                                                                                                                                                    |
@@ -684,7 +773,7 @@ Enables basic storage and retrieval of dates and times.
 
 | Prop                      | Type                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`type`**                | <code>"company"</code> |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **`type`**                | <code>'company'</code> |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **`name`**                | <code>string</code>    | The company’s legal name. [account.company.name](https://stripe.com/docs/api/tokens/create_account#create_account_token-account-company-name)                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **`owners_provided`**     | <code>boolean</code>   | Whether the company’s owners have been provided. Set this Boolean to `true` after creating all the company’s owners with the [Persons API](https://stripe.com/docs/api/persons) for accounts with a `relationship.owner` requirement. [account.company.owners_provided](https://stripe.com/docs/api/tokens/create_account#create_account_token-account-company-owners_provided)                                                                                                                                                                |
 | **`directors_provided`**  | <code>boolean</code>   | Whether the company’s directors have been provided. Set this Boolean to `true` after creating all the company’s directors with the [Persons API](https://stripe.com/docs/api/persons) for accounts with a `relationship.director` requirement. This value is not automatically set to `true` after creating directors, so it needs to be updated to indicate all directors have been provided. [account.company.directors_provided](https://stripe.com/docs/api/tokens/create_account#create_account_token-account-company-directors_provided) |
@@ -699,14 +788,102 @@ Enables basic storage and retrieval of dates and times.
 
 | Prop             | Type                            | Description                                                                                                                                                                                                                                                      |
 | ---------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`type`**       | <code>"individual"</code>       |                                                                                                                                                                                                                                                                  |
+| **`type`**       | <code>'individual'</code>       |                                                                                                                                                                                                                                                                  |
 | **`first_name`** | <code>string</code>             | The individual’s first name.                                                                                                                                                                                                                                     |
 | **`last_name`**  | <code>string</code>             | The individual’s last name.                                                                                                                                                                                                                                      |
 | **`email`**      | <code>string</code>             | The individual’s email.                                                                                                                                                                                                                                          |
-| **`gender`**     | <code>"male" \| "female"</code> | The individual’s gender (International regulations require either “male” or “female”).                                                                                                                                                                           |
+| **`gender`**     | <code>'male' \| 'female'</code> | The individual’s gender (International regulations require either “male” or “female”).                                                                                                                                                                           |
 | **`id_number`**  | <code>string</code>             | The government-issued ID number of the individual, as appropriate for the representative’s country. (Examples are a Social Security Number in the U.S., or a Social Insurance Number in Canada). Instead of the number itself, you can also provide a PII token. |
 | **`phone`**      | <code>string</code>             | The individual’s phone number.                                                                                                                                                                                                                                   |
 | **`ssn_last4`**  | <code>string</code>             | The last four digits of the individual’s Social Security Number (U.S. only).                                                                                                                                                                                     |
+
+
+### Type Aliases
+
+
+#### SetPublishableKeyOptions
+
+<code>{ key: string; }</code>
+
+
+#### AvailabilityResponse
+
+<code>{ available: boolean }</code>
+
+
+#### FinalizeApplePayTransactionOptions
+
+<code>{ success: boolean; }</code>
+
+
+#### PresentPaymentOptionsResponse
+
+<code>{ useGooglePay?: boolean; useApplePay?: boolean; paymentMethod?: <a href="#paymentmethod">PaymentMethod</a>; }</code>
+
+
+#### ValidityResponse
+
+<code>{ valid: boolean }</code>
+
+
+#### ValidateCardNumberOptions
+
+<code>{ number: string; }</code>
+
+
+#### ValidateExpiryDateOptions
+
+<code>{ exp_month: number; exp_year: number; }</code>
+
+
+#### ValidateCVCOptions
+
+<code>{ cvc: string; }</code>
+
+
+#### CardBrandResponse
+
+<code>{ brand: <a href="#cardbrand">CardBrand</a> }</code>
+
+
+#### IdentifyCardBrandOptions
+
+<code>{ number: string; }</code>
+
+
+#### InitCustomerSessionParams
+
+<code>{ id: string; object: 'ephemeral_key'; associated_objects: { type: 'customer'; id: string; }[]; created: number; expires: number; livemode: boolean; secret: string; apiVersion?: string; } & <a href="#stripeaccountidopt">StripeAccountIdOpt</a></code>
+
+
+#### StripeAccountIdOpt
+
+<code>{ /** * Optional * Used on Android only */ stripeAccountId?: string; }</code>
+
+
+#### CustomerPaymentMethodsResponse
+
+<code>{ paymentMethods: PaymentMethod[]; }</code>
+
+
+#### CreateSourceTokenOptions
+
+<code>{ type: <a href="#sourcetype">SourceType</a>; params: <a href="#sourceparams">SourceParams</a>; }</code>
+
+
+#### SourceParams
+
+<code><a href="#threedeesecureparams">ThreeDeeSecureParams</a> | <a href="#giropayparams">GiroPayParams</a> | <a href="#idealparams">iDEALParams</a> | <a href="#sepadebitparams">SEPADebitParams</a> | <a href="#sofortparams">SofortParams</a> | <a href="#alipayparams">AlipayParams</a> | <a href="#alipayreusableparams">AlipayReusableParams</a> | <a href="#p24params">P24Params</a> | <a href="#visacheckoutparams">VisaCheckoutParams</a></code>
+
+
+#### CreatePiiTokenOptions
+
+<code>{ pii: string; } & <a href="#stripeaccountidopt">StripeAccountIdOpt</a> & <a href="#idempotencykeyopt">IdempotencyKeyOpt</a></code>
+
+
+#### IdempotencyKeyOpt
+
+<code>{ /** * Optional * Used on Android only */ idempotencyKey?: string; }</code>
 
 
 ### Enums
@@ -749,5 +926,20 @@ Enables basic storage and retrieval of dates and times.
 | ---------- | ------------------- | ---------------------------------------------------------------------- |
 | **`MIN`**  | <code>'MIN'</code>  | Name, country code, and postal code (default).                         |
 | **`FULL`** | <code>'FULL'</code> | Name, street address, locality, region, country code, and postal code. |
+
+
+#### SourceType
+
+| Members              | Value                         |
+| -------------------- | ----------------------------- |
+| **`ThreeDeeSecure`** | <code>'3ds'</code>            |
+| **`GiroPay`**        | <code>'giropay'</code>        |
+| **`iDEAL`**          | <code>'ideal'</code>          |
+| **`SEPADebit`**      | <code>'sepadebit'</code>      |
+| **`Sofort`**         | <code>'sofort'</code>         |
+| **`AliPay`**         | <code>'alipay'</code>         |
+| **`AliPayReusable`** | <code>'alipayreusable'</code> |
+| **`P24`**            | <code>'p24'</code>            |
+| **`VisaCheckout`**   | <code>'visacheckout'</code>   |
 
 </docgen-api>
