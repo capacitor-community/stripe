@@ -1,4 +1,3 @@
-
 export enum CardBrand {
   AMERICAN_EXPRESS = 'American Express',
   DISCOVER = 'Discover',

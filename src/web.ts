@@ -29,9 +29,9 @@ import type {
   ValidateCVCOptions,
   ValidateExpiryDateOptions,
   ValidityResponse,
+  AvailabilityResponse,
 } from './definitions';
 import { CardBrand } from './definitions';
-import type { AvailabilityResponse } from './shared';
 
 function flatten(json: any, prefix?: string, omit?: string[]): any {
   let obj: any = {};

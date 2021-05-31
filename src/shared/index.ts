@@ -1,4 +1,4 @@
-import type {CardBrand} from './enum';
+import type { CardBrand } from './enum';
 
 export * from './enum';
 
