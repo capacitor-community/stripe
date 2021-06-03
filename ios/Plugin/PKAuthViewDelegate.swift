@@ -11,7 +11,7 @@ extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
             return
         }
 
-        if let c = self.bridge?.getSavedCall(ctx.callbackId) {
+        if let c = self.bridge?.savedCall(withID: ctx.callbackId) {
             c.error("payment timeout or user cancelled")
         }
 
@@ -20,7 +20,7 @@ extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
 
     @available(iOS 11.0, *)
     public func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
-        guard let ctx = self.applePayCtx, let callback = self.bridge?.getSavedCall(ctx.callbackId) else {
+        guard let ctx = self.applePayCtx, let callback = self.bridge?.savedCall(withID: ctx.callbackId) else {
             completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
             self.clearApplePay()
             return
@@ -46,7 +46,7 @@ extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
                 let pip: STPPaymentIntentParams = STPPaymentIntentParams.init(clientSecret: clientSecret)
                 pip.paymentMethodId = pm.stripeId
 
-                STPPaymentHandler.shared().confirmPayment(withParams: pip, authenticationContext: self, completion: { (status, _, err) in
+                STPPaymentHandler.shared().confirmPayment(pip, with: self, completion: { (status, _, err) in
                     switch status {
                     case .failed:
                         if err != nil {

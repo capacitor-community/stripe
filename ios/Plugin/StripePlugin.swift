@@ -96,7 +96,7 @@ public class StripePlugin: CAPPlugin {
                 call.reject("unable to create token: " + error!.localizedDescription)
                 return
             }
-            call.resolve(token.allResponseFields as! PluginResultData)
+            call.resolve(token.allResponseFields as! PluginCallResultData)
         }
     }
 
@@ -113,7 +113,7 @@ public class StripePlugin: CAPPlugin {
                 return
             }
 
-            call.resolve(token.allResponseFields as! PluginResultData)
+            call.resolve(token.allResponseFields as! PluginCallResultData)
         }
     }
 
@@ -152,7 +152,7 @@ public class StripePlugin: CAPPlugin {
             c(PKPaymentAuthorizationResult(status: .failure, errors: nil))
         }
 
-        if let oldCallback = self.bridge!.getSavedCall(ctx.callbackId) {
+        if let oldCallback = self.bridge!.savedCall(withID: ctx.callbackId) {
             self.bridge?.releaseCall(oldCallback)
         }
 
@@ -345,7 +345,7 @@ public class StripePlugin: CAPPlugin {
 
         let pm = STPPaymentHandler.shared()
 
-        pm.confirmPayment(withParams: pip, authenticationContext: self) { (status, pi, err) in
+        pm.confirmPayment(pip, with: self) { (status, pi, err) in
             switch status {
             case .failed:
                 if err != nil {
@@ -358,7 +358,7 @@ public class StripePlugin: CAPPlugin {
                 call.reject("user cancelled the transaction")
 
             case .succeeded:
-                call.resolve(pi!.allResponseFields as! PluginResultData)
+                call.resolve(pi!.allResponseFields as! PluginCallResultData)
             }
         }
     }
@@ -665,7 +665,7 @@ public class StripePlugin: CAPPlugin {
             return
         }
 
-        if let c = self.bridge?.getSavedCall(ctx.callbackId) {
+        if let c = self.bridge?.savedCall(withID: ctx.callbackId) {
             self.bridge?.releaseCall(c)
         }
 
