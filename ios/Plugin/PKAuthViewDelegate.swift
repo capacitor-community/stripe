@@ -38,7 +38,7 @@ extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
             STPAPIClient.shared.createPaymentMethod(with: payment) { (pm, err) in
                 guard let pm = pm else {
                     completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
-                    callback.reject("unable to create payment method: " + err!.localizedDescription, err)
+                    callback.reject("unable to create payment method: " + err!.localizedDescription)
                     self.clearApplePay()
                     return
                 }
@@ -50,7 +50,7 @@ extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
                     switch status {
                     case .failed:
                         if err != nil {
-                            callback.reject("payment failed: " + err!.localizedDescription, err)
+                            callback.reject("payment failed: " + err!.localizedDescription)
                         } else {
                             callback.reject("payment failed")
                         }
@@ -76,7 +76,7 @@ extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
             STPAPIClient.shared.createToken(with: payment) { (t, err) in
                 guard let t = t else {
                     completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
-                    callback.reject("unable to create token: " + err!.localizedDescription, err)
+                    callback.reject("unable to create token: " + err!.localizedDescription)
                     self.clearApplePay()
                     return
                 }
