@@ -35,22 +35,22 @@ jobs:
     #  run: npm test
 
     - name: Install test app node_modules
-      working-directory: ./test
+      working-directory: ./demo/angular
       run: npm ci
 
     - name: Build test app
-      working-directory: ./test
+      working-directory: ./demo/angular
       run: npm run build
 
     - name: Update & Sync Capacitor Project
-      working-directory: ./test
+      working-directory: ./demo/angular
       run: npx cap update android && npx cap sync android
 
     - name: Build Android Debug APK
-      working-directory: ./test/android
+      working-directory: ./demo/angular/android
       run: ./gradlew assembleDebug
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
-        path: ./test/android/app/build/outputs/apk/debug/app-debug.apk
+        path: ./demo/angular/android/app/build/outputs/apk/debug/app-debug.apk

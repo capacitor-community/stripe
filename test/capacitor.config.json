@@ -1,8 +1,0 @@
-{
-  "appId": "io.ionic.starter",
-  "appName": "capacitor-stripe",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www",
-  "cordova": {}
-}
