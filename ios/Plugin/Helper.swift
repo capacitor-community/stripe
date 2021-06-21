@@ -163,6 +163,46 @@ internal func applePayOpts(obj: [String: Any]) throws -> PKPaymentRequest {
 
     let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantId, country: country, currency: currency)
 
+    if ((obj["billingEmailAddress"] as? NSNumber) == 1) {
+        paymentRequest.requiredBillingContactFields.insert(PKContactField.emailAddress)
+    }
+
+    if ((obj["billingName"] as? NSNumber) == 1) {
+        paymentRequest.requiredBillingContactFields.insert(PKContactField.name)
+    }
+
+    if ((obj["billingPhoneNumber"] as? NSNumber) == 1) {
+        paymentRequest.requiredBillingContactFields.insert(PKContactField.phoneNumber)
+    }
+
+    if ((obj["billingPhoneticName"] as? NSNumber) == 1) {
+        paymentRequest.requiredBillingContactFields.insert(PKContactField.phoneticName)
+    }
+
+    if ((obj["billingPostalAddress"] as? NSNumber) == 1) {
+        paymentRequest.requiredBillingContactFields.insert(PKContactField.postalAddress)
+    }
+
+    if ((obj["shippingEmailAddress"] as? NSNumber) == 1) {
+        paymentRequest.requiredShippingContactFields.insert(PKContactField.emailAddress)
+    }
+
+    if ((obj["shippingName"] as? NSNumber) == 1) {
+        paymentRequest.requiredShippingContactFields.insert(PKContactField.name)
+    }
+
+    if ((obj["shippingPhoneNumber"] as? NSNumber) == 1) {
+        paymentRequest.requiredShippingContactFields.insert(PKContactField.phoneNumber)
+    }
+    
+    if ((obj["shippingPhoneticName"] as? NSNumber) == 1) {
+        paymentRequest.requiredShippingContactFields.insert(PKContactField.phoneticName)
+    }
+
+    if ((obj["shippingPostalAddress"] as? NSNumber) == 1) {
+        paymentRequest.requiredShippingContactFields.insert(PKContactField.postalAddress)
+    }
+
     paymentRequest.paymentSummaryItems = []
 
     for it in items {

@@ -1,4 +1,5 @@
 const PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY;
+const browser = browser || chrome
 
 describe('Init', () => {
   beforeAll(async () => {

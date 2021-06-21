@@ -23,6 +23,11 @@ class Stripe : Plugin() {
     private var googlePayCallback: GooglePayCallback? = null
 
     @PluginMethod
+    fun setStripeAccount(call: PluginCall) {
+        call.success()
+    }
+
+    @PluginMethod
     fun setPublishableKey(call: PluginCall) {
         try {
             val key = call.getString("key")
