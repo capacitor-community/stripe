@@ -21,7 +21,6 @@ npx cap sync
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`payWithGooglePay(...)`](#paywithgooglepay)
 * [Interfaces](#interfaces)
-* [Type Aliases](#type-aliases)
 * [Enums](#enums)
 
 </docgen-index>
@@ -158,6 +157,13 @@ payWithGooglePay(opts: { googlePayOptions: GooglePayOptions; }) => Promise<Googl
 | **`amount`** | <code>string \| number</code> |
 
 
+#### FinalizeApplePayTransactionOptions
+
+| Prop          | Type                 |
+| ------------- | -------------------- |
+| **`success`** | <code>boolean</code> |
+
+
 #### GooglePayResponse
 
 | Prop          | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -186,14 +192,6 @@ payWithGooglePay(opts: { googlePayOptions: GooglePayOptions; }) => Promise<Googl
 | **`billingAddressParameters`**  | <code>{ format?: <a href="#googlepaybillingaddressformat">GooglePayBillingAddressFormat</a>; phoneNumberRequired?: boolean; }</code> |                                                                                                                                                                                                                                                   |
 | **`shippingAddressRequired`**   | <code>boolean</code>                                                                                                                 | Set to true to request a full shipping address.                                                                                                                                                                                                   |
 | **`shippingAddressParameters`** | <code>{ allowedCountryCodes?: string[]; phoneNumberRequired?: boolean; }</code>                                                      |                                                                                                                                                                                                                                                   |
-
-
-### Type Aliases
-
-
-#### FinalizeApplePayTransactionOptions
-
-<code>{ success: boolean; }</code>
 
 
 ### Enums

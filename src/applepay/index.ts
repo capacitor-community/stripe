@@ -1,7 +1,3 @@
-import type { FinalizeApplePayTransactionOptions } from './enum';
-
-export * from './enum'
-
 export interface ApplePayDefinitions {
   isApplePayAvailable(): Promise<void>;
 
@@ -43,5 +39,9 @@ export interface ApplePayOptions {
   shippingPhoneticName?: boolean;
   shippingPostalAddress?: boolean;
 }
+
+export interface FinalizeApplePayTransactionOptions {
+  success: boolean;
+};
 
 

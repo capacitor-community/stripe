@@ -1,15 +1,3 @@
-export enum GooglePayCheckoutOption {
-  /**
-   * Standard text applies for the given totalPriceStatus (default).
-   */
-  DEFAULT = 'DEFAULT',
-  /**
-   * The selected payment method is charged immediately after the payer confirms their selections.
-   * This option is only available when `totalPriceStatus` is set to `FINAL`.
-   */
-  COMPLETE_IMMEDIATE_PURCHASE = 'COMPLETE_IMMEDIATE_PURCHASE',
-}
-
 export enum GooglePayBillingAddressFormat {
   /**
    * Name, country code, and postal code (default).
