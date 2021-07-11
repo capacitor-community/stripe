@@ -1,11 +1,9 @@
-import type {AvailabilityResponse} from '../shared';
-
-import type {FinalizeApplePayTransactionOptions} from './enum';
+import type { FinalizeApplePayTransactionOptions } from './enum';
 
 export * from './enum'
 
 export interface ApplePayDefinitions {
-  isApplePayAvailable(): Promise<AvailabilityResponse>;
+  isApplePayAvailable(): Promise<void>;
 
   payWithApplePay(options: {
     applePayOptions: ApplePayOptions;

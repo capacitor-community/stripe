@@ -1,11 +1,9 @@
-import type {AvailabilityResponse} from '../shared';
-
 import type { GooglePayBillingAddressFormat, GooglePayAuthMethod, GooglePayPriceStatus } from './enum';
 
 export * from './enum';
 
 export interface GooglePayDefinitions {
-  isGooglePayAvailable(): Promise<AvailabilityResponse>;
+  isGooglePayAvailable(): Promise<void>;
 
   payWithGooglePay(opts: {
     googlePayOptions: GooglePayOptions;
