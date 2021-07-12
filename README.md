@@ -20,7 +20,7 @@ npx cap sync
 * [`finalizeApplePayTransaction(...)`](#finalizeapplepaytransaction)
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`payWithGooglePay(...)`](#paywithgooglepay)
-* [`createPaymentSheet()`](#createpaymentsheet)
+* [`createPaymentSheet(...)`](#createpaymentsheet)
 * [`presentPaymentSheet()`](#presentpaymentsheet)
 * [`addListener(PaymentSheetEventsEnum.Loaded, ...)`](#addlistenerpaymentsheeteventsenumloaded-)
 * [`addListener(PaymentSheetEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentsheeteventsenumfailedtoload-)
@@ -118,11 +118,15 @@ payWithGooglePay(opts: { googlePayOptions: GooglePayOptions; }) => Promise<Googl
 --------------------
 
 
-### createPaymentSheet()
+### createPaymentSheet(...)
 
 ```typescript
-createPaymentSheet() => Promise<void>
+createPaymentSheet(options: CreatePaymentSheetOption) => Promise<void>
 ```
+
+| Param         | Type                                                                          |
+| ------------- | ----------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createpaymentsheetoption">CreatePaymentSheetOption</a></code> |
 
 --------------------
 
@@ -297,6 +301,14 @@ addListener(eventName: PaymentSheetEventsEnum.Result, listenerFunc: () => void) 
 | **`billingAddressParameters`**  | <code>{ format?: <a href="#googlepaybillingaddressformat">GooglePayBillingAddressFormat</a>; phoneNumberRequired?: boolean; }</code> |                                                                                                                                                                                                                                                   |
 | **`shippingAddressRequired`**   | <code>boolean</code>                                                                                                                 | Set to true to request a full shipping address.                                                                                                                                                                                                   |
 | **`shippingAddressParameters`** | <code>{ allowedCountryCodes?: string[]; phoneNumberRequired?: boolean; }</code>                                                      |                                                                                                                                                                                                                                                   |
+
+
+#### CreatePaymentSheetOption
+
+| Prop                   | Type                |
+| ---------------------- | ------------------- |
+| **`paymentIntentUrl`** | <code>string</code> |
+| **`customerUrl`**      | <code>string</code> |
 
 
 #### PluginListenerHandle

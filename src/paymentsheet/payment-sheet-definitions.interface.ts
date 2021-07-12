@@ -1,11 +1,11 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import type { ConnectUrl } from '../shared';
+import type { CreatePaymentSheetOption } from '../shared';
 
 import type { PaymentSheetEventsEnum } from './payment-sheet-events.enum';
 
 export interface PaymentSheetDefinitions {
-  createPaymentSheet(options: ConnectUrl): Promise<void>;
+  createPaymentSheet(options: CreatePaymentSheetOption): Promise<void>;
   presentPaymentSheet(): Promise<void>;
 
   addListener(
