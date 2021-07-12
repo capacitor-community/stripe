@@ -62,6 +62,14 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     });
   }
 
+  async createPaymentSheet(): Promise<void> {
+    return;
+  }
+
+  async presentPaymentSheet(): Promise<void> {
+    return;
+  }
+
   isApplePayAvailable(): Promise<void> {
     return new Promise((reject) => reject());
   }
