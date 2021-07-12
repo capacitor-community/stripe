@@ -2,6 +2,8 @@ package com.getcapacitor.community.stripe;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.getcapacitor.NativePlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -29,10 +31,9 @@ import org.json.JSONException;
 import com.stripe.android.GooglePayConfig;
 import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor;
 
-
-@CapacitorPlugin(
+@NativePlugin(
         name = "Stripe",
-        permissions = { @Permission(alias = "location", strings = { Manifest.permission.ACCESS_FINE_LOCATION }) }
+        requestCodes = {9972, 50000, 50001, 6000}
 )
 class StripePlugin extends Plugin {
     private Stripe stripeInstance;
