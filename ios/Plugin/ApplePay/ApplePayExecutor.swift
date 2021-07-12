@@ -4,7 +4,7 @@ import Capacitor
 class ApplePayExecutor: NSObject {
     public weak var plugin: CAPPlugin?
     internal var applePayCtx: ApplePayContext?
-    
+
     func payWithApplePay(_ call: CAPPluginCall) {
         let paymentRequest: PKPaymentRequest!
 
@@ -72,7 +72,7 @@ class ApplePayExecutor: NSObject {
             "available": Stripe.deviceSupportsApplePay()
         ])
     }
-    
+
     func clearApplePay(_ call: CAPPluginCall) {
         guard let ctx = self.applePayCtx else {
             return

@@ -18,7 +18,7 @@ public class StripePlugin: CAPPlugin {
             call.reject("you must provide a valid key")
             return
         }
-        
+
         if stripeAccount != "" {
             STPAPIClient.shared.stripeAccount = stripeAccount
         }
@@ -27,31 +27,31 @@ public class StripePlugin: CAPPlugin {
 
         call.resolve()
     }
-    
+
     @objc func createPaymentSheet(_ call: CAPPluginCall) {
-        PaymentSheetExecutor.createPaymentSheet(call);
+        PaymentSheetExecutor.createPaymentSheet(call)
     }
-    
+
     @objc func presentPaymentSheet(_ call: CAPPluginCall) {
-        PaymentSheetExecutor.presentPaymentSheet(call);
+        PaymentSheetExecutor.presentPaymentSheet(call)
     }
-    
+
     @objc func isApplePayAvailable(_ call: CAPPluginCall) {
-        ApplePayExecutor.isApplePayAvailable(call);
+        ApplePayExecutor.isApplePayAvailable(call)
     }
 
     @objc func payWithApplePay(_ call: CAPPluginCall) {
-        ApplePayExecutor.payWithApplePay(call);
+        ApplePayExecutor.payWithApplePay(call)
     }
 
     @objc func cancelApplePay(_ call: CAPPluginCall) {
-        ApplePayExecutor.cancelApplePay(call);
+        ApplePayExecutor.cancelApplePay(call)
     }
 
     @objc func finalizeApplePayTransaction(_ call: CAPPluginCall) {
-        ApplePayExecutor.finalizeApplePayTransaction(call);
+        ApplePayExecutor.finalizeApplePayTransaction(call)
     }
-    
+
     @objc func isGooglePayAvailable(_ call: CAPPluginCall) {
         call.reject("Google Pay is not available on iOS")
     }
