@@ -20,6 +20,13 @@ npx cap sync
 * [`finalizeApplePayTransaction(...)`](#finalizeapplepaytransaction)
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`payWithGooglePay(...)`](#paywithgooglepay)
+* [`createPaymentSheet()`](#createpaymentsheet)
+* [`presentPaymentSheet()`](#presentpaymentsheet)
+* [`addListener(PaymentSheetEventsEnum.Loaded, ...)`](#addlistenerpaymentsheeteventsenumloaded-)
+* [`addListener(PaymentSheetEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentsheeteventsenumfailedtoload-)
+* [`addListener(PaymentSheetEventsEnum.Opened, ...)`](#addlistenerpaymentsheeteventsenumopened-)
+* [`addListener(PaymentSheetEventsEnum.Closed, ...)`](#addlistenerpaymentsheeteventsenumclosed-)
+* [`addListener(PaymentSheetEventsEnum.Closed, ...)`](#addlistenerpaymentsheeteventsenumclosed-)
 * [Interfaces](#interfaces)
 * [Enums](#enums)
 
@@ -111,6 +118,104 @@ payWithGooglePay(opts: { googlePayOptions: GooglePayOptions; }) => Promise<Googl
 --------------------
 
 
+### createPaymentSheet()
+
+```typescript
+createPaymentSheet() => Promise<void>
+```
+
+--------------------
+
+
+### presentPaymentSheet()
+
+```typescript
+presentPaymentSheet() => Promise<void>
+```
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Loaded, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                             |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Opened, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Opened, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Opened</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Closed, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Closed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Closed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Closed, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Result, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Closed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -194,6 +299,13 @@ payWithGooglePay(opts: { googlePayOptions: GooglePayOptions; }) => Promise<Googl
 | **`shippingAddressParameters`** | <code>{ allowedCountryCodes?: string[]; phoneNumberRequired?: boolean; }</code>                                                      |                                                                                                                                                                                                                                                   |
 
 
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
 ### Enums
 
 
@@ -220,5 +332,16 @@ payWithGooglePay(opts: { googlePayOptions: GooglePayOptions; }) => Promise<Googl
 | ---------- | ------------------- | ---------------------------------------------------------------------- |
 | **`MIN`**  | <code>'MIN'</code>  | Name, country code, and postal code (default).                         |
 | **`FULL`** | <code>'FULL'</code> | Name, street address, locality, region, country code, and postal code. |
+
+
+#### PaymentSheetEventsEnum
+
+| Members            | Value                                   |
+| ------------------ | --------------------------------------- |
+| **`Loaded`**       | <code>"paymentSheetLoaded"</code>       |
+| **`FailedToLoad`** | <code>"paymentSheetFailedToLoad"</code> |
+| **`Opened`**       | <code>"paymentSheetOpened"</code>       |
+| **`Closed`**       | <code>"paymentSheetClosed"</code>       |
+| **`Result`**       | <code>"paymentSheetClosed"</code>       |
 
 </docgen-api>
