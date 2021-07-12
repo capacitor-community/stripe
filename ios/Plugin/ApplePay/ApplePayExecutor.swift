@@ -5,7 +5,7 @@ class ApplePayExecutor: NSObject {
     public weak var plugin: CAPPlugin?
     internal var applePayCtx: ApplePayContext?
     
-    @objc func payWithApplePay(_ call: CAPPluginCall) {
+    func payWithApplePay(_ call: CAPPluginCall) {
         let paymentRequest: PKPaymentRequest!
 
         do {
@@ -30,7 +30,7 @@ class ApplePayExecutor: NSObject {
         call.reject("invalid payment request")
     }
 
-    @objc func cancelApplePay(_ call: CAPPluginCall) {
+    func cancelApplePay(_ call: CAPPluginCall) {
         guard let ctx = self.applePayCtx else {
             call.reject("there is no existing Apple Pay transaction to cancel")
             return
@@ -48,7 +48,7 @@ class ApplePayExecutor: NSObject {
         call.resolve()
     }
 
-    @objc func finalizeApplePayTransaction(_ call: CAPPluginCall) {
+    func finalizeApplePayTransaction(_ call: CAPPluginCall) {
         guard let ctx = self.applePayCtx else {
             call.reject("there is no existing Apple Pay transaction to finalize")
             return
@@ -67,13 +67,13 @@ class ApplePayExecutor: NSObject {
         self.clearApplePay()
     }
 
-    @objc func isApplePayAvailable(_ call: CAPPluginCall) {
+    func isApplePayAvailable(_ call: CAPPluginCall) {
         call.resolve([
             "available": Stripe.deviceSupportsApplePay()
         ])
     }
     
-    @objc func clearApplePay(_ call: CAPPluginCall) {
+    func clearApplePay(_ call: CAPPluginCall) {
         guard let ctx = self.applePayCtx else {
             return
         }

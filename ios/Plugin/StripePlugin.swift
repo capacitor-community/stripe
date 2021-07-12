@@ -28,6 +28,14 @@ public class StripePlugin: CAPPlugin {
         call.resolve()
     }
     
+    @objc func createPaymentSheet(_ call: CAPPluginCall) {
+        PaymentSheetExecutor.createPaymentSheet(call);
+    }
+    
+    @objc func presentPaymentSheet(_ call: CAPPluginCall) {
+        PaymentSheetExecutor.presentPaymentSheet(call);
+    }
+    
     @objc func isApplePayAvailable(_ call: CAPPluginCall) {
         ApplePayExecutor.isApplePayAvailable(call);
     }
