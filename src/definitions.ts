@@ -1,13 +1,14 @@
-
 import type { ApplePayDefinitions } from './applepay';
 import type { GooglePayDefinitions } from './googlepay';
 import type { PaymentSheetDefinitions } from './paymentsheet';
 
 export * from './applepay/index';
 export * from './googlepay/index';
-export * from './paymentsheet/index'
+export * from './paymentsheet/index';
+export * from './shared/index';
 
-type StripeDefinitions = PaymentSheetDefinitions & ApplePayDefinitions &
+type StripeDefinitions = PaymentSheetDefinitions &
+  ApplePayDefinitions &
   GooglePayDefinitions;
 
 export interface StripePlugin extends StripeDefinitions {

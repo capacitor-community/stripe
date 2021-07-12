@@ -9,10 +9,15 @@ import type {
   GooglePayResponse,
   StripeInitializationOptions,
   StripePlugin,
+  CreatePaymentSheetOption,
 } from './definitions';
 
 export class StripeWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string | undefined;
+  private paymentSheetSettings: CreatePaymentSheetOption = {
+    paymentIntentUrl: undefined,
+    customerUrl: undefined,
+  };
   private stripe: Stripe | undefined;
 
   constructor() {
@@ -27,51 +32,31 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   }
 
   async initialize(options: StripeInitializationOptions): Promise<void> {
-    if (typeof options.publishableKey !== 'string' || options.publishableKey.trim().length === 0) {
+    if (
+      typeof options.publishableKey !== 'string' ||
+      options.publishableKey.trim().length === 0
+    ) {
       throw new Error('you must provide a valid key');
     }
-
-    const script: HTMLScriptElement = document.createElement('script');
-    script.src = 'https://js.stripe.com/v3/';
-    document.body.appendChild(script);
     this.publishableKey = options.publishableKey;
-
-    return new Promise((resolve, reject) => {
-      script.addEventListener(
-        'error',
-        (ev: ErrorEvent) => {
-          document.body.removeChild(script);
-          reject('Failed to load Stripe JS: ' + ev.message);
-        },
-        { once: true },
-      );
-
-      script.addEventListener(
-        'load',
-        () => {
-          try {
-            this.stripe = new (window as any).Stripe(options.publishableKey);
-            resolve();
-          } catch (err) {
-            document.body.removeChild(script);
-            reject(err);
-          }
-        },
-        { once: true },
-      );
-    });
   }
 
-  async createPaymentSheet(): Promise<void> {
+  async createPaymentSheet(options: CreatePaymentSheetOption): Promise<void> {
+    this.paymentSheetSettings = options;
     return;
   }
 
   async presentPaymentSheet(): Promise<void> {
+    const paymentSheetDOM = document.createElement('stripe-checkout') as any;
+    paymentSheetDOM.publishableKey = this.publishableKey;
+    paymentSheetDOM.paymentIntent = this.paymentSheetSettings.paymentIntentUrl;
+    paymentSheetDOM.customer = this.paymentSheetSettings.customerUrl;
+    document.body.appendChild(paymentSheetDOM);
     return;
   }
 
   isApplePayAvailable(): Promise<void> {
-    return new Promise((reject) => reject());
+    return new Promise(reject => reject());
   }
 
   async payWithApplePay(options: {
@@ -93,7 +78,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   }
 
   async isGooglePayAvailable(): Promise<void> {
-    return new Promise((reject) => reject());
+    return new Promise(reject => reject());
   }
 
   async payWithGooglePay(options: {

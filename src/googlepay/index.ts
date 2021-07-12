@@ -1,4 +1,4 @@
-import { GooglePayBillingAddressFormat, GooglePayAuthMethod, GooglePayPriceStatus } from './enum';
+import type { GooglePayBillingAddressFormat, GooglePayAuthMethod, GooglePayPriceStatus } from './enum';
 
 export interface GooglePayDefinitions {
   isGooglePayAvailable(): Promise<void>;
