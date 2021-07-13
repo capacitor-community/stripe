@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { ViewWillEnter } from '@ionic/angular';
 import { Stripe } from '@capacitor-community/stripe';
-import {environment} from '../../environments/environment';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tab1',
@@ -10,12 +12,20 @@ import {environment} from '../../environments/environment';
 })
 export class Tab1Page implements ViewWillEnter {
 
-  constructor() {}
+  constructor(
+    private http: HttpClient,
+  ) {}
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
+    const {paymentIntent, ephemeralKey, customer} = await this.http.post<{
+      paymentIntent: string;
+      ephemeralKey: string;
+      customer: string;
+    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
     Stripe.createPaymentSheet({
-      paymentIntentUrl: environment.api + 'payment-sheet',
-      customerUrl: '',
+      paymentIntentClientSecret: paymentIntent,
+      customerEphemeralKeySecret: ephemeralKey,
+      customerId: customer,
       merchantDisplayName: 'rdlabo',
       style: 'alwaysDark',
     });

@@ -309,8 +309,9 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 
 | Prop                              | Type                                       |
 | --------------------------------- | ------------------------------------------ |
-| **`paymentIntentUrl`**            | <code>string</code>                        |
-| **`customerUrl`**                 | <code>string</code>                        |
+| **`paymentIntentClientSecret`**   | <code>string</code>                        |
+| **`customerEphemeralKeySecret`**  | <code>string</code>                        |
+| **`customerId`**                  | <code>string</code>                        |
 | **`useApplePay`**                 | <code>boolean</code>                       |
 | **`applePayMerchantId`**          | <code>string</code>                        |
 | **`applePayMerchantCountryCode`** | <code>string</code>                        |

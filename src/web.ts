@@ -16,8 +16,9 @@ import { PaymentSheetEventsEnum } from './definitions';
 export class StripeWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string | undefined;
   private paymentSheetSettings: CreatePaymentSheetOption = {
-    paymentIntentUrl: undefined,
-    customerUrl: undefined,
+    paymentIntentClientSecret: undefined,
+    customerEphemeralKeySecret: undefined,
+    customerId: undefined,
   };
   private stripe: Stripe | undefined;
 
@@ -52,8 +53,9 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   }> {
     const paymentSheetDOM = document.createElement('stripe-checkout') as any;
     paymentSheetDOM.publishableKey = this.publishableKey;
-    paymentSheetDOM.paymentIntent = this.paymentSheetSettings.paymentIntentUrl;
-    paymentSheetDOM.customer = this.paymentSheetSettings.customerUrl;
+    paymentSheetDOM.paymentIntentClientSecret = this.paymentSheetSettings.paymentIntentClientSecret;
+    paymentSheetDOM.customerEphemeralKeySecret = this.paymentSheetSettings.customerEphemeralKeySecret;
+    paymentSheetDOM.customerId = this.paymentSheetSettings.customerId;
     document.body.appendChild(paymentSheetDOM);
     return {
       paymentResult: PaymentSheetEventsEnum.Completed,

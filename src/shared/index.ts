@@ -1,6 +1,18 @@
 export interface CreatePaymentSheetOption {
-  paymentIntentUrl: string | undefined;
-  customerUrl?: string | undefined;
+  /**
+   * Any documentation call 'paymentIntent'
+   */
+  paymentIntentClientSecret: string | undefined;
+
+  /**
+   * Any documentation call 'ephemeralKey'
+   */
+  customerEphemeralKeySecret: string | undefined;
+
+  /**
+   * Any documentation call 'customer'
+   */
+  customerId: string | undefined;
 
   /**
    * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet

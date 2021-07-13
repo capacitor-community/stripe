@@ -7,63 +7,47 @@ class PaymentSheetExecutor: NSObject {
     var paymentSheet: PaymentSheet?
 
     func createPaymentSheet(_ call: CAPPluginCall) {
-        let paymentIntentUrl = call.getString("paymentIntentUrl") ?? ""
-        if paymentIntentUrl == "" {
+        let paymentIntentClientSecret = call.getString("paymentIntentClientSecret") ?? ""
+        let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
+        let customerId = call.getString("customerId") ?? ""
+        if paymentIntentClientSecret == "" || customerEphemeralKeySecret == "" || customerId == "" {
+            call.reject("invalid Params")
             return
         }
 
-        let backendCheckoutUrl = URL(string: paymentIntentUrl)!
+        // MARK: Create a PaymentSheet instance
+        var configuration = PaymentSheet.Configuration()
 
-        var request = URLRequest(url: backendCheckoutUrl)
-        request.httpMethod = "POST"
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] (data, _, _) in
-            guard let data = data,
-                  let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                  let customerId = json["customer"] as? String,
-                  let customerEphemeralKeySecret = json["ephemeralKey"] as? String,
-                  let paymentIntentClientSecret = json["paymentIntent"] as? String,
-                  let self = self else {
-                // Handle error
-                self?.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: [:])
-                call.reject("URLSession Error. Response data is invalid")
-                return
+        let merchantDisplayName = call.getString("merchantDisplayName") ?? ""
+        if merchantDisplayName != "" {
+            configuration.merchantDisplayName = merchantDisplayName
+        }
+
+        if #available(iOS 13.0, *) {
+            let style = call.getString("style") ?? ""
+            if style == "alwaysLight" {
+                configuration.style = .alwaysLight
+            } else if style == "alwaysDark" {
+                configuration.style = .alwaysDark
             }
+        }
 
-            // MARK: Create a PaymentSheet instance
-            var configuration = PaymentSheet.Configuration()
+        let useApplePay = call.getBool("useApplePay") ?? false
+        let applePayMerchantId = call.getString("applePayMerchantId") ?? ""
+        let applePayMerchantCountryCode = call.getString("applePayMerchantCountryCode") ?? ""
 
-            let merchantDisplayName = call.getString("merchantDisplayName") ?? ""
-            if merchantDisplayName != "" {
-                configuration.merchantDisplayName = merchantDisplayName
-            }
+        if useApplePay == true && applePayMerchantId != "" && applePayMerchantCountryCode != "" {
+            configuration.applePay = .init(
+                merchantId: applePayMerchantId,
+                merchantCountryCode: applePayMerchantCountryCode
+            )
+        }
 
-            if #available(iOS 13.0, *) {
-                let style = call.getString("style") ?? ""
-                if style == "alwaysLight" {
-                    configuration.style = .alwaysLight
-                } else if style == "alwaysDark" {
-                    configuration.style = .alwaysDark
-                }
-            }
+        configuration.customer = .init(id: customerId, ephemeralKeySecret: customerEphemeralKeySecret)
+        self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret, configuration: configuration)
 
-            let useApplePay = call.getBool("useApplePay") ?? false
-            let applePayMerchantId = call.getString("applePayMerchantId") ?? ""
-            let applePayMerchantCountryCode = call.getString("applePayMerchantCountryCode") ?? ""
-
-            if useApplePay == true && applePayMerchantId != "" && applePayMerchantCountryCode != "" {
-                configuration.applePay = .init(
-                    merchantId: applePayMerchantId,
-                    merchantCountryCode: applePayMerchantCountryCode
-                )
-            }
-
-            configuration.customer = .init(id: customerId, ephemeralKeySecret: customerEphemeralKeySecret)
-            self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret, configuration: configuration)
-
-            self.plugin?.notifyListeners(PaymentSheetEvents.Loaded.rawValue, data: [:])
-            call.resolve([:])
-        })
-        task.resume()
+        self.plugin?.notifyListeners(PaymentSheetEvents.Loaded.rawValue, data: [:])
+        call.resolve([:])
     }
 
     func presentPaymentSheet(_ call: CAPPluginCall) {
