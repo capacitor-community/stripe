@@ -26,9 +26,12 @@
     "@nestjs/swagger": "^4.5.12",
     "aws-serverless-express": "^3.3.8",
     "express": "^4.17.1",
+    "install": "^0.13.0",
+    "npm": "^7.19.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.5.4"
+    "rxjs": "^6.5.4",
+    "stripe": "^8.161.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",
