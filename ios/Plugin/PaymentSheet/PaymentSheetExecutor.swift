@@ -46,6 +46,17 @@ class PaymentSheetExecutor: NSObject {
                 }
             }
 
+            let useApplePay = call.getBool("useApplePay") ?? false
+            let applePayMerchantId = call.getString("applePayMerchantId") ?? ""
+            let applePayMerchantCountryCode = call.getString("applePayMerchantCountryCode") ?? ""
+
+            if useApplePay == true && applePayMerchantId != "" && applePayMerchantCountryCode != "" {
+                configuration.applePay = .init(
+                    merchantId: applePayMerchantId,
+                    merchantCountryCode: applePayMerchantCountryCode
+                )
+            }
+
             configuration.customer = .init(id: customerId, ephemeralKeySecret: customerEphemeralKeySecret)
             self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret, configuration: configuration)
 
