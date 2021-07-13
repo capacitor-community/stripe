@@ -27,6 +27,8 @@ public class StripePlugin: CAPPlugin {
         }
 
         StripeAPI.defaultPublishableKey = publishableKey
+        
+        NSLog(publishableKey + "をセットしました")
 
         call.resolve()
     }
