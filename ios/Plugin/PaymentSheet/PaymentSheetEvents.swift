@@ -3,5 +3,5 @@ public enum PaymentSheetEvents: String {
     case FailedToLoad = "paymentSheetFailedToLoad"
     case Opened = "paymentSheetOpened"
     case Closed = "paymentSheetClosed"
-    case Result = "paymentSheetClosed"
+    case Result = "paymentSheetResult"
 }

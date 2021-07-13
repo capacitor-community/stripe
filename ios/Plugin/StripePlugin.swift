@@ -3,14 +3,17 @@ import Capacitor
 import Stripe
 import PassKit
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
 @objc(StripePlugin)
 public class StripePlugin: CAPPlugin {
+    internal var applePayCtx: ApplePayContext?
+    private let paymentSheetExecutor = PaymentSheetExecutor()
+    let applePayExecutor = ApplePayExecutor()
 
     @objc func initialize(_ call: CAPPluginCall) {
+        self.paymentSheetExecutor.plugin = self
+        self.applePayExecutor.plugin = self
+        self.applePayExecutor.applePayCtx = self.applePayCtx
+        
         let publishableKey = call.getString("publishableKey") ?? ""
         let stripeAccount = call.getString("stripeAccount") ?? ""
 
@@ -29,27 +32,27 @@ public class StripePlugin: CAPPlugin {
     }
 
     @objc func createPaymentSheet(_ call: CAPPluginCall) {
-        PaymentSheetExecutor.createPaymentSheet(call)
+        self.paymentSheetExecutor.createPaymentSheet(call)
     }
 
     @objc func presentPaymentSheet(_ call: CAPPluginCall) {
-        PaymentSheetExecutor.presentPaymentSheet(call)
+        self.paymentSheetExecutor.presentPaymentSheet(call)
     }
 
     @objc func isApplePayAvailable(_ call: CAPPluginCall) {
-        ApplePayExecutor.isApplePayAvailable(call)
+        self.applePayExecutor.isApplePayAvailable(call)
     }
 
     @objc func payWithApplePay(_ call: CAPPluginCall) {
-        ApplePayExecutor.payWithApplePay(call)
+        self.applePayExecutor.payWithApplePay(call)
     }
 
     @objc func cancelApplePay(_ call: CAPPluginCall) {
-        ApplePayExecutor.cancelApplePay(call)
+        self.applePayExecutor.cancelApplePay(call)
     }
 
     @objc func finalizeApplePayTransaction(_ call: CAPPluginCall) {
-        ApplePayExecutor.finalizeApplePayTransaction(call)
+        self.applePayExecutor.finalizeApplePayTransaction(call)
     }
 
     @objc func isGooglePayAvailable(_ call: CAPPluginCall) {
