@@ -24,9 +24,9 @@ npx cap sync
 * [`presentPaymentSheet()`](#presentpaymentsheet)
 * [`addListener(PaymentSheetEventsEnum.Loaded, ...)`](#addlistenerpaymentsheeteventsenumloaded-)
 * [`addListener(PaymentSheetEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentsheeteventsenumfailedtoload-)
-* [`addListener(PaymentSheetEventsEnum.Opened, ...)`](#addlistenerpaymentsheeteventsenumopened-)
-* [`addListener(PaymentSheetEventsEnum.Closed, ...)`](#addlistenerpaymentsheeteventsenumclosed-)
-* [`addListener(PaymentSheetEventsEnum.Closed, ...)`](#addlistenerpaymentsheeteventsenumclosed-)
+* [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted-)
+* [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled-)
+* [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed-)
 * [Interfaces](#interfaces)
 * [Enums](#enums)
 
@@ -134,8 +134,10 @@ createPaymentSheet(options: CreatePaymentSheetOption) => Promise<void>
 ### presentPaymentSheet()
 
 ```typescript
-presentPaymentSheet() => Promise<void>
+presentPaymentSheet() => Promise<{ paymentResult: PaymentSheetEventsEnum; }>
 ```
+
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum</a>; }&gt;</code>
 
 --------------------
 
@@ -172,47 +174,47 @@ addListener(eventName: PaymentSheetEventsEnum.FailedToLoad, listenerFunc: () => 
 --------------------
 
 
-### addListener(PaymentSheetEventsEnum.Opened, ...)
+### addListener(PaymentSheetEventsEnum.Completed, ...)
 
 ```typescript
-addListener(eventName: PaymentSheetEventsEnum.Opened, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: PaymentSheetEventsEnum.Completed, listenerFunc: () => void) => PluginListenerHandle
 ```
 
-| Param              | Type                                                                             |
-| ------------------ | -------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Opened</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+| Param              | Type                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                          |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
 --------------------
 
 
-### addListener(PaymentSheetEventsEnum.Closed, ...)
+### addListener(PaymentSheetEventsEnum.Canceled, ...)
 
 ```typescript
-addListener(eventName: PaymentSheetEventsEnum.Closed, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: PaymentSheetEventsEnum.Canceled, listenerFunc: () => void) => PluginListenerHandle
 ```
 
-| Param              | Type                                                                             |
-| ------------------ | -------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Closed</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+| Param              | Type                                                                               |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                         |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
 --------------------
 
 
-### addListener(PaymentSheetEventsEnum.Closed, ...)
+### addListener(PaymentSheetEventsEnum.Failed, ...)
 
 ```typescript
-addListener(eventName: PaymentSheetEventsEnum.Result, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                             |
 | ------------------ | -------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Closed</a></code> |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
@@ -357,8 +359,8 @@ addListener(eventName: PaymentSheetEventsEnum.Result, listenerFunc: () => void) 
 | ------------------ | --------------------------------------- |
 | **`Loaded`**       | <code>"paymentSheetLoaded"</code>       |
 | **`FailedToLoad`** | <code>"paymentSheetFailedToLoad"</code> |
-| **`Opened`**       | <code>"paymentSheetOpened"</code>       |
-| **`Closed`**       | <code>"paymentSheetClosed"</code>       |
-| **`Result`**       | <code>"paymentSheetClosed"</code>       |
+| **`Completed`**    | <code>"paymentSheetCompleted"</code>    |
+| **`Canceled`**     | <code>"paymentSheetCanceled"</code>     |
+| **`Failed`**       | <code>"paymentSheetFailed"</code>       |
 
 </docgen-api>

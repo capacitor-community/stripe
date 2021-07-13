@@ -11,6 +11,7 @@ import type {
   StripePlugin,
   CreatePaymentSheetOption,
 } from './definitions';
+import { PaymentSheetEventsEnum } from './definitions';
 
 export class StripeWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string | undefined;
@@ -46,13 +47,17 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     return;
   }
 
-  async presentPaymentSheet(): Promise<void> {
+  async presentPaymentSheet(): Promise<{
+    paymentResult: PaymentSheetEventsEnum;
+  }> {
     const paymentSheetDOM = document.createElement('stripe-checkout') as any;
     paymentSheetDOM.publishableKey = this.publishableKey;
     paymentSheetDOM.paymentIntent = this.paymentSheetSettings.paymentIntentUrl;
     paymentSheetDOM.customer = this.paymentSheetSettings.customerUrl;
     document.body.appendChild(paymentSheetDOM);
-    return;
+    return {
+      paymentResult: PaymentSheetEventsEnum.Completed,
+    };
   }
 
   isApplePayAvailable(): Promise<void> {
