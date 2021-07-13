@@ -6,7 +6,9 @@ import type { PaymentSheetEventsEnum } from './payment-sheet-events.enum';
 
 export interface PaymentSheetDefinitions {
   createPaymentSheet(options: CreatePaymentSheetOption): Promise<void>;
-  presentPaymentSheet(): Promise<void>;
+  presentPaymentSheet(): Promise<{
+    paymentResult: PaymentSheetEventsEnum;
+  }>;
 
   addListener(
     eventName: PaymentSheetEventsEnum.Loaded,
@@ -19,17 +21,17 @@ export interface PaymentSheetDefinitions {
   ): PluginListenerHandle;
 
   addListener(
-    eventName: PaymentSheetEventsEnum.Opened,
+    eventName: PaymentSheetEventsEnum.Completed,
     listenerFunc: () => void,
   ): PluginListenerHandle;
 
   addListener(
-    eventName: PaymentSheetEventsEnum.Closed,
+    eventName: PaymentSheetEventsEnum.Canceled,
     listenerFunc: () => void,
   ): PluginListenerHandle;
 
   addListener(
-    eventName: PaymentSheetEventsEnum.Result,
+    eventName: PaymentSheetEventsEnum.Failed,
     listenerFunc: () => void,
   ): PluginListenerHandle;
 }

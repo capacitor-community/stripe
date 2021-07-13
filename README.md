@@ -305,10 +305,15 @@ addListener(eventName: PaymentSheetEventsEnum.Result, listenerFunc: () => void) 
 
 #### CreatePaymentSheetOption
 
-| Prop                   | Type                |
-| ---------------------- | ------------------- |
-| **`paymentIntentUrl`** | <code>string</code> |
-| **`customerUrl`**      | <code>string</code> |
+| Prop                              | Type                                       |
+| --------------------------------- | ------------------------------------------ |
+| **`paymentIntentUrl`**            | <code>string</code>                        |
+| **`customerUrl`**                 | <code>string</code>                        |
+| **`useApplePay`**                 | <code>boolean</code>                       |
+| **`applePayMerchantId`**          | <code>string</code>                        |
+| **`applePayMerchantCountryCode`** | <code>string</code>                        |
+| **`merchantDisplayName`**         | <code>string</code>                        |
+| **`style`**                       | <code>'alwaysLight' \| 'alwaysDark'</code> |
 
 
 #### PluginListenerHandle

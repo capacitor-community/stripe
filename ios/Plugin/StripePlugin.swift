@@ -13,7 +13,7 @@ public class StripePlugin: CAPPlugin {
         self.paymentSheetExecutor.plugin = self
         self.applePayExecutor.plugin = self
         self.applePayExecutor.applePayCtx = self.applePayCtx
-        
+
         let publishableKey = call.getString("publishableKey") ?? ""
         let stripeAccount = call.getString("stripeAccount") ?? ""
 
@@ -27,8 +27,6 @@ public class StripePlugin: CAPPlugin {
         }
 
         StripeAPI.defaultPublishableKey = publishableKey
-        
-        NSLog(publishableKey + "をセットしました")
 
         call.resolve()
     }

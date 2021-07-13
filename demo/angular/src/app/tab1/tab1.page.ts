@@ -16,6 +16,8 @@ export class Tab1Page implements ViewWillEnter {
     Stripe.createPaymentSheet({
       paymentIntentUrl: environment.api + 'payment-sheet',
       customerUrl: '',
+      merchantDisplayName: 'rdlabo',
+      style: 'alwaysDark',
     });
   }
 
