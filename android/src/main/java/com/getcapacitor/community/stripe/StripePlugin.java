@@ -71,7 +71,10 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void presentPaymentSheet(final PluginCall call) {
         callbackId = call.getCallbackId();
+
+        // use paymentSheetExecutor.onPaymentSheetResult()
         bridge.saveCall(call);
+
         paymentSheetExecutor.presentPaymentSheet(call);
     }
 
