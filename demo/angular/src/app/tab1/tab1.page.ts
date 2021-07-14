@@ -17,7 +17,7 @@ export class Tab1Page implements ViewWillEnter {
   ) {}
 
   async ionViewWillEnter() {
-    const {paymentIntent, ephemeralKey, customer} = await this.http.post<{
+    const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
       paymentIntent: string;
       ephemeralKey: string;
       customer: string;
