@@ -1,30 +1,19 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
     "declaration": true,
-    "experimentalDecorators": true,
-    "lib": [
-      "dom",
-      "es2015"
-    ],
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "module": "es2015",
+    "esModuleInterop": true,
+    "lib": ["dom", "es2017"],
+    "module": "esnext",
     "moduleResolution": "node",
-    "noImplicitAny": true,
-    //    "noUnusedLocals": true,
-    //    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "dist/esm",
+    "pretty": true,
     "sourceMap": true,
-    "target": "es2015",
-    "baseUrl": ".",
-    "rootDir": "src"
+    "strict": true,
+    "target": "es2017"
   },
-  "include": [
-    "src/**.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "files": ["src/index.ts"]
 }

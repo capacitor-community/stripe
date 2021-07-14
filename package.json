@@ -1,50 +1,74 @@
 {
   "name": "@capacitor-community/stripe",
-  "version": "1.1.0",
+  "version": "3.0.0-3",
   "description": "Stripe SDK bindings for Capacitor Applications",
-  "main": "dist/esm/index.js",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
-  "scripts": {
-    "build": "npm run clean && tsc -p tsconfig.plugin.json",
-    "clean": "rm -rf ./dist",
-    "watch": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "test": "jest"
-  },
-  "author": "Zyra Media Inc. <info@zyra.ca>",
-  "license": "MIT",
-  "dependencies": {
-    "@capacitor/core": "^2.0.0"
-  },
-  "devDependencies": {
-    "@capacitor/android": "^2.0.0",
-    "@capacitor/ios": "^2.0.0",
-    "@stripe/stripe-js": "^1.11.0",
-    "@types/btoa": "^1.2.3",
-    "@types/isomorphic-fetch": "0.0.35",
-    "@types/jest": "~26.0.0",
-    "@types/node": "~14.0.13",
-    "@types/stripe": "~7.13.23",
-    "btoa": "^1.2.1",
-    "canvas": "^2.6.1",
-    "isomorphic-fetch": "~2.2.1",
-    "jest": "~26.0.1",
-    "standard-version": "^8.0.0",
-    "stripe": "~8.63.0",
-    "ts-jest": "~26.1.0",
-    "typescript": "~3.8.3"
-  },
+  "unpkg": "dist/plugin.js",
   "files": [
+    "android/src/main/",
+    "android/build.gradle",
     "dist/",
-    "ios/",
-    "android/",
+    "ios/Plugin/",
     "CapacitorCommunityStripe.podspec"
   ],
+  "author": "Zyra Media Inc. <info@zyra.ca>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/capacitor-community/stripe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/capacitor-community/stripe/issues"
+  },
   "keywords": [
     "capacitor",
     "plugin",
     "native"
   ],
+  "scripts": {
+    "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
+    "verify:ios": "cd ios && pod install && xcodebuild -workspace Plugin.xcworkspace -scheme Plugin && cd ..",
+    "verify:android": "cd android && ./gradlew clean build test && cd ..",
+    "verify:web": "npm run build",
+    "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
+    "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- autocorrect --format",
+    "eslint": "eslint src/. --ext ts",
+    "prettier": "prettier \"{src/*.ts,**/*.java}\"",
+    "swiftlint": "node-swiftlint",
+    "docgen": "docgen --api StripePlugin --output-readme README.md --output-json dist/docs.json",
+    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
+    "clean": "rimraf ./dist",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "release": "np --any-branch"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^3.0.0",
+    "@capacitor/core": "^3.0.0",
+    "@capacitor/docgen": "git+https://github.com/rdlabo/capacitor-docgen.git#feat/support_extends_build",
+    "@capacitor/ios": "^3.0.0",
+    "@ionic/eslint-config": "^0.3.0",
+    "@ionic/prettier-config": "^1.0.1",
+    "@ionic/swiftlint-config": "^1.1.2",
+    "eslint": "^7.11.0",
+    "np": "^7.5.0",
+    "prettier": "~2.2.0",
+    "prettier-plugin-java": "~1.0.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.32.0",
+    "swiftlint": "^1.0.1",
+    "typescript": "~4.0.3"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^3.0.0"
+  },
+  "prettier": "@ionic/prettier-config",
+  "swiftlint": "@ionic/swiftlint-config",
+  "eslintConfig": {
+    "extends": "@ionic/eslint-config/recommended"
+  },
   "capacitor": {
     "ios": {
       "src": "ios"
@@ -53,21 +77,8 @@
       "src": "android"
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/capacitor-community/stripe"
-  },
-  "bugs": {
-    "url": "https://github.com/capacitor-community/stripe/issues"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "jsdom",
-    "setupFiles": [
-      "<rootDir>/jest.setup.js"
-    ],
-    "testEnvironmentOptions": {
-      "resources": "usable"
-    }
+  "dependencies": {
+    "@stripe/stripe-js": "^1.16.0",
+    "stripe": "^8.150.0"
   }
 }

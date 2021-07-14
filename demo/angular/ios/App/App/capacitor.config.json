@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "capacitor-stripe",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
