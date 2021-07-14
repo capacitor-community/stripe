@@ -6,7 +6,7 @@ export enum PaymentSheetEventsEnum {
     Failed = "paymentSheetFailed",
 }
 
-export type PaymentSheetResult =
+export type PaymentSheetResultInterface =
     PaymentSheetEventsEnum.Loaded
     | PaymentSheetEventsEnum.FailedToLoad
     | PaymentSheetEventsEnum.Completed
