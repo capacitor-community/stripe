@@ -32,14 +32,12 @@ class PaymentSheetExecutor: NSObject {
             }
         }
 
-        let useApplePay = call.getBool("useApplePay") ?? false
         let applePayMerchantId = call.getString("applePayMerchantId") ?? ""
-        let applePayMerchantCountryCode = call.getString("applePayMerchantCountryCode") ?? ""
 
-        if useApplePay == true && applePayMerchantId != "" && applePayMerchantCountryCode != "" {
+        if call.getBool("useApplePay", false) && applePayMerchantId != "" {
             configuration.applePay = .init(
                 merchantId: applePayMerchantId,
-                merchantCountryCode: applePayMerchantCountryCode
+                merchantCountryCode: call.getString("countryCode", "US")
             )
         }
 

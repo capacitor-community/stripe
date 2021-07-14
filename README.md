@@ -307,16 +307,18 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 
 #### CreatePaymentSheetOption
 
-| Prop                              | Type                                       |
-| --------------------------------- | ------------------------------------------ |
-| **`paymentIntentClientSecret`**   | <code>string</code>                        |
-| **`customerEphemeralKeySecret`**  | <code>string</code>                        |
-| **`customerId`**                  | <code>string</code>                        |
-| **`useApplePay`**                 | <code>boolean</code>                       |
-| **`applePayMerchantId`**          | <code>string</code>                        |
-| **`applePayMerchantCountryCode`** | <code>string</code>                        |
-| **`merchantDisplayName`**         | <code>string</code>                        |
-| **`style`**                       | <code>'alwaysLight' \| 'alwaysDark'</code> |
+| Prop                             | Type                                       | Description                                                                                |
+| -------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **`paymentIntentClientSecret`**  | <code>string</code>                        | Any documentation call 'paymentIntent'                                                     |
+| **`customerEphemeralKeySecret`** | <code>string</code>                        | Any documentation call 'ephemeralKey'                                                      |
+| **`customerId`**                 | <code>string</code>                        | Any documentation call 'customer'                                                          |
+| **`useApplePay`**                | <code>boolean</code>                       | If you set payment method ApplePay, this set true                                          |
+| **`applePayMerchantId`**         | <code>string</code>                        | If set useApplePay false, Plugin ignore here.                                              |
+| **`useGooglePay`**               | <code>boolean</code>                       | If you set payment method GooglePay, this set true                                         |
+| **`GooglePayIsTesting`**         | <code>boolean</code>                       |                                                                                            |
+| **`countryCode`**                | <code>string</code>                        | use ApplePay and GooglePay. If set useApplePay and useGooglePay false, Plugin ignore here. |
+| **`merchantDisplayName`**        | <code>string</code>                        |                                                                                            |
+| **`style`**                      | <code>'alwaysLight' \| 'alwaysDark'</code> | iOS Only                                                                                   |
 
 
 #### PluginListenerHandle

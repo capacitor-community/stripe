@@ -15,18 +15,21 @@ export interface CreatePaymentSheetOption {
   customerId: string | undefined;
 
   /**
-   * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet
+   * If you set payment method ApplePay, this set true
    * @default false
+   * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet
    */
   useApplePay?: boolean;
 
+  /**
+   * If set useApplePay false, Plugin ignore here.
+   */
   applePayMerchantId?: string;
 
-  applePayMerchantCountryCode?: string;
-
   /**
-   * @url https://stripe.com/docs/payments/accept-a-payment?platform=android&ui=payment-sheet#google-pay
+   * If you set payment method GooglePay, this set true
    * @default false
+   * @url https://stripe.com/docs/payments/accept-a-payment?platform=android&ui=payment-sheet#google-pay
    */
   useGooglePay?: boolean;
 
@@ -36,9 +39,11 @@ export interface CreatePaymentSheetOption {
   GooglePayIsTesting?: boolean;
 
   /**
+   * use ApplePay and GooglePay.
+   * If set useApplePay and useGooglePay false, Plugin ignore here.
    * @default "US"
    */
-  GooglePayCountryCode?: string;
+  countryCode?: string;
 
   /**
    * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet

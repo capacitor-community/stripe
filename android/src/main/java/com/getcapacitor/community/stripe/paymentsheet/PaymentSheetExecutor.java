@@ -63,10 +63,11 @@ public class PaymentSheetExecutor extends Executor {
                 )
         );
 
-        Boolean useGooglePay = call.getBoolean("useGooglePay");
+        Boolean useGooglePay = call.getBoolean("useGooglePay", false);
 
         if (useGooglePay) {
             Boolean GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false);
+
             PaymentSheet.GooglePayConfiguration.Environment environment = PaymentSheet.GooglePayConfiguration.Environment.Production;
             if (GooglePayEnvironment) {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test;
@@ -75,7 +76,7 @@ public class PaymentSheetExecutor extends Executor {
             final PaymentSheet.GooglePayConfiguration googlePayConfiguration =
                     new PaymentSheet.GooglePayConfiguration(
                             environment,
-                            call.getString("GooglePayCountryCode", "US")
+                            call.getString("countryCode", "US")
                     );
             paymentConfiguration.setGooglePay(googlePayConfiguration);
         }
