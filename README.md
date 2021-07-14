@@ -30,6 +30,8 @@ npm install @capacitor-community/stripe
 npx cap sync
 ```
 
+__This plugin is not compatible with v1. All APIs have been revamped.__
+
 ### Android configuration
 
 In file `android/app/src/main/java/**/**/MainActivity.java`, add the plugin to the initialization list:
