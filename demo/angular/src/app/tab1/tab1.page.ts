@@ -23,8 +23,24 @@ export class Tab1Page implements ViewWillEnter {
       customer: string;
     }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
 
+    Stripe.addListener(PaymentSheetEventsEnum.Loaded, () => {
+      console.log('PaymentSheetEventsEnum.Loaded');
+    });
+
+    Stripe.addListener(PaymentSheetEventsEnum.FailedToLoad, () => {
+      console.log('PaymentSheetEventsEnum.FailedToLoad');
+    });
+
     Stripe.addListener(PaymentSheetEventsEnum.Completed, () => {
       console.log('PaymentSheetEventsEnum.Completed');
+    });
+
+    Stripe.addListener(PaymentSheetEventsEnum.Canceled, () => {
+      console.log('PaymentSheetEventsEnum.Canceled');
+    });
+
+    Stripe.addListener(PaymentSheetEventsEnum.Failed, () => {
+      console.log('PaymentSheetEventsEnum.Failed');
     });
 
     Stripe.createPaymentSheet({
