@@ -1,6 +1,27 @@
-# @capacitor-community/stripe
+<p align="center"><br><img src="https://user-images.githubusercontent.com/236501/85893648-1c92e880-b7a8-11ea-926d-95355b8175c7.png" width="128" height="128" /></p>
+<h3 align="center">Stripe</h3>
+<p align="center"><strong><code>@capacitor-community/stripe</code></strong></p>
+<p align="center">
+  Capacitor community plugin for native Stripe.
+</p>
 
-Stripe SDK bindings for Capacitor Applications
+<p align="center">
+  <img src="https://img.shields.io/maintenance/yes/2021?style=flat-square" />
+  <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/l/@capacitor-community/stripe?style=flat-square" /></a>
+<br>
+  <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/dw/@capacitor-community/stripe?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/v/@capacitor-community/stripe?style=flat-square" /></a>
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+<a href="#contributors-"><img src="https://img.shields.io/badge/all%20contributors-0-orange?style=flat-square" /></a>
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+</p>
+
+## Maintainers
+
+| Maintainer          | GitHub                              | Social                                | Sponsoring Company                             |
+| ------------------- | ----------------------------------- | ------------------------------------- | ---------------------------------------------- |
+| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | RELATION DESIGN LABO, GENERAL INC. ASSOCIATION |
+| Ibby Hadeed | [ihadeed](https://github.com/ihadeed) | |
 
 ## Install
 
