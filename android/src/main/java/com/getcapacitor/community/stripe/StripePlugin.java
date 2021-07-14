@@ -13,6 +13,7 @@ import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
+import com.stripe.android.paymentsheet.PaymentSheet;
 
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
 public class StripePlugin extends Plugin {
@@ -35,6 +36,13 @@ public class StripePlugin extends Plugin {
         this::notifyListeners,
         getLogTag()
     );
+
+    @Override
+    public void load() {
+        this.paymentSheetExecutor.paymentSheet = new PaymentSheet(getActivity(), result -> {
+            this.paymentSheetExecutor.onPaymentSheetResult(result);
+        });
+    }
 
     @PluginMethod
     public void initialize(final PluginCall call) {

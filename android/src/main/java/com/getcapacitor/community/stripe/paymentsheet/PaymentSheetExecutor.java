@@ -19,9 +19,8 @@ import com.stripe.android.paymentsheet.PaymentSheetResult;
 import com.stripe.android.paymentsheet.PaymentSheetResultCallback;
 
 public class PaymentSheetExecutor extends Executor {
-
+    public PaymentSheet paymentSheet;
     private final JSObject emptyObject = new JSObject();
-    private PaymentSheet paymentSheet;
     private PaymentSheet.Configuration paymentConfiguration;
 
     private String paymentIntentClientSecret;
@@ -61,9 +60,6 @@ public class PaymentSheetExecutor extends Executor {
     }
 
     public void presentPaymentSheet(final PluginCall call, Bridge bridge) {
-        paymentSheet = new PaymentSheet(bridge.getActivity(), result -> {
-            onPaymentSheetResult(result);
-        });
 
         try {
             paymentSheet.presentWithPaymentIntent(
@@ -75,7 +71,7 @@ public class PaymentSheetExecutor extends Executor {
         }
     }
 
-    private void onPaymentSheetResult(
+    public void onPaymentSheetResult(
             final PaymentSheetResult paymentSheetResult
     ) {
         if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
