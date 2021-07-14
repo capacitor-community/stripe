@@ -12,7 +12,7 @@ extension StripePlugin: PKPaymentAuthorizationViewControllerDelegate {
         }
 
         if let c = self.bridge?.savedCall(withID: ctx.callbackId) {
-            c.error("payment timeout or user cancelled")
+            c.reject("payment timeout or user cancelled")
         }
 
         self.applePayExecutor.clearApplePay()

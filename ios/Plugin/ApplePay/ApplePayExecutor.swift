@@ -71,7 +71,7 @@ class ApplePayExecutor: NSObject {
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
         call.resolve([
-            "available": Stripe.deviceSupportsApplePay()
+            "available": StripeAPI.deviceSupportsApplePay()
         ])
     }
 
