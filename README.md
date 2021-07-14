@@ -43,6 +43,7 @@ npx cap sync
 * [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled-)
 * [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed-)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 * [Enums](#enums)
 
 </docgen-index>
@@ -79,10 +80,10 @@ createPaymentSheet(options: CreatePaymentSheetOption) => Promise<void>
 ### presentPaymentSheet()
 
 ```typescript
-presentPaymentSheet() => Promise<{ paymentResult: PaymentSheetEventsEnum; }>
+presentPaymentSheet() => Promise<{ paymentResult: PaymentSheetResult; }>
 ```
 
-**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum</a>; }&gt;</code>
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentsheetresult">PaymentSheetResult</a>; }&gt;</code>
 
 --------------------
 
@@ -199,6 +200,14 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+### Type Aliases
+
+
+#### PaymentSheetResult
+
+<code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code>
 
 
 ### Enums

@@ -5,3 +5,5 @@ export enum PaymentSheetEventsEnum {
   Canceled = "paymentSheetCanceled",
   Failed = "paymentSheetFailed",
 }
+
+export type PaymentSheetResult = PaymentSheetEventsEnum.Completed | PaymentSheetEventsEnum.Completed | PaymentSheetEventsEnum.Failed;

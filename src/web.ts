@@ -6,7 +6,7 @@ import type {
   StripePlugin,
   CreatePaymentSheetOption,
 } from './definitions';
-import { PaymentSheetEventsEnum } from './definitions';
+import { PaymentSheetEventsEnum, PaymentSheetResult } from './definitions';
 
 export class StripeWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string | undefined;
@@ -44,7 +44,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   }
 
   async presentPaymentSheet(): Promise<{
-    paymentResult: PaymentSheetEventsEnum;
+    paymentResult: PaymentSheetResult;
   }> {
     const paymentSheetDOM = document.createElement('stripe-checkout') as any;
     paymentSheetDOM.publishableKey = this.publishableKey;
