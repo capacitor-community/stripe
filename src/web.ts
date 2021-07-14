@@ -2,11 +2,6 @@ import { WebPlugin } from '@capacitor/core';
 import type { Stripe } from '@stripe/stripe-js';
 
 import type {
-  ApplePayOptions,
-  ApplePayResponse,
-  FinalizeApplePayTransactionOptions,
-  GooglePayOptions,
-  GooglePayResponse,
   StripeInitializationOptions,
   StripePlugin,
   CreatePaymentSheetOption,
@@ -60,38 +55,5 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     return {
       paymentResult: PaymentSheetEventsEnum.Completed,
     };
-  }
-
-  isApplePayAvailable(): Promise<void> {
-    return new Promise(reject => reject());
-  }
-
-  async payWithApplePay(options: {
-    applePayOptions: ApplePayOptions;
-  }): Promise<ApplePayResponse> {
-    console.log(options);
-    throw 'Apple Pay is not supported on web';
-  }
-
-  async cancelApplePay(): Promise<void> {
-    throw 'Apple Pay is not supported on web';
-  }
-
-  async finalizeApplePayTransaction(
-    options: FinalizeApplePayTransactionOptions,
-  ): Promise<void> {
-    console.log(options);
-    throw 'Apple Pay is not supported on web';
-  }
-
-  async isGooglePayAvailable(): Promise<void> {
-    return new Promise(reject => reject());
-  }
-
-  async payWithGooglePay(options: {
-    googlePayOptions: GooglePayOptions;
-  }): Promise<GooglePayResponse> {
-    console.log(options);
-    throw 'Google Pay is not supported on web';
   }
 }

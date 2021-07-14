@@ -9,7 +9,6 @@ import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
@@ -25,13 +24,6 @@ public class StripePlugin extends Plugin {
     private String callbackId;
 
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
-        this::getContext,
-        this::getActivity,
-        this::notifyListeners,
-        getLogTag()
-    );
-
-    private final GooglePayExecutor googlePayExecutor = new GooglePayExecutor(
         this::getContext,
         this::getActivity,
         this::notifyListeners,
@@ -76,20 +68,5 @@ public class StripePlugin extends Plugin {
         bridge.saveCall(call);
 
         paymentSheetExecutor.presentPaymentSheet(call);
-    }
-
-    @PluginMethod
-    public void isApplePayAvailable(final PluginCall call) {
-        call.reject("Apple Pay is not available on Android");
-    }
-
-    @PluginMethod
-    public void isGooglePayAvailable(final PluginCall call) {
-        googlePayExecutor.isGooglePayAvailable(call, isTest);
-    }
-
-    @PluginMethod
-    public void payWithGooglePay(final PluginCall call) {
-        googlePayExecutor.payWithGooglePay(call, isTest, publishableKey, googlePayCallback);
     }
 }
