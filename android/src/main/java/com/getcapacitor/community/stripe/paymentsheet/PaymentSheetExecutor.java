@@ -47,20 +47,44 @@ public class PaymentSheetExecutor extends Executor {
             call.reject("invalid Params");
             return;
         }
+
+
+        String merchantDisplayName = call.getString("merchantDisplayName");
+
+        if (merchantDisplayName == null) {
+            merchantDisplayName = "";
+        }
+
         paymentConfiguration = new PaymentSheet.Configuration(
-                "Example, Inc.",
+                merchantDisplayName,
                 new PaymentSheet.CustomerConfiguration(
                         customerId,
                         customerEphemeralKeySecret
                 )
         );
 
+        Boolean useGooglePay = call.getBoolean("useGooglePay");
+
+        if (useGooglePay) {
+            Boolean GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false);
+            PaymentSheet.GooglePayConfiguration.Environment environment = PaymentSheet.GooglePayConfiguration.Environment.Production;
+            if (GooglePayEnvironment) {
+                environment = PaymentSheet.GooglePayConfiguration.Environment.Test;
+            }
+
+            final PaymentSheet.GooglePayConfiguration googlePayConfiguration =
+                    new PaymentSheet.GooglePayConfiguration(
+                            environment,
+                            call.getString("GooglePayCountryCode", "US")
+                    );
+            paymentConfiguration.setGooglePay(googlePayConfiguration);
+        }
+
         notifyListeners(PaymentSheetEvents.Loaded.getWebEventName(), emptyObject);
         call.resolve();
     }
 
-    public void presentPaymentSheet(final PluginCall call, Bridge bridge) {
-
+    public void presentPaymentSheet(final PluginCall call) {
         try {
             paymentSheet.presentWithPaymentIntent(
                     paymentIntentClientSecret,
@@ -72,18 +96,22 @@ public class PaymentSheetExecutor extends Executor {
     }
 
     public void onPaymentSheetResult(
+            Bridge bridge,
+            String callbackId,
             final PaymentSheetResult paymentSheetResult
     ) {
+        PluginCall call = bridge.getSavedCall(callbackId);
+
         if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             notifyListeners(PaymentSheetEvents.Canceled.getWebEventName(), emptyObject);
-//            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Canceled.getWebEventName()));
+            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Canceled.getWebEventName()));
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             notifyListeners(PaymentSheetEvents.Failed.getWebEventName(), emptyObject);
-//            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Failed.getWebEventName()));
+            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Failed.getWebEventName()));
             // ((PaymentSheetResult.Failed) paymentSheetResult).getError()
         } else if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             notifyListeners(PaymentSheetEvents.Completed.getWebEventName(), emptyObject);
-//            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Completed.getWebEventName()));
+            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Completed.getWebEventName()));
         }
     }
 }

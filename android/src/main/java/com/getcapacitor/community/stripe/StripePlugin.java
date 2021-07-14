@@ -22,6 +22,7 @@ public class StripePlugin extends Plugin {
     private String publishableKey;
     private Boolean isTest = true;
     private GooglePayCallback googlePayCallback = null;
+    private String callbackId;
 
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
         this::getContext,
@@ -40,7 +41,7 @@ public class StripePlugin extends Plugin {
     @Override
     public void load() {
         this.paymentSheetExecutor.paymentSheet = new PaymentSheet(getActivity(), result -> {
-            this.paymentSheetExecutor.onPaymentSheetResult(result);
+            this.paymentSheetExecutor.onPaymentSheetResult(bridge, callbackId, result);
         });
     }
 
@@ -69,7 +70,9 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void presentPaymentSheet(final PluginCall call) {
-        paymentSheetExecutor.presentPaymentSheet(call, bridge);
+        callbackId = call.getCallbackId();
+        bridge.saveCall(call);
+        paymentSheetExecutor.presentPaymentSheet(call);
     }
 
     @PluginMethod
