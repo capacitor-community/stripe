@@ -30,6 +30,79 @@ npm install @capacitor-community/stripe
 npx cap sync
 ```
 
+### Android configuration
+
+In file `android/app/src/main/java/**/**/MainActivity.java`, add the plugin to the initialization list:
+
+```java
+public class MainActivity extends BridgeActivity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        registerPlugin(com.getcapacitor.community.stripe.StripePlugin.class);
+    }
+}
+```
+
+### iOS configuration
+
+not need.
+
+
+## Example
+
+### Initialize Stripe
+
+```ts
+import { Stripe } from '@capacitor-community/stripe';
+
+export async function initialize(): Promise<void> {
+  Stripe.initialize({
+    publishableKey: "Your Publishable Key""",
+  });
+}
+```
+
+
+### Present Payment Sheet
+
+#### create
+
+You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use HTTPClient, Axios, Ajax, and so on.
+
+Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
+
+```ts
+import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
+
+export async function create(): Promise<void> {
+  /**
+   * Connect to your backend endpoint, and get every key.
+   */
+  const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+    paymentIntent: string;
+    ephemeralKey: string;
+    customer: string;
+  }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+  
+  Stripe.createPaymentSheet({
+    paymentIntentClientSecret: paymentIntent,
+    customerEphemeralKeySecret: ephemeralKey,
+    customerId: customer,
+    merchantDisplayName: 'Your App Name or Company Name',
+    // style: 'alwaysDark',
+  });
+}
+```
+
+### present
+
+```ts
+export async function present(): Promise<void> {
+  Stripe.presentPaymentSheet();
+}
+```
+
 ## API
 
 <docgen-index>
