@@ -2,13 +2,19 @@ import Foundation
 import Capacitor
 import Stripe
 import PassKit
+import UIKit
 
 @objc(StripePlugin)
 public class StripePlugin: CAPPlugin {
     private let paymentSheetExecutor = PaymentSheetExecutor()
+    private let cardInputModalExecutor = CardInputModalExecutor()
+    
 
     @objc func initialize(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.plugin = self
+        self.cardInputModalExecutor.plugin = self
+        
+        self.cardInputModalExecutor.presentCardInputModal()
 
         let publishableKey = call.getString("publishableKey") ?? ""
         let stripeAccount = call.getString("stripeAccount") ?? ""
