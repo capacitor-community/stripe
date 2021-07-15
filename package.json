@@ -13,7 +13,7 @@
     "ios/Plugin/",
     "CapacitorCommunityStripe.podspec"
   ],
-  "author": "Zyra Media Inc. <info@zyra.ca>",
+  "author": "Zyra Media Inc.<info@zyra.ca>",
   "license": "MIT",
   "repository": {
     "type": "git",

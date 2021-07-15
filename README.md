@@ -20,8 +20,8 @@
 
 | Maintainer          | GitHub                              | Social                                | Sponsoring Company                             |
 | ------------------- | ----------------------------------- | ------------------------------------- | ---------------------------------------------- |
-| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | RELATION DESIGN LABO, GENERAL INC. ASSOCIATION |
 | Ibby Hadeed | [ihadeed](https://github.com/ihadeed) | |
+| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | RELATION DESIGN LABO, GENERAL INC. ASSOCIATION |
 
 ## Install
 
@@ -70,7 +70,7 @@ export async function initialize(): Promise<void> {
 
 #### create
 
-You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use HTTPClient, Axios, Ajax, and so on.
+You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
 
 Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
 
@@ -155,10 +155,10 @@ createPaymentSheet(options: CreatePaymentSheetOption) => Promise<void>
 ### presentPaymentSheet()
 
 ```typescript
-presentPaymentSheet() => Promise<{ paymentResult: PaymentSheetResult; }>
+presentPaymentSheet() => Promise<{ paymentResult: PaymentSheetResultInterface; }>
 ```
 
-**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentsheetresult">PaymentSheetResult</a>; }&gt;</code>
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentsheetresultinterface">PaymentSheetResultInterface</a>; }&gt;</code>
 
 --------------------
 
@@ -280,9 +280,9 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 ### Type Aliases
 
 
-#### PaymentSheetResult
+#### PaymentSheetResultInterface
 
-<code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code>
+<code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Loaded</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.FailedToLoad</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code>
 
 
 ### Enums
