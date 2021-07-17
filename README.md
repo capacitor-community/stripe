@@ -117,6 +117,8 @@ export async function present(): Promise<void> {
 * [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted-)
 * [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled-)
 * [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed-)
+* [`createSetupIntent(...)`](#createsetupintent)
+* [`presentSetupIntent()`](#presentsetupintent)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -243,6 +245,28 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 --------------------
 
 
+### createSetupIntent(...)
+
+```typescript
+createSetupIntent(options: CreateSetupIntentOption) => Promise<void>
+```
+
+| Param         | Type                                                                        |
+| ------------- | --------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createsetupintentoption">CreateSetupIntentOption</a></code> |
+
+--------------------
+
+
+### presentSetupIntent()
+
+```typescript
+presentSetupIntent() => Promise<void>
+```
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -275,6 +299,13 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+#### CreateSetupIntentOption
+
+| Prop                          | Type                |
+| ----------------------------- | ------------------- |
+| **`setupIntentClientSecret`** | <code>string</code> |
 
 
 ### Type Aliases

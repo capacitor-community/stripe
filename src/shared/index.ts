@@ -58,3 +58,7 @@ export interface CreatePaymentSheetOption {
    */
   style?: 'alwaysLight' | 'alwaysDark';
 }
+
+export interface CreateSetupIntentOption {
+  setupIntentClientSecret: string;
+}

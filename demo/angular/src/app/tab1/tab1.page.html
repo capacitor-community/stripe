@@ -12,6 +12,9 @@
       <ion-title size="large">Tab 1</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-list>
+    <ion-item [disabled]="!readyPaymentSheet" (click)="presentPaymentSheet()" button="true" detail="true"><ion-label>PaymentSheet</ion-label></ion-item>
+    <ion-item [disabled]="!readySetupIntent" (click)="presentSetupIntent()" button="true" detail="true"><ion-label>SetupIntent</ion-label></ion-item>
+  </ion-list>
 
-  <div class="ion-text-center ion-padding"><ion-button (click)="presentPaymentSheet()">決済表示</ion-button></div>
 </ion-content>

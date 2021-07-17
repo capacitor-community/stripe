@@ -11,6 +11,8 @@ import {first} from 'rxjs/operators';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page implements ViewWillEnter {
+  readyPaymentSheet = false;
+  readySetupIntent = false;
 
   constructor(
     private http: HttpClient,
@@ -50,9 +52,16 @@ export class Tab1Page implements ViewWillEnter {
       merchantDisplayName: 'rdlabo',
       style: 'alwaysDark',
     });
+
+    this.readyPaymentSheet = true;
+    this.readySetupIntent = true;
   }
 
   presentPaymentSheet() {
     Stripe.presentPaymentSheet();
+  }
+
+  presentSetupIntent() {
+    Stripe.presentSetupIntent();
   }
 }

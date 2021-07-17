@@ -13,8 +13,6 @@ public class StripePlugin: CAPPlugin {
     @objc func initialize(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.plugin = self
         self.cardInputModalExecutor.plugin = self
-        
-        self.cardInputModalExecutor.presentCardInputModal()
 
         let publishableKey = call.getString("publishableKey") ?? ""
         let stripeAccount = call.getString("stripeAccount") ?? ""
@@ -39,5 +37,13 @@ public class StripePlugin: CAPPlugin {
 
     @objc func presentPaymentSheet(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.presentPaymentSheet(call)
+    }
+    
+    @objc func createSetupIntent(_ call: CAPPluginCall) {
+        self.cardInputModalExecutor.createSetupIntent(call)
+    }
+    
+    @objc func presentSetupIntent(_ call: CAPPluginCall) {
+        self.cardInputModalExecutor.presentSetupIntent(call)
     }
 }
