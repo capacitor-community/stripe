@@ -1,12 +1,14 @@
 import { WebPlugin } from '@capacitor/core';
 import type { Stripe } from '@stripe/stripe-js';
 
+import { PaymentSheetEventsEnum } from './definitions';
 import type {
   StripeInitializationOptions,
   StripePlugin,
   CreatePaymentSheetOption,
+  CreateSetupIntentOption,
+  PaymentSheetResultInterface,
 } from './definitions';
-import { PaymentSheetEventsEnum, PaymentSheetResultInterface } from './definitions';
 
 export class StripeWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string | undefined;
@@ -55,5 +57,14 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     return {
       paymentResult: PaymentSheetEventsEnum.Completed,
     };
+  }
+
+  async createSetupIntent(options: CreateSetupIntentOption): Promise<void> {
+    console.log(options)
+    return;
+  }
+
+  async presentSetupIntent(): Promise<void> {
+    return;
   }
 }

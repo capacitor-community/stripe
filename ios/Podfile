@@ -10,9 +10,11 @@ end
 target 'Plugin' do
   capacitor_pods
   pod 'Stripe', '~> 21.5.1'
+  pod 'FloatingPanel'
 end
 
 target 'PluginTests' do
   capacitor_pods
   pod 'Stripe', '~> 21.5.1'
+  pod 'FloatingPanel'
 end
