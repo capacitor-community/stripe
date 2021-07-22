@@ -7,10 +7,11 @@ class PaymentSheetExecutor: NSObject {
     var paymentSheet: PaymentSheet?
 
     func createPaymentSheet(_ call: CAPPluginCall) {
-        let paymentIntentClientSecret = call.getString("paymentIntentClientSecret") ?? ""
+        let paymentIntentClientSecret = call.getString("paymentIntentClientSecret") ?? nil
         let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
-        let customerId = call.getString("customerId") ?? ""
-        if paymentIntentClientSecret == "" || customerEphemeralKeySecret == "" || customerId == "" {
+        let customerId = call.getString("customerId") ?? nil
+
+        if paymentIntentClientSecret == nil || customerId == nil {
             call.reject("invalid Params")
             return
         }
@@ -41,8 +42,9 @@ class PaymentSheetExecutor: NSObject {
             )
         }
 
-        configuration.customer = .init(id: customerId, ephemeralKeySecret: customerEphemeralKeySecret)
-        self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret, configuration: configuration)
+        configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret)
+
+        self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret!, configuration: configuration)
 
         self.plugin?.notifyListeners(PaymentSheetEvents.Loaded.rawValue, data: [:])
         call.resolve([:])

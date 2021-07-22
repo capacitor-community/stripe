@@ -38,11 +38,11 @@ public class PaymentSheetExecutor extends Executor {
     public void createPaymentSheet(final PluginCall call, String publishableKey) {
         PaymentConfiguration.init(this.contextSupplier.get(), publishableKey);
 
-        paymentIntentClientSecret = call.getString("paymentIntentClientSecret");
-        String customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret");
-        String customerId = call.getString("customerId");
+        paymentIntentClientSecret = call.getString("paymentIntentClientSecret", null);
+        String customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null);
+        String customerId = call.getString("customerId", null);
 
-        if (paymentIntentClientSecret == null || customerEphemeralKeySecret == null || customerId == null) {
+        if (paymentIntentClientSecret == null || customerId == null) {
             notifyListeners(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
             call.reject("invalid Params");
             return;

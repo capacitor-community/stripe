@@ -14,7 +14,7 @@ public class StripePlugin: CAPPlugin {
         let stripeAccount = call.getString("stripeAccount") ?? ""
 
         if publishableKey == "" {
-            call.reject("you must provide a valid key")
+            call.reject("you must provide publishableKey")
             return
         }
 

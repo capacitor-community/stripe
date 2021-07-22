@@ -2,17 +2,17 @@ export interface CreatePaymentSheetOption {
   /**
    * Any documentation call 'paymentIntent'
    */
-  paymentIntentClientSecret: string | undefined;
+  paymentIntentClientSecret: string;
 
   /**
    * Any documentation call 'ephemeralKey'
    */
-  customerEphemeralKeySecret: string | undefined;
+  customerEphemeralKeySecret?: string;
 
   /**
    * Any documentation call 'customer'
    */
-  customerId: string | undefined;
+  customerId: string;
 
   /**
    * If you set payment method ApplePay, this set true
