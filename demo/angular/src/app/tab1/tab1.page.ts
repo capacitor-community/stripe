@@ -1,22 +1,24 @@
 import {Component} from '@angular/core';
-import {ViewWillEnter} from '@ionic/angular';
+import {ViewDidEnter} from '@ionic/angular';
 import {PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
+import {defineCustomElements} from '@stripe-elements/stripe-elements/loader';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
-export class Tab1Page implements ViewWillEnter {
+export class Tab1Page implements ViewDidEnter {
 
   constructor(
     private http: HttpClient,
-  ) {}
+  ) {
+  }
 
-  async ionViewWillEnter() {
+  async ionViewDidEnter() {
     const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
       paymentIntent: string;
       ephemeralKey: string;
@@ -42,8 +44,7 @@ export class Tab1Page implements ViewWillEnter {
     Stripe.addListener(PaymentSheetEventsEnum.Failed, () => {
       console.log('PaymentSheetEventsEnum.Failed');
     });
-
-    Stripe.createPaymentSheet({
+    await Stripe.createPaymentSheet({
       paymentIntentClientSecret: paymentIntent,
       customerEphemeralKeySecret: ephemeralKey,
       customerId: customer,
