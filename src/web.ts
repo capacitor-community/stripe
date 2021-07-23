@@ -43,7 +43,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
 
   async createPaymentSheet(options: CreatePaymentSheetOption): Promise<void> {
     if (!this.publishableKey) {
-      window.addEventListener(PaymentSheetEventsEnum.FailedToLoad, () => null);
+      this.notifyListeners(PaymentSheetEventsEnum.FailedToLoad, () => null);
       return;
     }
 
@@ -62,7 +62,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     this.stripeElement.paymentIntentClientSecret =
       options.paymentIntentClientSecret;
 
-    window.addEventListener(PaymentSheetEventsEnum.Loaded, () => null);
+    this.notifyListeners(PaymentSheetEventsEnum.Loaded, () => null);
   }
 
   async presentPaymentSheet(): Promise<{
@@ -96,7 +96,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     }).catch(() => undefined);
 
     if (props === undefined) {
-      window.addEventListener(PaymentSheetEventsEnum.Canceled, () => null);
+      this.notifyListeners(PaymentSheetEventsEnum.Canceled, () => null);
       return {
         paymentResult: PaymentSheetEventsEnum.Canceled,
       };
@@ -117,13 +117,13 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
 
     if (result.error !== undefined) {
-      window.addEventListener(PaymentSheetEventsEnum.Failed, () => null);
+      this.notifyListeners(PaymentSheetEventsEnum.Failed, () => null);
       return {
         paymentResult: PaymentSheetEventsEnum.Failed,
       };
     }
 
-    window.addEventListener(PaymentSheetEventsEnum.Completed, () => null);
+    this.notifyListeners(PaymentSheetEventsEnum.Completed, () => null);
     return {
       paymentResult: PaymentSheetEventsEnum.Completed,
     };

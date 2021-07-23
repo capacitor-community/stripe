@@ -1,31 +1,25 @@
-import {Component} from '@angular/core';
-import {ViewDidEnter} from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
 import {PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
-import {defineCustomElements} from '@stripe-elements/stripe-elements/loader';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
-export class Tab1Page implements ViewDidEnter {
+export class Tab1Page implements OnInit {
+  process: 'willReady' | 'Ready' = 'willReady';
 
   constructor(
     private http: HttpClient,
   ) {
   }
 
-  async ionViewDidEnter() {
-    const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
-      paymentIntent: string;
-      ephemeralKey: string;
-      customer: string;
-    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
-
+  async ngOnInit() {
     Stripe.addListener(PaymentSheetEventsEnum.Loaded, () => {
+      this.process = 'Ready';
       console.log('PaymentSheetEventsEnum.Loaded');
     });
 
@@ -34,16 +28,28 @@ export class Tab1Page implements ViewDidEnter {
     });
 
     Stripe.addListener(PaymentSheetEventsEnum.Completed, () => {
+      this.process = 'willReady';
       console.log('PaymentSheetEventsEnum.Completed');
     });
 
     Stripe.addListener(PaymentSheetEventsEnum.Canceled, () => {
+      this.process = 'willReady';
       console.log('PaymentSheetEventsEnum.Canceled');
     });
 
     Stripe.addListener(PaymentSheetEventsEnum.Failed, () => {
+      this.process = 'willReady';
       console.log('PaymentSheetEventsEnum.Failed');
     });
+  }
+
+  async createPaymentSheet() {
+    const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+      paymentIntent: string;
+      ephemeralKey: string;
+      customer: string;
+    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+
     await Stripe.createPaymentSheet({
       paymentIntentClientSecret: paymentIntent,
       customerEphemeralKeySecret: ephemeralKey,
@@ -51,6 +57,8 @@ export class Tab1Page implements ViewDidEnter {
       merchantDisplayName: 'rdlabo',
       style: 'alwaysDark',
     });
+
+    console.log('終わったよ')
   }
 
   presentPaymentSheet() {
