@@ -40,13 +40,14 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       throw new Error('you must provide a valid key');
     }
     this.publishableKey = options.publishableKey;
-    defineCustomElements(window)
   }
 
   async createPaymentSheet(options: CreatePaymentSheetOption): Promise<void> {
     if (!this.publishableKey) {
+      window.addEventListener(PaymentSheetEventsEnum.FailedToLoad, () => null);
       return;
     }
+
     const stripeModalElement = document.createElement('stripe-element-modal');
     stripeModalElement.appendChild(
       document.createElement('stripe-payment-sheet'),
@@ -58,13 +59,11 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     this.stripeElement = document.getElementsByTagName(
       'stripe-payment-sheet',
     )[0];
-    this.stripeElement.initStripe(this.publishableKey);
+    await this.stripeElement.initStripe(this.publishableKey);
     this.stripeElement.paymentIntentClientSecret =
       options.paymentIntentClientSecret;
 
-    window.addEventListener(PaymentSheetEventsEnum.Loaded, () => {
-      return null;
-    });
+    window.addEventListener(PaymentSheetEventsEnum.Loaded, () => null);
   }
 
   async presentPaymentSheet(): Promise<{
@@ -80,6 +79,13 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     )[0];
     await stripeModalElement.openModal();
 
+    /**
+     * When close stripeModalElement, remove stripe-elements DOM.
+     */
+    stripeModalElement.addEventListener('close', () => {
+      StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
+    });
+
     const props = await new Promise((resolve, reject) => {
       if (!this.stripeElement || !stripeModalElement) {
         return reject();
@@ -91,9 +97,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     }).catch(() => undefined);
 
     if (props === undefined) {
-      window.addEventListener(PaymentSheetEventsEnum.Canceled, () => {
-        return null;
-      });
+      window.addEventListener(PaymentSheetEventsEnum.Canceled, () => null);
       return {
         paymentResult: PaymentSheetEventsEnum.Canceled,
       };
@@ -111,21 +115,27 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     });
     this.stripeElement.updateProgress('success');
     await stripeModalElement.closeModal();
+    StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
 
     if (result.error !== undefined) {
-      window.addEventListener(PaymentSheetEventsEnum.Failed, () => {
-        return null;
-      });
+      window.addEventListener(PaymentSheetEventsEnum.Failed, () => null);
       return {
         paymentResult: PaymentSheetEventsEnum.Failed,
       };
     }
 
-    window.addEventListener(PaymentSheetEventsEnum.Completed, () => {
-      return null;
-    });
+    window.addEventListener(PaymentSheetEventsEnum.Completed, () => null);
     return {
       paymentResult: PaymentSheetEventsEnum.Completed,
     };
+  }
+
+  private static removeStripeDOM(stripeElement: StripePaymentSheet | undefined, stripeModalElement: StripeElementModal | undefined): void {
+    if (stripeElement) {
+      stripeElement.remove();
+    }
+    if (stripeModalElement) {
+      stripeModalElement.remove();
+    }
   }
 }
