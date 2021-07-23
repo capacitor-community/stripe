@@ -29,9 +29,9 @@
 
 ### Screenshots
 
-|  |  Android  |  iOS  |  Web  |
-| :--- | :---: | :---: | :---: |
-|  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png) | ![](demo/screenshots/payment-sheet-web.png)  |
+|  Android  |  iOS  |  Web  |
+| :---: | :---: | :---: |
+| ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png) | ![](demo/screenshots/payment-sheet-web.png)  |
 
 ## Install
 
@@ -71,7 +71,7 @@ npm install @stripe-elements/stripe-elements
 
 And defineCustomElements() called once during the bootstrapping of your application.
 
-```
+```ts
 import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 defineCustomElements();
 ```
