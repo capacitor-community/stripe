@@ -13,7 +13,7 @@
     </ion-toolbar>
   </ion-header>
   <ion-list>
-    <ion-item button="true" (click)="createPaymentSheet()" [disabled]="process === 'Ready'"><ion-label>準備</ion-label></ion-item>
-    <ion-item button="true" (click)="presentPaymentSheet()" [disabled]="process === 'willReady'"><ion-label>実行</ion-label></ion-item>
+    <ion-item button="true" (click)="createPaymentSheet()" [disabled]="process === 'Ready'"><ion-label>createPaymentSheet</ion-label></ion-item>
+    <ion-item button="true" (click)="presentPaymentSheet()" [disabled]="process === 'willReady'"><ion-label>presentPaymentSheet</ion-label></ion-item>
   </ion-list>
 </ion-content>

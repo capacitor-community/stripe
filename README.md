@@ -23,6 +23,16 @@
 | Ibby Hadeed | [ihadeed](https://github.com/ihadeed) | |
 | Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | RELATION DESIGN LABO, GENERAL INC. ASSOCIATION |
 
+## Demo
+
+[Demo code is here.](https://github.com/capacitor-community/stripe/tree/master/demo)
+
+### Screenshots
+
+|  |  Android  |  iOS  |  Web  |
+| :--- | :---: | :---: | :---: |
+|  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png) | ![](demo/screenshots/payment-sheet-web.png)  |
+
 ## Install
 
 ```bash
