@@ -51,6 +51,23 @@ public class MainActivity extends BridgeActivity {
 not need.
 
 
+### Web configuration
+
+__This feature is experimental. Please tested and feedback. If you want to contribute UI, Animation or create issue, move to https://github.com/stripe-elements/stripe-elements .__
+
+```bash
+npm install @stripe-elements/stripe-elements
+```
+
+And defineCustomElements() called once during the bootstrapping of your application.
+
+```
+import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
+defineCustomElements();
+```
+
+@stripe-elements/stripe-elements is created with StencilJS. If you can't understand where defined, please check https://stenciljs.com/docs/angular/
+
 ## Example
 
 ### Initialize Stripe
