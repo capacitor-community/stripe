@@ -2,7 +2,6 @@ import { WebPlugin } from '@capacitor/core';
 import type { Components } from '@stripe-elements/stripe-elements';
 import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
 import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
-import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 
 import type {
   StripeInitializationOptions,
@@ -133,9 +132,12 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   private static removeStripeDOM(stripeElement: StripePaymentSheet | undefined, stripeModalElement: StripeElementModal | undefined): void {
     if (stripeElement) {
       stripeElement.remove();
+      stripeElement = undefined;
     }
     if (stripeModalElement) {
       stripeModalElement.remove();
+      stripeModalElement = undefined;
     }
+    console.log([stripeElement, stripeModalElement])
   }
 }
