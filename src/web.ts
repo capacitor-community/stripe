@@ -132,12 +132,9 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   private static removeStripeDOM(stripeElement: StripePaymentSheet | undefined, stripeModalElement: StripeElementModal | undefined): void {
     if (stripeElement) {
       stripeElement.remove();
-      stripeElement = undefined;
     }
     if (stripeModalElement) {
       stripeModalElement.remove();
-      stripeModalElement = undefined;
     }
-    console.log([stripeElement, stripeModalElement])
   }
 }
