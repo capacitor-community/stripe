@@ -2,6 +2,7 @@ import { WebPlugin } from '@capacitor/core';
 import type { Components } from '@stripe-elements/stripe-elements';
 import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
 import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
+import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 
 import type {
   StripeInitializationOptions,
@@ -39,6 +40,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       throw new Error('you must provide a valid key');
     }
     this.publishableKey = options.publishableKey;
+    defineCustomElements(window)
   }
 
   async createPaymentSheet(options: CreatePaymentSheetOption): Promise<void> {
