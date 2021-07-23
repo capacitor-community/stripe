@@ -2,9 +2,7 @@ package com.getcapacitor.community.stripe;
 
 import android.app.Activity;
 import android.util.Log;
-
 import androidx.activity.ComponentActivity;
-
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -17,7 +15,7 @@ import com.stripe.android.paymentsheet.PaymentSheet;
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
 public class StripePlugin extends Plugin {
 
-//    private Stripe stripeInstance;
+    //    private Stripe stripeInstance;
     private String publishableKey;
     private Boolean isTest = true;
     private GooglePayCallback googlePayCallback = null;
@@ -32,9 +30,13 @@ public class StripePlugin extends Plugin {
 
     @Override
     public void load() {
-        this.paymentSheetExecutor.paymentSheet = new PaymentSheet(getActivity(), result -> {
-            this.paymentSheetExecutor.onPaymentSheetResult(bridge, callbackId, result);
-        });
+        this.paymentSheetExecutor.paymentSheet =
+            new PaymentSheet(
+                getActivity(),
+                result -> {
+                    this.paymentSheetExecutor.onPaymentSheetResult(bridge, callbackId, result);
+                }
+            );
     }
 
     @PluginMethod
@@ -46,7 +48,7 @@ public class StripePlugin extends Plugin {
                 call.reject("you must provide a valid key");
                 return;
             }
-//            stripeInstance = new Stripe(getContext(), publishableKey);
+            //            stripeInstance = new Stripe(getContext(), publishableKey);
             isTest = publishableKey.contains("test");
             PaymentConfiguration.init(getContext(), publishableKey);
             call.resolve();
