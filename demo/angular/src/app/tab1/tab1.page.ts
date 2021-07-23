@@ -57,8 +57,6 @@ export class Tab1Page implements OnInit {
       merchantDisplayName: 'rdlabo',
       style: 'alwaysDark',
     });
-
-    console.log('終わったよ')
   }
 
   presentPaymentSheet() {
