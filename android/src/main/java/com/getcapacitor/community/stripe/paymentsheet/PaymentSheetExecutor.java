@@ -3,10 +3,8 @@ package com.getcapacitor.community.stripe.paymentsheet;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-
 import androidx.activity.ComponentActivity;
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
@@ -19,6 +17,7 @@ import com.stripe.android.paymentsheet.PaymentSheetResult;
 import com.stripe.android.paymentsheet.PaymentSheetResultCallback;
 
 public class PaymentSheetExecutor extends Executor {
+
     public PaymentSheet paymentSheet;
     private final JSObject emptyObject = new JSObject();
     private PaymentSheet.Configuration paymentConfiguration;
@@ -48,20 +47,17 @@ public class PaymentSheetExecutor extends Executor {
             return;
         }
 
-
         String merchantDisplayName = call.getString("merchantDisplayName");
 
         if (merchantDisplayName == null) {
             merchantDisplayName = "";
         }
 
-        paymentConfiguration = new PaymentSheet.Configuration(
+        paymentConfiguration =
+            new PaymentSheet.Configuration(
                 merchantDisplayName,
-                new PaymentSheet.CustomerConfiguration(
-                        customerId,
-                        customerEphemeralKeySecret
-                )
-        );
+                new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
+            );
 
         Boolean useGooglePay = call.getBoolean("useGooglePay", false);
 
@@ -73,11 +69,10 @@ public class PaymentSheetExecutor extends Executor {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test;
             }
 
-            final PaymentSheet.GooglePayConfiguration googlePayConfiguration =
-                    new PaymentSheet.GooglePayConfiguration(
-                            environment,
-                            call.getString("countryCode", "US")
-                    );
+            final PaymentSheet.GooglePayConfiguration googlePayConfiguration = new PaymentSheet.GooglePayConfiguration(
+                environment,
+                call.getString("countryCode", "US")
+            );
             paymentConfiguration.setGooglePay(googlePayConfiguration);
         }
 
@@ -87,20 +82,13 @@ public class PaymentSheetExecutor extends Executor {
 
     public void presentPaymentSheet(final PluginCall call) {
         try {
-            paymentSheet.presentWithPaymentIntent(
-                    paymentIntentClientSecret,
-                    paymentConfiguration
-            );
+            paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret, paymentConfiguration);
         } catch (Exception ex) {
             call.reject(ex.getLocalizedMessage(), ex);
         }
     }
 
-    public void onPaymentSheetResult(
-            Bridge bridge,
-            String callbackId,
-            final PaymentSheetResult paymentSheetResult
-    ) {
+    public void onPaymentSheetResult(Bridge bridge, String callbackId, final PaymentSheetResult paymentSheetResult) {
         PluginCall call = bridge.getSavedCall(callbackId);
 
         if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {

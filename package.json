@@ -78,7 +78,6 @@
     }
   },
   "dependencies": {
-    "@stripe/stripe-js": "^1.16.0",
-    "stripe": "^8.150.0"
+    "@stripe-elements/stripe-elements": "0.0.1"
   }
 }
