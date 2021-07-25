@@ -1,9 +1,11 @@
+import type { PaymentFlowDefinitions } from './paymentflow';
 import type { PaymentSheetDefinitions } from './paymentsheet';
 
+export * from './paymentflow/index';
 export * from './paymentsheet/index';
 export * from './shared/index';
 
-type StripeDefinitions = PaymentSheetDefinitions;
+type StripeDefinitions = PaymentSheetDefinitions & PaymentFlowDefinitions;
 
 export interface StripePlugin extends StripeDefinitions {
   initialize(opts: StripeInitializationOptions): Promise<void>;

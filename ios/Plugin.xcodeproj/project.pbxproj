@@ -18,6 +18,8 @@
 		DB15233A2663D401003F8BF2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DB1523352663D401003F8BF2 /* Info.plist */; };
 		DB16470C269C457900E31818 /* PaymentSheetExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB16470B269C457900E31818 /* PaymentSheetExecutor.swift */; };
 		DB16470E269C468900E31818 /* PaymentSheetEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB16470D269C468900E31818 /* PaymentSheetEvents.swift */; };
+		DB280E4226AD433900AAEA30 /* PaymentFlowExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB280E4126AD433900AAEA30 /* PaymentFlowExecutor.swift */; };
+		DB280E4426AD476100AAEA30 /* PaymentFlowEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB280E4326AD476100AAEA30 /* PaymentFlowEvents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		DB1523352663D401003F8BF2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DB16470B269C457900E31818 /* PaymentSheetExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentSheetExecutor.swift; sourceTree = "<group>"; };
 		DB16470D269C468900E31818 /* PaymentSheetEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentSheetEvents.swift; sourceTree = "<group>"; };
+		DB280E4126AD433900AAEA30 /* PaymentFlowExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentFlowExecutor.swift; sourceTree = "<group>"; };
+		DB280E4326AD476100AAEA30 /* PaymentFlowEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentFlowEvents.swift; sourceTree = "<group>"; };
 		F65BB2953ECE002E1EF3E424 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
 		F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PluginTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -96,6 +100,7 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				DB280E4026AD432500AAEA30 /* PaymentFlow */,
 				DB16470A269C455D00E31818 /* PaymentSheet */,
 				DB1523352663D401003F8BF2 /* Info.plist */,
 				50E1A94720377CB70090CE1A /* StripePlugin.swift */,
@@ -143,6 +148,15 @@
 				DB16470D269C468900E31818 /* PaymentSheetEvents.swift */,
 			);
 			path = PaymentSheet;
+			sourceTree = "<group>";
+		};
+		DB280E4026AD432500AAEA30 /* PaymentFlow */ = {
+			isa = PBXGroup;
+			children = (
+				DB280E4126AD433900AAEA30 /* PaymentFlowExecutor.swift */,
+				DB280E4326AD476100AAEA30 /* PaymentFlowEvents.swift */,
+			);
+			path = PaymentFlow;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -323,6 +337,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB280E4226AD433900AAEA30 /* PaymentFlowExecutor.swift in Sources */,
+				DB280E4426AD476100AAEA30 /* PaymentFlowEvents.swift in Sources */,
 				DB16470E269C468900E31818 /* PaymentSheetEvents.swift in Sources */,
 				50E1A94820377CB70090CE1A /* StripePlugin.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* StripePlugin.m in Sources */,

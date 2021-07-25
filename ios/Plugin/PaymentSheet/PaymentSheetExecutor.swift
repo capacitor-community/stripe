@@ -8,8 +8,8 @@ class PaymentSheetExecutor: NSObject {
 
     func createPaymentSheet(_ call: CAPPluginCall) {
         let paymentIntentClientSecret = call.getString("paymentIntentClientSecret") ?? nil
-        let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
         let customerId = call.getString("customerId") ?? nil
+        let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
 
         if paymentIntentClientSecret == nil || customerId == nil {
             call.reject("invalid Params")
