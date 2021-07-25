@@ -1,8 +1,25 @@
-export interface CreatePaymentSheetOption {
+export interface CreatePaymentSheetOption extends BasePaymentOption {
   /**
    * Any documentation call 'paymentIntent'
    */
   paymentIntentClientSecret: string;
+}
+
+export interface CreatePaymentFlowOption extends BasePaymentOption{
+  /**
+   * Any documentation call 'paymentIntent'
+   * Set paymentIntentClientSecret or setupIntentClientSecret
+   */
+  paymentIntentClientSecret?: string;
+
+  /**
+   * Any documentation call 'paymentIntent'
+   * Set paymentIntentClientSecret or setupIntentClientSecret
+   */
+  setupIntentClientSecret?: string;
+}
+
+export interface BasePaymentOption {
 
   /**
    * Any documentation call 'ephemeralKey'

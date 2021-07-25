@@ -137,6 +137,18 @@ export async function present(): Promise<void> {
 <docgen-index>
 
 * [`initialize(...)`](#initialize)
+* [`createPaymentFlow(...)`](#createpaymentflow)
+* [`presentPaymentFlow()`](#presentpaymentflow)
+* [`confirmPaymentFlow()`](#confirmpaymentflow)
+* [`addListener(PaymentFlowEventsEnum.Loaded, ...)`](#addlistenerpaymentfloweventsenumloaded-)
+* [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload-)
+* [`addListener(PaymentFlowEventsEnum.Opened, ...)`](#addlistenerpaymentfloweventsenumopened-)
+* [`addListener(PaymentFlowEventsEnum.FailedToOpened, ...)`](#addlistenerpaymentfloweventsenumfailedtoopened-)
+* [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload-)
+* [`addListener(PaymentFlowEventsEnum.Completed, ...)`](#addlistenerpaymentfloweventsenumcompleted-)
+* [`addListener(PaymentFlowEventsEnum.Canceled, ...)`](#addlistenerpaymentfloweventsenumcanceled-)
+* [`addListener(PaymentFlowEventsEnum.Failed, ...)`](#addlistenerpaymentfloweventsenumfailed-)
+* [`addListener(PaymentFlowEventsEnum.Created, ...)`](#addlistenerpaymentfloweventsenumcreated-)
 * [`createPaymentSheet(...)`](#createpaymentsheet)
 * [`presentPaymentSheet()`](#presentpaymentsheet)
 * [`addListener(PaymentSheetEventsEnum.Loaded, ...)`](#addlistenerpaymentsheeteventsenumloaded-)
@@ -162,6 +174,185 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 | Param      | Type                                                                                |
 | ---------- | ----------------------------------------------------------------------------------- |
 | **`opts`** | <code><a href="#stripeinitializationoptions">StripeInitializationOptions</a></code> |
+
+--------------------
+
+
+### createPaymentFlow(...)
+
+```typescript
+createPaymentFlow(options: CreatePaymentFlowOption) => Promise<void>
+```
+
+| Param         | Type                                                                        |
+| ------------- | --------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createpaymentflowoption">CreatePaymentFlowOption</a></code> |
+
+--------------------
+
+
+### presentPaymentFlow()
+
+```typescript
+presentPaymentFlow() => Promise<{ cardNumber: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ cardNumber: string; }&gt;</code>
+
+--------------------
+
+
+### confirmPaymentFlow()
+
+```typescript
+confirmPaymentFlow() => Promise<PaymentFlowResultInterface>
+```
+
+**Returns:** <code>Promise&lt;<a href="#paymentflowresultinterface">PaymentFlowResultInterface</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Loaded, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                           |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Opened, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Opened, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Opened</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.FailedToOpened, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.FailedToOpened, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToOpened</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                             |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                           |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Completed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                              |
+| ------------------ | --------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                        |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Canceled, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Created, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Created, listenerFunc: (info: { cardNumber: string; }) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                            |
+| ------------------ | ------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Created</a></code> |
+| **`listenerFunc`** | <code>(info: { cardNumber: string; }) =&gt; void</code>                         |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
 --------------------
 
@@ -281,20 +472,12 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | **`stripeAccount`**  | <code>string</code> |
 
 
-#### CreatePaymentSheetOption
+#### CreatePaymentFlowOption
 
-| Prop                             | Type                                       | Description                                                                                |
-| -------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **`paymentIntentClientSecret`**  | <code>string</code>                        | Any documentation call 'paymentIntent'                                                     |
-| **`customerEphemeralKeySecret`** | <code>string</code>                        | Any documentation call 'ephemeralKey'                                                      |
-| **`customerId`**                 | <code>string</code>                        | Any documentation call 'customer'                                                          |
-| **`useApplePay`**                | <code>boolean</code>                       | If you set payment method ApplePay, this set true                                          |
-| **`applePayMerchantId`**         | <code>string</code>                        | If set useApplePay false, Plugin ignore here.                                              |
-| **`useGooglePay`**               | <code>boolean</code>                       | If you set payment method GooglePay, this set true                                         |
-| **`GooglePayIsTesting`**         | <code>boolean</code>                       |                                                                                            |
-| **`countryCode`**                | <code>string</code>                        | use ApplePay and GooglePay. If set useApplePay and useGooglePay false, Plugin ignore here. |
-| **`merchantDisplayName`**        | <code>string</code>                        |                                                                                            |
-| **`style`**                      | <code>'alwaysLight' \| 'alwaysDark'</code> | iOS Only                                                                                   |
+| Prop                            | Type                | Description                                                                                     |
+| ------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code> | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret |
+| **`setupIntentClientSecret`**   | <code>string</code> | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret |
 
 
 #### PluginListenerHandle
@@ -304,7 +487,19 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 
+#### CreatePaymentSheetOption
+
+| Prop                            | Type                | Description                            |
+| ------------------------------- | ------------------- | -------------------------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code> | Any documentation call 'paymentIntent' |
+
+
 ### Type Aliases
+
+
+#### PaymentFlowResultInterface
+
+<code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Completed</a> | <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Canceled</a> | <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Failed</a></code>
 
 
 #### PaymentSheetResultInterface
@@ -313,6 +508,20 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 
 
 ### Enums
+
+
+#### PaymentFlowEventsEnum
+
+| Members              | Value                                    |
+| -------------------- | ---------------------------------------- |
+| **`Loaded`**         | <code>"paymentFlowLoaded"</code>         |
+| **`FailedToLoad`**   | <code>"paymentFlowFailedToLoad"</code>   |
+| **`Opened`**         | <code>"paymentFlowOpen"</code>           |
+| **`FailedToOpened`** | <code>"paymentFlowFailedToOpened"</code> |
+| **`Completed`**      | <code>"paymentFlowCompleted"</code>      |
+| **`Canceled`**       | <code>"paymentFlowCanceled"</code>       |
+| **`Failed`**         | <code>"paymentFlowFailed"</code>         |
+| **`Created`**        | <code>"paymentFlowCreated"</code>        |
 
 
 #### PaymentSheetEventsEnum

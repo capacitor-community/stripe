@@ -13,7 +13,14 @@
     </ion-toolbar>
   </ion-header>
   <ion-list>
-    <ion-item button="true" (click)="createPaymentSheet()" [disabled]="process === 'Ready'"><ion-label>createPaymentSheet</ion-label></ion-item>
-    <ion-item button="true" (click)="presentPaymentSheet()" [disabled]="process === 'willReady'"><ion-label>presentPaymentSheet</ion-label></ion-item>
+    <ion-list-header><ion-label>PaymentSheet</ion-label></ion-list-header>
+    <ion-item button="true" (click)="createPaymentSheet()" [disabled]="processSheet !== 'willReady'"><ion-label>create PaymentSheet</ion-label></ion-item>
+    <ion-item button="true" (click)="presentPaymentSheet()" [disabled]="processSheet !== 'Ready'"><ion-label>present PaymentSheet</ion-label></ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-list-header><ion-label>PaymentFlow</ion-label></ion-list-header>
+    <ion-item button="true" (click)="createPaymentFlow()" [disabled]="processFlow !== 'willReady'"><ion-label>create PaymentFlow</ion-label></ion-item>
+    <ion-item button="true" (click)="presentPaymentFlow()" [disabled]="processFlow !== 'Ready'"><ion-label>present PaymentFlow</ion-label></ion-item>
+    <ion-item button="true" (click)="confirmPaymentFlow()" [disabled]="processFlow !== 'canConfirm'"><ion-label>confirm PaymentFlow</ion-label></ion-item>
   </ion-list>
 </ion-content>
