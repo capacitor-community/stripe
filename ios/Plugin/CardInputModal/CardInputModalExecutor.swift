@@ -7,12 +7,14 @@ class CardInputModalExecutor: NSObject, FloatingPanelControllerDelegate {
     public weak var plugin: CAPPlugin?
     var setupIntentClientSecret: String?
     public var floatingPanelController: FloatingPanelController!
+    public var isOpen: Bool = false
     
     class ModalFloatingPanelLayout: FloatingPanelLayout {
         let position: FloatingPanelPosition = .bottom
         let initialState: FloatingPanelState = .half
         var anchors: [FloatingPanelState: FloatingPanelLayoutAnchoring] {
             return [
+                .full: FloatingPanelLayoutAnchor(absoluteInset: 0, edge: .top, referenceGuide: .safeArea),
                 .half: FloatingPanelLayoutAnchor(absoluteInset: 350.0, edge: .bottom, referenceGuide: .safeArea),
             ]
         }
@@ -25,15 +27,31 @@ class CardInputModalExecutor: NSObject, FloatingPanelControllerDelegate {
     func presentSetupIntent(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+                if (self.isOpen) {
+                    return
+                }
+                
                 self.floatingPanelController = FloatingPanelController()
                 self.floatingPanelController.layout = ModalFloatingPanelLayout()
                 
                 let appearance = SurfaceAppearance()
+                
+                let shadow = SurfaceAppearance.Shadow()
+                shadow.color = UIColor.black
+                shadow.offset = CGSize(width: 0, height: 16)
+                shadow.radius = 16
+                shadow.spread = 8
+                appearance.shadows = [shadow]
+                
                 appearance.cornerRadius = 8.0
                 self.floatingPanelController.surfaceView.appearance = appearance
                 
-                // be able swipe close
-                // floatingPanelController.isRemovalInteractionEnabled = true
+
+                self.floatingPanelController.surfaceView.grabberHandle.isHidden = true
+                
+                // disable method, but will be work
+                self.floatingPanelController.panGestureRecognizer.isEnabled = false
+                self.floatingPanelController.backdropView.dismissalTapGestureRecognizer.isEnabled = true
                 
                 self.floatingPanelController.delegate = self
                 
@@ -43,6 +61,7 @@ class CardInputModalExecutor: NSObject, FloatingPanelControllerDelegate {
                 modalContentViewController.setupIntentClientSecret = self.setupIntentClientSecret
                 self.floatingPanelController.set(contentViewController: modalContentViewController)
                 self.floatingPanelController.addPanel(toParent:  rootViewController, animated: true)
+                self.isOpen = true
             }
         }
     }
@@ -50,12 +69,18 @@ class CardInputModalExecutor: NSObject, FloatingPanelControllerDelegate {
 
 extension CardInputModalExecutor: ModalContentViewControllerDelegate {
     func dismissModal() {
-        NSLog("これ", "クリックされた")
+        self.isOpen = false
         floatingPanelController.dismiss(animated: true, completion: nil)
+    }
+    func keyboardWillShow() {
+        floatingPanelController.move(to: .full, animated: true)
+    }
+    func keyboardWillHide() {
+        floatingPanelController.move(to: .half, animated: true)
     }
 }
 
-class ModalContentViewController: UIViewController {
+class ModalContentViewController: UIViewController, STPPaymentCardTextFieldDelegate {
     public weak var plugin: CAPPlugin?
     var delegate: ModalContentViewControllerDelegate?
     var setupIntentClientSecret: String?
@@ -64,15 +89,34 @@ class ModalContentViewController: UIViewController {
         let cardTextField = STPPaymentCardTextField()
         return cardTextField
     }()
+    
+    lazy var closeButton: UIButton = {
+        let closeButton = UIButton()
+        closeButton.titleLabel?.textAlignment = .center
+        closeButton.setTitle("×", for: .normal)
+        closeButton.titleLabel?.sizeToFit()
+        closeButton.setTitleColor(CompatibleColor.secondaryLabel, for: .normal)
+        closeButton.frame = CGRect(x: 20, y: 15, width: 20, height: 20)
+        closeButton.layer.cornerRadius = closeButton.bounds.midY
+
+        let closeGesture = UITapGestureRecognizer(target: self, action: #selector(self.closeGesture))
+        closeButton.addGestureRecognizer(closeGesture)
+        return closeButton
+    }()
+    
     lazy var payButton: UIButton = {
         let button = UIButton(type: .custom)
         button.layer.cornerRadius = 5
         button.backgroundColor = .systemBlue
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 22)
-        button.setTitle("Save", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.setTitle("Add card", for: .normal)
+        button.titleLabel?.alpha = 0.6
+        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         button.addTarget(self, action: #selector(pay), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
+    
     lazy var mandateLabel: UILabel = {
         let mandateLabel = UILabel()
         // Collect permission to reuse the customer's card:
@@ -85,26 +129,24 @@ class ModalContentViewController: UIViewController {
         mandateLabel.textColor = .systemGray
         return mandateLabel
     }()
-    lazy var closeButton: UIButton = {
-        let btnClose = UIButton()
-        btnClose.titleLabel?.textAlignment = .center
-        btnClose.setTitle("✕", for: .normal)
-        btnClose.setTitleColor(.white, for: .normal)
-        btnClose.frame = CGRect(x: 10, y: 30, width: 30, height: 30)
-        btnClose.layer.cornerRadius = btnClose.bounds.midY
-        btnClose.backgroundColor = .black
-        let closeGesture = UITapGestureRecognizer(target: self, action: #selector(self.closeGesture))
-        btnClose.addGestureRecognizer(closeGesture)
-        return btnClose
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
+        
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil) {_ in
+            self.delegate?.keyboardWillShow()
+        }
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: nil) {_ in
+            self.delegate?.keyboardWillHide()
+        }
+        
+        cardTextField.delegate = self;
         
         let stackView = UIStackView(arrangedSubviews: [cardTextField, payButton,  mandateLabel])
         stackView.axis = .vertical
         stackView.spacing = 20
-        stackView.layoutMargins = UIEdgeInsets(top: 60, left: 0, bottom: 0, right: 0)
+        stackView.layoutMargins = UIEdgeInsets(top: 40, left: 5, bottom: 0, right: 5)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -117,7 +159,7 @@ class ModalContentViewController: UIViewController {
             stackView.topAnchor.constraint(equalToSystemSpacingBelow: view.topAnchor, multiplier: 2),
         ])
         
-        self.view.backgroundColor = .black
+        self.view.backgroundColor = CompatibleColor.secondarySystemGroupedBackground
     }
     
     @objc
@@ -160,8 +202,31 @@ class ModalContentViewController: UIViewController {
     @objc func closeGesture(sender:UITapGestureRecognizer) {
         delegate?.dismissModal()
     }
+    
+    func paymentCardTextFieldDidChange(_ textField: STPPaymentCardTextField) {
+        payButton.isEnabled = textField.isValid
+        
+        if (payButton.isEnabled) {
+            payButton.titleLabel?.alpha = 1
+        } else {
+            payButton.titleLabel?.alpha = 0.6
+        }
+    }
 }
 
 protocol ModalContentViewControllerDelegate {
     func dismissModal()
+    func keyboardWillShow()
+    func keyboardWillHide()
+}
+
+extension UIViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
 }

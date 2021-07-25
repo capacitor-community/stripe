@@ -50,7 +50,6 @@ export class Tab1Page implements ViewWillEnter {
       customerEphemeralKeySecret: ephemeralKey,
       customerId: customer,
       merchantDisplayName: 'rdlabo',
-      style: 'alwaysDark',
     });
 
     this.readyPaymentSheet = true;
