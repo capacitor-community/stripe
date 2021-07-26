@@ -125,7 +125,7 @@ export async function createPaymentSheet(): Promise<void> {
 }
 ```
 
-### presentPaymentSheet
+#### presentPaymentSheet
 
 present in `PaymentSheet` is single flow. You don't need to confirm method.
 
@@ -171,7 +171,7 @@ export async function create(): Promise<void> {
 }
 ```
 
-### presentPaymentFlow
+#### presentPaymentFlow
 
 present in `presentPaymentFlow` is not submit method. You need to confirm method.
 
@@ -182,7 +182,7 @@ export async function present(): Promise<void> {
 }
 ```
 
-### confirmPaymentFlow
+#### confirmPaymentFlow
 
 ```ts
 export async function present(): Promise<void> {
