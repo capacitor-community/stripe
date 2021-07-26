@@ -94,7 +94,6 @@ export class Tab1Page implements OnInit {
     Stripe.presentPaymentSheet();
   }
 
-
   async createPaymentFlow() {
     const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
       paymentIntent: string;
