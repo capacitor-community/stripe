@@ -25,7 +25,8 @@
 
 ## Demo
 
-[Demo code is here.](https://github.com/capacitor-community/stripe/tree/master/demo)
+- [Demo code is here](https://github.com/capacitor-community/stripe/tree/master/demo). Please check these code before ask at issues.
+- Demo of Web is [hosting here.](https://capacitor-community-stripe.netlify.app/).
 
 ### Screenshots
 
