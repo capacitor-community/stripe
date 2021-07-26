@@ -23,10 +23,6 @@ public class PaymentFlowExecutor extends Executor {
 
     public PaymentSheet.FlowController flowController;
     private final JSObject emptyObject = new JSObject();
-    private PaymentSheet.Configuration paymentConfiguration;
-
-    private String paymentIntentClientSecret;
-    private String setupIntentClientSecret;
 
     public PaymentFlowExecutor(
         Supplier<Context> contextSupplier,
@@ -39,8 +35,8 @@ public class PaymentFlowExecutor extends Executor {
     }
 
     public void createPaymentFlow(final PluginCall call) {
-        paymentIntentClientSecret = call.getString("paymentIntentClientSecret", null);
-        setupIntentClientSecret = call.getString("setupIntentClientSecret", null);
+        String paymentIntentClientSecret = call.getString("paymentIntentClientSecret", null);
+        String setupIntentClientSecret = call.getString("setupIntentClientSecret", null);
         String customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null);
         String customerId = call.getString("customerId", null);
 
@@ -56,11 +52,10 @@ public class PaymentFlowExecutor extends Executor {
             merchantDisplayName = "";
         }
 
-        paymentConfiguration =
-            new PaymentSheet.Configuration(
-                merchantDisplayName,
-                new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
-            );
+        PaymentSheet.Configuration paymentConfiguration = new PaymentSheet.Configuration(
+            merchantDisplayName,
+            new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
+        );
 
         Boolean useGooglePay = call.getBoolean("useGooglePay", false);
 
@@ -129,7 +124,10 @@ public class PaymentFlowExecutor extends Executor {
     public void onPaymentOption(Bridge bridge, String callbackId, @Nullable PaymentOption paymentOption) {
         PluginCall call = bridge.getSavedCall(callbackId);
         if (paymentOption != null) {
-            notifyListenersFunction.accept(PaymentFlowEvents.Created.getWebEventName(), new JSObject().put("cardNumber", paymentOption.getLabel()));
+            notifyListenersFunction.accept(
+                PaymentFlowEvents.Created.getWebEventName(),
+                new JSObject().put("cardNumber", paymentOption.getLabel())
+            );
             call.resolve(new JSObject().put("cardNumber", paymentOption.getLabel()));
         } else {
             if (paymentOption != null) {
