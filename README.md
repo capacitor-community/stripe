@@ -93,13 +93,59 @@ export async function initialize(): Promise<void> {
 ```
 
 
-### Present Payment Sheet
+### PaymentSheet
+
+With PaymentSheet, you can make instant payments in a single flow.
 
 #### create
 
 You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
-
 Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
+
+```ts
+import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
+
+export async function createPaymentSheet(): Promise<void> {
+  /**
+   * Connect to your backend endpoint, and get every key.
+   */
+  const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+    paymentIntent: string;
+    ephemeralKey: string;
+    customer: string;
+  }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+  
+  Stripe.createPaymentSheet({
+    paymentIntentClientSecret: paymentIntent,
+    customerId: customer,
+    // merchantDisplayName: 'Your App Name or Company Name',
+    // customerEphemeralKeySecret: ephemeralKey,
+    // style: 'alwaysDark',
+  });
+}
+```
+
+### presentPaymentSheet
+
+present in `PaymentSheet` is single flow. You don't need to confirm method.
+
+```ts
+export async function present(): Promise<void> {
+  const result = await Stripe.presentPaymentSheet();
+}
+```
+
+
+### PaymentFlow
+
+With PaymentFlow, you can make payments in two steps flow. And you can use setupIntent.
+
+#### createPaymentFlow
+
+You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
+Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
+
+You will need to prepare either paymentIntentClientSecret or setupIntentClientSecret and set it in the method.
 
 ```ts
 import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
@@ -114,21 +160,33 @@ export async function create(): Promise<void> {
     customer: string;
   }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
   
-  Stripe.createPaymentSheet({
+  Stripe.createPaymentFlow({
     paymentIntentClientSecret: paymentIntent,
-    customerEphemeralKeySecret: ephemeralKey,
     customerId: customer,
-    merchantDisplayName: 'Your App Name or Company Name',
+    // setupIntentClientSecret: setupIntent,
+    // merchantDisplayName: 'Your App Name or Company Name',
+    // customerEphemeralKeySecret: ephemeralKey,
     // style: 'alwaysDark',
   });
 }
 ```
 
-### present
+### presentPaymentFlow
+
+present in `presentPaymentFlow` is not submit method. You need to confirm method.
 
 ```ts
 export async function present(): Promise<void> {
-  Stripe.presentPaymentSheet();
+  const result = await Stripe.presentPaymentFlow();
+  console.log(result); // { cardNumber: "●●●● ●●●● ●●●● ****" }
+}
+```
+
+### confirmPaymentFlow
+
+```ts
+export async function present(): Promise<void> {
+  const result = await Stripe.confirmPaymentFlow();
 }
 ```
 
@@ -143,7 +201,6 @@ export async function present(): Promise<void> {
 * [`addListener(PaymentFlowEventsEnum.Loaded, ...)`](#addlistenerpaymentfloweventsenumloaded-)
 * [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload-)
 * [`addListener(PaymentFlowEventsEnum.Opened, ...)`](#addlistenerpaymentfloweventsenumopened-)
-* [`addListener(PaymentFlowEventsEnum.FailedToOpened, ...)`](#addlistenerpaymentfloweventsenumfailedtoopened-)
 * [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload-)
 * [`addListener(PaymentFlowEventsEnum.Completed, ...)`](#addlistenerpaymentfloweventsenumcompleted-)
 * [`addListener(PaymentFlowEventsEnum.Canceled, ...)`](#addlistenerpaymentfloweventsenumcanceled-)
@@ -205,10 +262,10 @@ presentPaymentFlow() => Promise<{ cardNumber: string; }>
 ### confirmPaymentFlow()
 
 ```typescript
-confirmPaymentFlow() => Promise<PaymentFlowResultInterface>
+confirmPaymentFlow() => Promise<{ paymentResult: PaymentFlowResultInterface; }>
 ```
 
-**Returns:** <code>Promise&lt;<a href="#paymentflowresultinterface">PaymentFlowResultInterface</a>&gt;</code>
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentflowresultinterface">PaymentFlowResultInterface</a>; }&gt;</code>
 
 --------------------
 
@@ -255,22 +312,6 @@ addListener(eventName: PaymentFlowEventsEnum.Opened, listenerFunc: () => void) =
 | ------------------ | ------------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Opened</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
-
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
-
---------------------
-
-
-### addListener(PaymentFlowEventsEnum.FailedToOpened, ...)
-
-```typescript
-addListener(eventName: PaymentFlowEventsEnum.FailedToOpened, listenerFunc: () => void) => PluginListenerHandle
-```
-
-| Param              | Type                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToOpened</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                             |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -512,16 +553,15 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 
 #### PaymentFlowEventsEnum
 
-| Members              | Value                                    |
-| -------------------- | ---------------------------------------- |
-| **`Loaded`**         | <code>"paymentFlowLoaded"</code>         |
-| **`FailedToLoad`**   | <code>"paymentFlowFailedToLoad"</code>   |
-| **`Opened`**         | <code>"paymentFlowOpen"</code>           |
-| **`FailedToOpened`** | <code>"paymentFlowFailedToOpened"</code> |
-| **`Completed`**      | <code>"paymentFlowCompleted"</code>      |
-| **`Canceled`**       | <code>"paymentFlowCanceled"</code>       |
-| **`Failed`**         | <code>"paymentFlowFailed"</code>         |
-| **`Created`**        | <code>"paymentFlowCreated"</code>        |
+| Members            | Value                                  |
+| ------------------ | -------------------------------------- |
+| **`Loaded`**       | <code>"paymentFlowLoaded"</code>       |
+| **`FailedToLoad`** | <code>"paymentFlowFailedToLoad"</code> |
+| **`Opened`**       | <code>"paymentFlowOpened"</code>       |
+| **`Created`**      | <code>"paymentFlowCreated"</code>      |
+| **`Completed`**    | <code>"paymentFlowCompleted"</code>    |
+| **`Canceled`**     | <code>"paymentFlowCanceled"</code>     |
+| **`Failed`**       | <code>"paymentFlowFailed"</code>       |
 
 
 #### PaymentSheetEventsEnum
