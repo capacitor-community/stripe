@@ -106,10 +106,13 @@ class PaymentFlowExecutor: NSObject {
                 self.paymentSheetFlowController.confirm(from: rootViewController) { paymentResult in
                     switch paymentResult {
                     case .completed:
+                        self.plugin?.notifyListeners(PaymentFlowEvents.Completed.rawValue, data: [:])
                         call.resolve(["paymentResult": PaymentFlowEvents.Completed.rawValue])
                     case .canceled:
+                        self.plugin?.notifyListeners(PaymentFlowEvents.Canceled.rawValue, data: [:])
                         call.resolve(["paymentResult": PaymentFlowEvents.Canceled.rawValue])
                     case .failed(let error):
+                        self.plugin?.notifyListeners(PaymentFlowEvents.Failed.rawValue, data: [:])
                         call.resolve(["paymentResult": PaymentFlowEvents.Failed.rawValue])
                     }
                 }
