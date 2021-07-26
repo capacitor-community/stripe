@@ -1,16 +1,15 @@
 package com.getcapacitor.community.stripe;
 
-import android.app.Activity;
-import android.util.Log;
-import androidx.activity.ComponentActivity;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
+import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
-import com.stripe.android.Stripe;
+import com.stripe.android.paymentsheet.PaymentOptionCallback;
 import com.stripe.android.paymentsheet.PaymentSheet;
+import com.stripe.android.paymentsheet.PaymentSheetResultCallback;
 
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
 public class StripePlugin extends Plugin {
@@ -28,11 +27,28 @@ public class StripePlugin extends Plugin {
         getLogTag()
     );
 
+    private final PaymentFlowExecutor paymentFlowExecutor = new PaymentFlowExecutor(
+        this::getContext,
+        this::getActivity,
+        this::notifyListeners,
+        getLogTag()
+    );
+
     @Override
     public void load() {
         this.paymentSheetExecutor.paymentSheet =
             new PaymentSheet(
                 getActivity(),
+                result -> {
+                    this.paymentSheetExecutor.onPaymentSheetResult(bridge, callbackId, result);
+                }
+            );
+
+        final PaymentOptionCallback paymentOptionCallback = this.paymentFlowExecutor::onPaymentOption;
+        this.paymentFlowExecutor.flowController =
+            PaymentSheet.FlowController.create(
+                getActivity(),
+                paymentOptionCallback,
                 result -> {
                     this.paymentSheetExecutor.onPaymentSheetResult(bridge, callbackId, result);
                 }
@@ -59,7 +75,7 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void createPaymentSheet(final PluginCall call) {
-        paymentSheetExecutor.createPaymentSheet(call, publishableKey);
+        paymentSheetExecutor.createPaymentSheet(call);
     }
 
     @PluginMethod
