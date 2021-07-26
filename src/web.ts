@@ -2,15 +2,17 @@ import { WebPlugin } from '@capacitor/core';
 import type { Components } from '@stripe-elements/stripe-elements';
 import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
 import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
-import type {Stripe, StripeCardNumberElement} from '@stripe/stripe-js';
+import type { Stripe, StripeCardNumberElement } from '@stripe/stripe-js';
 
 import type {
   StripeInitializationOptions,
   StripePlugin,
   CreatePaymentSheetOption,
-  PaymentSheetResultInterface, CreatePaymentFlowOption, PaymentFlowResultInterface,
+  PaymentSheetResultInterface,
+  CreatePaymentFlowOption,
+  PaymentFlowResultInterface,
 } from './definitions';
-import {PaymentFlowEventsEnum, PaymentSheetEventsEnum} from './definitions';
+import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
 
 interface StripePaymentSheet
   extends Components.StripePaymentSheet,

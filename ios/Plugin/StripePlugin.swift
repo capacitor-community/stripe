@@ -11,7 +11,7 @@ public class StripePlugin: CAPPlugin {
     @objc func initialize(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.plugin = self
         self.paymentFlowExecutor.plugin = self
-        
+
         let publishableKey = call.getString("publishableKey") ?? ""
         let stripeAccount = call.getString("stripeAccount") ?? ""
 
@@ -36,7 +36,7 @@ public class StripePlugin: CAPPlugin {
     @objc func presentPaymentSheet(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.presentPaymentSheet(call)
     }
-    
+
     @objc func createPaymentFlow(_ call: CAPPluginCall) {
         self.paymentFlowExecutor.createPaymentFlow(call)
     }
@@ -44,7 +44,7 @@ public class StripePlugin: CAPPlugin {
     @objc func presentPaymentFlow(_ call: CAPPluginCall) {
         self.paymentFlowExecutor.presentPaymentFlow(call)
     }
-    
+
     @objc func confirmPaymentFlow(_ call: CAPPluginCall) {
         self.paymentFlowExecutor.confirmPaymentFlow(call)
     }
