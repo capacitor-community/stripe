@@ -97,7 +97,7 @@ export async function initialize(): Promise<void> {
 
 With PaymentSheet, you can make instant payments in a single flow.
 
-#### create
+#### createPaymentSheet
 
 You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
 Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
