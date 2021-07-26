@@ -29,11 +29,10 @@
 
 ### Screenshots
 
-|  |  PaymentSheet  |  PaymentFlow  |
-| :---: | :---: | :---: |
-|  Android  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-flow-android.png) |
-|  iOS  | ![](demo/screenshots/payment-sheet-ios.png)  | ![](demo/screenshots/payment-flow-ios.png) |
-|  Web  | ![](demo/screenshots/payment-sheet-web.png) | Coming soon |
+|  |  Android  |  iOS  |  Web  |
+| :---: | :---: | :---: | :---: |
+|  PaymentSheet  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png)  | ![](demo/screenshots/payment-sheet-web.png) |
+|  PaymentFlow   | ![](demo/screenshots/payment-flow-android.png) |  ![](demo/screenshots/payment-flow-ios.png) | Coming soon |
 
 ## Install
 
