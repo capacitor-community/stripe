@@ -81,8 +81,6 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void presentPaymentSheet(final PluginCall call) {
         paymentSheetCallbackId = call.getCallbackId();
-
-        // use paymentSheetExecutor.onPaymentSheetResult()
         bridge.saveCall(call);
 
         paymentSheetExecutor.presentPaymentSheet(call);
@@ -96,7 +94,6 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void presentPaymentFlow(final PluginCall call) {
         paymentFlowCallbackId = call.getCallbackId();
-
         bridge.saveCall(call);
 
         paymentFlowExecutor.presentPaymentFlow(call);
@@ -105,7 +102,6 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void confirmPaymentFlow(final PluginCall call) {
         paymentFlowCallbackId = call.getCallbackId();
-
         bridge.saveCall(call);
 
         paymentFlowExecutor.confirmPaymentFlow(call);

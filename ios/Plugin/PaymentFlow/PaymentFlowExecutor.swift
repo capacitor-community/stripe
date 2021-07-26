@@ -14,7 +14,7 @@ class PaymentFlowExecutor: NSObject {
         let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
 
         if (paymentIntentClientSecret == nil && setupIntentClientSecret == nil) || customerId == nil {
-            call.reject("invalid Params")
+            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.")
             return
         }
 
@@ -79,6 +79,7 @@ class PaymentFlowExecutor: NSObject {
         DispatchQueue.main.async {
             if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
                 self.paymentSheetFlowController.presentPaymentOptions(from: rootViewController) {
+                    self.plugin?.notifyListeners(PaymentFlowEvents.Opened.rawValue, data: [:])
                     self.updateFlow(call)
                 }
             }
@@ -87,7 +88,6 @@ class PaymentFlowExecutor: NSObject {
 
     private func updateFlow(_ call: CAPPluginCall) {
         if let paymentOption = paymentSheetFlowController.paymentOption {
-            print(paymentOption)
             self.plugin?.notifyListeners(PaymentFlowEvents.Created.rawValue, data: [
                 "cardNumber": paymentOption.label
             ])
@@ -96,7 +96,7 @@ class PaymentFlowExecutor: NSObject {
             ])
         } else {
             self.plugin?.notifyListeners(PaymentFlowEvents.Canceled.rawValue, data: [:])
-            call.reject("")
+            call.reject("User close PaymentFlow Sheet")
         }
     }
 
@@ -112,7 +112,7 @@ class PaymentFlowExecutor: NSObject {
                         self.plugin?.notifyListeners(PaymentFlowEvents.Canceled.rawValue, data: [:])
                         call.resolve(["paymentResult": PaymentFlowEvents.Canceled.rawValue])
                     case .failed(let error):
-                        self.plugin?.notifyListeners(PaymentFlowEvents.Failed.rawValue, data: [:])
+                        self.plugin?.notifyListeners(PaymentFlowEvents.Failed.rawValue, data: ["error": error.localizedDescription])
                         call.resolve(["paymentResult": PaymentFlowEvents.Failed.rawValue])
                     }
                 }

@@ -1,12 +1,11 @@
 export enum PaymentFlowEventsEnum {
     Loaded = "paymentFlowLoaded",
     FailedToLoad = "paymentFlowFailedToLoad",
-    Opened = "paymentFlowOpen",
-    FailedToOpened = "paymentFlowFailedToOpened",
+    Opened = "paymentFlowOpened",
+    Created = "paymentFlowCreated",
     Completed = "paymentFlowCompleted",
     Canceled = "paymentFlowCanceled",
     Failed = "paymentFlowFailed",
-    Created = "paymentFlowCreated",
 }
 export type PaymentFlowResultInterface =
   | PaymentFlowEventsEnum.Completed

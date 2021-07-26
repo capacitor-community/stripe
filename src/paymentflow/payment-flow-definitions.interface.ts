@@ -29,11 +29,6 @@ export interface PaymentFlowDefinitions {
   ): PluginListenerHandle;
 
   addListener(
-    eventName: PaymentFlowEventsEnum.FailedToOpened,
-    listenerFunc: () => void,
-  ): PluginListenerHandle;
-
-  addListener(
     eventName: PaymentFlowEventsEnum.FailedToLoad,
     listenerFunc: () => void,
   ): PluginListenerHandle;

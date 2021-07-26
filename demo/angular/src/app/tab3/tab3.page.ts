@@ -26,6 +26,10 @@ const happyPathItems: ITestItems [] = [
   },
   {
     type: 'event',
+    name: PaymentFlowEventsEnum.Opened,
+  },
+  {
+    type: 'event',
     name: PaymentFlowEventsEnum.Created,
   },
   {

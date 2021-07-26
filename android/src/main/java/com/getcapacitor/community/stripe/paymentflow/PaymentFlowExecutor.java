@@ -42,7 +42,7 @@ public class PaymentFlowExecutor extends Executor {
 
         if ((paymentIntentClientSecret == null && setupIntentClientSecret == null) || customerId == null) {
             notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("invalid Params");
+            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.");
             return;
         }
 
@@ -84,7 +84,7 @@ public class PaymentFlowExecutor extends Executor {
                         call.resolve();
                     } else {
                         notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
-                        call.reject("");
+                        call.reject(error.getLocalizedMessage());
                     }
                 }
             );
@@ -98,7 +98,7 @@ public class PaymentFlowExecutor extends Executor {
                         call.resolve();
                     } else {
                         notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
-                        call.reject("");
+                        call.reject(error.getLocalizedMessage());
                     }
                 }
             );
@@ -107,6 +107,10 @@ public class PaymentFlowExecutor extends Executor {
 
     public void presentPaymentFlow(final PluginCall call) {
         try {
+            notifyListenersFunction.accept(
+                    PaymentFlowEvents.Opened.getWebEventName(),
+                    emptyObject
+            );
             flowController.presentPaymentOptions();
         } catch (Exception ex) {
             call.reject(ex.getLocalizedMessage(), ex);
@@ -132,7 +136,7 @@ public class PaymentFlowExecutor extends Executor {
         } else {
             if (paymentOption != null) {
                 notifyListenersFunction.accept(PaymentFlowEvents.Canceled.getWebEventName(), emptyObject);
-                call.reject("");
+                call.reject("User close PaymentFlow Sheet");
             }
         }
     }
@@ -144,9 +148,11 @@ public class PaymentFlowExecutor extends Executor {
             notifyListenersFunction.accept(PaymentFlowEvents.Canceled.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentFlowEvents.Canceled.getWebEventName()));
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
-            notifyListenersFunction.accept(PaymentFlowEvents.Failed.getWebEventName(), emptyObject);
+            notifyListenersFunction.accept(
+                PaymentFlowEvents.Failed.getWebEventName(),
+                new JSObject().put("error", ((PaymentSheetResult.Failed) paymentSheetResult).getError().getLocalizedMessage())
+            );
             call.resolve(new JSObject().put("paymentResult", PaymentFlowEvents.Failed.getWebEventName()));
-            // ((PaymentSheetResult.Failed) paymentSheetResult).getError()
         } else if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             notifyListenersFunction.accept(PaymentFlowEvents.Completed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentFlowEvents.Completed.getWebEventName()));

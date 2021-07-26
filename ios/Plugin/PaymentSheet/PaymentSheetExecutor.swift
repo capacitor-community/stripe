@@ -12,7 +12,7 @@ class PaymentSheetExecutor: NSObject {
         let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
 
         if paymentIntentClientSecret == nil || customerId == nil {
-            call.reject("invalid Params")
+            call.reject("Invalid Params. this method require paymentIntentClientSecret and customerId.")
             return
         }
 
@@ -63,7 +63,7 @@ class PaymentSheetExecutor: NSObject {
                         self.plugin?.notifyListeners(PaymentSheetEvents.Canceled.rawValue, data: [:])
                         call.resolve(["paymentResult": PaymentSheetEvents.Canceled.rawValue])
                     case .failed(let error):
-                        self.plugin?.notifyListeners(PaymentSheetEvents.Failed.rawValue, data: [:])
+                        self.plugin?.notifyListeners(PaymentSheetEvents.Failed.rawValue, data: ["error": error.localizedDescription])
                         call.resolve(["paymentResult": PaymentSheetEvents.Failed.rawValue])
                     }
                 }

@@ -172,6 +172,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       'stripe-element-modal',
     )[0];
     await stripeModalElement.openModal();
+    this.notifyListeners(PaymentFlowEventsEnum.Opened, null);
 
     /**
      * When close stripeModalElement, remove stripe-elements DOM.

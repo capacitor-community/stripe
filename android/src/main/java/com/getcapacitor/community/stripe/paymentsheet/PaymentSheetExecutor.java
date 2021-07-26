@@ -9,6 +9,7 @@ import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
+import com.getcapacitor.community.stripe.paymentflow.PaymentFlowEvents;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
@@ -41,7 +42,7 @@ public class PaymentSheetExecutor extends Executor {
 
         if (paymentIntentClientSecret == null || customerId == null) {
             notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("invalid Params");
+            call.reject("Invalid Params. this method require paymentIntentClientSecret and customerId.");
             return;
         }
 
@@ -93,9 +94,12 @@ public class PaymentSheetExecutor extends Executor {
             notifyListenersFunction.accept(PaymentSheetEvents.Canceled.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Canceled.getWebEventName()));
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
+            notifyListenersFunction.accept(
+                PaymentSheetEvents.Failed.getWebEventName(),
+                new JSObject().put("error", ((PaymentSheetResult.Failed) paymentSheetResult).getError().getLocalizedMessage())
+            );
             notifyListenersFunction.accept(PaymentSheetEvents.Failed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Failed.getWebEventName()));
-            // ((PaymentSheetResult.Failed) paymentSheetResult).getError()
         } else if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             notifyListenersFunction.accept(PaymentSheetEvents.Completed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Completed.getWebEventName()));
