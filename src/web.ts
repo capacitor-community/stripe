@@ -14,18 +14,14 @@ import type {
 } from './definitions';
 import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
 
-interface StripePaymentSheet
-  extends Components.StripePaymentSheet,
-    HTMLStencilElement,
-    HTMLElement {}
-interface StripeElementModal
-  extends Components.StripeElementModal,
+interface StripePaymentSheetModal
+  extends Components.StripePaymentSheetModal,
     HTMLStencilElement,
     HTMLElement {}
 
 export class StripeWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string | undefined;
-  private stripeElement: StripePaymentSheet | undefined;
+  private paymentSheet: StripePaymentSheetModal | undefined;
 
   private flowStripe: Stripe | undefined;
   private flowCardNumber: StripeCardNumberElement | undefined;
@@ -53,19 +49,12 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       return;
     }
 
-    const stripeModalElement = document.createElement('stripe-element-modal');
-    stripeModalElement.appendChild(
-      document.createElement('stripe-payment-sheet'),
-    );
-    document.querySelector('body')?.appendChild(stripeModalElement);
+    this.paymentSheet = document.createElement('stripe-payment-sheet-modal');
+    document.querySelector('body')?.appendChild(this.paymentSheet);
+    await customElements.whenDefined('stripe-payment-sheet-modal');
 
-    await customElements.whenDefined('stripe-payment-sheet');
-
-    this.stripeElement = document.getElementsByTagName(
-      'stripe-payment-sheet',
-    )[0];
-    await this.stripeElement.initStripe(this.publishableKey);
-    this.stripeElement.paymentIntentClientSecret =
+    this.paymentSheet.publishableKey = this.publishableKey;
+    this.paymentSheet.paymentIntentClientSecret =
       options.paymentIntentClientSecret;
 
     this.notifyListeners(PaymentSheetEventsEnum.Loaded, null);
@@ -74,33 +63,11 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   async presentPaymentSheet(): Promise<{
     paymentResult: PaymentSheetResultInterface;
   }> {
-    if (!this.stripeElement) {
+    if (!this.paymentSheet) {
       throw new Error();
     }
 
-    await customElements.whenDefined('stripe-element-modal');
-    const stripeModalElement: StripeElementModal = document.getElementsByTagName(
-      'stripe-element-modal',
-    )[0];
-    await stripeModalElement.openModal();
-
-    /**
-     * When close stripeModalElement, remove stripe-elements DOM.
-     */
-    stripeModalElement.addEventListener('close', () => {
-      StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
-    });
-
-    const props = await new Promise((resolve, reject) => {
-      if (!this.stripeElement || !stripeModalElement) {
-        return reject();
-      }
-      this.stripeElement.addEventListener('formSubmit', async props => {
-        resolve(props);
-      });
-      stripeModalElement.addEventListener('close', () => reject());
-    }).catch(() => undefined);
-
+    const props = await this.paymentSheet.present();
     if (props === undefined) {
       this.notifyListeners(PaymentSheetEventsEnum.Canceled, null);
       return {
@@ -118,9 +85,8 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       type: 'card',
       card: cardNumber,
     });
-    this.stripeElement.updateProgress('success');
-    await stripeModalElement.closeModal();
-    StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
+    this.paymentSheet.updateProgress('success');
+    this.paymentSheet.remove();
 
     if (result.error !== undefined) {
       this.notifyListeners(PaymentSheetEventsEnum.Failed, null);
@@ -142,19 +108,12 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       return;
     }
 
-    const stripeModalElement = document.createElement('stripe-element-modal');
-    stripeModalElement.appendChild(
-      document.createElement('stripe-payment-sheet'),
-    );
-    document.querySelector('body')?.appendChild(stripeModalElement);
+    this.paymentSheet = document.createElement('stripe-payment-sheet-modal');
+    document.querySelector('body')?.appendChild(this.paymentSheet);
+    await customElements.whenDefined('stripe-payment-sheet-modal');
 
-    await customElements.whenDefined('stripe-payment-sheet');
-
-    this.stripeElement = document.getElementsByTagName(
-      'stripe-payment-sheet',
-    )[0];
-    await this.stripeElement.initStripe(this.publishableKey);
-    this.stripeElement.paymentIntentClientSecret =
+    this.paymentSheet.publishableKey = this.publishableKey;
+    this.paymentSheet.paymentIntentClientSecret =
       options.paymentIntentClientSecret;
 
     this.notifyListeners(PaymentFlowEventsEnum.Loaded, null);
@@ -163,37 +122,15 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   async presentPaymentFlow(): Promise<{
     cardNumber: string;
   }> {
-    if (!this.stripeElement) {
+    if (!this.paymentSheet) {
       throw new Error();
     }
 
-    await customElements.whenDefined('stripe-element-modal');
-    const stripeModalElement: StripeElementModal = document.getElementsByTagName(
-      'stripe-element-modal',
-    )[0];
-    await stripeModalElement.openModal();
     this.notifyListeners(PaymentFlowEventsEnum.Opened, null);
-
-    /**
-     * When close stripeModalElement, remove stripe-elements DOM.
-     */
-    stripeModalElement.addEventListener('close', () => {
-      StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
-    });
-
-    const props = await new Promise((resolve, reject) => {
-      if (!this.stripeElement || !stripeModalElement) {
-        return reject();
-      }
-      this.stripeElement.addEventListener('formSubmit', async props => {
-        resolve(props);
-      });
-      stripeModalElement.addEventListener('close', () => reject());
-    }).catch(() => undefined);
-
+    const props = await this.paymentSheet.present().catch(() => undefined);
     if (props === undefined) {
       this.notifyListeners(PaymentFlowEventsEnum.Canceled, null);
-      throw new Error('');
+      throw new Error();
     }
 
     const {
@@ -205,20 +142,18 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     this.flowStripe = stripe;
     this.flowCardNumber = cardNumber;
 
-    // todo: get card number
     this.notifyListeners(PaymentFlowEventsEnum.Created, {
       cardNumber: '',
     });
-
     return {
       cardNumber: '',
-    };
+    }
   }
 
   async confirmPaymentFlow(): Promise<{
     paymentResult: PaymentFlowResultInterface;
   }> {
-    if (!this.stripeElement || !this.flowStripe || !this.flowCardNumber) {
+    if (!this.paymentSheet || !this.flowStripe || !this.flowCardNumber) {
       throw new Error();
     }
 
@@ -231,28 +166,12 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       this.notifyListeners(PaymentFlowEventsEnum.Failed, null);
     }
 
-    this.stripeElement.updateProgress('success');
-    const stripeModalElement: StripeElementModal = document.getElementsByTagName(
-      'stripe-element-modal',
-    )[0];
-    await stripeModalElement.closeModal();
-    StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
+    this.paymentSheet.updateProgress('success');
+    this.paymentSheet.remove();
 
     this.notifyListeners(PaymentFlowEventsEnum.Completed, null);
     return {
       paymentResult: PaymentFlowEventsEnum.Completed,
     };
-  }
-
-  private static removeStripeDOM(
-    stripeElement: StripePaymentSheet | undefined,
-    stripeModalElement: StripeElementModal | undefined,
-  ): void {
-    if (stripeElement) {
-      stripeElement.remove();
-    }
-    if (stripeModalElement) {
-      stripeModalElement.remove();
-    }
   }
 }

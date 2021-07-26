@@ -42,7 +42,8 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "release": "np --any-branch"
+    "release": "np",
+    "update:elements": "npm i @stripe-elements/stripe-elements@latest && cd demo/angular && npm i @stripe-elements/stripe-elements@latest"
   },
   "devDependencies": {
     "@capacitor/android": "^3.0.0",
@@ -78,6 +79,6 @@
     }
   },
   "dependencies": {
-    "@stripe-elements/stripe-elements": "0.0.1"
+    "@stripe-elements/stripe-elements": "0.0.3"
   }
 }
