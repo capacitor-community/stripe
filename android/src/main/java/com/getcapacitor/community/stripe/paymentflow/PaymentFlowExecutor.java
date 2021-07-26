@@ -10,7 +10,6 @@ import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
-import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetEvents;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
@@ -39,14 +38,14 @@ public class PaymentFlowExecutor extends Executor {
         this.contextSupplier = contextSupplier;
     }
 
-    public void createPaymentSheet(final PluginCall call) {
+    public void createPaymentFlow(final PluginCall call) {
         paymentIntentClientSecret = call.getString("paymentIntentClientSecret", null);
         setupIntentClientSecret = call.getString("setupIntentClientSecret", null);
         String customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null);
         String customerId = call.getString("customerId", null);
 
         if ((paymentIntentClientSecret == null && setupIntentClientSecret == null) || customerId == null) {
-            notifyListeners(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
+            notifyListeners(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
             call.reject("invalid Params");
             return;
         }
@@ -86,10 +85,10 @@ public class PaymentFlowExecutor extends Executor {
                 paymentConfiguration,
                 (success, error) -> {
                     if (success) {
-                        notifyListeners(PaymentSheetEvents.Loaded.getWebEventName(), emptyObject);
+                        notifyListeners(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
                         call.resolve();
                     } else {
-                        notifyListeners(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
+                        notifyListeners(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
                         call.reject("");
                     }
                 }
@@ -100,10 +99,10 @@ public class PaymentFlowExecutor extends Executor {
                 paymentConfiguration,
                 (success, error) -> {
                     if (success) {
-                        notifyListeners(PaymentSheetEvents.Loaded.getWebEventName(), emptyObject);
+                        notifyListeners(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
                         call.resolve();
                     } else {
-                        notifyListeners(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
+                        notifyListeners(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
                         call.reject("");
                     }
                 }
@@ -122,13 +121,13 @@ public class PaymentFlowExecutor extends Executor {
     public void confirmPaymentFlow(final PluginCall call) {
         try {
             flowController.confirm();
-            onPaymentOption(flowController.getPaymentOption(), call);
         } catch (Exception ex) {
             call.reject(ex.getLocalizedMessage(), ex);
         }
     }
 
-    private void onPaymentOption(@Nullable PaymentOption paymentOption, final PluginCall call) {
+    public void onPaymentOption(Bridge bridge, String callbackId, @Nullable PaymentOption paymentOption) {
+        PluginCall call = bridge.getSavedCall(callbackId);
         if (paymentOption != null) {
             notifyListeners(PaymentFlowEvents.Created.getWebEventName(), new JSObject().put("cardNumber", paymentOption.getLabel()));
             call.resolve();
@@ -140,19 +139,19 @@ public class PaymentFlowExecutor extends Executor {
         }
     }
 
-    public void onPaymentSheetResult(Bridge bridge, String callbackId, final PaymentSheetResult paymentSheetResult) {
+    public void onPaymentFlowResult(Bridge bridge, String callbackId, final PaymentSheetResult paymentSheetResult) {
         PluginCall call = bridge.getSavedCall(callbackId);
 
         if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
-            notifyListeners(PaymentSheetEvents.Canceled.getWebEventName(), emptyObject);
-            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Canceled.getWebEventName()));
+            notifyListeners(PaymentFlowEvents.Canceled.getWebEventName(), emptyObject);
+            call.resolve(new JSObject().put("paymentResult", PaymentFlowEvents.Canceled.getWebEventName()));
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
-            notifyListeners(PaymentSheetEvents.Failed.getWebEventName(), emptyObject);
-            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Failed.getWebEventName()));
+            notifyListeners(PaymentFlowEvents.Failed.getWebEventName(), emptyObject);
+            call.resolve(new JSObject().put("paymentResult", PaymentFlowEvents.Failed.getWebEventName()));
             // ((PaymentSheetResult.Failed) paymentSheetResult).getError()
         } else if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            notifyListeners(PaymentSheetEvents.Completed.getWebEventName(), emptyObject);
-            call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Completed.getWebEventName()));
+            notifyListeners(PaymentFlowEvents.Completed.getWebEventName(), emptyObject);
+            call.resolve(new JSObject().put("paymentResult", PaymentFlowEvents.Completed.getWebEventName()));
         }
     }
 }

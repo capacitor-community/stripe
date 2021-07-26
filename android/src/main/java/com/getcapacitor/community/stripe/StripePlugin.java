@@ -7,9 +7,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
-import com.stripe.android.paymentsheet.PaymentOptionCallback;
 import com.stripe.android.paymentsheet.PaymentSheet;
-import com.stripe.android.paymentsheet.PaymentSheetResultCallback;
 
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
 public class StripePlugin extends Plugin {
@@ -18,7 +16,8 @@ public class StripePlugin extends Plugin {
     private String publishableKey;
     private Boolean isTest = true;
     private GooglePayCallback googlePayCallback = null;
-    private String callbackId;
+    private String paymentSheetCallbackId;
+    private String paymentFlowCallbackId;
 
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
         this::getContext,
@@ -40,17 +39,18 @@ public class StripePlugin extends Plugin {
             new PaymentSheet(
                 getActivity(),
                 result -> {
-                    this.paymentSheetExecutor.onPaymentSheetResult(bridge, callbackId, result);
+                    this.paymentSheetExecutor.onPaymentSheetResult(bridge, paymentSheetCallbackId, result);
                 }
             );
 
-        final PaymentOptionCallback paymentOptionCallback = this.paymentFlowExecutor::onPaymentOption;
         this.paymentFlowExecutor.flowController =
             PaymentSheet.FlowController.create(
                 getActivity(),
-                paymentOptionCallback,
+                paymentOption -> {
+                    this.paymentFlowExecutor.onPaymentOption(bridge, paymentFlowCallbackId, paymentOption);
+                },
                 result -> {
-                    this.paymentSheetExecutor.onPaymentSheetResult(bridge, callbackId, result);
+                    this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
                 }
             );
     }
@@ -80,11 +80,34 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void presentPaymentSheet(final PluginCall call) {
-        callbackId = call.getCallbackId();
+        paymentSheetCallbackId = call.getCallbackId();
 
         // use paymentSheetExecutor.onPaymentSheetResult()
         bridge.saveCall(call);
 
         paymentSheetExecutor.presentPaymentSheet(call);
+    }
+
+    @PluginMethod
+    public void createPaymentFlow(final PluginCall call) {
+        paymentFlowExecutor.createPaymentFlow(call);
+    }
+
+    @PluginMethod
+    public void presentPaymentFlow(final PluginCall call) {
+        paymentFlowCallbackId = call.getCallbackId();
+
+        bridge.saveCall(call);
+
+        paymentFlowExecutor.presentPaymentFlow(call);
+    }
+
+    @PluginMethod
+    public void confirmPaymentFlow(final PluginCall call) {
+        paymentFlowCallbackId = call.getCallbackId();
+
+        bridge.saveCall(call);
+
+        paymentFlowExecutor.confirmPaymentFlow(call);
     }
 }
