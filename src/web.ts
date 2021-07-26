@@ -192,6 +192,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
 
     if (props === undefined) {
       this.notifyListeners(PaymentFlowEventsEnum.Canceled, null);
+      throw new Error("")
     }
 
     const {
@@ -207,12 +208,15 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     this.notifyListeners(PaymentFlowEventsEnum.Created, {
       cardNumber: '',
     });
+
     return {
       cardNumber: '',
     };
   }
 
-  async confirmPaymentFlow(): Promise<PaymentFlowResultInterface> {
+  async confirmPaymentFlow(): Promise<{
+    paymentResult: PaymentFlowResultInterface
+  }> {
     if (!this.stripeElement || !this.flowStripe || !this.flowCardNumber) {
       throw new Error();
     }
@@ -233,7 +237,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await stripeModalElement.closeModal();
     StripeWeb.removeStripeDOM(this.stripeElement, stripeModalElement);
 
-    return PaymentFlowEventsEnum.Completed;
+    this.notifyListeners(PaymentFlowEventsEnum.Completed, null);
+    return {
+      paymentResult: PaymentFlowEventsEnum.Completed
+    };
   }
 
   private static removeStripeDOM(

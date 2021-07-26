@@ -9,7 +9,9 @@ export interface PaymentFlowDefinitions {
   presentPaymentFlow(): Promise<{
     cardNumber: string;
   }>;
-  confirmPaymentFlow(): Promise<PaymentFlowResultInterface>;
+  confirmPaymentFlow(): Promise<{
+    paymentResult: PaymentFlowResultInterface
+  }>;
 
   addListener(
     eventName: PaymentFlowEventsEnum.Loaded,

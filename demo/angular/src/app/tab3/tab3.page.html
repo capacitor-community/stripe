@@ -12,4 +12,19 @@
       <ion-title size="large">FLOW</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ion-list>
+    <ion-list-header><ion-label>PROCESS</ion-label></ion-list-header>
+    <ion-item (click)="create('happyPath')" button="true" detail="true"><ion-label>Expect Happy Path</ion-label></ion-item>
+    <ion-item (click)="create('cancelPath')" button="true" detail="true"><ion-label>Expect User Cancel</ion-label></ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="eventItems.length > 0">
+    <ion-list-header><ion-label>EXPECT</ion-label></ion-list-header>
+    <ion-item *ngFor="let item of eventItems; let i = index" [lines]="eventItems.length - 1 === i ? 'full' : undefined ">
+      <ion-icon slot="start" [name]="item.type === 'method' ? 'play-outline' : 'notifications-circle-outline'"></ion-icon>
+      <ion-label>{{item.name}}</ion-label>
+      <ion-icon slot="end" name="checkmark-circle" *ngIf="item.result !== undefined" [color]="item.result ? 'success' : 'danger'"></ion-icon>
+    </ion-item>
+  </ion-list>
 </ion-content>
