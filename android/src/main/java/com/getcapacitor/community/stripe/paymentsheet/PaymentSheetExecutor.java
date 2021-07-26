@@ -40,7 +40,7 @@ public class PaymentSheetExecutor extends Executor {
         String customerId = call.getString("customerId", null);
 
         if (paymentIntentClientSecret == null || customerId == null) {
-            notifyListeners(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
+            notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
             call.reject("invalid Params");
             return;
         }
@@ -74,7 +74,7 @@ public class PaymentSheetExecutor extends Executor {
             paymentConfiguration.setGooglePay(googlePayConfiguration);
         }
 
-        notifyListeners(PaymentSheetEvents.Loaded.getWebEventName(), emptyObject);
+        notifyListenersFunction.accept(PaymentSheetEvents.Loaded.getWebEventName(), emptyObject);
         call.resolve();
     }
 
@@ -90,14 +90,14 @@ public class PaymentSheetExecutor extends Executor {
         PluginCall call = bridge.getSavedCall(callbackId);
 
         if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
-            notifyListeners(PaymentSheetEvents.Canceled.getWebEventName(), emptyObject);
+            notifyListenersFunction.accept(PaymentSheetEvents.Canceled.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Canceled.getWebEventName()));
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
-            notifyListeners(PaymentSheetEvents.Failed.getWebEventName(), emptyObject);
+            notifyListenersFunction.accept(PaymentSheetEvents.Failed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Failed.getWebEventName()));
             // ((PaymentSheetResult.Failed) paymentSheetResult).getError()
         } else if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            notifyListeners(PaymentSheetEvents.Completed.getWebEventName(), emptyObject);
+            notifyListenersFunction.accept(PaymentSheetEvents.Completed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Completed.getWebEventName()));
         }
     }

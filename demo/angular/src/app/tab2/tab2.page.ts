@@ -105,7 +105,7 @@ export class Tab2Page {
       .then(async () => await this.helper.updateItem(this.eventItems,'createPaymentSheet', true))
       .catch(async () => await this.helper.updateItem(this.eventItems,'createPaymentSheet', false));
 
-    Stripe.presentPaymentSheet()
+    await Stripe.presentPaymentSheet()
       .then(async (data) => await this.helper.updateItem(this.eventItems,'presentPaymentSheet', undefined, data.paymentResult))
       .catch(async () => await this.helper.updateItem(this.eventItems,'presentPaymentSheet', false));
 
