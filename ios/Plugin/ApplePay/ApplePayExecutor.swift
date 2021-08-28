@@ -8,7 +8,7 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
     public var appleClientSecret: String = ""
     private var payCallId: String?
     private var paymentRequest: PKPaymentRequest?
-    
+
     func isApplePayAvailable(_ call: CAPPluginCall) {
         call.reject("Can not use on This Device.")
     }
@@ -19,13 +19,13 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
             call.reject("Invalid Params. this method require paymentIntentClientSecret")
             return
         }
-        
+
         let items = call.getArray("paymentSummaryItems", [String: Any].self) ?? nil
         if items == nil {
             call.reject("Invalid Params. this method require paymentSummaryItems")
             return
         }
-        
+
         var paymentSummaryItems: [PKPaymentSummaryItem] = []
         if let strs = items {
             for item in strs {
@@ -36,19 +36,17 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
             }
         }
 
-        
         let merchantDisplayName = call.getString("merchantDisplayName") ?? ""
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantDisplayName, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
-        
+
         self.appleClientSecret = paymentIntentClientSecret!
         self.paymentRequest = paymentRequest
-        
+
         self.plugin?.notifyListeners(ApplePayEvents.Loaded.rawValue, data: [:])
         call.resolve()
     }
-    
-    
+
     func presentApplePay(_ call: CAPPluginCall) {
         if let paymentRequest = self.paymentRequest {
             if let applePayContext = STPApplePayContext(paymentRequest: paymentRequest, delegate: self) {
@@ -70,7 +68,7 @@ extension ApplePayExecutor {
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: STPPaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
         let clientSecret = self.appleClientSecret
         let error = "" // Call the completion block with the client secret or an error
-        completion(clientSecret, error as? Error);
+        completion(clientSecret, error as? Error)
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPPaymentStatus, error: Error?) {

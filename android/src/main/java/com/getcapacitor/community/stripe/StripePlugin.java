@@ -109,16 +109,16 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void isApplePayAvailable(final PluginCall call) {
-        call.unimplemented('Not implemented on Android.');
+        call.unimplemented("Not implemented on Android.");
     }
 
     @PluginMethod
     public void createApplePay(final PluginCall call) {
-        call.unimplemented('Not implemented on Android.');
+        call.unimplemented("Not implemented on Android.");
     }
 
     @PluginMethod
     public void presentApplePay(final PluginCall call) {
-        call.unimplemented('Not implemented on Android.');
+        call.unimplemented("Not implemented on Android.");
     }
 }

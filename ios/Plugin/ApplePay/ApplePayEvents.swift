@@ -5,4 +5,3 @@ public enum ApplePayEvents: String {
     case Canceled = "applePayCanceled"
     case Failed = "applePayFailed"
 }
-

@@ -147,7 +147,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     });
     return {
       cardNumber: '',
-    }
+    };
   }
 
   async confirmPaymentFlow(): Promise<{

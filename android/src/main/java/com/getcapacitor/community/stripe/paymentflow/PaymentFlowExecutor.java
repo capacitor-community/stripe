@@ -107,10 +107,7 @@ public class PaymentFlowExecutor extends Executor {
 
     public void presentPaymentFlow(final PluginCall call) {
         try {
-            notifyListenersFunction.accept(
-                    PaymentFlowEvents.Opened.getWebEventName(),
-                    emptyObject
-            );
+            notifyListenersFunction.accept(PaymentFlowEvents.Opened.getWebEventName(), emptyObject);
             flowController.presentPaymentOptions();
         } catch (Exception ex) {
             call.reject(ex.getLocalizedMessage(), ex);

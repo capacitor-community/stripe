@@ -50,7 +50,7 @@ public class StripePlugin: CAPPlugin {
     @objc func confirmPaymentFlow(_ call: CAPPluginCall) {
         self.paymentFlowExecutor.confirmPaymentFlow(call)
     }
-    
+
     @objc func isApplePayAvailable(_ call: CAPPluginCall) {
         self.applePayExecutor.isApplePayAvailable(call)
     }
@@ -58,7 +58,7 @@ public class StripePlugin: CAPPlugin {
     @objc func createApplePay(_ call: CAPPluginCall) {
         self.applePayExecutor.createApplePay(call)
     }
-    
+
     @objc func presentApplePay(_ call: CAPPluginCall) {
         self.applePayExecutor.presentApplePay(call)
     }
