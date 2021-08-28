@@ -10,7 +10,7 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
     private var paymentRequest: PKPaymentRequest?
     
     func isApplePayAvailable(_ call: CAPPluginCall) {
-        call.unimplemented("Not implemented on This Device.")
+        call.reject("Can not use on This Device.")
     }
 
     func createApplePay(_ call: CAPPluginCall) {

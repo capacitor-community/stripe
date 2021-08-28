@@ -1,8 +1,8 @@
 public enum ApplePayEvents: String {
-    case Loaded = "ApplePayLoaded"
-    case FailedToLoad = "ApplePayFailedToLoad"
-    case Completed = "ApplePayCompleted"
-    case Canceled = "ApplePayCanceled"
-    case Failed = "ApplePayFailed"
+    case Loaded = "applePayLoaded"
+    case FailedToLoad = "applePayFailedToLoad"
+    case Completed = "applePayCompleted"
+    case Canceled = "applePayCanceled"
+    case Failed = "applePayFailed"
 }
 

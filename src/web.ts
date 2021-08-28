@@ -174,4 +174,16 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       paymentResult: PaymentFlowEventsEnum.Completed,
     };
   }
+
+  isApplePayAvailable(): void {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  createApplePay(): void {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  presentApplePay(): void {
+    throw this.unimplemented('Not implemented on web.');
+  }
 }

@@ -75,3 +75,14 @@ export interface BasePaymentOption {
    */
   style?: 'alwaysLight' | 'alwaysDark';
 }
+
+export interface CreateApplePayOption {
+  paymentIntentClientSecret: string;
+  paymentSummaryItems: {
+    label: string;
+    amount: number;
+  }[];
+  merchantDisplayName: string;
+  countryCode: string;
+  currency: string;
+}
