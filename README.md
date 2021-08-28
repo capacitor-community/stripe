@@ -195,7 +195,7 @@ export async function present(): Promise<void> {
 
 ### 3. Apple Pay
 
-With Apple Pay, you can make instant payments in a single flow.
+With Apple Pay, you can make instant payments in a single flow. Please check settings: https://stripe.com/docs/apple-pay#merchantid
 
 #### 2.1. createApplePay
 
