@@ -82,7 +82,7 @@ defineCustomElements();
 
 ## Example
 
-### Initialize Stripe
+### 1. Initialize Stripe
 
 ```ts
 import { Stripe } from '@capacitor-community/stripe';
@@ -95,11 +95,11 @@ export async function initialize(): Promise<void> {
 ```
 
 
-### PaymentSheet
+### 2. PaymentSheet
 
 With PaymentSheet, you can make instant payments in a single flow.
 
-#### createPaymentSheet
+#### 2.1. createPaymentSheet
 
 You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
 Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
@@ -127,7 +127,7 @@ export async function createPaymentSheet(): Promise<void> {
 }
 ```
 
-#### presentPaymentSheet
+#### 2.2. presentPaymentSheet
 
 present in `PaymentSheet` is single flow. You don't need to confirm method.
 
@@ -138,11 +138,11 @@ export async function present(): Promise<void> {
 ```
 
 
-### PaymentFlow
+### 3. PaymentFlow
 
 With PaymentFlow, you can make payments in two steps flow. And you can use setupIntent.
 
-#### createPaymentFlow
+#### 3.1.  createPaymentFlow
 
 You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
 Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
@@ -173,7 +173,7 @@ export async function create(): Promise<void> {
 }
 ```
 
-#### presentPaymentFlow
+#### 3.2. presentPaymentFlow
 
 present in `presentPaymentFlow` is not submit method. You need to confirm method.
 
@@ -184,7 +184,7 @@ export async function present(): Promise<void> {
 }
 ```
 
-#### confirmPaymentFlow
+#### 3.3. confirmPaymentFlow
 
 ```ts
 export async function present(): Promise<void> {
