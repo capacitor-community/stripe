@@ -29,9 +29,14 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
         var paymentSummaryItems: [PKPaymentSummaryItem] = []
         if let strs = items {
             for item in strs {
-                //      [ PKPaymentSummaryItem(label: "iHats, Inc", amount: 50.00
+                let label = item["label"] as? String ?? ""
+                let amount = item["amount"] as? NSNumber
+                let amountD: NSDecimalNumber
+                
+                amountD = NSDecimalNumber(decimal: amount!.decimalValue)
+
                 if (item["label"] != nil) && (item["amount"] != nil) {
-                    paymentSummaryItems.append(PKPaymentSummaryItem(label: item["label"] as! String, amount: item["amount"] as! NSDecimalNumber))
+                    paymentSummaryItems.append(PKPaymentSummaryItem(label: label, amount: amountD))
                 }
             }
         }
@@ -50,10 +55,12 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
     func presentApplePay(_ call: CAPPluginCall) {
         if let paymentRequest = self.paymentRequest {
             if let applePayContext = STPApplePayContext(paymentRequest: paymentRequest, delegate: self) {
-                if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
-                    self.plugin?.bridge?.saveCall(call)
-                    self.payCallId = call.callbackId
-                    applePayContext.presentApplePay(on: rootViewController)
+                DispatchQueue.main.async {
+                    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+                        self.plugin?.bridge?.saveCall(call)
+                        self.payCallId = call.callbackId
+                        applePayContext.presentApplePay(on: rootViewController)
+                    }
                 }
             } else {
                 call.reject("STPApplePayContext is failed")

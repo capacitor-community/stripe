@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {PaymentFlowEventsEnum, PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
+import {ApplePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
@@ -12,6 +12,7 @@ import {first} from 'rxjs/operators';
 export class Tab1Page implements OnInit {
   processSheet: 'willReady' | 'Ready' = 'willReady';
   processFlow: 'willReady' | 'Ready' | 'canConfirm' = 'willReady';
+  processApplePay: 'willReady' | 'Ready' = 'willReady';
 
   constructor(
     private http: HttpClient,
@@ -73,6 +74,32 @@ export class Tab1Page implements OnInit {
       console.log(info);
       this.processFlow = 'canConfirm';
     });
+
+    /** ------------------------------------------------------------------- **/
+
+    Stripe.addListener(ApplePayEventsEnum.Loaded, () => {
+      this.processApplePay = 'Ready';
+      console.log('ApplePayEventsEnum.Loaded');
+    });
+
+    Stripe.addListener(ApplePayEventsEnum.FailedToLoad, () => {
+      console.log('ApplePayEventsEnum.FailedToLoad');
+    });
+
+    Stripe.addListener(ApplePayEventsEnum.Completed, () => {
+      this.processApplePay = 'willReady';
+      console.log('ApplePayEventsEnum.Completed');
+    });
+
+    Stripe.addListener(ApplePayEventsEnum.Canceled, () => {
+      this.processApplePay = 'willReady';
+      console.log('ApplePayEventsEnum.Canceled');
+    });
+
+    Stripe.addListener(ApplePayEventsEnum.Failed, () => {
+      this.processApplePay = 'willReady';
+      console.log('ApplePayEventsEnum.Failed');
+    });
   }
 
   async createPaymentSheet() {
@@ -115,5 +142,27 @@ export class Tab1Page implements OnInit {
 
   confirmPaymentFlow() {
     Stripe.confirmPaymentFlow();
+  }
+
+  async createApplePay() {
+    const { paymentIntent, ephemeralKey } = await this.http.post<{
+      paymentIntent: string;
+      ephemeralKey: string;
+    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+
+    await Stripe.createApplePay({
+      paymentIntentClientSecret: paymentIntent,
+      paymentSummaryItems: [{
+        label: 'Product Name',
+        amount: 1099.00
+      }],
+      merchantDisplayName: 'rdlabo',
+      countryCode: 'US',
+      currency: 'USD',
+    });
+  }
+
+  presentApplePay() {
+    Stripe.presentApplePay();
   }
 }

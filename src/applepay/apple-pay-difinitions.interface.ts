@@ -5,7 +5,7 @@ import type {CreateApplePayOption} from '../shared';
 import type { ApplePayEventsEnum, ApplePayResultInterface } from './apple-pay-events.enum';
 
 export interface ApplePayDefinitions {
-  isApplePayAvailable(): Promise<void>
+  isApplePayAvailable(): Promise<void>;
 
   createApplePay(options: CreateApplePayOption): Promise<void>;
 

@@ -12,7 +12,7 @@ import type {
   CreatePaymentFlowOption,
   PaymentFlowResultInterface,
 } from './definitions';
-import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
+import {ApplePayResultInterface, PaymentFlowEventsEnum, PaymentSheetEventsEnum} from './definitions';
 
 interface StripePaymentSheetModal
   extends Components.StripePaymentSheetModal,
@@ -175,15 +175,17 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     };
   }
 
-  isApplePayAvailable(): void {
+  isApplePayAvailable(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
 
-  createApplePay(): void {
+  createApplePay(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   }
 
-  presentApplePay(): void {
+  presentApplePay(): Promise<{
+    paymentResult: ApplePayResultInterface;
+  }> {
     throw this.unimplemented('Not implemented on web.');
   }
 }
