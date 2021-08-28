@@ -20,6 +20,7 @@
 		DB16470E269C468900E31818 /* PaymentSheetEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB16470D269C468900E31818 /* PaymentSheetEvents.swift */; };
 		DB280E4226AD433900AAEA30 /* PaymentFlowExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB280E4126AD433900AAEA30 /* PaymentFlowExecutor.swift */; };
 		DB280E4426AD476100AAEA30 /* PaymentFlowEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB280E4326AD476100AAEA30 /* PaymentFlowEvents.swift */; };
+		DB9491A626D9FC9600E48032 /* ApplePay in Resources */ = {isa = PBXBuildFile; fileRef = DB9491A526D9FC9600E48032 /* ApplePay */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		DB16470D269C468900E31818 /* PaymentSheetEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentSheetEvents.swift; sourceTree = "<group>"; };
 		DB280E4126AD433900AAEA30 /* PaymentFlowExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentFlowExecutor.swift; sourceTree = "<group>"; };
 		DB280E4326AD476100AAEA30 /* PaymentFlowEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentFlowEvents.swift; sourceTree = "<group>"; };
+		DB9491A526D9FC9600E48032 /* ApplePay */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ApplePay; sourceTree = "<group>"; };
 		F65BB2953ECE002E1EF3E424 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
 		F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PluginTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -100,6 +102,7 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				DB9491A526D9FC9600E48032 /* ApplePay */,
 				DB280E4026AD432500AAEA30 /* PaymentFlow */,
 				DB16470A269C455D00E31818 /* PaymentSheet */,
 				DB1523352663D401003F8BF2 /* Info.plist */,
@@ -258,6 +261,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB9491A626D9FC9600E48032 /* ApplePay in Resources */,
 				DB15233A2663D401003F8BF2 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

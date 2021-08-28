@@ -192,11 +192,63 @@ export async function present(): Promise<void> {
 }
 ```
 
+### 3. Apple Pay
+
+With Apple Pay, you can make instant payments in a single flow.
+
+#### 2.1. createApplePay
+
+You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
+Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
+
+```ts
+import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
+
+export async function createApplePay(): Promise<void> {
+  /**
+   * Connect to your backend endpoint, and get every key.
+   */
+  const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+    paymentIntent: string;
+  }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+
+  await Stripe.createApplePay({
+    paymentIntentClientSecret: paymentIntent,
+    paymentSummaryItems: [{
+      label: 'Product Name',
+      amount: 1099.00
+    }],
+    merchantDisplayName: 'rdlabo',
+    countryCode: 'US',
+    currency: 'USD',
+  });
+}
+```
+
+#### 2.2. presentApplePay
+
+present in `createApplePay` is single flow. You don't need to confirm method.
+
+```ts
+export async function present(): Promise<void> {
+  const result = await Stripe.presentApplePay();
+}
+```
+
 ## API
 
 <docgen-index>
 
 * [`initialize(...)`](#initialize)
+* [`isApplePayAvailable()`](#isapplepayavailable)
+* [`createApplePay(...)`](#createapplepay)
+* [`presentApplePay()`](#presentapplepay)
+* [`addListener(ApplePayEventsEnum.Loaded, ...)`](#addlistenerapplepayeventsenumloaded-)
+* [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload-)
+* [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload-)
+* [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted-)
+* [`addListener(ApplePayEventsEnum.Canceled, ...)`](#addlistenerapplepayeventsenumcanceled-)
+* [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed-)
 * [`createPaymentFlow(...)`](#createpaymentflow)
 * [`presentPaymentFlow()`](#presentpaymentflow)
 * [`confirmPaymentFlow()`](#confirmpaymentflow)
@@ -233,6 +285,135 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 | Param      | Type                                                                                |
 | ---------- | ----------------------------------------------------------------------------------- |
 | **`opts`** | <code><a href="#stripeinitializationoptions">StripeInitializationOptions</a></code> |
+
+--------------------
+
+
+### isApplePayAvailable()
+
+```typescript
+isApplePayAvailable() => Promise<void>
+```
+
+--------------------
+
+
+### createApplePay(...)
+
+```typescript
+createApplePay(options: CreateApplePayOption) => Promise<void>
+```
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createapplepayoption">CreateApplePayOption</a></code> |
+
+--------------------
+
+
+### presentApplePay()
+
+```typescript
+presentApplePay() => Promise<{ paymentResult: ApplePayResultInterface; }>
+```
+
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#applepayresultinterface">ApplePayResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Loaded, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Completed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                        |
+| ------------------ | --------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                  |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Canceled, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
 --------------------
 
@@ -515,12 +696,15 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | **`stripeAccount`**  | <code>string</code> |
 
 
-#### CreatePaymentFlowOption
+#### CreateApplePayOption
 
-| Prop                            | Type                | Description                                                                                     |
-| ------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------- |
-| **`paymentIntentClientSecret`** | <code>string</code> | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret |
-| **`setupIntentClientSecret`**   | <code>string</code> | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret |
+| Prop                            | Type                                              |
+| ------------------------------- | ------------------------------------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code>                               |
+| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> |
+| **`merchantDisplayName`**       | <code>string</code>                               |
+| **`countryCode`**               | <code>string</code>                               |
+| **`currency`**                  | <code>string</code>                               |
 
 
 #### PluginListenerHandle
@@ -528,6 +712,14 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+#### CreatePaymentFlowOption
+
+| Prop                            | Type                | Description                                                                                     |
+| ------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code> | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret |
+| **`setupIntentClientSecret`**   | <code>string</code> | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret |
 
 
 #### CreatePaymentSheetOption
@@ -538,6 +730,11 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 
 
 ### Type Aliases
+
+
+#### ApplePayResultInterface
+
+<code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a></code>
 
 
 #### PaymentFlowResultInterface
@@ -551,6 +748,17 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 
 
 ### Enums
+
+
+#### ApplePayEventsEnum
+
+| Members            | Value                               |
+| ------------------ | ----------------------------------- |
+| **`Loaded`**       | <code>"applePayLoaded"</code>       |
+| **`FailedToLoad`** | <code>"applePayFailedToLoad"</code> |
+| **`Completed`**    | <code>"applePayCompleted"</code>    |
+| **`Canceled`**     | <code>"applePayCanceled"</code>     |
+| **`Failed`**       | <code>"applePayFailed"</code>       |
 
 
 #### PaymentFlowEventsEnum

@@ -12,7 +12,7 @@ import type {
   CreatePaymentFlowOption,
   PaymentFlowResultInterface,
 } from './definitions';
-import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
+import {ApplePayResultInterface, PaymentFlowEventsEnum, PaymentSheetEventsEnum} from './definitions';
 
 interface StripePaymentSheetModal
   extends Components.StripePaymentSheetModal,
@@ -147,7 +147,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     });
     return {
       cardNumber: '',
-    }
+    };
   }
 
   async confirmPaymentFlow(): Promise<{
@@ -173,5 +173,19 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     return {
       paymentResult: PaymentFlowEventsEnum.Completed,
     };
+  }
+
+  isApplePayAvailable(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  createApplePay(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+
+  presentApplePay(): Promise<{
+    paymentResult: ApplePayResultInterface;
+  }> {
+    throw this.unimplemented('Not implemented on web.');
   }
 }
