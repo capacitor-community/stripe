@@ -10,4 +10,7 @@ CAP_PLUGIN(StripePlugin, "Stripe",
            CAP_PLUGIN_METHOD(createPaymentFlow, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(presentPaymentFlow, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(confirmPaymentFlow, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(isApplePayAvailable, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(createApplePay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(presentApplePay, CAPPluginReturnPromise);
 )
