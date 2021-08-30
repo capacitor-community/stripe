@@ -158,7 +158,7 @@ export class Tab1Page implements OnInit {
         label: 'Product Name',
         amount: 1099.00
       }],
-      merchantDisplayName: 'merchant.com.getcapacitor.stripe',
+      merchantIdentifier: 'merchant.com.getcapacitor.stripe',
       countryCode: 'US',
       currency: 'USD',
     });
