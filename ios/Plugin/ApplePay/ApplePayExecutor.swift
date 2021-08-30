@@ -94,7 +94,7 @@ extension ApplePayExecutor {
                 call.resolve(["paymentResult": ApplePayEvents.Failed.rawValue])
                 break
             case .userCancellation:
-                self.plugin?.notifyListeners(ApplePayEvents.Completed.rawValue, data: [:])
+                self.plugin?.notifyListeners(ApplePayEvents.Canceled.rawValue, data: [:])
                 call.resolve(["paymentResult": ApplePayEvents.Canceled.rawValue])
                 break
             @unknown default:
