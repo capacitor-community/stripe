@@ -13,6 +13,7 @@ export class Tab1Page implements OnInit {
   processSheet: 'willReady' | 'Ready' = 'willReady';
   processFlow: 'willReady' | 'Ready' | 'canConfirm' = 'willReady';
   processApplePay: 'willReady' | 'Ready' = 'willReady';
+  isApplePayAvailable = false;
 
   constructor(
     private http: HttpClient,
@@ -100,6 +101,8 @@ export class Tab1Page implements OnInit {
       this.processApplePay = 'willReady';
       console.log('ApplePayEventsEnum.Failed');
     });
+
+    Stripe.isApplePayAvailable().then(() => this.isApplePayAvailable = true);
   }
 
   async createPaymentSheet() {
@@ -145,9 +148,8 @@ export class Tab1Page implements OnInit {
   }
 
   async createApplePay() {
-    const { paymentIntent, ephemeralKey } = await this.http.post<{
+    const { paymentIntent } = await this.http.post<{
       paymentIntent: string;
-      ephemeralKey: string;
     }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
 
     await Stripe.createApplePay({

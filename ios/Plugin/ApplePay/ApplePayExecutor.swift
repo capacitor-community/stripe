@@ -10,7 +10,11 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
     private var paymentRequest: PKPaymentRequest?
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
-        call.reject("Can not use on This Device.")
+        if (!StripeAPI.deviceSupportsApplePay()) {
+            call.reject("Can not use on this Device.")
+            return
+        }
+        call.resolve()
     }
 
     func createApplePay(_ call: CAPPluginCall) {
