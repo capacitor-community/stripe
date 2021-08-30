@@ -82,7 +82,7 @@ export interface CreateApplePayOption {
     label: string;
     amount: number;
   }[];
-  merchantDisplayName: string;
+  merchantIdentifier: string;
   countryCode: string;
   currency: string;
 }

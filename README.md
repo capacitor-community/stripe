@@ -703,7 +703,7 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | ------------------------------- | ------------------------------------------------- |
 | **`paymentIntentClientSecret`** | <code>string</code>                               |
 | **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> |
-| **`merchantDisplayName`**       | <code>string</code>                               |
+| **`merchantIdentifier`**        | <code>string</code>                               |
 | **`countryCode`**               | <code>string</code>                               |
 | **`currency`**                  | <code>string</code>                               |
 

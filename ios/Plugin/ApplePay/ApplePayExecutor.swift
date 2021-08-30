@@ -45,8 +45,8 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
             }
         }
 
-        let merchantDisplayName = call.getString("merchantDisplayName") ?? ""
-        let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantDisplayName, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
+        let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
+        let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
 
         self.appleClientSecret = paymentIntentClientSecret!
