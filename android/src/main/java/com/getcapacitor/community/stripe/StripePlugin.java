@@ -4,6 +4,7 @@ import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
+import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor;
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
@@ -12,10 +13,7 @@ import com.stripe.android.paymentsheet.PaymentSheet;
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
 public class StripePlugin extends Plugin {
 
-    //    private Stripe stripeInstance;
     private String publishableKey;
-    private Boolean isTest = true;
-    private GooglePayCallback googlePayCallback = null;
     private String paymentSheetCallbackId;
     private String paymentFlowCallbackId;
 
@@ -27,6 +25,13 @@ public class StripePlugin extends Plugin {
     );
 
     private final PaymentFlowExecutor paymentFlowExecutor = new PaymentFlowExecutor(
+        this::getContext,
+        this::getActivity,
+        this::notifyListeners,
+        getLogTag()
+    );
+
+    private final GooglePayExecutor googlePayExecutor = new GooglePayExecutor(
         this::getContext,
         this::getActivity,
         this::notifyListeners,
@@ -65,7 +70,7 @@ public class StripePlugin extends Plugin {
                 return;
             }
             //            stripeInstance = new Stripe(getContext(), publishableKey);
-            isTest = publishableKey.contains("test");
+            //            isTest = publishableKey.contains("test");
             PaymentConfiguration.init(getContext(), publishableKey);
             call.resolve();
         } catch (Exception e) {
@@ -120,5 +125,20 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void presentApplePay(final PluginCall call) {
         call.unimplemented("Not implemented on Android.");
+    }
+
+    @PluginMethod
+    public void isGooglePayAvailable(final PluginCall call) {
+        googlePayExecutor.isGooglePayAvailable(call);
+    }
+
+    @PluginMethod
+    public void createGooglePay(final PluginCall call) {
+        googlePayExecutor.createGooglePay(call);
+    }
+
+    @PluginMethod
+    public void presentGooglePay(final PluginCall call) {
+        googlePayExecutor.presentGooglePay(call);
     }
 }

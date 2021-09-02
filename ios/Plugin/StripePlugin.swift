@@ -62,4 +62,16 @@ public class StripePlugin: CAPPlugin {
     @objc func presentApplePay(_ call: CAPPluginCall) {
         self.applePayExecutor.presentApplePay(call)
     }
+
+    @objc func isGooglePayAvailable(_ call: CAPPluginCall) {
+        call.unavailable("Not implemented on iOS.")
+    }
+
+    @objc func createGooglePay(_ call: CAPPluginCall) {
+        call.unavailable("Not implemented on iOS.")
+    }
+
+    @objc func presentGooglePay(_ call: CAPPluginCall) {
+        call.unavailable("Not implemented on iOS.")
+    }
 }
