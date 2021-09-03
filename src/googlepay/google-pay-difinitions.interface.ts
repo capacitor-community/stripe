@@ -1,16 +1,16 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import type {CreateApplePayOption} from '../shared';
+import type { CreateGooglePayOption } from '../shared';
 
 import type { GooglePayEventsEnum, GooglePayResultInterface } from './google-pay-events.enum';
 
 export interface GooglePayDefinitions {
   isGooglePayAvailable(): Promise<void>;
 
-  createGooglePay(options: CreateApplePayOption): Promise<void>;
+  createGooglePay(options: CreateGooglePayOption): Promise<void>;
 
   presentGooglePay(): Promise<{
-    paymentResult: GooglePayDefinitions;
+    paymentResult: GooglePayResultInterface;
   }>;
 
   addListener(

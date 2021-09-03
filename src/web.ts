@@ -11,7 +11,7 @@ import type {
   PaymentSheetResultInterface,
   CreatePaymentFlowOption,
   PaymentFlowResultInterface,
-  ApplePayResultInterface,
+  ApplePayResultInterface, GooglePayResultInterface,
 } from './definitions';
 import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
 
@@ -199,7 +199,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   }
 
   presentGooglePay(): Promise<{
-    paymentResult: ApplePayResultInterface;
+    paymentResult: GooglePayResultInterface;
   }> {
     throw this.unimplemented('Not implemented on web.');
   }

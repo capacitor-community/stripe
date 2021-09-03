@@ -16,6 +16,7 @@ public class StripePlugin extends Plugin {
     private String publishableKey;
     private String paymentSheetCallbackId;
     private String paymentFlowCallbackId;
+    private Boolean isTest = true;
 
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
         this::getContext,
@@ -70,7 +71,7 @@ public class StripePlugin extends Plugin {
                 return;
             }
             //            stripeInstance = new Stripe(getContext(), publishableKey);
-            //            isTest = publishableKey.contains("test");
+            isTest = publishableKey.contains("test");
             PaymentConfiguration.init(getContext(), publishableKey);
             call.resolve();
         } catch (Exception e) {
@@ -129,16 +130,16 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void isGooglePayAvailable(final PluginCall call) {
-        googlePayExecutor.isGooglePayAvailable(call);
+        googlePayExecutor.isGooglePayAvailable(call, isTest);
     }
 
     @PluginMethod
     public void createGooglePay(final PluginCall call) {
-        googlePayExecutor.createGooglePay(call);
+        googlePayExecutor.createGooglePay(call, isTest);
     }
 
     @PluginMethod
     public void presentGooglePay(final PluginCall call) {
-        googlePayExecutor.presentGooglePay(call);
+        googlePayExecutor.presentGooglePay(bridge, call);
     }
 }

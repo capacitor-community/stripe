@@ -3,6 +3,7 @@ import {ApplePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum, Strip
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
+import {GooglePayEventsEnum} from '../../../../../src/googlepay';
 
 @Component({
   selector: 'app-tab1',
@@ -13,7 +14,9 @@ export class Tab1Page implements OnInit {
   processSheet: 'willReady' | 'Ready' = 'willReady';
   processFlow: 'willReady' | 'Ready' | 'canConfirm' = 'willReady';
   processApplePay: 'willReady' | 'Ready' = 'willReady';
+  processGooglePay: 'willReady' | 'Ready' = 'willReady';
   isApplePayAvailable = false;
+  isGooglePayAvailable = false;
 
   constructor(
     private http: HttpClient,
@@ -103,6 +106,34 @@ export class Tab1Page implements OnInit {
     });
 
     Stripe.isApplePayAvailable().then(() => this.isApplePayAvailable = true);
+
+    /** ------------------------------------------------------------------- **/
+
+    Stripe.addListener(GooglePayEventsEnum.Loaded, () => {
+      this.processGooglePay = 'Ready';
+      console.log('ApplePayEventsEnum.Loaded');
+    });
+
+    Stripe.addListener(GooglePayEventsEnum.FailedToLoad, () => {
+      console.log('ApplePayEventsEnum.FailedToLoad');
+    });
+
+    Stripe.addListener(GooglePayEventsEnum.Completed, () => {
+      this.processGooglePay = 'willReady';
+      console.log('ApplePayEventsEnum.Completed');
+    });
+
+    Stripe.addListener(GooglePayEventsEnum.Canceled, () => {
+      this.processGooglePay = 'willReady';
+      console.log('ApplePayEventsEnum.Canceled');
+    });
+
+    Stripe.addListener(GooglePayEventsEnum.Failed, () => {
+      this.processGooglePay = 'willReady';
+      console.log('ApplePayEventsEnum.Failed');
+    });
+
+    Stripe.isGooglePayAvailable().then(() => this.isGooglePayAvailable = true);
   }
 
   async createPaymentSheet() {
@@ -166,5 +197,21 @@ export class Tab1Page implements OnInit {
 
   presentApplePay() {
     Stripe.presentApplePay();
+  }
+
+  async createGooglePay() {
+    const { paymentIntent } = await this.http.post<{
+      paymentIntent: string;
+    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+
+    await Stripe.createGooglePay({
+      paymentIntentClientSecret: paymentIntent,
+      merchantName: 'getCapacitor',
+      countryCode: 'US',
+    });
+  }
+
+  presentGooglePay() {
+    Stripe.presentGooglePay();
   }
 }
