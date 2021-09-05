@@ -245,8 +245,8 @@ And in Android App, you need some settings.
 In file android/app/src/main/AndroidManifest.xml, add the following XML elements under <manifest><application> :
 
 ```xml
-<string name="merchant_country_code">US</string>
-<string name="merchant_name">Widget Store</string>
+<string name="country_code">US</string>
+<string name="merchant_display_name">Widget Store</string>
 <bool name="is_google_pay_test">true</bool>
 ```
 
@@ -257,12 +257,12 @@ In file android/app/src/main/res/values/strings.xml add the following lines :
   android:value="true" />
 
 <meta-data
-  android:name="com.getcapacitor.community.stripe.merchant_country_code"
-  android:value="@string/merchant_country_code"/>
+  android:name="com.getcapacitor.community.stripe.country_code"
+  android:value="@string/country_code"/>
 
 <meta-data
-  android:name="com.getcapacitor.community.stripe.merchant_name"
-  android:value="@string/merchant_name"/>
+  android:name="com.getcapacitor.community.stripe.merchant_display_name"
+  android:value="@string/merchant_display_name"/>
 
 <meta-data
   android:name="com.getcapacitor.community.stripe.is_google_pay_test"

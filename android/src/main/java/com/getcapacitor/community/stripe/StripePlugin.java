@@ -66,15 +66,15 @@ public class StripePlugin extends Plugin {
             );
 
         String countryCode;
-        String merchantName;
+        String displayName;
         GooglePayEnvironment googlePayEnvironment;
 
         try {
             ApplicationInfo appInfo = getContext()
                 .getPackageManager()
                 .getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
-            countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_country_code");
-            merchantName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_name");
+            countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
+            displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
 
             boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.is_google_pay_test");
             if (isTest) {
@@ -85,14 +85,14 @@ public class StripePlugin extends Plugin {
         } catch (Exception ex) {
             // Default Value
             countryCode = "US";
-            merchantName = "Widget Store";
+            displayName = "Widget Store";
             googlePayEnvironment = GooglePayEnvironment.Test;
         }
 
         this.googlePayExecutor.googlePayLauncher =
             new GooglePayLauncher(
                 getActivity(),
-                new GooglePayLauncher.Config(googlePayEnvironment, countryCode, merchantName),
+                new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
                 (boolean isReady) -> {
                     this.googlePayExecutor.isAvailable = isReady;
                 },
