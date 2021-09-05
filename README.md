@@ -90,7 +90,7 @@ import { Stripe } from '@capacitor-community/stripe';
 
 export async function initialize(): Promise<void> {
   Stripe.initialize({
-    publishableKey: "Your Publishable Key""",
+    publishableKey: "Your Publishable Key",
   });
 }
 ```
