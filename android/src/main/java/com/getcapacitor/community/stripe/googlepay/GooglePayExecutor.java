@@ -18,8 +18,6 @@ public class GooglePayExecutor extends Executor {
     public GooglePayLauncher googlePayLauncher;
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
-    private String googlePayPresentCallbackId;
-    private Bridge bridge;
     public boolean isAvailable;
 
     public GooglePayExecutor(
@@ -52,14 +50,12 @@ public class GooglePayExecutor extends Executor {
         call.resolve();
     }
 
-    public void presentGooglePay(final PluginCall call, Bridge bridge) {
-        this.bridge = bridge;
-        googlePayPresentCallbackId = call.getCallbackId();
+    public void presentGooglePay(final PluginCall call) {
         this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
     }
 
-    public void onGooglePayResult(@NotNull GooglePayLauncher.Result result) {
-        PluginCall call = bridge.getSavedCall(googlePayPresentCallbackId);
+    public void onGooglePayResult(Bridge bridge, String callbackId, @NotNull GooglePayLauncher.Result result) {
+        PluginCall call = bridge.getSavedCall(callbackId);
         if (result instanceof GooglePayLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Completed.getWebEventName()));

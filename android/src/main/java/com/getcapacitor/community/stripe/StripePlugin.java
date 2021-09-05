@@ -22,6 +22,7 @@ public class StripePlugin extends Plugin {
     private Boolean isTest = true;
     private String paymentSheetCallbackId;
     private String paymentFlowCallbackId;
+    private String googlePayCallbackId;
 
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
         this::getContext,
@@ -97,7 +98,7 @@ public class StripePlugin extends Plugin {
                     this.googlePayExecutor.isAvailable = isReady;
                 },
                 (@NotNull GooglePayLauncher.Result result) -> {
-                    this.googlePayExecutor.onGooglePayResult(result);
+                    this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result);
                 }
             );
     }
@@ -181,6 +182,7 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void presentGooglePay(final PluginCall call) {
-        googlePayExecutor.presentGooglePay(call, bridge);
+        googlePayCallbackId = call.getCallbackId();
+        googlePayExecutor.presentGooglePay(call);
     }
 }
