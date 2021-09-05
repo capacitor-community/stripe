@@ -4,4 +4,6 @@
     <string name="title_activity_main">capacitor-stripe</string>
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="merchant_country_code">US</string>
+    <string name="merchant_name">Widget Store</string>
 </resources>

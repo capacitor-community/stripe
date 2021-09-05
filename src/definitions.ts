@@ -11,7 +11,8 @@ export * from './shared/index';
 
 type StripeDefinitions = PaymentSheetDefinitions &
   PaymentFlowDefinitions &
-  ApplePayDefinitions & GooglePayDefinitions;
+  ApplePayDefinitions &
+  GooglePayDefinitions;
 
 export interface StripePlugin extends StripeDefinitions {
   initialize(opts: StripeInitializationOptions): Promise<void>;

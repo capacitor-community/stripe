@@ -11,7 +11,8 @@ import type {
   PaymentSheetResultInterface,
   CreatePaymentFlowOption,
   PaymentFlowResultInterface,
-  ApplePayResultInterface, GooglePayResultInterface,
+  ApplePayResultInterface,
+  GooglePayResultInterface,
 } from './definitions';
 import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
 

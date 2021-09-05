@@ -2,13 +2,12 @@ package com.getcapacitor.community.stripe.models;
 
 import android.app.Activity;
 import android.content.Context;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Supplier;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.google.android.gms.common.util.BiConsumer;
 
-public abstract class Executor extends AppCompatActivity {
+public abstract class Executor {
 
     protected Supplier<Context> contextSupplier;
     protected final Supplier<Activity> activitySupplier;

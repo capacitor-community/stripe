@@ -1,5 +1,7 @@
 package com.getcapacitor.community.stripe;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -8,15 +10,18 @@ import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor;
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
+import com.stripe.android.googlepaylauncher.GooglePayEnvironment;
+import com.stripe.android.googlepaylauncher.GooglePayLauncher;
 import com.stripe.android.paymentsheet.PaymentSheet;
+import org.jetbrains.annotations.NotNull;
 
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
 public class StripePlugin extends Plugin {
 
     private String publishableKey;
+    private Boolean isTest = true;
     private String paymentSheetCallbackId;
     private String paymentFlowCallbackId;
-    private Boolean isTest = true;
 
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
         this::getContext,
@@ -57,6 +62,33 @@ public class StripePlugin extends Plugin {
                 },
                 result -> {
                     this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
+                }
+            );
+
+        String countryCode;
+        String merchantName;
+
+        try {
+            ApplicationInfo appInfo = getContext()
+                .getPackageManager()
+                .getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+            countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_country_code");
+            merchantName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_name");
+        } catch (Exception ex) {
+            // Default Value
+            countryCode = "US";
+            merchantName = "Widget Store";
+        }
+
+        this.googlePayExecutor.googlePayLauncher =
+            new GooglePayLauncher(
+                getActivity(),
+                new GooglePayLauncher.Config(GooglePayEnvironment.Test, countryCode, merchantName),
+                (boolean isReady) -> {
+                    this.googlePayExecutor.isAvailable = isReady;
+                },
+                (@NotNull GooglePayLauncher.Result result) -> {
+                    this.googlePayExecutor.onGooglePayResult(result);
                 }
             );
     }
@@ -130,7 +162,7 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void isGooglePayAvailable(final PluginCall call) {
-        googlePayExecutor.isGooglePayAvailable(call, isTest);
+        googlePayExecutor.isGooglePayAvailable(call);
     }
 
     @PluginMethod

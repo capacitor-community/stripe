@@ -37,6 +37,14 @@
         <meta-data
           android:name="com.google.android.gms.wallet.api.enabled"
           android:value="true" />
+
+        <meta-data
+          android:name="com.getcapacitor.community.stripe.merchant_country_code"
+          android:value="@string/merchant_country_code"/>
+
+        <meta-data
+          android:name="com.getcapacitor.community.stripe.merchant_name"
+          android:value="@string/merchant_name"/>
     </application>
 
     <!-- Permissions -->
