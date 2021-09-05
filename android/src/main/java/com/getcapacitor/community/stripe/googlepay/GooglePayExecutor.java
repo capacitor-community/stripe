@@ -3,7 +3,7 @@ package com.getcapacitor.community.stripe.googlepay;
 import android.app.Activity;
 import android.content.Context;
 import androidx.core.util.Supplier;
-import com.getcapacitor.Bridge;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
@@ -17,8 +17,7 @@ public class GooglePayExecutor extends Executor {
     public GooglePayLauncher googlePayLauncher;
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
-    private String callbackId;
-    private Bridge bridge;
+    private String googlePayPresentCallbackId;
     public boolean isAvailable;
 
     public GooglePayExecutor(
@@ -39,7 +38,7 @@ public class GooglePayExecutor extends Executor {
         }
     }
 
-    public void createGooglePay(final PluginCall call, final boolean isTest) {
+    public void createGooglePay(final PluginCall call) {
         this.clientSecret = call.getString("paymentIntentClientSecret");
 
         if (this.clientSecret == null) {
@@ -51,14 +50,13 @@ public class GooglePayExecutor extends Executor {
         call.resolve();
     }
 
-    public void presentGooglePay(Bridge bridge, final PluginCall call) {
-        callbackId = call.getCallbackId();
-        this.bridge = bridge;
+    public void presentGooglePay(final PluginCall call) {
+        googlePayPresentCallbackId = call.getCallbackId();
         this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
     }
 
     public void onGooglePayResult(@NotNull GooglePayLauncher.Result result) {
-        PluginCall call = bridge.getSavedCall(callbackId);
+        PluginCall call = bridge.getSavedCall(googlePayPresentCallbackId);
         if (result instanceof GooglePayLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Completed.getWebEventName()));
