@@ -20,6 +20,7 @@
 
 | Maintainer          | GitHub                              | Social                                | Sponsoring Company                             |
 | ------------------- | ----------------------------------- | ------------------------------------- | ---------------------------------------------- |
+| Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) |  |
 | Ibby Hadeed | [ihadeed](https://github.com/ihadeed) | |
 | Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | RELATION DESIGN LABO, GENERAL INC. ASSOCIATION |
 
