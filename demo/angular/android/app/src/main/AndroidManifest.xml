@@ -47,8 +47,8 @@
           android:value="@string/merchant_display_name"/>
 
         <meta-data
-          android:name="com.getcapacitor.community.stripe.is_google_pay_test"
-          android:value="@bool/is_google_pay_test"/>
+          android:name="com.getcapacitor.community.stripe.google_pay_is_testing"
+          android:value="@bool/google_pay_is_testing"/>
     </application>
 
     <!-- Permissions -->

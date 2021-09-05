@@ -247,7 +247,7 @@ In file android/app/src/main/AndroidManifest.xml, add the following XML elements
 ```xml
 <string name="country_code">US</string>
 <string name="merchant_display_name">Widget Store</string>
-<bool name="is_google_pay_test">true</bool>
+<bool name="google_pay_is_testing">true</bool>
 ```
 
 In file android/app/src/main/res/values/strings.xml add the following lines :
@@ -265,8 +265,8 @@ In file android/app/src/main/res/values/strings.xml add the following lines :
   android:value="@string/merchant_display_name"/>
 
 <meta-data
-  android:name="com.getcapacitor.community.stripe.is_google_pay_test"
-  android:value="@bool/is_google_pay_test"/>
+  android:name="com.getcapacitor.community.stripe.google_pay_is_testing"
+  android:value="@bool/google_pay_is_testing"/>
 ```
 
 #### 4.1. createGooglePay

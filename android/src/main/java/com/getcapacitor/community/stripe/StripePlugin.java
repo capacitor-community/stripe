@@ -76,7 +76,7 @@ public class StripePlugin extends Plugin {
             countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
             displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
 
-            boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.is_google_pay_test");
+            boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing");
             if (isTest) {
                 googlePayEnvironment = GooglePayEnvironment.Test;
             } else {
