@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import androidx.core.util.Supplier;
 
+import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
@@ -18,6 +19,7 @@ public class GooglePayExecutor extends Executor {
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
     private String googlePayPresentCallbackId;
+    private Bridge bridge;
     public boolean isAvailable;
 
     public GooglePayExecutor(
@@ -50,7 +52,8 @@ public class GooglePayExecutor extends Executor {
         call.resolve();
     }
 
-    public void presentGooglePay(final PluginCall call) {
+    public void presentGooglePay(final PluginCall call, Bridge bridge) {
+        this.bridge = bridge;
         googlePayPresentCallbackId = call.getCallbackId();
         this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
     }

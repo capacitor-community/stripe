@@ -181,6 +181,6 @@ public class StripePlugin extends Plugin {
 
     @PluginMethod
     public void presentGooglePay(final PluginCall call) {
-        googlePayExecutor.presentGooglePay(call);
+        googlePayExecutor.presentGooglePay(call, bridge);
     }
 }
