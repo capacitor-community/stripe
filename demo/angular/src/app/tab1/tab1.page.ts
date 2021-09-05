@@ -206,8 +206,6 @@ export class Tab1Page implements OnInit {
 
     await Stripe.createGooglePay({
       paymentIntentClientSecret: paymentIntent,
-      merchantName: 'getCapacitor',
-      countryCode: 'US',
     });
   }
 

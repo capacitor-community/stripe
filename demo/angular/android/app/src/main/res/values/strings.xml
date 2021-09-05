@@ -6,4 +6,5 @@
     <string name="custom_url_scheme">io.ionic.starter</string>
     <string name="merchant_country_code">US</string>
     <string name="merchant_name">Widget Store</string>
+    <bool name="is_google_pay_test">true</bool>
 </resources>

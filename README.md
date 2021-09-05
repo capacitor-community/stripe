@@ -197,7 +197,7 @@ export async function present(): Promise<void> {
 
 With Apple Pay, you can make instant payments in a single flow. Please check settings: https://stripe.com/docs/apple-pay#merchantid
 
-#### 2.1. createApplePay
+#### 3.1. createApplePay
 
 You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
 Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
@@ -209,7 +209,7 @@ export async function createApplePay(): Promise<void> {
   /**
    * Connect to your backend endpoint, and get every key.
    */
-  const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+  const { paymentIntent } = await this.http.post<{
     paymentIntent: string;
   }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
 
@@ -226,9 +226,74 @@ export async function createApplePay(): Promise<void> {
 }
 ```
 
-#### 2.2. presentApplePay
+#### 3.2. presentApplePay
 
 present in `createApplePay` is single flow. You don't need to confirm method.
+
+```ts
+export async function present(): Promise<void> {
+  const result = await Stripe.presentApplePay();
+}
+```
+
+
+### 4. Google Pay
+
+With Google Pay, you can make instant payments in a single flow. Please check settings: https://stripe.com/docs/google-pay
+And in Android App, you need some settings.
+
+In file android/app/src/main/AndroidManifest.xml, add the following XML elements under <manifest><application> :
+
+```xml
+<string name="merchant_country_code">US</string>
+<string name="merchant_name">Widget Store</string>
+<bool name="is_google_pay_test">true</bool>
+```
+
+In file android/app/src/main/res/values/strings.xml add the following lines :
+```xml
+<meta-data
+  android:name="com.google.android.gms.wallet.api.enabled"
+  android:value="true" />
+
+<meta-data
+  android:name="com.getcapacitor.community.stripe.merchant_country_code"
+  android:value="@string/merchant_country_code"/>
+
+<meta-data
+  android:name="com.getcapacitor.community.stripe.merchant_name"
+  android:value="@string/merchant_name"/>
+
+<meta-data
+  android:name="com.getcapacitor.community.stripe.is_google_pay_test"
+  android:value="@bool/is_google_pay_test"/>
+```
+
+#### 4.1. createGooglePay
+
+You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
+Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=android#add-server-endpoint
+
+```ts
+import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
+
+export async function createGooglePay(): Promise<void> {
+  /**
+   * Connect to your backend endpoint, and get every key.
+   */
+  const { paymentIntent } = await this.http.post<{
+    paymentIntent: string;
+  }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+
+  await Stripe.createGooglePay({
+    paymentIntentClientSecret: paymentIntent,
+  });
+}
+```
+
+#### 4.2. presentGooglePay
+
+present in `createGooglePay` is single flow. You don't need to confirm method.
 
 ```ts
 export async function present(): Promise<void> {
@@ -858,8 +923,6 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | Prop                            | Type                |
 | ------------------------------- | ------------------- |
 | **`paymentIntentClientSecret`** | <code>string</code> |
-| **`merchantName`**              | <code>string</code> |
-| **`countryCode`**               | <code>string</code> |
 
 
 #### CreatePaymentFlowOption

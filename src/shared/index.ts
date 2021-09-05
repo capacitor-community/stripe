@@ -89,6 +89,4 @@ export interface CreateApplePayOption {
 
 export interface CreateGooglePayOption {
   paymentIntentClientSecret: string;
-  merchantName: string;
-  countryCode: string;
 }
