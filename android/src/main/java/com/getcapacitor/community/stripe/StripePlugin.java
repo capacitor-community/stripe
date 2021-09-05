@@ -183,6 +183,8 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void presentGooglePay(final PluginCall call) {
         googlePayCallbackId = call.getCallbackId();
+        bridge.saveCall(call);
+
         googlePayExecutor.presentGooglePay(call);
     }
 }
