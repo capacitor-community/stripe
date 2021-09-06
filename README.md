@@ -36,6 +36,7 @@
 |  PaymentSheet  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png)  | ![](demo/screenshots/payment-sheet-web.png) |
 |  PaymentFlow   | ![](demo/screenshots/payment-flow-android.png) |  ![](demo/screenshots/payment-flow-ios.png) | Coming soon |
 |  ApplePay   | Not support |  ![](demo/screenshots/apple-pay-ios.png) | Coming soon |
+|  GooglePay   |  ![](demo/screenshots/google-pay-android.png) | Not support | Coming soon |
 
 ## Install
 
