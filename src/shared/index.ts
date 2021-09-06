@@ -36,10 +36,10 @@ export interface BasePaymentOption {
    * @default false
    * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet
    */
-  useApplePay?: boolean;
+  enableApplePay?: boolean;
 
   /**
-   * If set useApplePay false, Plugin ignore here.
+   * If set enableApplePay false, Plugin ignore here.
    */
   applePayMerchantId?: string;
 
@@ -48,7 +48,7 @@ export interface BasePaymentOption {
    * @default false
    * @url https://stripe.com/docs/payments/accept-a-payment?platform=android&ui=payment-sheet#google-pay
    */
-  useGooglePay?: boolean;
+  enableGooglePay?: boolean;
 
   /**
    * @default false,
@@ -57,7 +57,7 @@ export interface BasePaymentOption {
 
   /**
    * use ApplePay and GooglePay.
-   * If set useApplePay and useGooglePay false, Plugin ignore here.
+   * If set enableApplePay and enableGooglePay false, Plugin ignore here.
    * @default "US"
    */
   countryCode?: string;
