@@ -73,13 +73,11 @@ public class StripePlugin extends Plugin {
                         new GooglePayLauncher(
                                 getActivity(),
                                 new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
-                                (boolean isReady) -> {
-                                    this.googlePayExecutor.isAvailable = isReady;
-                                },
-                                (@NotNull GooglePayLauncher.Result result) -> {
-                                    this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result);
-                                }
+                                (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
+                                (@NotNull GooglePayLauncher.Result result) -> this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
                         );
+            } else {
+                Logger.info("Plugin didn't prepare Google Pay.");
             }
         } catch (Exception ignored) {
             Logger.info("Plugin didn't prepare Google Pay.");
