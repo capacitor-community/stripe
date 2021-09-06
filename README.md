@@ -242,8 +242,7 @@ export async function present(): Promise<void> {
 With Google Pay, you can make instant payments in a single flow. Please check settings: https://stripe.com/docs/google-pay
 And in Android App, you need some settings.
 
-In file android/app/src/main/AndroidManifest.xml, add the following XML elements under <manifest><application> :
-
+In file android/app/src/main/res/values/strings.xml add the following lines :
 ```xml
 <string name="publishable_key">Your Publishable Key</string>
 <bool name="enable_google_pay">true</bool>
@@ -252,7 +251,7 @@ In file android/app/src/main/AndroidManifest.xml, add the following XML elements
 <bool name="google_pay_is_testing">true</bool>
 ```
 
-In file android/app/src/main/res/values/strings.xml add the following lines :
+In file android/app/src/main/AndroidManifest.xml, add the following XML elements under <manifest><application> :
 ```xml
 <meta-data
   android:name="com.getcapacitor.community.stripe.publishable_key"
