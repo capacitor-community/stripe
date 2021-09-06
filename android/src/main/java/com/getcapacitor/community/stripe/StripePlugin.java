@@ -2,6 +2,8 @@ package com.getcapacitor.community.stripe;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+
+import com.getcapacitor.Logger;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -19,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 public class StripePlugin extends Plugin {
 
     private String publishableKey;
-    private Boolean isTest = true;
     private String paymentSheetCallbackId;
     private String paymentFlowCallbackId;
     private String googlePayCallbackId;
@@ -47,6 +48,40 @@ public class StripePlugin extends Plugin {
 
     @Override
     public void load() {
+        try {
+            ApplicationInfo appInfo = getContext()
+                    .getPackageManager()
+                    .getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+
+            publishableKey = appInfo.metaData.getString("com.getcapacitor.community.stripe.publishable_key");
+            PaymentConfiguration.init(getContext(), publishableKey);
+
+            String countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
+            String displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
+            boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing");
+
+            GooglePayEnvironment googlePayEnvironment;
+            if (isTest) {
+                googlePayEnvironment = GooglePayEnvironment.Test;
+            } else {
+                googlePayEnvironment = GooglePayEnvironment.Production;
+            }
+
+            this.googlePayExecutor.googlePayLauncher =
+                    new GooglePayLauncher(
+                            getActivity(),
+                            new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
+                            (boolean isReady) -> {
+                                this.googlePayExecutor.isAvailable = isReady;
+                            },
+                            (@NotNull GooglePayLauncher.Result result) -> {
+                                this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result);
+                            }
+                    );
+        } catch (Exception ignored) {
+            Logger.info("Plugin didn't prepare Google Pay.");
+        }
+
         this.paymentSheetExecutor.paymentSheet =
             new PaymentSheet(
                 getActivity(),
@@ -65,56 +100,22 @@ public class StripePlugin extends Plugin {
                     this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
                 }
             );
-
-        String countryCode;
-        String displayName;
-        GooglePayEnvironment googlePayEnvironment;
-
-        try {
-            ApplicationInfo appInfo = getContext()
-                .getPackageManager()
-                .getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
-            countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
-            displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
-
-            boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing");
-            if (isTest) {
-                googlePayEnvironment = GooglePayEnvironment.Test;
-            } else {
-                googlePayEnvironment = GooglePayEnvironment.Production;
-            }
-        } catch (Exception ex) {
-            // Default Value
-            countryCode = "US";
-            displayName = "Widget Store";
-            googlePayEnvironment = GooglePayEnvironment.Test;
-        }
-
-        this.googlePayExecutor.googlePayLauncher =
-            new GooglePayLauncher(
-                getActivity(),
-                new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
-                (boolean isReady) -> {
-                    this.googlePayExecutor.isAvailable = isReady;
-                },
-                (@NotNull GooglePayLauncher.Result result) -> {
-                    this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result);
-                }
-            );
     }
 
     @PluginMethod
     public void initialize(final PluginCall call) {
         try {
-            publishableKey = call.getString("publishableKey");
+            if (publishableKey == null) {
+                publishableKey = call.getString("publishableKey");
 
-            if (publishableKey == null || publishableKey.equals("")) {
-                call.reject("you must provide a valid key");
-                return;
+                if (publishableKey == null || publishableKey.equals("")) {
+                    call.reject("you must provide a valid key");
+                    return;
+                }
+                PaymentConfiguration.init(getContext(), publishableKey);
+            } else {
+                Logger.info("PaymentConfiguration.init was run at load");
             }
-            //            stripeInstance = new Stripe(getContext(), publishableKey);
-            isTest = publishableKey.contains("test");
-            PaymentConfiguration.init(getContext(), publishableKey);
             call.resolve();
         } catch (Exception e) {
             call.reject("unable to set publishable key: " + e.getLocalizedMessage(), e);

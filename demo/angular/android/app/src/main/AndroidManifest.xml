@@ -39,6 +39,10 @@
           android:value="true" />
 
         <meta-data
+          android:name="com.getcapacitor.community.stripe.publishable_key"
+          android:value="@string/publishable_key"/>
+
+        <meta-data
           android:name="com.getcapacitor.community.stripe.country_code"
           android:value="@string/country_code"/>
 

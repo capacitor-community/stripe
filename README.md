@@ -245,6 +245,7 @@ And in Android App, you need some settings.
 In file android/app/src/main/AndroidManifest.xml, add the following XML elements under <manifest><application> :
 
 ```xml
+<string name="publishable_key">Your Publishable Key</string>
 <string name="country_code">US</string>
 <string name="merchant_display_name">Widget Store</string>
 <bool name="google_pay_is_testing">true</bool>
@@ -252,6 +253,10 @@ In file android/app/src/main/AndroidManifest.xml, add the following XML elements
 
 In file android/app/src/main/res/values/strings.xml add the following lines :
 ```xml
+<meta-data
+  android:name="com.getcapacitor.community.stripe.publishable_key"
+  android:value="@string/publishable_key"/>
+
 <meta-data
   android:name="com.google.android.gms.wallet.api.enabled"
   android:value="true" />
