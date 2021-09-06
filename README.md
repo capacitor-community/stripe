@@ -1,4 +1,7 @@
 <p align="center"><br><img src="https://user-images.githubusercontent.com/236501/85893648-1c92e880-b7a8-11ea-926d-95355b8175c7.png" width="128" height="128" /></p>
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 <h3 align="center">Stripe</h3>
 <p align="center"><strong><code>@capacitor-community/stripe</code></strong></p>
 <p align="center">
@@ -1032,6 +1035,19 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/metalllus"><img src="https://avatars.githubusercontent.com/u/48943750?v=4?s=100" width="100px;" alt=""/><br /><sub><b>metalllus</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=metalllus" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
