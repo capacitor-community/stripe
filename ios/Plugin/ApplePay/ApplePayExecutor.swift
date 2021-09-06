@@ -10,7 +10,7 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
     private var paymentRequest: PKPaymentRequest?
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
-        if (!StripeAPI.deviceSupportsApplePay()) {
+        if !StripeAPI.deviceSupportsApplePay() {
             call.reject("Can not use on this Device.")
             return
         }
@@ -36,7 +36,7 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
                 let label = item["label"] as? String ?? ""
                 let amount = item["amount"] as? NSNumber
                 let amountD: NSDecimalNumber
-                
+
                 amountD = NSDecimalNumber(decimal: amount!.decimalValue)
 
                 if (item["label"] != nil) && (item["amount"] != nil) {

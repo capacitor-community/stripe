@@ -4,4 +4,10 @@
     <string name="title_activity_main">capacitor-stripe</string>
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
+
+    <string name="publishable_key">pk_test_YssveZBA1kucfaTfZbeDwauN</string>
+    <bool name="enable_google_pay">true</bool>
+    <string name="country_code">US</string>
+    <string name="merchant_display_name">Widget Store</string>
+    <bool name="google_pay_is_testing">true</bool>
 </resources>

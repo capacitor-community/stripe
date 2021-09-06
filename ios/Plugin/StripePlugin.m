@@ -13,4 +13,7 @@ CAP_PLUGIN(StripePlugin, "Stripe",
            CAP_PLUGIN_METHOD(isApplePayAvailable, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(createApplePay, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(presentApplePay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(isGooglePayAvailable, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(createGooglePay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(presentGooglePay, CAPPluginReturnPromise);
 )

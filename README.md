@@ -91,7 +91,7 @@ import { Stripe } from '@capacitor-community/stripe';
 
 export async function initialize(): Promise<void> {
   Stripe.initialize({
-    publishableKey: "Your Publishable Key""",
+    publishableKey: "Your Publishable Key",
   });
 }
 ```
@@ -198,7 +198,7 @@ export async function present(): Promise<void> {
 
 With Apple Pay, you can make instant payments in a single flow. Please check settings: https://stripe.com/docs/apple-pay#merchantid
 
-#### 2.1. createApplePay
+#### 3.1. createApplePay
 
 You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
 Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=ios#add-server-endpoint
@@ -210,7 +210,7 @@ export async function createApplePay(): Promise<void> {
   /**
    * Connect to your backend endpoint, and get every key.
    */
-  const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+  const { paymentIntent } = await this.http.post<{
     paymentIntent: string;
   }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
 
@@ -227,9 +227,83 @@ export async function createApplePay(): Promise<void> {
 }
 ```
 
-#### 2.2. presentApplePay
+#### 3.2. presentApplePay
 
 present in `createApplePay` is single flow. You don't need to confirm method.
+
+```ts
+export async function present(): Promise<void> {
+  const result = await Stripe.presentApplePay();
+}
+```
+
+
+### 4. Google Pay
+
+With Google Pay, you can make instant payments in a single flow. Please check settings: https://stripe.com/docs/google-pay
+And in Android App, you need some settings.
+
+In file android/app/src/main/res/values/strings.xml add the following lines :
+```xml
+<string name="publishable_key">Your Publishable Key</string>
+<bool name="enable_google_pay">true</bool>
+<string name="country_code">US</string>
+<string name="merchant_display_name">Widget Store</string>
+<bool name="google_pay_is_testing">true</bool>
+```
+
+In file android/app/src/main/AndroidManifest.xml, add the following XML elements under <manifest><application> :
+```xml
+<meta-data
+  android:name="com.getcapacitor.community.stripe.publishable_key"
+  android:value="@string/publishable_key"/>
+
+<meta-data
+  android:name="com.getcapacitor.community.stripe.enable_google_pay"
+  android:value="@bool/enable_google_pay"/>
+
+<meta-data
+  android:name="com.google.android.gms.wallet.api.enabled"
+  android:value="true" />
+
+<meta-data
+  android:name="com.getcapacitor.community.stripe.country_code"
+  android:value="@string/country_code"/>
+
+<meta-data
+  android:name="com.getcapacitor.community.stripe.merchant_display_name"
+  android:value="@string/merchant_display_name"/>
+
+<meta-data
+  android:name="com.getcapacitor.community.stripe.google_pay_is_testing"
+  android:value="@bool/google_pay_is_testing"/>
+```
+
+#### 4.1. createGooglePay
+
+You should connect to your backend endpoint, and get every key. This is "not" function at this Plugin. So you can use `HTTPClient` , `Axios` , `Ajax` , and so on.
+Backend structure is here: https://stripe.com/docs/payments/accept-a-payment?platform=android#add-server-endpoint
+
+```ts
+import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
+
+export async function createGooglePay(): Promise<void> {
+  /**
+   * Connect to your backend endpoint, and get every key.
+   */
+  const { paymentIntent } = await this.http.post<{
+    paymentIntent: string;
+  }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+
+  await Stripe.createGooglePay({
+    paymentIntentClientSecret: paymentIntent,
+  });
+}
+```
+
+#### 4.2. presentGooglePay
+
+present in `createGooglePay` is single flow. You don't need to confirm method.
 
 ```ts
 export async function present(): Promise<void> {
@@ -251,6 +325,15 @@ export async function present(): Promise<void> {
 * [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted-)
 * [`addListener(ApplePayEventsEnum.Canceled, ...)`](#addlistenerapplepayeventsenumcanceled-)
 * [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed-)
+* [`isGooglePayAvailable()`](#isgooglepayavailable)
+* [`createGooglePay(...)`](#creategooglepay)
+* [`presentGooglePay()`](#presentgooglepay)
+* [`addListener(GooglePayEventsEnum.Loaded, ...)`](#addlistenergooglepayeventsenumloaded-)
+* [`addListener(GooglePayEventsEnum.FailedToLoad, ...)`](#addlistenergooglepayeventsenumfailedtoload-)
+* [`addListener(GooglePayEventsEnum.FailedToLoad, ...)`](#addlistenergooglepayeventsenumfailedtoload-)
+* [`addListener(GooglePayEventsEnum.Completed, ...)`](#addlistenergooglepayeventsenumcompleted-)
+* [`addListener(GooglePayEventsEnum.Canceled, ...)`](#addlistenergooglepayeventsenumcanceled-)
+* [`addListener(GooglePayEventsEnum.Failed, ...)`](#addlistenergooglepayeventsenumfailed-)
 * [`createPaymentFlow(...)`](#createpaymentflow)
 * [`presentPaymentFlow()`](#presentpaymentflow)
 * [`confirmPaymentFlow()`](#confirmpaymentflow)
@@ -414,6 +497,135 @@ addListener(eventName: ApplePayEventsEnum.Failed, listenerFunc: () => void) => P
 | ------------------ | ------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### isGooglePayAvailable()
+
+```typescript
+isGooglePayAvailable() => Promise<void>
+```
+
+--------------------
+
+
+### createGooglePay(...)
+
+```typescript
+createGooglePay(options: CreateGooglePayOption) => Promise<void>
+```
+
+| Param         | Type                                                                    |
+| ------------- | ----------------------------------------------------------------------- |
+| **`options`** | <code><a href="#creategooglepayoption">CreateGooglePayOption</a></code> |
+
+--------------------
+
+
+### presentGooglePay()
+
+```typescript
+presentGooglePay() => Promise<{ paymentResult: GooglePayResultInterface; }>
+```
+
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#googlepayresultinterface">GooglePayResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Loaded, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Completed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                          |
+| ------------------ | ----------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                    |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Canceled, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                         |
+| ------------------ | ---------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                   |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -716,6 +928,13 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 
+#### CreateGooglePayOption
+
+| Prop                            | Type                |
+| ------------------------------- | ------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code> |
+
+
 #### CreatePaymentFlowOption
 
 | Prop                            | Type                | Description                                                                                     |
@@ -737,6 +956,11 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 #### ApplePayResultInterface
 
 <code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a></code>
+
+
+#### GooglePayResultInterface
+
+<code><a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code>
 
 
 #### PaymentFlowResultInterface
@@ -761,6 +985,17 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | **`Completed`**    | <code>"applePayCompleted"</code>    |
 | **`Canceled`**     | <code>"applePayCanceled"</code>     |
 | **`Failed`**       | <code>"applePayFailed"</code>       |
+
+
+#### GooglePayEventsEnum
+
+| Members            | Value                                |
+| ------------------ | ------------------------------------ |
+| **`Loaded`**       | <code>"googlePayLoaded"</code>       |
+| **`FailedToLoad`** | <code>"googlePayFailedToLoad"</code> |
+| **`Completed`**    | <code>"googlePayCompleted"</code>    |
+| **`Canceled`**     | <code>"googlePayCanceled"</code>     |
+| **`Failed`**       | <code>"googlePayFailed"</code>       |
 
 
 #### PaymentFlowEventsEnum

@@ -33,6 +33,30 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <meta-data
+          android:name="com.google.android.gms.wallet.api.enabled"
+          android:value="true" />
+
+        <meta-data
+          android:name="com.getcapacitor.community.stripe.enable_google_pay"
+          android:value="@bool/enable_google_pay"/>
+
+        <meta-data
+          android:name="com.getcapacitor.community.stripe.publishable_key"
+          android:value="@string/publishable_key"/>
+
+        <meta-data
+          android:name="com.getcapacitor.community.stripe.country_code"
+          android:value="@string/country_code"/>
+
+        <meta-data
+          android:name="com.getcapacitor.community.stripe.merchant_display_name"
+          android:value="@string/merchant_display_name"/>
+
+        <meta-data
+          android:name="com.getcapacitor.community.stripe.google_pay_is_testing"
+          android:value="@bool/google_pay_is_testing"/>
     </application>
 
     <!-- Permissions -->
