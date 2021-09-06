@@ -2,7 +2,6 @@ package com.getcapacitor.community.stripe;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-
 import com.getcapacitor.Logger;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
@@ -50,8 +49,8 @@ public class StripePlugin extends Plugin {
     public void load() {
         try {
             ApplicationInfo appInfo = getContext()
-                    .getPackageManager()
-                    .getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+                .getPackageManager()
+                .getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
 
             boolean enableGooglePay = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.enable_google_pay");
             if (enableGooglePay) {
@@ -70,12 +69,13 @@ public class StripePlugin extends Plugin {
                 }
 
                 this.googlePayExecutor.googlePayLauncher =
-                        new GooglePayLauncher(
-                                getActivity(),
-                                new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
-                                (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
-                                (@NotNull GooglePayLauncher.Result result) -> this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
-                        );
+                    new GooglePayLauncher(
+                        getActivity(),
+                        new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
+                        (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
+                        (@NotNull GooglePayLauncher.Result result) ->
+                            this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
+                    );
             } else {
                 Logger.info("Plugin didn't prepare Google Pay.");
             }
