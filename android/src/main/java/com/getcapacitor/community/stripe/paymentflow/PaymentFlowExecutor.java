@@ -57,9 +57,9 @@ public class PaymentFlowExecutor extends Executor {
             new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
         );
 
-        Boolean useGooglePay = call.getBoolean("useGooglePay", false);
+        Boolean enableGooglePay = call.getBoolean("enableGooglePay", false);
 
-        if (useGooglePay) {
+        if (enableGooglePay) {
             Boolean GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false);
 
             PaymentSheet.GooglePayConfiguration.Environment environment = PaymentSheet.GooglePayConfiguration.Environment.Production;
