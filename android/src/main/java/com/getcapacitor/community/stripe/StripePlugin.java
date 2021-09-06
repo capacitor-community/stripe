@@ -53,31 +53,34 @@ public class StripePlugin extends Plugin {
                     .getPackageManager()
                     .getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
 
-            publishableKey = appInfo.metaData.getString("com.getcapacitor.community.stripe.publishable_key");
-            PaymentConfiguration.init(getContext(), publishableKey);
+            boolean enableGooglePay = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.enable_google_pay");
+            if (enableGooglePay) {
+                publishableKey = appInfo.metaData.getString("com.getcapacitor.community.stripe.publishable_key");
+                PaymentConfiguration.init(getContext(), publishableKey);
 
-            String countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
-            String displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
-            boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing");
+                String countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
+                String displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
+                boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing");
 
-            GooglePayEnvironment googlePayEnvironment;
-            if (isTest) {
-                googlePayEnvironment = GooglePayEnvironment.Test;
-            } else {
-                googlePayEnvironment = GooglePayEnvironment.Production;
+                GooglePayEnvironment googlePayEnvironment;
+                if (isTest) {
+                    googlePayEnvironment = GooglePayEnvironment.Test;
+                } else {
+                    googlePayEnvironment = GooglePayEnvironment.Production;
+                }
+
+                this.googlePayExecutor.googlePayLauncher =
+                        new GooglePayLauncher(
+                                getActivity(),
+                                new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
+                                (boolean isReady) -> {
+                                    this.googlePayExecutor.isAvailable = isReady;
+                                },
+                                (@NotNull GooglePayLauncher.Result result) -> {
+                                    this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result);
+                                }
+                        );
             }
-
-            this.googlePayExecutor.googlePayLauncher =
-                    new GooglePayLauncher(
-                            getActivity(),
-                            new GooglePayLauncher.Config(googlePayEnvironment, countryCode, displayName),
-                            (boolean isReady) -> {
-                                this.googlePayExecutor.isAvailable = isReady;
-                            },
-                            (@NotNull GooglePayLauncher.Result result) -> {
-                                this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result);
-                            }
-                    );
         } catch (Exception ignored) {
             Logger.info("Plugin didn't prepare Google Pay.");
         }

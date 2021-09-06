@@ -39,6 +39,10 @@
           android:value="true" />
 
         <meta-data
+          android:name="com.getcapacitor.community.stripe.enable_google_pay"
+          android:value="@bool/enable_google_pay"/>
+
+        <meta-data
           android:name="com.getcapacitor.community.stripe.publishable_key"
           android:value="@string/publishable_key"/>
 
