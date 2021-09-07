@@ -24,7 +24,7 @@
     "@capacitor/android": "^3.1.1",
     "@capacitor/core": "3.0.0",
     "@ionic/angular": "^5.5.2",
-    "@stripe-elements/stripe-elements": "0.0.3",
+    "@stripe-elements/stripe-elements": "^1.0.0-canary",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.4"
