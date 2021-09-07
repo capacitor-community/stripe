@@ -116,9 +116,17 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-sheet');
 
     this.paymentSheet.publishableKey = this.publishableKey;
-    this.paymentSheet.intentClientSecret =
-      options.paymentIntentClientSecret;
-    this.paymentSheet.intentType = "setup";
+
+    // eslint-disable-next-line no-prototype-builtins
+    if (options.hasOwnProperty('paymentIntentClientSecret')) {
+      this.paymentSheet.intentType = "payment";
+      this.paymentSheet.intentClientSecret =
+        options.paymentIntentClientSecret;
+    } else {
+      this.paymentSheet.intentType = "setup";
+      this.paymentSheet.intentClientSecret =
+        options.setupIntentClientSecret;
+    }
 
     this.notifyListeners(PaymentFlowEventsEnum.Loaded, null);
   }
@@ -143,14 +151,19 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       detail: FormSubmitEvent;
     };
 
+    const { token } = await stripe.createToken(cardNumber);
+    if (token === undefined || token.card === undefined) {
+      throw new Error();
+    }
+
     this.flowStripe = stripe;
     this.flowCardNumber = cardNumber;
 
     this.notifyListeners(PaymentFlowEventsEnum.Created, {
-      cardNumber: '',
+      cardNumber: token.card.last4,
     });
     return {
-      cardNumber: '',
+      cardNumber: token.card.last4,
     };
   }
 
