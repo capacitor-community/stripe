@@ -13,6 +13,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "davidme-stripe",
+      "name": "davidme-stripe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/52758633?v=4",
+      "profile": "https://stripe.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
