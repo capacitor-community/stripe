@@ -117,6 +117,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-sheet');
 
     this.paymentSheet.publishableKey = this.publishableKey;
+    this.paymentSheet.applicationName = "@capacitor-community/stripe"
 
     // eslint-disable-next-line no-prototype-builtins
     if (options.hasOwnProperty('paymentIntentClientSecret')) {
