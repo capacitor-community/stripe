@@ -13,7 +13,7 @@
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/dw/@capacitor-community/stripe?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/v/@capacitor-community/stripe?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-<a href="#contributors-"><img src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square" /></a>
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
@@ -1039,6 +1039,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/metalllus"><img src="https://avatars.githubusercontent.com/u/48943750?v=4?s=100" width="100px;" alt=""/><br /><sub><b>metalllus</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=metalllus" title="Code">💻</a></td>
+    <td align="center"><a href="https://stripe.com"><img src="https://avatars.githubusercontent.com/u/52758633?v=4?s=100" width="100px;" alt=""/><br /><sub><b>davidme-stripe</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=davidme-stripe" title="Code">💻</a></td>
   </tr>
 </table>
 
