@@ -79,6 +79,6 @@
     }
   },
   "dependencies": {
-    "@stripe-elements/stripe-elements": "0.0.3"
+    "@stripe-elements/stripe-elements": "^1.0.0"
   }
 }
