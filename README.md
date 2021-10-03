@@ -1040,6 +1040,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/metalllus"><img src="https://avatars.githubusercontent.com/u/48943750?v=4?s=100" width="100px;" alt=""/><br /><sub><b>metalllus</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=metalllus" title="Code">💻</a></td>
     <td align="center"><a href="https://wp-kyoto.net/"><img src="https://avatars.githubusercontent.com/u/6883571?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hidetaka Okamoto</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=hideokamoto" title="Code">💻</a></td>
+    <td align="center"><a href="https://stripe.com"><img src="https://avatars.githubusercontent.com/u/52758633?v=4?s=100" width="100px;" alt=""/><br /><sub><b>davidme-stripe</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=davidme-stripe" title="Code">💻</a></td>
   </tr>
 </table>
 
