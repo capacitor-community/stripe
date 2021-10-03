@@ -24,6 +24,8 @@ public class StripePlugin extends Plugin {
 
     private MetaData metaData;
 
+    private static final String APP_INFO_NAME = "@capacitor-community/stripe";
+
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
         this::getContext,
         this::getActivity,
@@ -51,6 +53,7 @@ public class StripePlugin extends Plugin {
         if (metaData.enableGooglePay) {
             this.publishableKey = metaData.publishableKey;
             PaymentConfiguration.init(getContext(), metaData.publishableKey);
+            Stripe.setAppInfo(AppInfo.create(APP_INFO_NAME));
 
             this.googlePayExecutor.googlePayLauncher =
                 new GooglePayLauncher(
@@ -95,6 +98,7 @@ public class StripePlugin extends Plugin {
                     return;
                 }
                 PaymentConfiguration.init(getContext(), publishableKey);
+                Stripe.setAppInfo(AppInfo.create(APP_INFO_NAME));
             } else {
                 Logger.info("PaymentConfiguration.init was run at load");
             }
