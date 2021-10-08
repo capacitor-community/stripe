@@ -1,36 +1,108 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+## [v1.1.0](https://github.com/capacitor-community/stripe/tree/v1.1.0) (2020-11-27)
 
-### [0.3.2](https://github.com/capacitor-community/stripe/compare/v0.3.1...v0.3.2) (2019-11-27)
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v1.0.4...v1.1.0)
 
-### [0.3.1](https://github.com/capacitor-community/stripe/compare/v0.3.0...v0.3.1) (2019-11-27)
+**Closed issues:**
+
+- Type errors in ios build [\#31](https://github.com/capacitor-community/stripe/issues/31)
+
+**Merged pull requests:**
+
+- Upgrade stripe 21 [\#34](https://github.com/capacitor-community/stripe/pull/34) ([bryce13950](https://github.com/bryce13950))
+
+## [v1.0.4](https://github.com/capacitor-community/stripe/tree/v1.0.4) (2020-11-25)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v1.0.3...v1.0.4)
+
+## [v1.0.3](https://github.com/capacitor-community/stripe/tree/v1.0.3) (2020-11-17)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v1.0.2...v1.0.3)
+
+**Closed issues:**
+
+- Cannot install via NPM [\#30](https://github.com/capacitor-community/stripe/issues/30)
+
+## [v1.0.2](https://github.com/capacitor-community/stripe/tree/v1.0.2) (2020-11-16)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v1.0.1...v1.0.2)
+
+## [v1.0.1](https://github.com/capacitor-community/stripe/tree/v1.0.1) (2020-11-16)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v1.0.0...v1.0.1)
+
+## [v1.0.0](https://github.com/capacitor-community/stripe/tree/v1.0.0) (2020-11-16)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v1.0.0-beta.2...v1.0.0)
+
+**Fixed bugs:**
+
+- Creating a custom session is failing on Android [\#13](https://github.com/capacitor-community/stripe/issues/13)
+
+**Closed issues:**
+
+- Best practice to get card input from user [\#26](https://github.com/capacitor-community/stripe/issues/26)
+- \[Help\]Not able to get the response in code from Stripe [\#24](https://github.com/capacitor-community/stripe/issues/24)
+- On IOS  `confirmPaymentIntent` doesn't return a response. [\#19](https://github.com/capacitor-community/stripe/issues/19)
+
+**Merged pull requests:**
+
+- Cap template [\#29](https://github.com/capacitor-community/stripe/pull/29) ([ihadeed](https://github.com/ihadeed))
+- Fix/ios confirm pi [\#27](https://github.com/capacitor-community/stripe/pull/27) ([ihadeed](https://github.com/ihadeed))
+- feat\(Android\): add support for billing details at confirmPaymentIntent [\#22](https://github.com/capacitor-community/stripe/pull/22) ([gerard2p](https://github.com/gerard2p))
+
+## [v1.0.0-beta.2](https://github.com/capacitor-community/stripe/tree/v1.0.0-beta.2) (2020-07-10)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/1.0.0-beta.0...v1.0.0-beta.2)
+
+**Closed issues:**
+
+- Google pay issues [\#5](https://github.com/capacitor-community/stripe/issues/5)
+- Stripe with Google pay and Apple pay [\#1](https://github.com/capacitor-community/stripe/issues/1)
+
+**Merged pull requests:**
+
+- refactor\(definitions\): make redirectUrl optional [\#12](https://github.com/capacitor-community/stripe/pull/12) ([danielsogl](https://github.com/danielsogl))
+
+## [1.0.0-beta.0](https://github.com/capacitor-community/stripe/tree/1.0.0-beta.0) (2020-06-18)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v0.3.2...1.0.0-beta.0)
+
+**Closed issues:**
+
+- Crash on user cancelling Google Pay native screen [\#10](https://github.com/capacitor-community/stripe/issues/10)
+- PaymentIntent missing from iOS? [\#8](https://github.com/capacitor-community/stripe/issues/8)
+- Name param doesnts return from Stripe.createCardToken method [\#6](https://github.com/capacitor-community/stripe/issues/6)
+- How to check whether google pay or apple pay supported or not? [\#4](https://github.com/capacitor-community/stripe/issues/4)
+- you must provide a valid key [\#3](https://github.com/capacitor-community/stripe/issues/3)
+- Passing account holder name to Stripe [\#2](https://github.com/capacitor-community/stripe/issues/2)
+
+**Merged pull requests:**
+
+- Upgrade [\#11](https://github.com/capacitor-community/stripe/pull/11) ([ihadeed](https://github.com/ihadeed))
+- fixes no token returned from payWithGooglePay [\#9](https://github.com/capacitor-community/stripe/pull/9) ([bolekro](https://github.com/bolekro))
+
+## [v0.3.2](https://github.com/capacitor-community/stripe/tree/v0.3.2) (2019-11-27)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v0.3.1...v0.3.2)
+
+## [v0.3.1](https://github.com/capacitor-community/stripe/tree/v0.3.1) (2019-11-27)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v0.3.0...v0.3.1)
+
+## [v0.3.0](https://github.com/capacitor-community/stripe/tree/v0.3.0) (2019-11-27)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v0.2.0...v0.3.0)
+
+## [v0.2.0](https://github.com/capacitor-community/stripe/tree/v0.2.0) (2019-11-07)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/v0.1.0...v0.2.0)
+
+## [v0.1.0](https://github.com/capacitor-community/stripe/tree/v0.1.0) (2019-11-07)
+
+[Full Changelog](https://github.com/capacitor-community/stripe/compare/f244fb2409064299b706855dfb590597ffaf0811...v0.1.0)
 
 
-### Bug Fixes
 
-* **web:** update apple pay and google pay implementations ([bb9ba8b](https://github.com/capacitor-community/stripe/commit/bb9ba8bdc6fad7cc42fbdfc787ebdb6a9e6d13be))
-
-## [0.3.0](https://github.com/capacitor-community/stripe/compare/v0.2.0...v0.3.0) (2019-11-27)
-
-
-### ⚠ BREAKING CHANGES
-
-* **android:** plugin must be imported as Stripe
-* plugin is now accessbile via Stripe instead of StripePlugin
-* plugin must be imported as Stripe instead of StripePlugin
-
-### Features
-
-* **android:** update Google Pay options handling ([5dd04a9](https://github.com/capacitor-community/stripe/commit/5dd04a9b4cf99c83c8d590f3a9ca80218b08b753))
-* **web:** implement customer session methods ([68a47db](https://github.com/capacitor-community/stripe/commit/68a47db6c3d1fd8c028473309fccd6540c306231))
-
-
-### Bug Fixes
-
-* **web:** remove 'no-cors' fetch config ([39fb3c9](https://github.com/capacitor-community/stripe/commit/39fb3c91fbeb0febaaacc28c7b0042234eb5d673))
-
-
-* **android:** update name to Stripe ([ca814aa](https://github.com/capacitor-community/stripe/commit/ca814aa12305e439b205b182eaa411921b8026be))
-* update ios headers + name ([a76bbf0](https://github.com/capacitor-community/stripe/commit/a76bbf0a8632c5eeccf49c27918d8cb7713e248d))
-* rename plugin from StripePlugin to Stripe ([8aa8bb2](https://github.com/capacitor-community/stripe/commit/8aa8bb2f18fe8e4d79a0e084350d9c7cda9856bd))
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*

@@ -121,13 +121,25 @@ class Stripe : Plugin() {
         val currency = call.getString("currency")
         val routingNumber = call.getString("routing_number")
 
+        if (country.isNullOrBlank() || currency.isNullOrBlank() || routingNumber.isNullOrBlank()) {
+            call.reject("Missing required information")
+            return
+        }
+
         var stripeAccHolder = BankAccountTokenParams.Type.Individual
 
         if (accountHolderType == "company") {
             stripeAccHolder = BankAccountTokenParams.Type.Company
         }
 
-        val bankAccount = BankAccountTokenParams(country, currency, accountNumber, stripeAccHolder, accountHolderName, routingNumber)
+        val bankAccount = BankAccountTokenParams(
+            country!!,
+            currency!!,
+            accountNumber!!,
+            stripeAccHolder,
+            accountHolderName,
+            routingNumber
+        )
 
         val idempotencyKey = call.getString("idempotencyKey")
         val stripeAccountId = call.getString("stripeAccountId")
@@ -156,7 +168,12 @@ class Stripe : Plugin() {
             }
         }
 
-        stripeInstance.createBankAccountToken(bankAccount, idempotencyKey, stripeAccountId, callback)
+        stripeInstance.createBankAccountToken(
+            bankAccount,
+            idempotencyKey,
+            stripeAccountId,
+            callback
+        )
     }
 
     @PluginMethod
@@ -187,23 +204,42 @@ class Stripe : Plugin() {
         val stripeAccountId = call.getString("stripeAccountId")
 
         when (sourceType) {
-            0 -> sourceParams = SourceParams.createThreeDSecureParams(amount, currency, returnURL, card)
+            0 -> sourceParams =
+                SourceParams.createThreeDSecureParams(amount, currency!!, returnURL!!, card!!)
 
-            1 -> sourceParams = SourceParams.createGiropayParams(amount, name, returnURL, statementDescriptor)
+            1 -> sourceParams =
+                SourceParams.createGiropayParams(amount, name!!, returnURL!!, statementDescriptor)
 
-            2 -> sourceParams = SourceParams.createIdealParams(amount, name, returnURL, statementDescriptor, bank)
+            2 -> sourceParams =
+                SourceParams.createIdealParams(amount, name, returnURL!!, statementDescriptor, bank)
 
-            3 -> sourceParams = SourceParams.createSepaDebitParams(name, iban, addressLine1, city, zip, country)
+            3 -> sourceParams = SourceParams.createSepaDebitParams(
+                name!!,
+                iban!!,
+                addressLine1,
+                city!!,
+                zip!!,
+                country!!
+            )
 
-            4 -> sourceParams = SourceParams.createSofortParams(amount, returnURL, country, statementDescriptor)
+            4 -> sourceParams =
+                SourceParams.createSofortParams(amount, returnURL!!, country!!, statementDescriptor)
 
-            5 -> sourceParams = SourceParams.createAlipaySingleUseParams(amount, currency, name, email, returnURL)
+            5 -> sourceParams = SourceParams.createAlipaySingleUseParams(
+                amount,
+                currency!!,
+                name,
+                email,
+                returnURL!!
+            )
 
-            6 -> sourceParams = SourceParams.createAlipayReusableParams(currency, name, email, returnURL)
+            6 -> sourceParams =
+                SourceParams.createAlipayReusableParams(currency!!, name, email, returnURL!!)
 
-            7 -> sourceParams = SourceParams.createP24Params(amount, currency, name, email, returnURL)
+            7 -> sourceParams =
+                SourceParams.createP24Params(amount, currency!!, name, email!!, returnURL!!)
 
-            8 -> sourceParams = SourceParams.createVisaCheckoutParams(callId)
+            8 -> sourceParams = SourceParams.createVisaCheckoutParams(callId!!)
 
             else -> return
         }
@@ -232,7 +268,7 @@ class Stripe : Plugin() {
         }
 
         val legalEntity = call.getObject("legalEntity")
-        val tosShownAndAccepted = call.getBoolean("tosShownAndAccepted")
+        val tosShownAndAccepted = call.getBoolean("tosShownAndAccepted", false)!!
 
         val idempotencyKey = call.getString("idempotencyKey")
         val stripeAccountId = call.getString("stripeAccountId")
@@ -254,7 +290,7 @@ class Stripe : Plugin() {
         var verifyBack: String? = null;
 
         if (legalEntity.has("verification")) {
-            val verifyObj = legalEntity.getJSObject("verification")
+            val verifyObj = legalEntity.getJSObject("verification")!!
             verifyFront = verifyObj.getString("front")
             verifyBack = verifyObj.getString("back")
         }
@@ -265,12 +301,13 @@ class Stripe : Plugin() {
         when (legalEntity.getString("businessType")) {
             "company" -> {
                 val builder = AccountParams.BusinessTypeParams.Company.Builder()
-                        .setAddress(address)
-                        .setName(legalEntity.getString("name"))
-                        .setPhone(legalEntity.getString("phone"))
+                    .setAddress(address)
+                    .setName(legalEntity.getString("name"))
+                    .setPhone(legalEntity.getString("phone"))
 
                 if (hasVerify) {
-                    val verifyDoc = AccountParams.BusinessTypeParams.Company.Document(verifyFront, verifyBack)
+                    val verifyDoc =
+                        AccountParams.BusinessTypeParams.Company.Document(verifyFront, verifyBack)
                     val verify = AccountParams.BusinessTypeParams.Company.Verification(verifyDoc)
                     builder.setVerification(verify)
                 }
@@ -280,17 +317,20 @@ class Stripe : Plugin() {
             }
             "individual" -> {
                 val builder = AccountParams.BusinessTypeParams.Individual.Builder()
-                        .setFirstName(legalEntity.getString("first_name"))
-                        .setLastName(legalEntity.getString("last_name"))
-                        .setEmail(legalEntity.getString("email"))
-                        .setGender(legalEntity.getString("gender"))
-                        .setIdNumber(legalEntity.getString("id_number"))
-                        .setPhone(legalEntity.getString("phone"))
-                        .setSsnLast4(legalEntity.getString("ssn_last4"))
-                        .setAddress(address)
+                    .setFirstName(legalEntity.getString("first_name"))
+                    .setLastName(legalEntity.getString("last_name"))
+                    .setEmail(legalEntity.getString("email"))
+                    .setGender(legalEntity.getString("gender"))
+                    .setIdNumber(legalEntity.getString("id_number"))
+                    .setPhone(legalEntity.getString("phone"))
+                    .setSsnLast4(legalEntity.getString("ssn_last4"))
+                    .setAddress(address)
 
                 if (hasVerify) {
-                    val verifyDoc = AccountParams.BusinessTypeParams.Individual.Document(verifyFront, verifyBack)
+                    val verifyDoc = AccountParams.BusinessTypeParams.Individual.Document(
+                        verifyFront,
+                        verifyBack
+                    )
                     val verify = AccountParams.BusinessTypeParams.Individual.Verification(verifyDoc)
                     builder.setVerification(verify)
                 }
@@ -327,7 +367,7 @@ class Stripe : Plugin() {
             return
         }
 
-        val pii = call.getString("pii")
+        val pii = call.getString("pii")!!
         val idempotencyKey = call.getString("idempotencyKey")
         val stripeAccountId = call.getString("stripeAccountId")
         val callback = object : ApiResultCallback<Token> {
@@ -355,40 +395,57 @@ class Stripe : Plugin() {
         val saveMethod = call.getBoolean("saveMethod", false)
         val redirectUrl = call.getString("redirectUrl", null)
         val stripeAccountId = call.getString("stripeAccountId")
-        val session = if(call.getString("setupFutureUsage") == "on_session")  ConfirmPaymentIntentParams.SetupFutureUsage.OnSession  else ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
-        var setupFutureUsage = if(saveMethod!!) session else null
+        val session =
+            if (call.getString("setupFutureUsage") == "on_session") ConfirmPaymentIntentParams.SetupFutureUsage.OnSession else ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
+        val setupFutureUsage = if (saveMethod!!) session else null
         val params: ConfirmPaymentIntentParams
 
         when {
             call.hasOption("card") -> {
-                var card = call.getObject("card")
-                var address = Address.Builder()
-                        .setLine1(card.optString("address_line1"))
-                        .setLine2(card.optString("address_line2"))
-                        .setCity(card.optString("address_city"))
-                        .setState(card.optString("address_state"))
-                        .setCountry(card.optString("address_country"))
-                        .setPostalCode(card.optString("address_zip"))
-                        .build()
-                var billing_details = PaymentMethod.BillingDetails().toBuilder()
-                        .setEmail(card.optString("email"))
-                        .setName(card.optString("name"))
-                        .setPhone(card.optString("phone"))
-                        .setAddress(address)
-                        .build()
+                val card = call.getObject("card")
+                val address = Address.Builder()
+                    .setLine1(card.optString("address_line1"))
+                    .setLine2(card.optString("address_line2"))
+                    .setCity(card.optString("address_city"))
+                    .setState(card.optString("address_state"))
+                    .setCountry(card.optString("address_country"))
+                    .setPostalCode(card.optString("address_zip"))
+                    .build()
+                val billing_details = PaymentMethod.BillingDetails().toBuilder()
+                    .setEmail(card.optString("email"))
+                    .setName(card.optString("name"))
+                    .setPhone(card.optString("phone"))
+                    .setAddress(address)
+                    .build()
                 val cardParams = buildCard(card)
-                        .build()
-                        .toPaymentMethodParamsCard()
+                    .build()
+                    .toPaymentMethodParamsCard()
                 val pmCreateParams = PaymentMethodCreateParams.create(cardParams, billing_details)
-                params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmCreateParams, clientSecret, redirectUrl, saveMethod!!, setupFutureUsage=setupFutureUsage)
+                params = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(
+                    pmCreateParams,
+                    clientSecret!!,
+                    redirectUrl,
+                    saveMethod,
+                    setupFutureUsage = setupFutureUsage
+                )
             }
 
             call.hasOption("paymentMethodId") -> {
-                params = ConfirmPaymentIntentParams.createWithPaymentMethodId(call.getString("paymentMethodId"), clientSecret, redirectUrl, saveMethod!!)
+                params = ConfirmPaymentIntentParams.createWithPaymentMethodId(
+                    call.getString("paymentMethodId")!!,
+                    clientSecret!!,
+                    redirectUrl,
+                    saveMethod
+                )
             }
 
             call.hasOption("sourceId") -> {
-                params = ConfirmPaymentIntentParams.createWithSourceId(call.getString("sourceId"), clientSecret, redirectUrl, saveMethod!!)
+                params = ConfirmPaymentIntentParams.createWithSourceId(
+                    call.getString("sourceId")!!,
+                    clientSecret!!,
+                    redirectUrl!!,
+                    saveMethod
+                )
             }
 
             call.hasOption("googlePayOptions") -> {
@@ -396,8 +453,15 @@ class Stripe : Plugin() {
                 val cb = object : GooglePayCallback() {
                     override fun onSuccess(res: PaymentData) {
                         try {
-                            val pmParams = PaymentMethodCreateParams.createFromGooglePay(JSObject(res.toJson()))
-                            val confirmParams = ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(pmParams, clientSecret, redirectUrl, saveMethod)
+                            val pmParams =
+                                PaymentMethodCreateParams.createFromGooglePay(JSObject(res.toJson()))
+                            val confirmParams =
+                                ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(
+                                    pmParams,
+                                    clientSecret!!,
+                                    redirectUrl,
+                                    saveMethod
+                                )
                             stripeInstance.confirmPayment(activity, confirmParams, stripeAccountId)
                         } catch (e: JSONException) {
                             savedCall?.error("unable to parse json: " + e.localizedMessage, e)
@@ -422,7 +486,7 @@ class Stripe : Plugin() {
             }
 
             else -> {
-                params = ConfirmPaymentIntentParams.create(clientSecret, redirectUrl)
+                params = ConfirmPaymentIntentParams.create(clientSecret!!, redirectUrl)
             }
         }
 
@@ -437,7 +501,7 @@ class Stripe : Plugin() {
             return
         }
 
-        val clientSecret = call.getString("clientSecret")
+        val clientSecret = call.getString("clientSecret")!!
         val redirectUrl = call.getString("redirectUrl")
 
         val params: ConfirmSetupIntentParams
@@ -451,11 +515,16 @@ class Stripe : Plugin() {
             }
 
             call.hasOption("paymentMethodId") -> {
-                params = ConfirmSetupIntentParams.create(call.getString("paymentMethodId"), clientSecret, redirectUrl)
+                params = ConfirmSetupIntentParams.create(
+                    call.getString("paymentMethodId")!!,
+                    clientSecret,
+                    redirectUrl
+                )
             }
 
             else -> {
-                params = ConfirmSetupIntentParams.createWithoutPaymentMethod(clientSecret, redirectUrl)
+                params =
+                    ConfirmSetupIntentParams.createWithoutPaymentMethod(clientSecret, redirectUrl)
             }
         }
 
@@ -470,15 +539,15 @@ class Stripe : Plugin() {
         PaymentConfiguration.init(context, publishableKey)
 
         val activ = PaymentMethodsActivityStarter.Args.Builder()
-                .setPaymentConfiguration(PaymentConfiguration.getInstance(context))
-                .setPaymentMethodTypes(listOf(PaymentMethod.Type.Card))
-                .setBillingAddressFields(BillingAddressFields.PostalCode)
-                .setPaymentConfiguration(PaymentConfiguration.getInstance(context))
-                .setIsPaymentSessionActive(true)
-                .setShouldShowGooglePay(true)
-                .setCanDeletePaymentMethods(true)
-                .setIsPaymentSessionActive(false)
-                .build()
+            .setPaymentConfiguration(PaymentConfiguration.getInstance(context))
+            .setPaymentMethodTypes(listOf(PaymentMethod.Type.Card))
+            .setBillingAddressFields(BillingAddressFields.PostalCode)
+            .setPaymentConfiguration(PaymentConfiguration.getInstance(context))
+            .setIsPaymentSessionActive(true)
+            .setShouldShowGooglePay(true)
+            .setCanDeletePaymentMethods(true)
+            .setIsPaymentSessionActive(false)
+            .build()
 
         PaymentMethodsActivityStarter(activity).startForResult(activ)
 
@@ -501,11 +570,11 @@ class Stripe : Plugin() {
         val req = GooglePayDummyRequest()
 
         paymentsClient.isReadyToPay(req)
-                .addOnCompleteListener { task ->
-                    val obj = JSObject()
-                    obj.putOpt("available", task.isSuccessful)
-                    call.resolve(obj)
-                }
+            .addOnCompleteListener { task ->
+                val obj = JSObject()
+                obj.putOpt("available", task.isSuccessful)
+                call.resolve(obj)
+            }
     }
 
     @PluginMethod
@@ -578,8 +647,8 @@ class Stripe : Plugin() {
         }
 
         customerSession!!.getPaymentMethods(
-                PaymentMethod.Type.Card,
-                StripePaymentMethodsListener(callback = callback)
+            PaymentMethod.Type.Card,
+            StripePaymentMethodsListener(callback = callback)
         )
     }
 
@@ -590,22 +659,29 @@ class Stripe : Plugin() {
         }
 
         val sourceId = call.getString("sourceId")
-        val type = call.getString("type", "card")
+        val type = call.getString("type", "card")!!
 
         if (sourceId == null || sourceId.isEmpty()) {
             call.reject("You must provide a value for sourceId")
             return
         }
 
-        customerSession!!.setCustomerDefaultSource(sourceId, type, object : CustomerSession.CustomerRetrievalListener {
-            override fun onCustomerRetrieved(customer: Customer) {
-                customerPaymentMethods(call)
-            }
+        customerSession!!.setCustomerDefaultSource(
+            sourceId,
+            type,
+            object : CustomerSession.CustomerRetrievalListener {
+                override fun onCustomerRetrieved(customer: Customer) {
+                    customerPaymentMethods(call)
+                }
 
-            override fun onError(errorCode: Int, errorMessage: String, stripeError: StripeError?) {
-                call.reject(errorMessage, java.lang.Exception(errorMessage))
-            }
-        })
+                override fun onError(
+                    errorCode: Int,
+                    errorMessage: String,
+                    stripeError: StripeError?
+                ) {
+                    call.reject(errorMessage, java.lang.Exception(errorMessage))
+                }
+            })
     }
 
     @PluginMethod
@@ -615,7 +691,7 @@ class Stripe : Plugin() {
         }
 
         val sourceId = call.getString("sourceId")
-        val type = call.getString("type", "card")
+        val type = call.getString("type", "card")!!
 
         if (sourceId == null) {
             call.reject("you must provide a sourceId")
@@ -741,10 +817,16 @@ class Stripe : Plugin() {
     override fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.handleOnActivityResult(requestCode, resultCode, data)
 
-        Log.d(TAG, "handleOnActivityResult called with request code: $requestCode and resultCode: $resultCode")
+        Log.d(
+            TAG,
+            "handleOnActivityResult called with request code: $requestCode and resultCode: $resultCode"
+        )
 
         if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
-            Log.d(TAG, "requestCode matches GooglePay, forwarding data to handleGooglePayActivityResult")
+            Log.d(
+                TAG,
+                "requestCode matches GooglePay, forwarding data to handleGooglePayActivityResult"
+            )
             handleGooglePayActivityResult(resultCode, data)
             return
         }
@@ -834,9 +916,9 @@ class Stripe : Plugin() {
             googlePayCallback = callback
 
             AutoResolveHelper.resolveTask(
-                    paymentsClient.loadPaymentData(req),
-                    activity,
-                    LOAD_PAYMENT_DATA_REQUEST_CODE
+                paymentsClient.loadPaymentData(req),
+                activity,
+                LOAD_PAYMENT_DATA_REQUEST_CODE
             )
         } catch (e: JSONException) {
             Log.e(TAG, "Failed to parse json object", e)
