@@ -12,9 +12,6 @@
 <br>
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/dw/@capacitor-community/stripe?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/v/@capacitor-community/stripe?style=flat-square" /></a>
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-<a href="#contributors-"><img src="https://img.shields.io/badge/all%20contributors-3-orange?style=flat-square" /></a>
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
 ## Maintainers
@@ -24,6 +21,13 @@
 | Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) |  |
 | Ibby Hadeed | [ihadeed](https://github.com/ihadeed) | |
 | Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | RELATION DESIGN LABO, GENERAL INC. ASSOCIATION |
+
+## Contributors ✨
+<a href="https://github.com/capacitor-community/stripe/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=capacitor-community/stripe" />
+</a>
+
+Made with [contributors-img](https://contrib.rocks).
 
 ## Demo
 
@@ -1029,37 +1033,3 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 ## License
 
 @capacitor-community/stripe is [MIT licensed](./LICENSE).
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/metalllus"><img src="https://avatars.githubusercontent.com/u/48943750?v=4?s=100" width="100px;" alt=""/><br /><sub><b>metalllus</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=metalllus" title="Code">💻</a></td>
-    <td align="center"><a href="https://wp-kyoto.net/"><img src="https://avatars.githubusercontent.com/u/6883571?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hidetaka Okamoto</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=hideokamoto" title="Code">💻</a></td>
-    <td align="center"><a href="https://stripe.com"><img src="https://avatars.githubusercontent.com/u/52758633?v=4?s=100" width="100px;" alt=""/><br /><sub><b>davidme-stripe</b></sub></a><br /><a href="https://github.com/capacitor-community/stripe/commits?author=davidme-stripe" title="Code">💻</a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-  </tr>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
