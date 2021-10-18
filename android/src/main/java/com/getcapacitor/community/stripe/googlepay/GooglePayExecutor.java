@@ -9,24 +9,34 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowEvents;
 import com.google.android.gms.common.util.BiConsumer;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
+import com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncher;
+
+
 import org.jetbrains.annotations.NotNull;
 
 public class GooglePayExecutor extends Executor {
 
-    public GooglePayLauncher googlePayLauncher;
+    public GooglePayPaymentMethodLauncher googlePayPaymentMethodLauncher;
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
     public boolean isAvailable;
+    private Gson gson;
 
     public GooglePayExecutor(
-        Supplier<Context> contextSupplier,
-        Supplier<Activity> activitySupplier,
-        BiConsumer<String, JSObject> notifyListenersFunction,
-        String pluginLogTag
+            Supplier<Context> contextSupplier,
+            Supplier<Activity> activitySupplier,
+            BiConsumer<String, JSObject> notifyListenersFunction,
+            String pluginLogTag
     ) {
         super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "GooglePayExecutor");
         this.contextSupplier = contextSupplier;
+        this.gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
     }
 
     public void isGooglePayAvailable(final PluginCall call) {
@@ -50,22 +60,28 @@ public class GooglePayExecutor extends Executor {
     }
 
     public void presentGooglePay(final PluginCall call) {
-        this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
+//        this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
+        this.googlePayPaymentMethodLauncher.present("eur");
     }
 
-    public void onGooglePayResult(Bridge bridge, String callbackId, @NotNull GooglePayLauncher.Result result) {
+    public void onGooglePayPaymentMethodResult(Bridge bridge, String callbackId, @NotNull GooglePayPaymentMethodLauncher.Result result) {
         PluginCall call = bridge.getSavedCall(callbackId);
 
-        if (result instanceof GooglePayLauncher.Result.Completed) {
+        if (result instanceof GooglePayPaymentMethodLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.getWebEventName(), emptyObject);
-            call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Completed.getWebEventName()));
-        } else if (result instanceof GooglePayLauncher.Result.Canceled) {
+
+            String paymentMethodJson = gson.toJson(((GooglePayPaymentMethodLauncher.Result.Completed) result).getPaymentMethod());
+
+            call.resolve(new JSObject()
+                    .put("paymentResult", GooglePayEvents.Completed.getWebEventName())
+                    .put("paymentMethod", paymentMethodJson));
+        } else if (result instanceof GooglePayPaymentMethodLauncher.Result.Canceled) {
             notifyListenersFunction.accept(GooglePayEvents.Canceled.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Canceled.getWebEventName()));
-        } else if (result instanceof GooglePayLauncher.Result.Failed) {
+        } else if (result instanceof GooglePayPaymentMethodLauncher.Result.Failed) {
             notifyListenersFunction.accept(
-                GooglePayEvents.Failed.getWebEventName(),
-                new JSObject().put("error", ((GooglePayLauncher.Result.Failed) result).getError().getLocalizedMessage())
+                    GooglePayEvents.Failed.getWebEventName(),
+                    new JSObject().put("error", ((GooglePayPaymentMethodLauncher.Result.Failed) result).getError().getLocalizedMessage())
             );
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Failed.getWebEventName()));
         }
