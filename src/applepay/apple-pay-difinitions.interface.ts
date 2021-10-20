@@ -14,7 +14,6 @@ export interface ApplePayDefinitions {
 
   presentApplePay(): Promise<{
     paymentResult: ApplePayResultInterface;
-    data?: any;
   }>;
 
   addListener(

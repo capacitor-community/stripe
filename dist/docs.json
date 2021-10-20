@@ -53,9 +53,9 @@
       },
       {
         "name": "presentApplePay",
-        "signature": "() => Promise<{ paymentResult: ApplePayResultInterface; data?: any; }>",
+        "signature": "() => Promise<{ paymentResult: ApplePayResultInterface; }>",
         "parameters": [],
-        "returns": "Promise<{ paymentResult: ApplePayResultInterface; data?: any; }>",
+        "returns": "Promise<{ paymentResult: ApplePayResultInterface; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [
