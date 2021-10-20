@@ -86,7 +86,7 @@ extension ApplePayExecutor {
         if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
             switch status {
             case .success:
-                self.plugin?.notifyListeners(ApplePayEvents.Completed.rawValue, data: [:])
+                self.plugin?.notifyListeners(ApplePayEvents.Completed.rawValue, data: ["context" : context])
                 call.resolve(["paymentResult": ApplePayEvents.Completed.rawValue])
                 break
             case .error:
