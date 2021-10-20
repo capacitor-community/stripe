@@ -87,7 +87,7 @@ extension ApplePayExecutor {
             switch status {
             case .success:
                 self.plugin?.notifyListeners(ApplePayEvents.Completed.rawValue, data: [:])
-                call.resolve(["paymentResult": ApplePayEvents.Completed.rawValue])
+                call.resolve(["paymentResult": ApplePayEvents.Completed.rawValue, "context": context])
                 break
             case .error:
                 self.plugin?.notifyListeners(ApplePayEvents.Failed.rawValue, data: ["error": error?.localizedDescription])
