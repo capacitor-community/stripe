@@ -6,6 +6,7 @@ export interface ApplePayDefinitions {
     createApplePay(options: CreateApplePayOption): Promise<void>;
     presentApplePay(): Promise<{
         paymentResult: ApplePayResultInterface;
+        data?: any;
     }>;
     addListener(eventName: ApplePayEventsEnum.Loaded, listenerFunc: () => void): PluginListenerHandle;
     addListener(eventName: ApplePayEventsEnum.FailedToLoad, listenerFunc: () => void): PluginListenerHandle;

@@ -405,10 +405,10 @@ createApplePay(options: CreateApplePayOption) => Promise<void>
 ### presentApplePay()
 
 ```typescript
-presentApplePay() => Promise<{ paymentResult: ApplePayResultInterface; }>
+presentApplePay() => Promise<{ paymentResult: ApplePayResultInterface; data?: any; }>
 ```
 
-**Returns:** <code>Promise&lt;{ paymentResult: <a href="#applepayresultinterface">ApplePayResultInterface</a>; }&gt;</code>
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#applepayresultinterface">ApplePayResultInterface</a>; data?: any; }&gt;</code>
 
 --------------------
 
