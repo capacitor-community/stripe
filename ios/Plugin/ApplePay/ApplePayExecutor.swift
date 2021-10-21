@@ -8,7 +8,7 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
     public var appleClientSecret: String = ""
     private var payCallId: String?
     private var paymentRequest: PKPaymentRequest?
-    private var paymentMethod: STPPaymentMethod?
+    private var paymentMethodId: String?
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
         if !StripeAPI.deviceSupportsApplePay() {
@@ -78,7 +78,7 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
 
 extension ApplePayExecutor {
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: STPPaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
-        self.paymentMethod = paymentMethod
+        self.paymentMethodId = paymentMethod.stripeId
         let clientSecret = self.appleClientSecret
         let error = "" // Call the completion block with the client secret or an error
         completion(clientSecret, error as? Error)
@@ -89,7 +89,7 @@ extension ApplePayExecutor {
             switch status {
             case .success:
                 self.plugin?.notifyListeners(ApplePayEvents.Completed.rawValue, data: [:])
-                call.resolve(["paymentResult": ApplePayEvents.Completed.rawValue, "paymentMethodId": self.paymentMethod.stripeId])
+                call.resolve(["paymentResult": ApplePayEvents.Completed.rawValue, "paymentMethodId": self.paymentMethodId])
                 break
             case .error:
                 self.plugin?.notifyListeners(ApplePayEvents.Failed.rawValue, data: ["error": error?.localizedDescription])

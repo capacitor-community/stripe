@@ -24,7 +24,6 @@ public class GooglePayExecutor extends Executor {
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
     public boolean isAvailable;
-    private Gson gson;
 
     public GooglePayExecutor(
             Supplier<Context> contextSupplier,
@@ -70,11 +69,11 @@ public class GooglePayExecutor extends Executor {
         if (result instanceof GooglePayPaymentMethodLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.getWebEventName(), emptyObject);
 
-            String paymentMethodJson = gson.toJson(((GooglePayPaymentMethodLauncher.Result.Completed) result).getPaymentMethod());
+            String paymentMethodId = ((GooglePayPaymentMethodLauncher.Result.Completed) result).getPaymentMethod().id;
 
             call.resolve(new JSObject()
                     .put("paymentResult", GooglePayEvents.Completed.getWebEventName())
-                    .put("paymentMethod", paymentMethodJson));
+                    .put("paymentMethodId", paymentMethodId));
         } else if (result instanceof GooglePayPaymentMethodLauncher.Result.Canceled) {
             notifyListenersFunction.accept(GooglePayEvents.Canceled.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Canceled.getWebEventName()));
