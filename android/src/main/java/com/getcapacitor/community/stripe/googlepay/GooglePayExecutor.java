@@ -65,7 +65,6 @@ public class GooglePayExecutor extends Executor {
 
     public void onGooglePayPaymentMethodResult(Bridge bridge, String callbackId, @NotNull GooglePayPaymentMethodLauncher.Result result) {
         PluginCall call = bridge.getSavedCall(callbackId);
-
         if (result instanceof GooglePayPaymentMethodLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.getWebEventName(), emptyObject);
 
