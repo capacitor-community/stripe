@@ -33,9 +33,6 @@ public class GooglePayExecutor extends Executor {
     ) {
         super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "GooglePayExecutor");
         this.contextSupplier = contextSupplier;
-        this.gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create();
     }
 
     public void isGooglePayAvailable(final PluginCall call) {
