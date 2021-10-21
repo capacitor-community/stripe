@@ -23,7 +23,7 @@ public class GooglePayExecutor extends Executor {
     public GooglePayPaymentMethodLauncher googlePayPaymentMethodLauncher;
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
-    public boolean isAvailable; // Ashu 3
+    public boolean isAvailable; // Ashu 4
 
     public GooglePayExecutor(
             Supplier<Context> contextSupplier,
