@@ -313,7 +313,7 @@ present in `createGooglePay` is single flow. You don't need to confirm method.
 
 ```ts
 export async function present(): Promise<void> {
-  const result = await Stripe.presentApplePay();
+  const result = await Stripe.presentGooglePay();
 }
 ```
 
