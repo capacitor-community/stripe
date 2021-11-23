@@ -9,27 +9,21 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowEvents;
 import com.google.android.gms.common.util.BiConsumer;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
-import com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncher;
-
-
 import org.jetbrains.annotations.NotNull;
 
 public class GooglePayExecutor extends Executor {
 
-    public GooglePayPaymentMethodLauncher googlePayPaymentMethodLauncher;
+    public GooglePayLauncher googlePayLauncher;
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
     public boolean isAvailable;
 
     public GooglePayExecutor(
-            Supplier<Context> contextSupplier,
-            Supplier<Activity> activitySupplier,
-            BiConsumer<String, JSObject> notifyListenersFunction,
-            String pluginLogTag
+        Supplier<Context> contextSupplier,
+        Supplier<Activity> activitySupplier,
+        BiConsumer<String, JSObject> notifyListenersFunction,
+        String pluginLogTag
     ) {
         super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "GooglePayExecutor");
         this.contextSupplier = contextSupplier;
@@ -56,27 +50,22 @@ public class GooglePayExecutor extends Executor {
     }
 
     public void presentGooglePay(final PluginCall call) {
-//        this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
-        this.googlePayPaymentMethodLauncher.present("eur");
+        this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
     }
 
-    public void onGooglePayPaymentMethodResult(Bridge bridge, String callbackId, @NotNull GooglePayPaymentMethodLauncher.Result result) {
+    public void onGooglePayResult(Bridge bridge, String callbackId, @NotNull GooglePayLauncher.Result result) {
         PluginCall call = bridge.getSavedCall(callbackId);
-        if (result instanceof GooglePayPaymentMethodLauncher.Result.Completed) {
+
+        if (result instanceof GooglePayLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.getWebEventName(), emptyObject);
-
-            String paymentMethodId = ((GooglePayPaymentMethodLauncher.Result.Completed) result).getPaymentMethod().id;
-
-            call.resolve(new JSObject()
-                    .put("paymentResult", GooglePayEvents.Completed.getWebEventName())
-                    .put("paymentMethodId", paymentMethodId));
-        } else if (result instanceof GooglePayPaymentMethodLauncher.Result.Canceled) {
+            call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Completed.getWebEventName()));
+        } else if (result instanceof GooglePayLauncher.Result.Canceled) {
             notifyListenersFunction.accept(GooglePayEvents.Canceled.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Canceled.getWebEventName()));
-        } else if (result instanceof GooglePayPaymentMethodLauncher.Result.Failed) {
+        } else if (result instanceof GooglePayLauncher.Result.Failed) {
             notifyListenersFunction.accept(
-                    GooglePayEvents.Failed.getWebEventName(),
-                    new JSObject().put("error", ((GooglePayPaymentMethodLauncher.Result.Failed) result).getError().getLocalizedMessage())
+                GooglePayEvents.Failed.getWebEventName(),
+                new JSObject().put("error", ((GooglePayLauncher.Result.Failed) result).getError().getLocalizedMessage())
             );
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Failed.getWebEventName()));
         }

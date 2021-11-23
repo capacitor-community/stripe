@@ -13,7 +13,6 @@ import com.stripe.android.AppInfo;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
-import com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncher;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,24 +29,24 @@ public class StripePlugin extends Plugin {
     private static final String APP_INFO_NAME = "@capacitor-community/stripe";
 
     private final PaymentSheetExecutor paymentSheetExecutor = new PaymentSheetExecutor(
-            this::getContext,
-            this::getActivity,
-            this::notifyListeners,
-            getLogTag()
+        this::getContext,
+        this::getActivity,
+        this::notifyListeners,
+        getLogTag()
     );
 
     private final PaymentFlowExecutor paymentFlowExecutor = new PaymentFlowExecutor(
-            this::getContext,
-            this::getActivity,
-            this::notifyListeners,
-            getLogTag()
+        this::getContext,
+        this::getActivity,
+        this::notifyListeners,
+        getLogTag()
     );
 
     private final GooglePayExecutor googlePayExecutor = new GooglePayExecutor(
-            this::getContext,
-            this::getActivity,
-            this::notifyListeners,
-            getLogTag()
+        this::getContext,
+        this::getActivity,
+        this::notifyListeners,
+        getLogTag()
     );
 
     @Override
@@ -58,36 +57,36 @@ public class StripePlugin extends Plugin {
             PaymentConfiguration.init(getContext(), metaData.publishableKey);
             Stripe.setAppInfo(AppInfo.create(APP_INFO_NAME));
 
-            this.googlePayExecutor.googlePayPaymentMethodLauncher =
-                    new GooglePayPaymentMethodLauncher(
-                            getActivity(),
-                            new GooglePayPaymentMethodLauncher.Config(metaData.googlePayEnvironment, metaData.countryCode, metaData.displayName),
-                            (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
-                            (@NotNull GooglePayPaymentMethodLauncher.Result result) ->
-                                    this.googlePayExecutor.onGooglePayPaymentMethodResult(bridge, googlePayCallbackId, result)
-                    );
+            this.googlePayExecutor.googlePayLauncher =
+                new GooglePayLauncher(
+                    getActivity(),
+                    new GooglePayLauncher.Config(metaData.googlePayEnvironment, metaData.countryCode, metaData.displayName),
+                    (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
+                    (@NotNull GooglePayLauncher.Result result) ->
+                        this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
+                );
         } else {
             Logger.info("Plugin didn't prepare Google Pay.");
         }
 
         this.paymentSheetExecutor.paymentSheet =
-                new PaymentSheet(
-                        getActivity(),
-                        result -> {
-                            this.paymentSheetExecutor.onPaymentSheetResult(bridge, paymentSheetCallbackId, result);
-                        }
-                );
+            new PaymentSheet(
+                getActivity(),
+                result -> {
+                    this.paymentSheetExecutor.onPaymentSheetResult(bridge, paymentSheetCallbackId, result);
+                }
+            );
 
         this.paymentFlowExecutor.flowController =
-                PaymentSheet.FlowController.create(
-                        getActivity(),
-                        paymentOption -> {
-                            this.paymentFlowExecutor.onPaymentOption(bridge, paymentFlowCallbackId, paymentOption);
-                        },
-                        result -> {
-                            this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
-                        }
-                );
+            PaymentSheet.FlowController.create(
+                getActivity(),
+                paymentOption -> {
+                    this.paymentFlowExecutor.onPaymentOption(bridge, paymentFlowCallbackId, paymentOption);
+                },
+                result -> {
+                    this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
+                }
+            );
     }
 
     @PluginMethod
