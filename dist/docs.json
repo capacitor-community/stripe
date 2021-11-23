@@ -907,6 +907,13 @@
           "docs": "",
           "complexTypes": [],
           "type": "string"
+        },
+        {
+          "name": "currency",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string"
         }
       ],
       "importObject": [

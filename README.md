@@ -939,6 +939,7 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | Prop                            | Type                |
 | ------------------------------- | ------------------- |
 | **`paymentIntentClientSecret`** | <code>string</code> |
+| **`currency`**                  | <code>string</code> |
 
 
 #### CreatePaymentFlowOption
