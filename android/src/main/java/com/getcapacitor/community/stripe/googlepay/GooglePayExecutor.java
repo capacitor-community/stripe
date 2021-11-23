@@ -17,6 +17,7 @@ public class GooglePayExecutor extends Executor {
     public GooglePayLauncher googlePayLauncher;
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
+    private String currency;
     public boolean isAvailable;
 
     public GooglePayExecutor(
@@ -39,6 +40,7 @@ public class GooglePayExecutor extends Executor {
 
     public void createGooglePay(final PluginCall call) {
         this.clientSecret = call.getString("paymentIntentClientSecret");
+        this.currency = call.getString("currency");
 
         if (this.clientSecret == null) {
             notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
@@ -50,7 +52,7 @@ public class GooglePayExecutor extends Executor {
     }
 
     public void presentGooglePay(final PluginCall call) {
-        this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
+        this.googlePayLauncher.presentForSetupIntent(this.clientSecret, this.currency);
     }
 
     public void onGooglePayResult(Bridge bridge, String callbackId, @NotNull GooglePayLauncher.Result result) {
