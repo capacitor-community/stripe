@@ -3,9 +3,15 @@ import { Stripe, StripePlugin, StripeInitializationOptions } from '@capacitor-co
 import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 
 export type CapacitorStripe = {
-    stripe: StripePlugin
+    stripe: StripePlugin;
+    isApplePayAvailable: boolean;
+    isGooglePayAvailable: boolean;
 }
-const CapacitorStripeContext = createContext<CapacitorStripe>({} as any)
+const CapacitorStripeContext = createContext<CapacitorStripe>({
+    stripe: undefined as any,
+    isApplePayAvailable: false,
+    isGooglePayAvailable: false,
+})
 
 export const useCapacitorStripe = () => {
     return useContext(CapacitorStripeContext)
@@ -20,20 +26,40 @@ export const CapacitorStripeProvider :FC<CapacitorStripeProviderProps> = ({
     ...initializeOptions
 }) => {
     const [stripe, setStripe] = useState<StripePlugin>()
+    const [isApplePayAvailable, setApplePayAvailableStatus] = useState(false)
+    const [isGooglePayAvailable, setGooglePayAvailableStatus] = useState(false)
     useEffect(() => {
-        defineCustomElements();
-        if (!initializeOptions.publishableKey) return
-        Stripe.initialize(initializeOptions).then(() => {
-            setStripe(Stripe)
-        })
-    }, [initializeOptions])
+        defineCustomElements().then(() => {   
+            if (!initializeOptions.publishableKey) return
+            Stripe.initialize(initializeOptions)
+                .then(() => {
+                    return Stripe.isApplePayAvailable().then(() => {
+                        setApplePayAvailableStatus(true)
+                    }).catch(() => {
+                        setApplePayAvailableStatus(false)
+                    })
+                })
+                .then(() => {
+                    return Stripe.isGooglePayAvailable().then(() => {
+                        setGooglePayAvailableStatus(true)
+                    }).catch(() => {
+                        setGooglePayAvailableStatus(false)
+                    })
+                })
+                .then(() => {
+                    setStripe(Stripe)
+                })
+        });
+    }, [initializeOptions, setApplePayAvailableStatus])
     if (!stripe) {
         if (fallback) return <>{fallback}</>
         return null;
     }
     return (
         <CapacitorStripeContext.Provider value={{
-            stripe
+            stripe,
+            isGooglePayAvailable,
+            isApplePayAvailable,
         }}>
             {children}
         </CapacitorStripeContext.Provider>
