@@ -60,6 +60,9 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     this.paymentSheet.intentClientSecret =
       options.paymentIntentClientSecret;
     this.paymentSheet.intentType = "payment";
+    if (options.zipCode !== undefined) {
+      this.paymentSheet.zip = options.zipCode
+    }
 
     this.notifyListeners(PaymentSheetEventsEnum.Loaded, null);
   }
@@ -128,6 +131,9 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       this.paymentSheet.intentType = "setup";
       this.paymentSheet.intentClientSecret =
         options.setupIntentClientSecret;
+    }
+    if (options.zipCode !== undefined) {
+      this.paymentSheet.zip = options.zipCode
     }
 
     if (isPlatform(window, 'ios')) {
