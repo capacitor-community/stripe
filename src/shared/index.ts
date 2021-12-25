@@ -1,3 +1,6 @@
+/**
+ * @extends BasePaymentOption
+ */
 export interface CreatePaymentSheetOption extends BasePaymentOption {
   /**
    * Any documentation call 'paymentIntent'
@@ -5,7 +8,10 @@ export interface CreatePaymentSheetOption extends BasePaymentOption {
   paymentIntentClientSecret: string;
 }
 
-export interface CreatePaymentFlowOption extends BasePaymentOption{
+/**
+ * @extends BasePaymentOption
+ */
+export interface CreatePaymentFlowOption extends BasePaymentOption {
   /**
    * Any documentation call 'paymentIntent'
    * Set paymentIntentClientSecret or setupIntentClientSecret
