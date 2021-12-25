@@ -29,7 +29,7 @@ export interface BasePaymentOption {
   /**
    * Any documentation call 'customer'
    */
-  customerId: string;
+  customerId?: string;
 
   /**
    * If you set payment method ApplePay, this set true
