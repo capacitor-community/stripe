@@ -9,10 +9,10 @@ end
 
 target 'Plugin' do
   capacitor_pods
-  pod 'Stripe', '~> 21.5.1'
+  pod 'Stripe', '~> 21.8.1'
 end
 
 target 'PluginTests' do
   capacitor_pods
-  pod 'Stripe', '~> 21.5.1'
+  pod 'Stripe', '~> 21.8.1'
 end
