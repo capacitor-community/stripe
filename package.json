@@ -42,7 +42,7 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "release": "np",
+    "release": "np --no-tests",
     "update:elements": "npm i @stripe-elements/stripe-elements@latest && cd demo/angular && npm i @stripe-elements/stripe-elements@latest"
   },
   "devDependencies": {
