@@ -993,7 +993,7 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 
 #### PaymentSheetResultInterface
 
-<code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Loaded</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.FailedToLoad</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code>
+<code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code>
 
 
 ### Enums
