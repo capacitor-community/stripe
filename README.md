@@ -913,7 +913,6 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | Prop                 | Type                |
 | -------------------- | ------------------- |
 | **`publishableKey`** | <code>string</code> |
-| **`stripeAccount`**  | <code>string</code> |
 
 
 #### CreateApplePayOption

@@ -15,21 +15,16 @@ public class StripePlugin: CAPPlugin {
         self.applePayExecutor.plugin = self
 
         let publishableKey = call.getString("publishableKey") ?? ""
-        let stripeAccount = call.getString("stripeAccount") ?? ""
 
         if publishableKey == "" {
             call.reject("you must provide publishableKey")
             return
         }
 
-        if stripeAccount != "" {
-            STPAPIClient.shared.stripeAccount = stripeAccount
-        }
-
         StripeAPI.defaultPublishableKey = publishableKey
 
         STPAPIClient.shared.appInfo = STPAppInfo(name: "@capacitor-community/stripe", partnerId: nil, version: nil, url: nil)
-        
+
         call.resolve()
     }
 
