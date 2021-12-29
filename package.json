@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-community/stripe",
-  "version": "3.4.0",
+  "version": "3.4.2",
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -42,13 +42,13 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "release": "np",
+    "release": "np --no-tests",
     "update:elements": "npm i @stripe-elements/stripe-elements@latest && cd demo/angular && npm i @stripe-elements/stripe-elements@latest"
   },
   "devDependencies": {
     "@capacitor/android": "^3.0.0",
     "@capacitor/core": "^3.0.0",
-    "@capacitor/docgen": "git+https://github.com/rdlabo/capacitor-docgen.git#feat/support_extends_build",
+    "@capacitor/docgen": "github:rdlabo/capacitor-docgen#release",
     "@capacitor/ios": "^3.0.0",
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",

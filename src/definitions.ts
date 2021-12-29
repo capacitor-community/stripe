@@ -20,5 +20,4 @@ export interface StripePlugin extends StripeDefinitions {
 
 export interface StripeInitializationOptions {
   publishableKey: string;
-  stripeAccount?: string;
 }
