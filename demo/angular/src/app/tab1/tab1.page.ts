@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ApplePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
+import {ApplePayEventsEnum, GooglePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
-import {GooglePayEventsEnum} from '../../../../../src/googlepay';
 
 @Component({
   selector: 'app-tab1',
