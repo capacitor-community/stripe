@@ -53,6 +53,7 @@
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
+    "@types/react": "^17.0.38",
     "eslint": "^7.11.0",
     "np": "^7.5.0",
     "prettier": "~2.2.0",
@@ -79,6 +80,7 @@
     }
   },
   "dependencies": {
-    "@stripe-elements/stripe-elements": "^1.0.0"
+    "@stripe-elements/stripe-elements": "^1.0.0",
+    "react": "^17.0.2"
   }
 }

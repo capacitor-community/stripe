@@ -6,5 +6,6 @@ const Stripe = registerPlugin<StripePlugin>('Stripe', {
   web: () => import('./web').then(m => new m.StripeWeb()),
 });
 
+export * from './react/provider'
 export * from './definitions';
 export { Stripe };
