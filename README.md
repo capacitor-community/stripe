@@ -29,10 +29,14 @@
 
 Made with [contributors-img](https://contrib.rocks).
 
+## How to use
+
+Learn at [the official @capacitor-community/stripe documentation](https://stripe.capacitorjs.jp/).
+
 ## Demo
 
 - [Demo code is here](https://github.com/capacitor-community/stripe/tree/master/demo). Please check these code before ask at issues.
-- Demo of Web is [hosting here.](https://capacitor-community-stripe.netlify.app/).
+- Demo of Web is [hosting here](https://capacitor-community-stripe.netlify.app/).
 
 ### Screenshots
 
@@ -42,10 +46,6 @@ Made with [contributors-img](https://contrib.rocks).
 |  PaymentFlow   | ![](demo/screenshots/payment-flow-android.png) |  ![](demo/screenshots/payment-flow-ios.png) | Coming soon |
 |  ApplePay   | Not support |  ![](demo/screenshots/apple-pay-ios.png) | Coming soon |
 |  GooglePay   |  ![](demo/screenshots/google-pay-android.png) | Not support | Coming soon |
-
-## How to use
-
-Learn at [the official @capacitor-community/stripe documentation](https://stripe.capacitorjs.jp/).
 
 ## API
 
