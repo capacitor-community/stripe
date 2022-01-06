@@ -33,6 +33,8 @@ Made with [contributors-img](https://contrib.rocks).
 
 Learn at [the official @capacitor-community/stripe documentation](https://stripe.capacitorjs.jp/).
 
+日本語版をご利用の際は [ja.stripe.capacitorjs.jp](https://ja.stripe.capacitorjs.jp/docs/payment-sheet/) をご確認ください。
+
 ## Demo
 
 - [Demo code is here](https://github.com/capacitor-community/stripe/tree/master/demo). Please check these code before ask at issues.
