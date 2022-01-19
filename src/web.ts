@@ -1,5 +1,4 @@
 import { WebPlugin } from '@capacitor/core';
-import { isPlatform } from './shared/platform';
 import type { Components } from '@stripe-elements/stripe-elements';
 import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
 import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
@@ -16,6 +15,7 @@ import type {
   GooglePayResultInterface,
 } from './definitions';
 import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
+import { isPlatform } from './shared/platform';
 
 interface StripePaymentSheet
   extends Components.StripePaymentSheet,
@@ -57,9 +57,8 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-sheet');
 
     this.paymentSheet.publishableKey = this.publishableKey;
-    this.paymentSheet.intentClientSecret =
-      options.paymentIntentClientSecret;
-    this.paymentSheet.intentType = "payment";
+    this.paymentSheet.intentClientSecret = options.paymentIntentClientSecret;
+    this.paymentSheet.intentType = 'payment';
 
     this.notifyListeners(PaymentSheetEventsEnum.Loaded, null);
   }
@@ -117,17 +116,15 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-sheet');
 
     this.paymentSheet.publishableKey = this.publishableKey;
-    this.paymentSheet.applicationName = "@capacitor-community/stripe"
+    this.paymentSheet.applicationName = '@capacitor-community/stripe';
 
     // eslint-disable-next-line no-prototype-builtins
     if (options.hasOwnProperty('paymentIntentClientSecret')) {
-      this.paymentSheet.intentType = "payment";
-      this.paymentSheet.intentClientSecret =
-        options.paymentIntentClientSecret;
+      this.paymentSheet.intentType = 'payment';
+      this.paymentSheet.intentClientSecret = options.paymentIntentClientSecret;
     } else {
-      this.paymentSheet.intentType = "setup";
-      this.paymentSheet.intentClientSecret =
-        options.setupIntentClientSecret;
+      this.paymentSheet.intentType = 'setup';
+      this.paymentSheet.intentClientSecret = options.setupIntentClientSecret;
     }
 
     if (isPlatform(window, 'ios')) {
