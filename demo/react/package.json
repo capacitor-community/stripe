@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@capacitor-community/stripe": "^3.4.0",
-    "@capacitor/app": "1.0.6",
-    "@capacitor/core": "3.3.2",
-    "@capacitor/haptics": "1.1.3",
-    "@capacitor/keyboard": "1.1.3",
-    "@capacitor/status-bar": "1.0.6",
+    "@capacitor-community/stripe": "file:../..",
+    "@capacitor/app": "^1.0.0",
+    "@capacitor/core": "^3.0.0",
+    "@capacitor/haptics": "^1.0.0",
+    "@capacitor/keyboard": "^1.0.0",
+    "@capacitor/status-bar": "^1.0.0",
     "@ionic/react": "^5.5.0",
     "@ionic/react-router": "^5.5.0",
     "@stripe-elements/stripe-elements": "^1.0.0",
@@ -67,7 +67,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "3.3.2"
+    "@capacitor/cli": "^3.0.0"
   },
   "description": "An Ionic project"
 }
