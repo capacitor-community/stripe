@@ -1,9 +1,5 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import './Tab1.css';
-import { useState } from 'react';
-import { useCapacitorStripe } from '../fixtures/Provider';
-import { usePaymentSheet } from '../hooks/payment-sheet';
-import { ProcessStatus } from '../interfaces';
 import { PaymentSheet } from './Tab1/PaymentSheet';
 import { PaymentFlow } from './Tab1/PaymentFlow';
 import { ApplePay } from './Tab1/ApplePay';

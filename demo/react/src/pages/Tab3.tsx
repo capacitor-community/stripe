@@ -1,5 +1,16 @@
 import { PaymentSheetEventsEnum } from '@capacitor-community/stripe';
-import { IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import {
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar
+} from '@ionic/react';
 import { checkmarkCircle, playOutline } from 'ionicons/icons';
 import { useCallback, useEffect, useState } from 'react';
 import { useCapacitorStripe } from '../fixtures/Provider';
@@ -61,7 +72,7 @@ const Tab3: React.FC = () => {
       setConfirmPaymentFlowResult('error')
       throw e
     })
-    
+
   },[stripe, createPaymentIntent, setHttpClientStepResult, setCreatePaymentFlowResult, setPresentPaymentFlowResult, setConfirmPaymentFlowResult])
   return (
     <IonPage>
