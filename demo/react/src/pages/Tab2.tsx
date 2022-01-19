@@ -82,7 +82,7 @@ const Tab2: React.FC = () => {
         <IonList>
           <IonListHeader>Task</IonListHeader>
           <IonItem button detail onClick={() => startHappyPath()}>
-            <IonLabel>Epect Happy Path</IonLabel>
+            <IonLabel>Expect Happy Path</IonLabel>
           </IonItem>
         </IonList>
         <IonList>
