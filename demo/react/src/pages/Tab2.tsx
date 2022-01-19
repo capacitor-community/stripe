@@ -13,7 +13,7 @@ import {
 } from '@ionic/react';
 import { checkmarkCircle, playOutline } from 'ionicons/icons';
 import { useCallback, useEffect, useState } from 'react';
-import { useCapacitorStripe } from '../fixtures/Provider';
+import { useCapacitorStripe } from '@capacitor-community/stripe';
 import { usePaymentSheet } from '../hooks/payment-sheet';
 import { TaskResult } from '../interfaces';
 import './Tab2.css';

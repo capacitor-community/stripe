@@ -1,6 +1,6 @@
 import { IonItem, IonLabel, IonList, IonListHeader } from '@ionic/react';
 import { useState } from 'react';
-import { useCapacitorStripe } from '../../fixtures/Provider';
+import { useCapacitorStripe } from '@capacitor-community/stripe';
 import { usePaymentSheet } from '../../hooks/payment-sheet';
 import { ProcessStatus } from '../../interfaces';
 

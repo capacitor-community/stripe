@@ -58,6 +58,7 @@
     "np": "^7.5.0",
     "prettier": "~2.2.0",
     "prettier-plugin-java": "~1.0.0",
+    "react": "^17.0.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.32.0",
     "swiftlint": "^1.0.1",
@@ -80,7 +81,6 @@
     }
   },
   "dependencies": {
-    "@stripe-elements/stripe-elements": "^1.0.0",
-    "react": "^17.0.2"
+    "@stripe-elements/stripe-elements": "^1.0.0"
   }
 }
