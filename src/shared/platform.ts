@@ -6,7 +6,7 @@ interface IsPlatformSignature {
   (win: Window, plt: Platforms): boolean;
 }
 
-export const getPlatforms = (win?: any) => setupPlatforms(win);
+export const getPlatforms = (win?: any): Platforms[]  => setupPlatforms(win);
 
 export const isPlatform: IsPlatformSignature = (winOrPlatform: Window | Platforms | undefined, platform?: Platforms) => {
   if (typeof winOrPlatform === 'string') {
@@ -16,7 +16,7 @@ export const isPlatform: IsPlatformSignature = (winOrPlatform: Window | Platform
   return getPlatforms(winOrPlatform).includes(platform!);
 };
 
-export const setupPlatforms = (win: any = window) => {
+export const setupPlatforms = (win: any = window): Platforms[]=> {
   if (typeof win === 'undefined') { return []; }
 
   win.Ionic = win.Ionic || {};
@@ -102,7 +102,7 @@ const isCordova = (win: any): boolean =>
 
 const isCapacitorNative = (win: any): boolean => {
   const capacitor = win['Capacitor'];
-  return !!(capacitor && capacitor.isNative);
+  return !!(capacitor?.isNative);
 };
 
 const isElectron = (win: Window): boolean =>
@@ -111,7 +111,7 @@ const isElectron = (win: Window): boolean =>
 const isPWA = (win: Window): boolean =>
   !!(win.matchMedia('(display-mode: standalone)').matches || (win.navigator as any).standalone);
 
-export const testUserAgent = (win: Window, expr: RegExp) =>
+export const testUserAgent = (win: Window, expr: RegExp): boolean =>
   expr.test(win.navigator.userAgent);
 
 const matchMedia = (win: Window, query: string): boolean =>
