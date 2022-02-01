@@ -16,7 +16,7 @@ const CapacitorStripeContext = createContext<CapacitorStripe>({
     isGooglePayAvailable: false,
 })
 
-export const useCapacitorStripe = () => {
+export const useCapacitorStripe = (): CapacitorStripe => {
     return useContext(CapacitorStripeContext)
 }
 export type CapacitorStripeProviderProps = PropsWithChildren<StripeInitializationOptions & {
