@@ -5,19 +5,19 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import type { StripePlugin, StripeInitializationOptions } from '../index';
 import { Stripe } from '../index';
 
-export type CapacitorStripe = {
+export type CapacitorStripeContext = {
     stripe: StripePlugin;
     isApplePayAvailable: boolean;
     isGooglePayAvailable: boolean;
 }
-const CapacitorStripeContext = createContext<CapacitorStripe>({
+const capacitorStripeContext = createContext<CapacitorStripeContext>({
     stripe: undefined as any,
     isApplePayAvailable: false,
     isGooglePayAvailable: false,
 })
 
-export const useCapacitorStripe = (): CapacitorStripe => {
-    return useContext(CapacitorStripeContext)
+export const useCapacitorStripe = (): CapacitorStripeContext => {
+    return useContext(capacitorStripeContext)
 }
 export type CapacitorStripeProviderProps = PropsWithChildren<StripeInitializationOptions & {
     fallback?: ReactNode;
@@ -59,12 +59,12 @@ export const CapacitorStripeProvider :FC<CapacitorStripeProviderProps> = ({
         return null;
     }
     return (
-        <CapacitorStripeContext.Provider value={{
+        <capacitorStripeContext.Provider value={{
             stripe,
             isGooglePayAvailable,
             isApplePayAvailable,
         }}>
             {children}
-        </CapacitorStripeContext.Provider>
+        </capacitorStripeContext.Provider>
     )
 }
