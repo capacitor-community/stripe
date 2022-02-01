@@ -38,6 +38,10 @@ jobs:
       working-directory: ./demo/angular
       run: npm ci
 
+    - name: Build test React app
+      working-directory: ./demo/react
+      run: npm run build
+
     - name: Build test app
       working-directory: ./demo/angular
       run: npm run build
