@@ -21,6 +21,7 @@ import { useCapacitorStripe } from '@capacitor-community/stripe/dist/esm/react/p
 import { usePaymentSheet } from '../hooks/payment-sheet';
 import { TaskResult } from '../interfaces';
 import './Tab3.css';
+import React from 'react';
 
 const Tab3: React.FC = () => {
   const {stripe} = useCapacitorStripe()

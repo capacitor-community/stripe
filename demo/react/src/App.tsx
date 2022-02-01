@@ -29,6 +29,7 @@ import './theme/variables.css';
  * import { useCapacitorStripe } from '@capacitor-community/stripe/react';
  */
 import { CapacitorStripeProvider } from '@capacitor-community/stripe/dist/esm/react/provider';
+import React from 'react';
 
 const App: React.FC = () => (
   <CapacitorStripeProvider
