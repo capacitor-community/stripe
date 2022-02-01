@@ -40,7 +40,7 @@ jobs:
 
     - name: Build test React app
       working-directory: ./demo/react
-      run: npm run build
+      run: npm ci && npm run build
 
     - name: Build test app
       working-directory: ./demo/angular
