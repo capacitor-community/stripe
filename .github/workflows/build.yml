@@ -38,13 +38,17 @@ jobs:
       working-directory: ./demo/angular
       run: npm ci
 
+    - name: Build test React app
+      working-directory: ./demo/react
+      run: npm ci && npm run build
+
     - name: Build test app
       working-directory: ./demo/angular
-      run: npm run build
+      run: npm run cap
 
     - name: Update & Sync Capacitor Project
       working-directory: ./demo/angular
-      run: npx cap update android && npx cap sync android
+      run: npx cap update android
 
     - name: Build Android Debug APK
       working-directory: ./demo/angular/android

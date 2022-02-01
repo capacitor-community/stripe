@@ -24,7 +24,12 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import { CapacitorStripeProvider } from './fixtures/Provider';
+/**
+ * If you use typescript@4.5, you can write:
+ * import { useCapacitorStripe } from '@capacitor-community/stripe/react';
+ */
+import { CapacitorStripeProvider } from '@capacitor-community/stripe/dist/esm/react/provider';
+import React from 'react';
 
 const App: React.FC = () => (
   <CapacitorStripeProvider

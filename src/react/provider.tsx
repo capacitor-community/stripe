@@ -1,6 +1,9 @@
-import React, { createContext, FC, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
-import { Stripe, StripePlugin, StripeInitializationOptions } from '../index';
 import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
+import type { FC, PropsWithChildren, ReactNode} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+
+import type { StripePlugin, StripeInitializationOptions } from '../index';
+import { Stripe } from '../index';
 
 export type CapacitorStripe = {
     stripe: StripePlugin;
@@ -29,7 +32,7 @@ export const CapacitorStripeProvider :FC<CapacitorStripeProviderProps> = ({
     const [isApplePayAvailable, setApplePayAvailableStatus] = useState(false)
     const [isGooglePayAvailable, setGooglePayAvailableStatus] = useState(false)
     useEffect(() => {
-        defineCustomElements().then(() => {   
+        defineCustomElements().then(() => {
             if (!initializeOptions.publishableKey) return
             Stripe.initialize(initializeOptions)
                 .then(() => {

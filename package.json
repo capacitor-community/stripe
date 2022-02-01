@@ -6,6 +6,17 @@
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
+  "exports": {
+    ".": {
+      "type": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js"
+    },
+    "./react": {
+      "type": "./dist/esm/react/provider.d.ts",
+      "import": "./dist/esm/react/provider.js"
+    },
+    "./*": "./*"
+  },
   "files": [
     "android/src/main/",
     "android/build.gradle",
@@ -64,7 +75,8 @@
     "typescript": "~4.0.3"
   },
   "peerDependencies": {
-    "@capacitor/core": "^3.0.0"
+    "@capacitor/core": "^3.0.0",
+    "react": "^17.0.2"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
@@ -80,7 +92,6 @@
     }
   },
   "dependencies": {
-    "@stripe-elements/stripe-elements": "^1.0.0",
-    "react": "^17.0.2"
+    "@stripe-elements/stripe-elements": "^1.0.0"
   }
 }
