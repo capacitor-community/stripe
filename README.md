@@ -99,6 +99,9 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
+This is for @capacitor/docgen only.
+Not use in product.
+
 ### isApplePayAvailable()
 
 ```typescript
@@ -710,6 +713,15 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 | Method         | Signature                                                                                                |
 | -------------- | -------------------------------------------------------------------------------------------------------- |
 | **initialize** | (opts: <a href="#stripeinitializationoptions">StripeInitializationOptions</a>) =&gt; Promise&lt;void&gt; |
+
+
+#### CapacitorStripeContext
+
+| Prop                       | Type                                                  |
+| -------------------------- | ----------------------------------------------------- |
+| **`stripe`**               | <code><a href="#stripeplugin">StripePlugin</a></code> |
+| **`isApplePayAvailable`**  | <code>boolean</code>                                  |
+| **`isGooglePayAvailable`** | <code>boolean</code>                                  |
 
 
 ### Type Aliases

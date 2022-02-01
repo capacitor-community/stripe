@@ -48,7 +48,7 @@
     "eslint": "eslint src/. --ext ts",
     "prettier": "prettier \"{src/*.ts,**/*.java}\"",
     "swiftlint": "node-swiftlint",
-    "docgen": "docgen --api CapacitorStripeContext  --output-readme README.md --output-json dist/docs.json",
+    "docgen": "docgen --api DocGenType  --output-readme README.md --output-json dist/docs.json",
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
