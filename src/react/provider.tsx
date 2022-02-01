@@ -10,14 +10,14 @@ export type CapacitorStripeContext = {
     isApplePayAvailable: boolean;
     isGooglePayAvailable: boolean;
 }
-const capacitorStripeContext = createContext<CapacitorStripeContext>({
+const StripeContext = createContext<CapacitorStripeContext>({
     stripe: undefined as any,
     isApplePayAvailable: false,
     isGooglePayAvailable: false,
 })
 
 export const useCapacitorStripe = (): CapacitorStripeContext => {
-    return useContext(capacitorStripeContext)
+    return useContext(StripeContext)
 }
 export type CapacitorStripeProviderProps = PropsWithChildren<StripeInitializationOptions & {
     fallback?: ReactNode;
@@ -59,12 +59,12 @@ export const CapacitorStripeProvider :FC<CapacitorStripeProviderProps> = ({
         return null;
     }
     return (
-        <capacitorStripeContext.Provider value={{
+        <StripeContext.Provider value={{
             stripe,
             isGooglePayAvailable,
             isApplePayAvailable,
         }}>
             {children}
-        </capacitorStripeContext.Provider>
+        </StripeContext.Provider>
     )
 }
