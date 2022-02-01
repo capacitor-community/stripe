@@ -53,7 +53,6 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 
 <docgen-index>
 
-* [`initialize(...)`](#initialize)
 * [`isApplePayAvailable()`](#isapplepayavailable)
 * [`createApplePay(...)`](#createapplepay)
 * [`presentApplePay()`](#presentapplepay)
@@ -90,6 +89,7 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted)
 * [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled)
 * [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed)
+* [`initialize(...)`](#initialize)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -98,19 +98,6 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
-
-### initialize(...)
-
-```typescript
-initialize(opts: StripeInitializationOptions) => Promise<void>
-```
-
-| Param      | Type                                                                                |
-| ---------- | ----------------------------------------------------------------------------------- |
-| **`opts`** | <code><a href="#stripeinitializationoptions">StripeInitializationOptions</a></code> |
-
---------------------
-
 
 ### isApplePayAvailable()
 
@@ -637,14 +624,20 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 --------------------
 
 
+### initialize(...)
+
+```typescript
+initialize(opts: StripeInitializationOptions) => Promise<void>
+```
+
+| Param      | Type                                                                                |
+| ---------- | ----------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#stripeinitializationoptions">StripeInitializationOptions</a></code> |
+
+--------------------
+
+
 ### Interfaces
-
-
-#### StripeInitializationOptions
-
-| Prop                 | Type                |
-| -------------------- | ------------------- |
-| **`publishableKey`** | <code>string</code> |
 
 
 #### CreateApplePayOption
@@ -703,6 +696,20 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) 
 | **`countryCode`**                | <code>string</code>                        | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here. | <code>"US"</code>       |
 | **`merchantDisplayName`**        | <code>string</code>                        |                                                                                                  | <code>"App Name"</code> |
 | **`style`**                      | <code>'alwaysLight' \| 'alwaysDark'</code> | iOS Only                                                                                         | <code>undefined</code>  |
+
+
+#### StripeInitializationOptions
+
+| Prop                 | Type                |
+| -------------------- | ------------------- |
+| **`publishableKey`** | <code>string</code> |
+
+
+#### StripePlugin
+
+| Method         | Signature                                                                                                |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| **initialize** | (opts: <a href="#stripeinitializationoptions">StripeInitializationOptions</a>) =&gt; Promise&lt;void&gt; |
 
 
 ### Type Aliases
