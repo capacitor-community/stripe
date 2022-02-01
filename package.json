@@ -7,14 +7,11 @@
   "types": "dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
   "exports": {
-    ".": {
-      "type": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js"
-    },
     "./react": {
       "type": "./dist/esm/react/provider.d.ts",
       "import": "./dist/esm/react/provider.js"
-    }
+    },
+    "./*": "./*"
   },
   "files": [
     "android/src/main/",
