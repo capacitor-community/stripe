@@ -2,14 +2,9 @@ import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 import type { FC, PropsWithChildren, ReactNode} from "react";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-import type { StripePlugin, StripeInitializationOptions } from '../index';
+import type { StripePlugin, StripeInitializationOptions, CapacitorStripeContext } from '../index';
 import { Stripe } from '../index';
 
-export type CapacitorStripeContext = {
-    stripe: StripePlugin;
-    isApplePayAvailable: boolean;
-    isGooglePayAvailable: boolean;
-}
 const StripeContext = createContext<CapacitorStripeContext>({
     stripe: undefined as any,
     isApplePayAvailable: false,

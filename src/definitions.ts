@@ -21,3 +21,9 @@ export interface StripePlugin extends StripeDefinitions {
 export interface StripeInitializationOptions {
   publishableKey: string;
 }
+
+export interface CapacitorStripeContext {
+  stripe: StripePlugin;
+  isApplePayAvailable: boolean;
+  isGooglePayAvailable: boolean;
+}
