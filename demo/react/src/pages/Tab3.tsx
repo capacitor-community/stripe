@@ -13,7 +13,11 @@ import {
 } from '@ionic/react';
 import { checkmarkCircle, playOutline } from 'ionicons/icons';
 import { useCallback, useEffect, useState } from 'react';
-import { useCapacitorStripe } from '@capacitor-community/stripe';
+/**
+ * If you use typescript@4.5, you can write:
+ * import { useCapacitorStripe } from '@capacitor-community/stripe/react';
+ */
+import { useCapacitorStripe } from '@capacitor-community/stripe/dist/esm/react/provider';
 import { usePaymentSheet } from '../hooks/payment-sheet';
 import { TaskResult } from '../interfaces';
 import './Tab3.css';

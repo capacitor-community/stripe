@@ -1,6 +1,10 @@
 import { IonItem, IonLabel, IonList, IonListHeader } from '@ionic/react';
 import { useState } from 'react';
-import { useCapacitorStripe } from '@capacitor-community/stripe';
+/**
+ * If you use typescript@4.5, you can write:
+ * import { useCapacitorStripe } from '@capacitor-community/stripe/react';
+ */
+import { useCapacitorStripe } from '@capacitor-community/stripe/dist/esm/react/provider';
 import { usePaymentSheet } from '../../hooks/payment-sheet';
 import { ProcessStatus } from '../../interfaces';
 

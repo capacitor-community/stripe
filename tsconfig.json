@@ -16,5 +16,5 @@
     "target": "es2017",
     "jsx": "react"
   },
-  "files": ["src/index.ts"]
+  "files": ["src/index.ts", "src/react/provider.tsx"]
 }
