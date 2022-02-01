@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApplePayEventsEnum, GooglePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
+
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
