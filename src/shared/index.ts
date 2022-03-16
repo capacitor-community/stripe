@@ -85,7 +85,7 @@ export interface BasePaymentOption {
    * Show ZIP code field
    * @default true
    */
-  zipCode?: boolean
+  withZipCode?: boolean
 }
 
 export interface CreateApplePayOption {
