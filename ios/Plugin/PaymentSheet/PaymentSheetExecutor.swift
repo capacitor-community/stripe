@@ -9,10 +9,17 @@ class PaymentSheetExecutor: NSObject {
     func createPaymentSheet(_ call: CAPPluginCall) {
         let paymentIntentClientSecret = call.getString("paymentIntentClientSecret") ?? nil
         let customerId = call.getString("customerId") ?? nil
-        let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
+        let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? nil
 
-        if paymentIntentClientSecret == nil || customerId == nil {
-            call.reject("Invalid Params. this method require paymentIntentClientSecret and customerId.")
+        if paymentIntentClientSecret == nil {
+            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
+            call.reject("Invalid Params. this method require paymentIntentClientSecret.")
+            return
+        }
+        
+        if customerId != nil && customerEphemeralKeySecret == nil {
+            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
+            call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.")
             return
         }
 
@@ -42,7 +49,10 @@ class PaymentSheetExecutor: NSObject {
             )
         }
 
-        configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret)
+        
+        if customerId != nil && customerEphemeralKeySecret != nil {
+            configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
+        }
 
         self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret!, configuration: configuration)
 

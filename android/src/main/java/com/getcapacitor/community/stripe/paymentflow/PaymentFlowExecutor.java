@@ -40,9 +40,15 @@ public class PaymentFlowExecutor extends Executor {
         String customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null);
         String customerId = call.getString("customerId", null);
 
-        if ((paymentIntentClientSecret == null && setupIntentClientSecret == null) || customerId == null) {
+        if (paymentIntentClientSecret == null && setupIntentClientSecret == null) {
             notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.");
+            call.reject("Invalid Params. This method require paymentIntentClientSecret or setupIntentClientSecret.");
+            return;
+        }
+
+        if (customerId != null && customerEphemeralKeySecret == null) {
+            notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
+            call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.");
             return;
         }
 
