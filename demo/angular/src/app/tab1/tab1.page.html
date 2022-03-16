@@ -18,7 +18,18 @@
     <ion-item button="true" detail="true" (click)="presentPaymentSheet()" [disabled]="processSheet !== 'Ready'"><ion-label>present</ion-label></ion-item>
   </ion-list>
   <ion-list>
+    <ion-list-header><ion-label>PaymentSheet without customer</ion-label></ion-list-header>
+    <ion-item button="true" detail="true" (click)="createPaymentSheet(false)" [disabled]="processSheet !== 'willReady'"><ion-label>create</ion-label></ion-item>
+    <ion-item button="true" detail="true" (click)="presentPaymentSheet()" [disabled]="processSheet !== 'Ready'"><ion-label>present</ion-label></ion-item>
+  </ion-list>
+  <ion-list>
     <ion-list-header><ion-label>PaymentFlow</ion-label></ion-list-header>
+    <ion-item button="true" detail="true" (click)="createPaymentFlow()" [disabled]="processFlow !== 'willReady'"><ion-label>create</ion-label></ion-item>
+    <ion-item button="true" detail="true" (click)="presentPaymentFlow()" [disabled]="processFlow !== 'Ready'"><ion-label>present</ion-label></ion-item>
+    <ion-item button="true" detail="true" (click)="confirmPaymentFlow()" [disabled]="processFlow !== 'canConfirm'"><ion-label>confirm</ion-label></ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-list-header><ion-label>PaymentFlow without customer</ion-label></ion-list-header>
     <ion-item button="true" detail="true" (click)="createPaymentFlow()" [disabled]="processFlow !== 'willReady'"><ion-label>create</ion-label></ion-item>
     <ion-item button="true" detail="true" (click)="presentPaymentFlow()" [disabled]="processFlow !== 'Ready'"><ion-label>present</ion-label></ion-item>
     <ion-item button="true" detail="true" (click)="confirmPaymentFlow()" [disabled]="processFlow !== 'canConfirm'"><ion-label>confirm</ion-label></ion-item>

@@ -17,7 +17,7 @@ export const usePaymentSheet = () => {
           customer,
           paymentIntent,
           ephemeralKey,
-        } = await fetch(`${api}payment-sheet`, {
+        } = await fetch(`${api}intent`, {
           method: 'POST'
         }).then(res => res.json())
         return {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Stripe } from 'stripe';
 
@@ -10,8 +10,8 @@ export class AppController {
     this.stripe = require('stripe')('sk_test_BpbfN6DaB1VhEDVMlLg33IIL');
   }
 
-  @Post('payment-sheet')
-  async createPaymentSheet(): Promise<{
+  @Post('intent')
+  async createIntent(): Promise<{
     paymentIntent: string;
     ephemeralKey: string;
     customer: string;
@@ -33,6 +33,22 @@ export class AppController {
       paymentIntent: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
       customer: customer.id
+    }
+  }
+
+  @Post('intent/without-customer')
+  async createIntentWithoutCustomer(): Promise<{
+    paymentIntent: string;
+  }> {
+    /**
+     * https://stripe.com/docs/payments/accept-a-payment?platform=ios
+     */
+    const paymentIntent = await this.stripe.paymentIntents.create({
+      amount: 1099,
+      currency: 'usd',
+    });
+    return {
+      paymentIntent: paymentIntent.client_secret,
     }
   }
 }

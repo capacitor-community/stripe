@@ -88,7 +88,7 @@ export class Tab2Page {
       paymentIntent: string;
       ephemeralKey: string;
       customer: string;
-    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise)
+    }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise)
       .catch(async (e) => {
         await this.helper.updateItem(this.eventItems,'HttpClient', false);
         throw e;
