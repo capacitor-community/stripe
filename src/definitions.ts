@@ -20,5 +20,19 @@ export interface StripePlugin extends StripeDefinitions {
 
 export interface StripeInitializationOptions {
   publishableKey: string;
-  stripeAccount?: string;
+}
+
+export interface CapacitorStripeContext {
+  stripe: StripePlugin;
+  isApplePayAvailable: boolean;
+  isGooglePayAvailable: boolean;
+}
+
+/**
+ * This is for @capacitor/docgen only.
+ * Not use in product.
+ */
+export interface DocGenType {
+  stripe: StripePlugin;
+  context: CapacitorStripeContext;
 }

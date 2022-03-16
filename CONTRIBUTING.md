@@ -40,3 +40,6 @@ This is useful to run in CI to verify that the plugin builds for all platforms.
 Check formatting and code quality, autoformat/autofix if possible.
 
 This template is integrated with ESLint, Prettier, and SwiftLint. Using these tools is completely optional, but the [Capacitor Community](https://github.com/capacitor-community/) strives to have consistent code style and structure for easier cooperation.
+
+# Note
+`docgen --api DocGenType` is for Document. 

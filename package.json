@@ -1,11 +1,22 @@
 {
   "name": "@capacitor-community/stripe",
-  "version": "3.4.0",
+  "version": "3.5.3",
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
+  "exports": {
+    ".": {
+      "type": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js"
+    },
+    "./react": {
+      "type": "./dist/esm/react/provider.d.ts",
+      "import": "./dist/esm/react/provider.js"
+    },
+    "./*": "./*"
+  },
   "files": [
     "android/src/main/",
     "android/build.gradle",
@@ -37,22 +48,23 @@
     "eslint": "eslint src/. --ext ts",
     "prettier": "prettier \"{src/*.ts,**/*.java}\"",
     "swiftlint": "node-swiftlint",
-    "docgen": "docgen --api StripePlugin --output-readme README.md --output-json dist/docs.json",
+    "docgen": "docgen --api DocGenType --output-readme README.md --output-json dist/docs.json",
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "release": "np",
+    "release": "np --no-tests",
     "update:elements": "npm i @stripe-elements/stripe-elements@latest && cd demo/angular && npm i @stripe-elements/stripe-elements@latest"
   },
   "devDependencies": {
     "@capacitor/android": "^3.0.0",
     "@capacitor/core": "^3.0.0",
-    "@capacitor/docgen": "git+https://github.com/rdlabo/capacitor-docgen.git#feat/support_extends_build",
+    "@capacitor/docgen": "git+https://github.com/rdlabo/capacitor-docgen.git#release",
     "@capacitor/ios": "^3.0.0",
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
+    "@types/react": "^17.0.38",
     "eslint": "^7.11.0",
     "np": "^7.5.0",
     "prettier": "~2.2.0",
@@ -63,7 +75,8 @@
     "typescript": "~4.0.3"
   },
   "peerDependencies": {
-    "@capacitor/core": "^3.0.0"
+    "@capacitor/core": "^3.0.0",
+    "react": "^17.0.2"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",

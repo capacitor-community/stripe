@@ -7,8 +7,6 @@ export enum PaymentSheetEventsEnum {
 }
 
 export type PaymentSheetResultInterface =
-    PaymentSheetEventsEnum.Loaded
-    | PaymentSheetEventsEnum.FailedToLoad
-    | PaymentSheetEventsEnum.Completed
+    PaymentSheetEventsEnum.Completed
     | PaymentSheetEventsEnum.Canceled
     | PaymentSheetEventsEnum.Failed;

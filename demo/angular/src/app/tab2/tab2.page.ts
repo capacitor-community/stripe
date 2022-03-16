@@ -100,7 +100,6 @@ export class Tab2Page {
       paymentIntentClientSecret: paymentIntent,
       customerEphemeralKeySecret: ephemeralKey,
       customerId: customer,
-      merchantDisplayName: 'rdlabo',
     })
       .then(async () => await this.helper.updateItem(this.eventItems,'createPaymentSheet', true))
       .catch(async () => await this.helper.updateItem(this.eventItems,'createPaymentSheet', false));
