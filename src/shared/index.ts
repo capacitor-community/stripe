@@ -80,6 +80,12 @@ export interface BasePaymentOption {
    * @default undefined
    */
   style?: 'alwaysLight' | 'alwaysDark';
+
+  /**
+   * Show ZIP code field
+   * @default true
+   */
+  withZipCode?: boolean
 }
 
 export interface CreateApplePayOption {
