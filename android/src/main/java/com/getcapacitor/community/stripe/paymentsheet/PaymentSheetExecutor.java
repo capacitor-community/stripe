@@ -59,10 +59,12 @@ public class PaymentSheetExecutor extends Executor {
         }
 
         paymentConfiguration =
-            new PaymentSheet.Configuration(
-                merchantDisplayName,
-                new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
-            );
+            customerId != null
+                ? new PaymentSheet.Configuration(
+                    merchantDisplayName,
+                    new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
+                )
+                : new PaymentSheet.Configuration(merchantDisplayName);
 
         Boolean enableGooglePay = call.getBoolean("enableGooglePay", false);
 

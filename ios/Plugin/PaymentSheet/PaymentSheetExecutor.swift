@@ -16,7 +16,7 @@ class PaymentSheetExecutor: NSObject {
             call.reject("Invalid Params. this method require paymentIntentClientSecret.")
             return
         }
-        
+
         if customerId != nil && customerEphemeralKeySecret == nil {
             self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
             call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.")
@@ -49,7 +49,6 @@ class PaymentSheetExecutor: NSObject {
             )
         }
 
-        
         if customerId != nil && customerEphemeralKeySecret != nil {
             configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
         }

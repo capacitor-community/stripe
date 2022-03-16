@@ -18,7 +18,7 @@ class PaymentFlowExecutor: NSObject {
             call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret.")
             return
         }
-        
+
         if customerId != nil && customerEphemeralKeySecret == nil {
             self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
             call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.")
