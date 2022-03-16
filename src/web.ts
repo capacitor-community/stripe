@@ -57,11 +57,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-sheet');
 
     this.paymentSheet.publishableKey = this.publishableKey;
-    this.paymentSheet.intentClientSecret =
-      options.paymentIntentClientSecret;
-    this.paymentSheet.intentType = "payment";
+    this.paymentSheet.intentClientSecret = options.paymentIntentClientSecret;
+    this.paymentSheet.intentType = 'payment';
     if (options.withZipCode !== undefined) {
-      this.paymentSheet.zip = options.withZipCode
+      this.paymentSheet.zip = options.withZipCode;
     }
 
     this.notifyListeners(PaymentSheetEventsEnum.Loaded, null);
@@ -131,7 +130,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       this.paymentSheet.intentClientSecret = options.setupIntentClientSecret;
     }
     if (options.withZipCode !== undefined) {
-      this.paymentSheet.zip = options.withZipCode
+      this.paymentSheet.zip = options.withZipCode;
     }
 
     if (isPlatform(window, 'ios')) {
