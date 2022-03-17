@@ -136,38 +136,60 @@ export class Tab1Page implements OnInit {
     Stripe.isGooglePayAvailable().then(() => this.isGooglePayAvailable = true);
   }
 
-  async createPaymentSheet() {
-    const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
-      paymentIntent: string;
-      ephemeralKey: string;
-      customer: string;
-    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+  async createPaymentSheet(withCustomer = true) {
+    if (withCustomer) {
+      const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+        paymentIntent: string;
+        ephemeralKey: string;
+        customer: string;
+      }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
 
-    await Stripe.createPaymentSheet({
-      paymentIntentClientSecret: paymentIntent,
-      customerEphemeralKeySecret: ephemeralKey,
-      customerId: customer,
-      merchantDisplayName: 'rdlabo',
-    });
+      await Stripe.createPaymentSheet({
+        paymentIntentClientSecret: paymentIntent,
+        customerEphemeralKeySecret: ephemeralKey,
+        customerId: customer,
+        merchantDisplayName: 'rdlabo',
+      });
+    } else {
+      const { paymentIntent } = await this.http.post<{
+        paymentIntent: string;
+      }>(environment.api + 'intent/without-customer', {}).pipe(first()).toPromise(Promise);
+
+      await Stripe.createPaymentSheet({
+        paymentIntentClientSecret: paymentIntent,
+        merchantDisplayName: 'rdlabo',
+      });
+    }
   }
 
   presentPaymentSheet() {
     Stripe.presentPaymentSheet();
   }
 
-  async createPaymentFlow() {
-    const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
-      paymentIntent: string;
-      ephemeralKey: string;
-      customer: string;
-    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+  async createPaymentFlow(withCustomer = true) {
+    if (withCustomer) {
+      const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+        paymentIntent: string;
+        ephemeralKey: string;
+        customer: string;
+      }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
 
-    await Stripe.createPaymentFlow({
-      paymentIntentClientSecret: paymentIntent,
-      customerEphemeralKeySecret: ephemeralKey,
-      customerId: customer,
-      merchantDisplayName: 'rdlabo',
-    });
+      await Stripe.createPaymentFlow({
+        paymentIntentClientSecret: paymentIntent,
+        customerEphemeralKeySecret: ephemeralKey,
+        customerId: customer,
+        merchantDisplayName: 'rdlabo',
+      });
+    } else {
+      const { paymentIntent } = await this.http.post<{
+        paymentIntent: string;
+      }>(environment.api + 'intent/without-customer', {}).pipe(first()).toPromise(Promise);
+
+      await Stripe.createPaymentFlow({
+        paymentIntentClientSecret: paymentIntent,
+        merchantDisplayName: 'rdlabo',
+      });
+    }
   }
 
   presentPaymentFlow() {
@@ -181,7 +203,7 @@ export class Tab1Page implements OnInit {
   async createApplePay() {
     const { paymentIntent } = await this.http.post<{
       paymentIntent: string;
-    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+    }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
 
     await Stripe.createApplePay({
       paymentIntentClientSecret: paymentIntent,
@@ -202,7 +224,7 @@ export class Tab1Page implements OnInit {
   async createGooglePay() {
     const { paymentIntent } = await this.http.post<{
       paymentIntent: string;
-    }>(environment.api + 'payment-sheet', {}).pipe(first()).toPromise(Promise);
+    }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
 
     await Stripe.createGooglePay({
       paymentIntentClientSecret: paymentIntent,

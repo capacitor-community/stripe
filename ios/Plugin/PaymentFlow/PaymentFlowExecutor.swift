@@ -11,10 +11,17 @@ class PaymentFlowExecutor: NSObject {
         let setupIntentClientSecret = call.getString("setupIntentClientSecret") ?? nil
 
         let customerId = call.getString("customerId") ?? nil
-        let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? ""
+        let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? nil
 
-        if (paymentIntentClientSecret == nil && setupIntentClientSecret == nil) || customerId == nil {
-            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.")
+        if paymentIntentClientSecret == nil && setupIntentClientSecret == nil {
+            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
+            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret.")
+            return
+        }
+
+        if customerId != nil && customerEphemeralKeySecret == nil {
+            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
+            call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.")
             return
         }
 
@@ -44,7 +51,9 @@ class PaymentFlowExecutor: NSObject {
             )
         }
 
-        configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret)
+        if customerId != nil && customerEphemeralKeySecret != nil {
+            configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
+        }
 
         if setupIntentClientSecret != nil {
             PaymentSheet.FlowController.create(setupIntentClientSecret: setupIntentClientSecret!,
