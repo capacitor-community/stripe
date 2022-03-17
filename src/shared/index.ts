@@ -82,7 +82,8 @@ export interface BasePaymentOption {
   style?: 'alwaysLight' | 'alwaysDark';
 
   /**
-   * Show ZIP code field
+   * Platform: Web only
+   * Show ZIP code field.
    * @default true
    */
   withZipCode?: boolean
