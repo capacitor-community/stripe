@@ -1,21 +1,23 @@
-import { WebPlugin } from '@capacitor/core';
-import type { Components } from '@stripe-elements/stripe-elements';
-import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
-import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
-import type { Stripe, StripeCardNumberElement } from '@stripe/stripe-js';
+import {WebPlugin} from '@capacitor/core';
+import type {Components} from '@stripe-elements/stripe-elements';
+import type {FormSubmitEvent} from '@stripe-elements/stripe-elements/dist/types/interfaces';
+import type {HTMLStencilElement} from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
+import type {Stripe, StripeCardNumberElement} from '@stripe/stripe-js';
 
 import type {
+  ApplePayResultInterface,
+  CreateApplePayOption,
+  CreateGooglePayOption,
+  CreatePaymentFlowOption,
+  CreatePaymentSheetOption,
+  GooglePayResultInterface,
+  PaymentFlowResultInterface,
+  PaymentSheetResultInterface,
   StripeInitializationOptions,
   StripePlugin,
-  CreatePaymentSheetOption,
-  PaymentSheetResultInterface,
-  CreatePaymentFlowOption,
-  PaymentFlowResultInterface,
-  ApplePayResultInterface,
-  GooglePayResultInterface, CreateApplePayOption,
 } from './definitions';
-import {ApplePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum} from './definitions';
-import { isPlatform } from './shared/platform';
+import {ApplePayEventsEnum, GooglePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum} from './definitions';
+import {isPlatform} from './shared/platform';
 
 interface StripePaymentSheet
   extends Components.StripePaymentSheet,
@@ -34,8 +36,11 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   private flowStripe: Stripe | undefined;
   private flowCardNumberElement: StripeCardNumberElement | undefined;
 
-  private requestButton: StripeRequestButton | undefined;
-  private requestButtonOptions: CreateApplePayOption | undefined;
+  private requestApplePay: StripeRequestButton | undefined;
+  private requestApplePayOptions: CreateApplePayOption | undefined;
+
+  private requestGooglePay: StripeRequestButton | undefined;
+  private requestGooglePayOptions: CreateGooglePayOption | undefined;
 
   constructor() {
     super({
@@ -221,89 +226,113 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       this.notifyListeners(ApplePayEventsEnum.FailedToLoad, null);
       return;
     }
-
-    this.requestButton = document.createElement('stripe-payment-request-button');
-    document.querySelector('body')?.appendChild(this.requestButton);
-    await customElements.whenDefined('stripe-payment-request-button');
-
-    try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      this.requestButton.applicationName = '@capacitor-community/stripe';
-    } catch (e) {
-      console.error(e);
-    }
-
-    this.requestButtonOptions = createApplePayOption;
+    this.requestApplePay = await this.createPaymentRequestButton('ios');
+    this.requestApplePayOptions = createApplePayOption;
     this.notifyListeners(ApplePayEventsEnum.Loaded, null);
   }
 
   presentApplePay(): Promise<{
     paymentResult: ApplePayResultInterface;
   }> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      if (this.requestButton === undefined || this.requestButtonOptions === undefined || this.publishableKey === undefined) {
-        return resolve({
-          paymentResult: ApplePayEventsEnum.Failed
-        });
-      }
-      await this.requestButton.setPaymentRequestOption({
-        country: this.requestButtonOptions.countryCode.toUpperCase(),
-        currency: this.requestButtonOptions.currency.toLowerCase(),
-        total: this.requestButtonOptions.paymentSummaryItems[this.requestButtonOptions.paymentSummaryItems.length - 1],
-        displayItems: this.requestButtonOptions.paymentSummaryItems,
-      });
-
-      // await this.requestButton.setPaymentRequestShippingAddressEventHandler(async (event, stripe) => {});
-      const intentClientSecret = this.requestButtonOptions.paymentIntentClientSecret;
-      await this.requestButton.setPaymentMethodEventHandler(async (event, stripe) => {
-        const line1: string[] = event?.shippingAddress?.addressLine || [];
-        const { error } = await stripe.confirmCardPayment(
-          intentClientSecret,
-          {
-            payment_method: event.paymentMethod.id,
-            shipping: {
-              name: event?.shippingAddress?.recipient || '',
-              phone: event?.shippingAddress?.phone,
-              address: {
-                line1: line1.length ? line1[0] : '',
-                city: event?.shippingAddress?.city,
-                postal_code: event?.shippingAddress?.postalCode,
-                state: event?.shippingAddress?.region,
-                country: event?.shippingAddress?.country,
-              },
-            },
-          },
-          { handleActions: false }
-        );
-        if (error) {
-          this.notifyListeners(ApplePayEventsEnum.Failed, null);
-          resolve({
-            paymentResult: ApplePayEventsEnum.Failed
-          });
-        }
-        resolve({
-          paymentResult: ApplePayEventsEnum.Completed
-        });
-      });
-      await this.requestButton.initStripe(this.publishableKey);
-
-      // ここでApplePayのクリックイベント
-    });
+    return this.presentPaymentRequestButton('ios', this.requestApplePay, this.requestApplePayOptions, ApplePayEventsEnum) as Promise<{
+      paymentResult: ApplePayResultInterface;
+    }>
   }
 
   isGooglePayAvailable(): Promise<void> {
-    throw this.unimplemented('Not implemented on web.');
+    return new Promise(resolve => resolve());
   }
 
-  createGooglePay(): Promise<void> {
-    throw this.unimplemented('Not implemented on web.');
+  async createGooglePay(createGooglePayOption: CreateGooglePayOption): Promise<void> {
+    if (!this.publishableKey) {
+      this.notifyListeners(GooglePayEventsEnum.FailedToLoad, null);
+      return;
+    }
+    this.requestGooglePay = await this.createPaymentRequestButton('md');
+    this.requestGooglePayOptions = createGooglePayOption;
+    this.notifyListeners(GooglePayEventsEnum.Loaded, null);
   }
 
   presentGooglePay(): Promise<{
     paymentResult: GooglePayResultInterface;
   }> {
-    throw this.unimplemented('Not implemented on web.');
+    return this.presentPaymentRequestButton('md', this.requestGooglePay, this.requestGooglePayOptions, GooglePayEventsEnum) as Promise<{
+      paymentResult: GooglePayResultInterface;
+    }>
+  }
+
+  private async createPaymentRequestButton(type: 'ios' | 'md'): Promise<StripeRequestButton> {
+    const requestButton = document.createElement('stripe-payment-request-button');
+    requestButton.setAttribute('mode', type);
+    document.querySelector('body')?.appendChild(requestButton);
+    await customElements.whenDefined('stripe-payment-request-button');
+    requestButton.applicationName = '@capacitor-community/stripe';
+
+    return requestButton;
+  }
+
+  private async presentPaymentRequestButton(type: 'ios' | 'md', requestButton: StripeRequestButton | undefined, requestButtonOptions: CreateApplePayOption | CreateGooglePayOption | undefined, EventsEnum: typeof ApplePayEventsEnum | typeof GooglePayEventsEnum): Promise<{
+    paymentResult: ApplePayResultInterface | GooglePayResultInterface;
+  }> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      if (requestButton === undefined || requestButtonOptions === undefined || this.publishableKey === undefined) {
+        console.log({requestButton, requestButtonOptions, publishableKey: this.publishableKey});
+        this.notifyListeners(EventsEnum.Failed, null);
+        return resolve({
+          paymentResult: EventsEnum.Failed
+        });
+      }
+
+      console.log(['setPaymentRequestOption', {
+        country: requestButtonOptions.countryCode!.toUpperCase(),
+        currency: requestButtonOptions.currency!.toLowerCase(),
+        total: requestButtonOptions.paymentSummaryItems![requestButtonOptions.paymentSummaryItems!.length - 1],
+        displayItems: requestButtonOptions.paymentSummaryItems,
+        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard']
+      }])
+      await requestButton.setPaymentRequestOption({
+        country: requestButtonOptions.countryCode!.toUpperCase(),
+        currency: requestButtonOptions.currency!.toLowerCase(),
+        total: requestButtonOptions.paymentSummaryItems![requestButtonOptions.paymentSummaryItems!.length - 1],
+        displayItems: requestButtonOptions.paymentSummaryItems,
+        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard']
+      });
+
+      // await this.requestButton.setPaymentRequestShippingAddressEventHandler(async (event, stripe) => {});
+      const intentClientSecret = requestButtonOptions.paymentIntentClientSecret;
+      await requestButton.setPaymentMethodEventHandler(async (event, stripe) => {
+        console.log(['setPaymentMethodEventHandler', event]);
+        const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+          intentClientSecret,
+          {
+            payment_method: event.paymentMethod.id,
+          },
+          { handleActions: false }
+        );
+        if (confirmError) {
+          console.log(confirmError);
+          this.notifyListeners(EventsEnum.Failed, null);
+          resolve({
+            paymentResult: EventsEnum.Failed
+          });
+        }
+        if (paymentIntent?.status === "requires_action") {
+          const {error} = await stripe.confirmCardPayment(intentClientSecret);
+          if (error) {
+            this.notifyListeners(EventsEnum.Failed, null);
+            resolve({
+              paymentResult: EventsEnum.Failed
+            });
+          }
+        }
+        console.log(['paymentIntent', paymentIntent])
+        this.notifyListeners(EventsEnum.Completed, null);
+        resolve({
+          paymentResult: EventsEnum.Completed
+        });
+      });
+      await requestButton.initStripe(this.publishableKey, false);
+    });
   }
 }

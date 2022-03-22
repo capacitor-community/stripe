@@ -663,9 +663,13 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 
 #### CreateGooglePayOption
 
-| Prop                            | Type                |
-| ------------------------------- | ------------------- |
-| **`paymentIntentClientSecret`** | <code>string</code> |
+| Prop                            | Type                                              | Description |
+| ------------------------------- | ------------------------------------------------- | ----------- |
+| **`paymentIntentClientSecret`** | <code>string</code>                               |             |
+| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only    |
+| **`merchantIdentifier`**        | <code>string</code>                               | Web only    |
+| **`countryCode`**               | <code>string</code>                               | Web only    |
+| **`currency`**                  | <code>string</code>                               | Web only    |
 
 
 #### CreatePaymentFlowOption

@@ -102,4 +102,24 @@ export interface CreateApplePayOption {
 
 export interface CreateGooglePayOption {
   paymentIntentClientSecret: string;
+
+  /**
+   * Web only
+   */
+  paymentSummaryItems?: {
+    label: string;
+    amount: number;
+  }[];
+  /**
+   * Web only
+   */
+  merchantIdentifier?: string;
+  /**
+   * Web only
+   */
+  countryCode?: string;
+  /**
+   * Web only
+   */
+  currency?: string;
 }
