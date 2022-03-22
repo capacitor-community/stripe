@@ -1,24 +1,31 @@
-import { WebPlugin } from '@capacitor/core';
-import type { Components } from '@stripe-elements/stripe-elements';
-import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
-import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
-import type { Stripe, StripeCardNumberElement } from '@stripe/stripe-js';
+import {WebPlugin} from '@capacitor/core';
+import type {Components} from '@stripe-elements/stripe-elements';
+import type {FormSubmitEvent} from '@stripe-elements/stripe-elements/dist/types/interfaces';
+import type {HTMLStencilElement} from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
+import type {Stripe, StripeCardNumberElement} from '@stripe/stripe-js';
 
 import type {
+  ApplePayResultInterface,
+  CreateApplePayOption,
+  CreateGooglePayOption,
+  CreatePaymentFlowOption,
+  CreatePaymentSheetOption,
+  GooglePayResultInterface,
+  PaymentFlowResultInterface,
+  PaymentSheetResultInterface,
   StripeInitializationOptions,
   StripePlugin,
-  CreatePaymentSheetOption,
-  PaymentSheetResultInterface,
-  CreatePaymentFlowOption,
-  PaymentFlowResultInterface,
-  ApplePayResultInterface,
-  GooglePayResultInterface,
 } from './definitions';
-import { PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
-import { isPlatform } from './shared/platform';
+import {ApplePayEventsEnum, GooglePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum} from './definitions';
+import {isPlatform} from './shared/platform';
 
 interface StripePaymentSheet
   extends Components.StripePaymentSheet,
+    HTMLStencilElement,
+    HTMLElement {}
+
+interface StripeRequestButton
+  extends Components.StripePaymentRequestButton,
     HTMLStencilElement,
     HTMLElement {}
 
@@ -28,6 +35,12 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
 
   private flowStripe: Stripe | undefined;
   private flowCardNumberElement: StripeCardNumberElement | undefined;
+
+  private requestApplePay: StripeRequestButton | undefined;
+  private requestApplePayOptions: CreateApplePayOption | undefined;
+
+  private requestGooglePay: StripeRequestButton | undefined;
+  private requestGooglePayOptions: CreateGooglePayOption | undefined;
 
   constructor() {
     super({
@@ -205,30 +218,123 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   }
 
   isApplePayAvailable(): Promise<void> {
-    throw this.unimplemented('Not implemented on web.');
+    return new Promise(resolve => resolve());
   }
 
-  createApplePay(): Promise<void> {
-    throw this.unimplemented('Not implemented on web.');
+  async createApplePay(createApplePayOption: CreateApplePayOption): Promise<void> {
+    if (!this.publishableKey) {
+      this.notifyListeners(ApplePayEventsEnum.FailedToLoad, null);
+      return;
+    }
+    this.requestApplePay = await this.createPaymentRequestButton('ios');
+    this.requestApplePayOptions = createApplePayOption;
+    this.notifyListeners(ApplePayEventsEnum.Loaded, null);
   }
 
   presentApplePay(): Promise<{
     paymentResult: ApplePayResultInterface;
   }> {
-    throw this.unimplemented('Not implemented on web.');
+    return this.presentPaymentRequestButton('ios', this.requestApplePay, this.requestApplePayOptions, ApplePayEventsEnum) as Promise<{
+      paymentResult: ApplePayResultInterface;
+    }>
   }
 
   isGooglePayAvailable(): Promise<void> {
-    throw this.unimplemented('Not implemented on web.');
+    return new Promise(resolve => resolve());
   }
 
-  createGooglePay(): Promise<void> {
-    throw this.unimplemented('Not implemented on web.');
+  async createGooglePay(createGooglePayOption: CreateGooglePayOption): Promise<void> {
+    if (!this.publishableKey) {
+      this.notifyListeners(GooglePayEventsEnum.FailedToLoad, null);
+      return;
+    }
+    this.requestGooglePay = await this.createPaymentRequestButton('md');
+    this.requestGooglePayOptions = createGooglePayOption;
+    this.notifyListeners(GooglePayEventsEnum.Loaded, null);
   }
 
   presentGooglePay(): Promise<{
     paymentResult: GooglePayResultInterface;
   }> {
-    throw this.unimplemented('Not implemented on web.');
+    return this.presentPaymentRequestButton('md', this.requestGooglePay, this.requestGooglePayOptions, GooglePayEventsEnum) as Promise<{
+      paymentResult: GooglePayResultInterface;
+    }>
+  }
+
+  private async createPaymentRequestButton(type: 'ios' | 'md'): Promise<StripeRequestButton> {
+    const requestButton = document.createElement('stripe-payment-request-button');
+    requestButton.setAttribute('mode', type);
+    document.querySelector('body')?.appendChild(requestButton);
+    await customElements.whenDefined('stripe-payment-request-button');
+    requestButton.applicationName = '@capacitor-community/stripe';
+
+    return requestButton;
+  }
+
+  private async presentPaymentRequestButton(type: 'ios' | 'md', requestButton: StripeRequestButton | undefined, requestButtonOptions: CreateApplePayOption | CreateGooglePayOption | undefined, EventsEnum: typeof ApplePayEventsEnum | typeof GooglePayEventsEnum): Promise<{
+    paymentResult: ApplePayResultInterface | GooglePayResultInterface;
+  }> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      if (requestButton === undefined || requestButtonOptions === undefined || this.publishableKey === undefined) {
+        console.log({requestButton, requestButtonOptions, publishableKey: this.publishableKey});
+        this.notifyListeners(EventsEnum.Failed, null);
+        return resolve({
+          paymentResult: EventsEnum.Failed
+        });
+      }
+
+      console.log(['setPaymentRequestOption', {
+        country: requestButtonOptions.countryCode!.toUpperCase(),
+        currency: requestButtonOptions.currency!.toLowerCase(),
+        total: requestButtonOptions.paymentSummaryItems![requestButtonOptions.paymentSummaryItems!.length - 1],
+        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard'],
+        requestPayerName: true,
+        requestPayerEmail: true,
+      }])
+      await requestButton.setPaymentRequestOption({
+        country: requestButtonOptions.countryCode!.toUpperCase(),
+        currency: requestButtonOptions.currency!.toLowerCase(),
+        total: requestButtonOptions.paymentSummaryItems![requestButtonOptions.paymentSummaryItems!.length - 1],
+        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard'],
+        requestPayerName: true,
+        requestPayerEmail: true,
+      });
+
+      // await this.requestButton.setPaymentRequestShippingAddressEventHandler(async (event, stripe) => {});
+      const intentClientSecret = requestButtonOptions.paymentIntentClientSecret;
+      await requestButton.setPaymentMethodEventHandler(async (event, stripe) => {
+        console.log(['setPaymentMethodEventHandler', event]);
+        const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(
+          intentClientSecret,
+          {
+            payment_method: event.paymentMethod.id,
+          },
+          { handleActions: false }
+        );
+        if (confirmError) {
+          console.log(confirmError);
+          this.notifyListeners(EventsEnum.Failed, null);
+          return resolve({
+            paymentResult: EventsEnum.Failed
+          });
+        }
+        if (paymentIntent?.status === "requires_action") {
+          const {error} = await stripe.confirmCardPayment(intentClientSecret);
+          if (error) {
+            this.notifyListeners(EventsEnum.Failed, null);
+            return resolve({
+              paymentResult: EventsEnum.Failed
+            });
+          }
+        }
+        console.log(['paymentIntent', paymentIntent])
+        this.notifyListeners(EventsEnum.Completed, null);
+        return resolve({
+          paymentResult: EventsEnum.Completed
+        });
+      });
+      await requestButton.initStripe(this.publishableKey, false);
+    });
   }
 }

@@ -111,26 +111,26 @@ export class Tab1Page implements OnInit {
 
     Stripe.addListener(GooglePayEventsEnum.Loaded, () => {
       this.processGooglePay = 'Ready';
-      console.log('ApplePayEventsEnum.Loaded');
+      console.log('GooglePayEventsEnum.Loaded');
     });
 
     Stripe.addListener(GooglePayEventsEnum.FailedToLoad, () => {
-      console.log('ApplePayEventsEnum.FailedToLoad');
+      console.log('GooglePayEventsEnum.FailedToLoad');
     });
 
     Stripe.addListener(GooglePayEventsEnum.Completed, () => {
       this.processGooglePay = 'willReady';
-      console.log('ApplePayEventsEnum.Completed');
+      console.log('GooglePayEventsEnum.Completed');
     });
 
     Stripe.addListener(GooglePayEventsEnum.Canceled, () => {
       this.processGooglePay = 'willReady';
-      console.log('ApplePayEventsEnum.Canceled');
+      console.log('GooglePayEventsEnum.Canceled');
     });
 
     Stripe.addListener(GooglePayEventsEnum.Failed, () => {
       this.processGooglePay = 'willReady';
-      console.log('ApplePayEventsEnum.Failed');
+      console.log('GooglePayEventsEnum.Failed');
     });
 
     Stripe.isGooglePayAvailable().then(() => this.isGooglePayAvailable = true);
@@ -228,10 +228,18 @@ export class Tab1Page implements OnInit {
 
     await Stripe.createGooglePay({
       paymentIntentClientSecret: paymentIntent,
+      paymentSummaryItems: [{
+        label: 'Product Name',
+        amount: 1099.00
+      }],
+      merchantIdentifier: 'merchant.com.getcapacitor.stripe',
+      countryCode: 'US',
+      currency: 'USD',
     });
   }
 
-  presentGooglePay() {
-    Stripe.presentGooglePay();
+  async presentGooglePay() {
+    const result = await Stripe.presentGooglePay();
+    console.log(result);
   }
 }

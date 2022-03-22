@@ -42,12 +42,12 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 
 ### Screenshots
 
-|  |  Android  |  iOS  |  Web  |
-| :---: | :---: | :---: | :---: |
+|  |  Android  |  iOS  |                     Web                     |
+| :---: | :---: | :---: |:-------------------------------------------:|
 |  PaymentSheet  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png)  | ![](demo/screenshots/payment-sheet-web.png) |
 |  PaymentFlow   | ![](demo/screenshots/payment-flow-android.png) |  ![](demo/screenshots/payment-flow-ios.png) | ![](demo/screenshots/payment-sheet-web.png) |
-|  ApplePay   | Not support |  ![](demo/screenshots/apple-pay-ios.png) | Coming soon |
-|  GooglePay   |  ![](demo/screenshots/google-pay-android.png) | Not support | Coming soon |
+|  ApplePay   | Not support |  ![](demo/screenshots/apple-pay-ios.png) |                    beta.                    |
+|  GooglePay   |  ![](demo/screenshots/google-pay-android.png) | Not support |                    beta.                    |
 
 ## API
 
@@ -663,9 +663,13 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 
 #### CreateGooglePayOption
 
-| Prop                            | Type                |
-| ------------------------------- | ------------------- |
-| **`paymentIntentClientSecret`** | <code>string</code> |
+| Prop                            | Type                                              | Description |
+| ------------------------------- | ------------------------------------------------- | ----------- |
+| **`paymentIntentClientSecret`** | <code>string</code>                               |             |
+| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only    |
+| **`merchantIdentifier`**        | <code>string</code>                               | Web only    |
+| **`countryCode`**               | <code>string</code>                               | Web only    |
+| **`currency`**                  | <code>string</code>                               | Web only    |
 
 
 #### CreatePaymentFlowOption

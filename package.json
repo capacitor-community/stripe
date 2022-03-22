@@ -76,6 +76,7 @@
   },
   "peerDependencies": {
     "@capacitor/core": "^3.0.0",
+    "@stripe-elements/stripe-elements": "^1.1.0-5",
     "react": "^17.0.2"
   },
   "prettier": "@ionic/prettier-config",
@@ -90,8 +91,5 @@
     "android": {
       "src": "android"
     }
-  },
-  "dependencies": {
-    "@stripe-elements/stripe-elements": "^1.0.0"
   }
 }
