@@ -315,7 +315,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
         if (confirmError) {
           console.log(confirmError);
           this.notifyListeners(EventsEnum.Failed, null);
-          resolve({
+          return resolve({
             paymentResult: EventsEnum.Failed
           });
         }
@@ -323,14 +323,14 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
           const {error} = await stripe.confirmCardPayment(intentClientSecret);
           if (error) {
             this.notifyListeners(EventsEnum.Failed, null);
-            resolve({
+            return resolve({
               paymentResult: EventsEnum.Failed
             });
           }
         }
         console.log(['paymentIntent', paymentIntent])
         this.notifyListeners(EventsEnum.Completed, null);
-        resolve({
+        return resolve({
           paymentResult: EventsEnum.Completed
         });
       });
