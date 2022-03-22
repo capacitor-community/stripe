@@ -288,15 +288,17 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
         country: requestButtonOptions.countryCode!.toUpperCase(),
         currency: requestButtonOptions.currency!.toLowerCase(),
         total: requestButtonOptions.paymentSummaryItems![requestButtonOptions.paymentSummaryItems!.length - 1],
-        displayItems: requestButtonOptions.paymentSummaryItems,
-        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard']
+        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard'],
+        requestPayerName: true,
+        requestPayerEmail: true,
       }])
       await requestButton.setPaymentRequestOption({
         country: requestButtonOptions.countryCode!.toUpperCase(),
         currency: requestButtonOptions.currency!.toLowerCase(),
         total: requestButtonOptions.paymentSummaryItems![requestButtonOptions.paymentSummaryItems!.length - 1],
-        displayItems: requestButtonOptions.paymentSummaryItems,
-        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard']
+        disableWallets: type === 'ios' ? ['googlePay', 'browserCard']: ['applePay', 'browserCard'],
+        requestPayerName: true,
+        requestPayerEmail: true,
       });
 
       // await this.requestButton.setPaymentRequestShippingAddressEventHandler(async (event, stripe) => {});
