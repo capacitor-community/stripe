@@ -105,8 +105,6 @@ export class Tab1Page implements OnInit {
       console.log('ApplePayEventsEnum.Failed');
     });
 
-    Stripe.isApplePayAvailable().then(() => this.isApplePayAvailable = true);
-
     /** ------------------------------------------------------------------- **/
 
     Stripe.addListener(GooglePayEventsEnum.Loaded, () => {
@@ -133,7 +131,8 @@ export class Tab1Page implements OnInit {
       console.log('GooglePayEventsEnum.Failed');
     });
 
-    Stripe.isGooglePayAvailable().then(() => this.isGooglePayAvailable = true);
+    Stripe.isApplePayAvailable().then(() => this.isApplePayAvailable = true).catch(() => undefined);
+    Stripe.isGooglePayAvailable().then(() => this.isGooglePayAvailable = true).catch(() => undefined);
   }
 
   async createPaymentSheet(withCustomer = true) {
