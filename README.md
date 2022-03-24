@@ -47,7 +47,7 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 |  PaymentSheet  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png)  | ![](demo/screenshots/payment-sheet-web.png) |
 |  PaymentFlow   | ![](demo/screenshots/payment-flow-android.png) |  ![](demo/screenshots/payment-flow-ios.png) | ![](demo/screenshots/payment-sheet-web.png) |
 |  ApplePay   | Not support |  ![](demo/screenshots/apple-pay-ios.png) |                    beta.                    |
-|  GooglePay   |  ![](demo/screenshots/google-pay-android.png) | Not support |                    beta.                    |
+|  GooglePay   |  ![](demo/screenshots/google-pay-android.png) | Not support |  ![](demo/screenshots/google-pay-web.png)   |
 
 ## API
 
