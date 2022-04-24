@@ -663,13 +663,13 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 
 #### CreateGooglePayOption
 
-| Prop                            | Type                                              | Description |
-| ------------------------------- | ------------------------------------------------- | ----------- |
-| **`paymentIntentClientSecret`** | <code>string</code>                               |             |
-| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only    |
-| **`merchantIdentifier`**        | <code>string</code>                               | Web only    |
-| **`countryCode`**               | <code>string</code>                               | Web only    |
-| **`currency`**                  | <code>string</code>                               | Web only    |
+| Prop                            | Type                                              | Description                                               |
+| ------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code>                               |                                                           |
+| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
+| **`merchantIdentifier`**        | <code>string</code>                               | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
+| **`countryCode`**               | <code>string</code>                               | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
+| **`currency`**                  | <code>string</code>                               | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
 
 
 #### CreatePaymentFlowOption
