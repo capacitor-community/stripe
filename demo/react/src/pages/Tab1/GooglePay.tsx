@@ -32,7 +32,14 @@ export const GooglePay: React.FC = () => {
                 } = await createPaymentIntent()
                 try {
                     await stripe.createGooglePay({
-                        paymentIntentClientSecret: paymentIntent,
+                      paymentIntentClientSecret: paymentIntent,
+                      paymentSummaryItems: [{
+                        label: 'Product Name',
+                        amount: 1099.00
+                      }],
+                      merchantIdentifier: 'merchant.com.getcapacitor.stripe',
+                      countryCode: 'US',
+                      currency: 'USD',
                     })
                     setStep('create')
                 } catch(e) {
