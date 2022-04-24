@@ -105,6 +105,7 @@ export interface CreateGooglePayOption {
 
   /**
    * Web only
+   * need @stripe-elements/stripe-elements > 1.1.0
    */
   paymentSummaryItems?: {
     label: string;
@@ -112,14 +113,17 @@ export interface CreateGooglePayOption {
   }[];
   /**
    * Web only
+   * need @stripe-elements/stripe-elements > 1.1.0
    */
   merchantIdentifier?: string;
   /**
    * Web only
+   * need @stripe-elements/stripe-elements > 1.1.0
    */
   countryCode?: string;
   /**
    * Web only
+   * need @stripe-elements/stripe-elements > 1.1.0
    */
   currency?: string;
 }
