@@ -22,6 +22,13 @@ public class StripePlugin: CAPPlugin {
         }
 
         StripeAPI.defaultPublishableKey = publishableKey
+        
+
+        let stripeAccount = call.getString("stripeAccount") ?? ""
+        
+        if (stripeAccount != "") {
+            STPAPIClient.shared.stripeAccount = stripeAccount
+        }
 
         STPAPIClient.shared.appInfo = STPAppInfo(name: "@capacitor-community/stripe", partnerId: nil, version: nil, url: nil)
 

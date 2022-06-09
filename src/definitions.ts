@@ -20,6 +20,12 @@ export interface StripePlugin extends StripeDefinitions {
 
 export interface StripeInitializationOptions {
   publishableKey: string;
+
+  /**
+   * Optional. Making API calls for connected accounts
+   * @info https://stripe.com/docs/connect/authentication
+   */
+  stripeAccount?: string;
 }
 
 export interface CapacitorStripeContext {

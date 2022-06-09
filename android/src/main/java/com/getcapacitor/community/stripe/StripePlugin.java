@@ -99,7 +99,10 @@ public class StripePlugin extends Plugin {
                     call.reject("you must provide a valid key");
                     return;
                 }
-                PaymentConfiguration.init(getContext(), publishableKey);
+
+                String stripeAccountId = call.getString("stripeAccount", null);
+
+                PaymentConfiguration.init(getContext(), publishableKey, stripeAccountId);
                 Stripe.setAppInfo(AppInfo.create(APP_INFO_NAME));
             } else {
                 Logger.info("PaymentConfiguration.init was run at load");

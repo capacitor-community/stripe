@@ -31,6 +31,7 @@ interface StripeRequestButton
 
 export class StripeWeb extends WebPlugin implements StripePlugin {
   private publishableKey: string | undefined;
+  private stripeAccount: string | undefined;
   private paymentSheet: StripePaymentSheet | undefined;
 
   private flowStripe: Stripe | undefined;
@@ -57,6 +58,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       throw new Error('you must provide a valid key');
     }
     this.publishableKey = options.publishableKey;
+
+    if (options.stripeAccount) {
+      this.stripeAccount = options.stripeAccount;
+    }
   }
 
   async createPaymentSheet(options: CreatePaymentSheetOption): Promise<void> {
@@ -70,6 +75,11 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-sheet');
 
     this.paymentSheet.publishableKey = this.publishableKey;
+
+    if (this.stripeAccount) {
+      this.paymentSheet.stripeAccount = this.stripeAccount;
+    }
+
     this.paymentSheet.intentClientSecret = options.paymentIntentClientSecret;
     this.paymentSheet.intentType = 'payment';
     if (options.withZipCode !== undefined) {
@@ -132,6 +142,11 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-sheet');
 
     this.paymentSheet.publishableKey = this.publishableKey;
+
+    if (this.stripeAccount) {
+      this.paymentSheet.stripeAccount = this.stripeAccount;
+    }
+
     this.paymentSheet.applicationName = '@capacitor-community/stripe';
 
     // eslint-disable-next-line no-prototype-builtins
@@ -268,6 +283,11 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     await customElements.whenDefined('stripe-payment-request-button');
 
     requestButton.publishableKey = this.publishableKey!;
+
+    if (this.stripeAccount) {
+      requestButton.stripeAccount = this.stripeAccount;
+    }
+
     requestButton.applicationName = '@capacitor-community/stripe';
     return await requestButton.isAvailable(type).finally(() => requestButton.remove());
   }
@@ -277,6 +297,11 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     document.querySelector('body')?.appendChild(requestButton);
     await customElements.whenDefined('stripe-payment-request-button');
     requestButton.publishableKey = this.publishableKey!;
+
+    if (this.stripeAccount) {
+      requestButton.stripeAccount = this.stripeAccount;
+    }
+
     requestButton.applicationName = '@capacitor-community/stripe';
 
     return requestButton;
@@ -335,7 +360,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
           paymentResult: EventsEnum.Completed
         });
       });
-      await requestButton.initStripe(this.publishableKey, false);
+      await requestButton.initStripe(this.publishableKey, {
+        stripeAccount: this.stripeAccount,
+        showButton: false,
+      });
     });
   }
 }
