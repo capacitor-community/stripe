@@ -22,11 +22,10 @@ public class StripePlugin: CAPPlugin {
         }
 
         StripeAPI.defaultPublishableKey = publishableKey
-        
 
         let stripeAccount = call.getString("stripeAccount") ?? ""
-        
-        if (stripeAccount != "") {
+
+        if stripeAccount != "" {
             STPAPIClient.shared.stripeAccount = stripeAccount
         }
 
