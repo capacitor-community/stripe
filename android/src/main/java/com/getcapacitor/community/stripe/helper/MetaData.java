@@ -14,6 +14,7 @@ public class MetaData {
     public String publishableKey;
     public String countryCode;
     public String displayName;
+    public String stripeAccount;
     public GooglePayEnvironment googlePayEnvironment;
 
     public MetaData(Supplier<Context> contextSupplier) {
@@ -28,6 +29,7 @@ public class MetaData {
             publishableKey = appInfo.metaData.getString("com.getcapacitor.community.stripe.publishable_key");
             countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
             displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
+            stripeAccount = appInfo.metaData.getString("com.getcapacitor.community.stripe.stripe_account");
 
             boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing");
             if (isTest) {

@@ -54,7 +54,8 @@ public class StripePlugin extends Plugin {
         metaData = new MetaData(this::getContext);
         if (metaData.enableGooglePay) {
             this.publishableKey = metaData.publishableKey;
-            PaymentConfiguration.init(getContext(), metaData.publishableKey);
+
+            PaymentConfiguration.init(getContext(), metaData.publishableKey, metaData.stripeAccount);
             Stripe.setAppInfo(AppInfo.create(APP_INFO_NAME));
 
             this.googlePayExecutor.googlePayLauncher =
