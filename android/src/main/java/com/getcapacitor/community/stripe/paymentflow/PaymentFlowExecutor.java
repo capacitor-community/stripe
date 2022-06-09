@@ -23,6 +23,7 @@ public class PaymentFlowExecutor extends Executor {
 
     public PaymentSheet.FlowController flowController;
     private final JSObject emptyObject = new JSObject();
+    private PaymentSheet.Configuration paymentConfiguration;
 
     public PaymentFlowExecutor(
         Supplier<Context> contextSupplier,
@@ -58,28 +59,34 @@ public class PaymentFlowExecutor extends Executor {
             merchantDisplayName = "";
         }
 
-        PaymentSheet.Configuration paymentConfiguration = customerId != null
-            ? new PaymentSheet.Configuration(
-                merchantDisplayName,
-                new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
-            )
-            : new PaymentSheet.Configuration(merchantDisplayName);
-
         Boolean enableGooglePay = call.getBoolean("enableGooglePay", false);
 
-        if (enableGooglePay) {
+        final PaymentSheet.CustomerConfiguration customer = customerId != null ?
+                new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
+                : null;
+
+        if (!enableGooglePay) {
+            paymentConfiguration = new PaymentSheet.Configuration(
+                    merchantDisplayName,
+                    customer
+            );
+        } else {
             Boolean GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false);
 
             PaymentSheet.GooglePayConfiguration.Environment environment = PaymentSheet.GooglePayConfiguration.Environment.Production;
+
             if (GooglePayEnvironment) {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test;
             }
 
-            final PaymentSheet.GooglePayConfiguration googlePayConfiguration = new PaymentSheet.GooglePayConfiguration(
-                environment,
-                call.getString("countryCode", "US")
+            paymentConfiguration = new PaymentSheet.Configuration(
+                    merchantDisplayName,
+                    customer,
+                    new PaymentSheet.GooglePayConfiguration(
+                            environment,
+                            call.getString("countryCode", "US")
+                    )
             );
-            paymentConfiguration.setGooglePay(googlePayConfiguration);
         }
 
         if (setupIntentClientSecret != null) {
