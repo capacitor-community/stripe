@@ -709,9 +709,10 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 
 #### StripeInitializationOptions
 
-| Prop                 | Type                |
-| -------------------- | ------------------- |
-| **`publishableKey`** | <code>string</code> |
+| Prop                 | Type                | Description                                       |
+| -------------------- | ------------------- | ------------------------------------------------- |
+| **`publishableKey`** | <code>string</code> |                                                   |
+| **`stripeAccount`**  | <code>string</code> | Optional. Making API calls for connected accounts |
 
 
 #### StripePlugin
