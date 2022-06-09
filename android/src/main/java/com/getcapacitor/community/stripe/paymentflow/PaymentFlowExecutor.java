@@ -61,15 +61,12 @@ public class PaymentFlowExecutor extends Executor {
 
         Boolean enableGooglePay = call.getBoolean("enableGooglePay", false);
 
-        final PaymentSheet.CustomerConfiguration customer = customerId != null ?
-                new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
-                : null;
+        final PaymentSheet.CustomerConfiguration customer = customerId != null
+            ? new PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret)
+            : null;
 
         if (!enableGooglePay) {
-            paymentConfiguration = new PaymentSheet.Configuration(
-                    merchantDisplayName,
-                    customer
-            );
+            paymentConfiguration = new PaymentSheet.Configuration(merchantDisplayName, customer);
         } else {
             Boolean GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false);
 
@@ -79,14 +76,12 @@ public class PaymentFlowExecutor extends Executor {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test;
             }
 
-            paymentConfiguration = new PaymentSheet.Configuration(
+            paymentConfiguration =
+                new PaymentSheet.Configuration(
                     merchantDisplayName,
                     customer,
-                    new PaymentSheet.GooglePayConfiguration(
-                            environment,
-                            call.getString("countryCode", "US")
-                    )
-            );
+                    new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US"))
+                );
         }
 
         if (setupIntentClientSecret != null) {
