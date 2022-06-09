@@ -64,7 +64,7 @@
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^2.0.0",
     "@ionic/swiftlint-config": "^1.1.2",
-    "@types/react": "^18.0.12",
+    "@types/react": "^16.14.3",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "eslint": "^7.32.0",
     "np": "^7.5.0",
@@ -78,7 +78,7 @@
   "peerDependencies": {
     "@capacitor/core": "^3.0.0",
     "@stripe-elements/stripe-elements": "^2.0.1",
-    "react": "^18.1.0"
+    "react": "^17.0.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
