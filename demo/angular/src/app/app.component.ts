@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Stripe} from '../../../../dist/esm';
+import { Stripe } from '../../../../dist/esm';
 
 @Component({
   selector: 'app-root',

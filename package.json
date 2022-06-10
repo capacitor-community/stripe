@@ -77,7 +77,7 @@
   },
   "peerDependencies": {
     "@capacitor/core": "^3.0.0",
-    "@stripe-elements/stripe-elements": "^2.0.1",
+    "@stripe-elements/stripe-elements": "^2.0.2",
     "react": "^17.0.0"
   },
   "prettier": "@ionic/prettier-config",

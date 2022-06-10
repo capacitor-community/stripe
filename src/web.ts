@@ -71,6 +71,8 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       this.paymentSheet.stripeAccount = this.stripeAccount;
     }
 
+    this.paymentSheet.applicationName = '@capacitor-community/stripe';
+
     this.paymentSheet.intentClientSecret = options.paymentIntentClientSecret;
     this.paymentSheet.intentType = 'payment';
     if (options.withZipCode !== undefined) {
