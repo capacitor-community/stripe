@@ -2,12 +2,13 @@ package com.getcapacitor.community.stripe.googlepay;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+
 import androidx.core.util.Supplier;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
-import com.getcapacitor.community.stripe.paymentflow.PaymentFlowEvents;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
 import org.jetbrains.annotations.NotNull;
@@ -41,11 +42,12 @@ public class GooglePayExecutor extends Executor {
         this.clientSecret = call.getString("paymentIntentClientSecret");
 
         if (this.clientSecret == null) {
-            notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
+            notifyListenersFunction.accept(GooglePayEvents.FailedToLoad.getWebEventName(), emptyObject);
             call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.");
             return;
         }
 
+        notifyListenersFunction.accept(GooglePayEvents.Loaded.getWebEventName(), emptyObject);
         call.resolve();
     }
 
