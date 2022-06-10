@@ -6,7 +6,6 @@ import { ApplePay } from './Tab1/ApplePay';
 import { GooglePay } from './Tab1/GooglePay';
 import React from 'react';
 
-
 const Tab1: React.FC = () => {
   return (
     <IonPage>

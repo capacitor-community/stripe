@@ -1,5 +1,5 @@
 import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
-import type { FC, PropsWithChildren, ReactNode} from "react";
+import type { FC, PropsWithChildren, ReactNode } from "react";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import type { StripePlugin, StripeInitializationOptions, CapacitorStripeContext } from '../index';
