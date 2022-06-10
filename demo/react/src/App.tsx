@@ -1,5 +1,14 @@
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
+import {
+  IonApp,
+  IonIcon,
+  IonLabel,
+  IonRouterOutlet,
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
+  setupIonicReact
+} from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { chevronForwardCircleOutline, copyOutline, tabletLandscapeOutline } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
@@ -30,6 +39,8 @@ import './theme/variables.css';
  */
 import { CapacitorStripeProvider } from '@capacitor-community/stripe/dist/esm/react/provider';
 import React from 'react';
+
+setupIonicReact();
 
 const App: React.FC = () => (
   <CapacitorStripeProvider
