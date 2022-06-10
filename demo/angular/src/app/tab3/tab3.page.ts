@@ -113,21 +113,21 @@ export class Tab3Page {
       customerId: customer,
       merchantDisplayName: 'rdlabo',
     })
-      .then(async () => await this.helper.updateItem(this.eventItems,'createPaymentFlow', true))
-      .catch(async () => await this.helper.updateItem(this.eventItems,'createPaymentFlow', false));
+      .then(() => this.helper.updateItem(this.eventItems,'createPaymentFlow', true))
+      .catch(() => this.helper.updateItem(this.eventItems,'createPaymentFlow', false));
 
     if (type === 'happyPath') {
       await Stripe.presentPaymentFlow()
-        .then(async (data) => await this.helper.updateItem(this.eventItems, 'presentPaymentFlow', data.hasOwnProperty('cardNumber')))
-        .catch(async () => await this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false));
+        .then((data) => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', data.hasOwnProperty('cardNumber')))
+        .catch(() => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false));
 
       await Stripe.confirmPaymentFlow()
-        .then(async (data) => await this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', undefined, data.paymentResult))
-        .catch(async () => await this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', false));
+        .then((data) => this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', undefined, data.paymentResult))
+        .catch(() => this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', false));
     } else {
       await Stripe.presentPaymentFlow()
-        .then(async (data) => await this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false))
-        .catch(async () => await this.helper.updateItem(this.eventItems, 'presentPaymentFlow', true));
+        .then((data) => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false))
+        .catch(() => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', true));
     }
 
     this.listenerHandlers.forEach(handler => handler.remove());

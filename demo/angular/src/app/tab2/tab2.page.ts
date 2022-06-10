@@ -100,13 +100,14 @@ export class Tab2Page {
       paymentIntentClientSecret: paymentIntent,
       customerEphemeralKeySecret: ephemeralKey,
       customerId: customer,
+      merchantDisplayName: 'rdlabo',
     })
-      .then(async () => await this.helper.updateItem(this.eventItems,'createPaymentSheet', true))
-      .catch(async () => await this.helper.updateItem(this.eventItems,'createPaymentSheet', false));
+      .then(() => this.helper.updateItem(this.eventItems,'createPaymentSheet', true))
+      .catch(() => this.helper.updateItem(this.eventItems,'createPaymentSheet', false));
 
     await Stripe.presentPaymentSheet()
-      .then(async (data) => await this.helper.updateItem(this.eventItems,'presentPaymentSheet', undefined, data.paymentResult))
-      .catch(async () => await this.helper.updateItem(this.eventItems,'presentPaymentSheet', false));
+      .then((data) => this.helper.updateItem(this.eventItems,'presentPaymentSheet', undefined, data.paymentResult))
+      .catch(() => this.helper.updateItem(this.eventItems,'presentPaymentSheet', false));
 
     this.listenerHandlers.forEach(handler => handler.remove());
   }
