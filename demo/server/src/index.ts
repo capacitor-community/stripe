@@ -15,12 +15,12 @@ const bootstrapServer = async (): Promise<Server> => {
   app.enableCors();
   await app.init();
   return awsServerlessExpress.createServer(expressApp);
-}
+};
 
 export const handler: APIGatewayProxyHandler = async (event, context) => {
   if (!cachedServer) {
-    cachedServer = await bootstrapServer()
+    cachedServer = await bootstrapServer();
   }
   return awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE')
-      .promise;
+    .promise;
 };
