@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@capacitor-community/stripe": "file:../..",
+    "@capacitor-community/stripe": "^3.8.2-0",
     "@capacitor/app": "^1.0.0",
     "@capacitor/core": "^3.0.0",
     "@capacitor/haptics": "^1.0.0",

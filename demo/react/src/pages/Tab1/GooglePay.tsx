@@ -11,7 +11,7 @@ import React from 'react';
 
 
 export const GooglePay: React.FC = () => {
-  const { stripe, isApplePayAvailable } = useCapacitorStripe()
+  const { stripe, isGooglePayAvailable } = useCapacitorStripe()
   const [step, setStep] = useState<ProcessStatus>('ready')
   const { createPaymentIntent } = usePaymentSheet()
   return (
@@ -19,7 +19,7 @@ export const GooglePay: React.FC = () => {
       <IonListHeader>
         <IonLabel>GooglePay</IonLabel>
       </IonListHeader>
-      {isApplePayAvailable ? (
+      {isGooglePayAvailable ? (
           <>
             <IonItem
                 button

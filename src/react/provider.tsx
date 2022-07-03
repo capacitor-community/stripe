@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 import type { FC, PropsWithChildren, ReactNode } from "react";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -27,7 +28,11 @@ export const CapacitorStripeProvider :FC<CapacitorStripeProviderProps> = ({
     const [isApplePayAvailable, setApplePayAvailableStatus] = useState(false)
     const [isGooglePayAvailable, setGooglePayAvailableStatus] = useState(false)
     useEffect(() => {
-        defineCustomElements().then(() => {
+        Promise.race([
+          // If isNativePlatform is false, work defineCustomElements.
+          new Promise(resolve => Capacitor.isNativePlatform() ? resolve() : undefined),
+          defineCustomElements()
+        ]).then(() => {
             if (!initializeOptions.publishableKey) return
             Stripe.initialize(initializeOptions)
                 .then(() => {
