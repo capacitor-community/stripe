@@ -28,11 +28,7 @@ export const CapacitorStripeProvider :FC<CapacitorStripeProviderProps> = ({
     const [isApplePayAvailable, setApplePayAvailableStatus] = useState(false)
     const [isGooglePayAvailable, setGooglePayAvailableStatus] = useState(false)
     useEffect(() => {
-        Promise.race([
-          // If isNativePlatform is false, work defineCustomElements.
-          new Promise(resolve => Capacitor.isNativePlatform() ? resolve() : undefined),
-          defineCustomElements()
-        ]).then(() => {
+        new Promise(resolve => Capacitor.isNativePlatform() ? resolve() : defineCustomElements()).then(() => {
             if (!initializeOptions.publishableKey) return
             Stripe.initialize(initializeOptions)
                 .then(() => {
