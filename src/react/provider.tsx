@@ -1,7 +1,7 @@
+import { Capacitor } from '@capacitor/core';
 import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 import type { FC, PropsWithChildren, ReactNode } from "react";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Capacitor } from '@capacitor/core';
 
 import type { StripePlugin, StripeInitializationOptions, CapacitorStripeContext } from '../index';
 import { Stripe } from '../index';
