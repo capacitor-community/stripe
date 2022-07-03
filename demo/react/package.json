@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@capacitor-community/stripe": "^3.8.0-1",
+    "@capacitor-community/stripe": "file:../..",
     "@capacitor/app": "^1.0.0",
     "@capacitor/core": "^3.0.0",
     "@capacitor/haptics": "^1.0.0",
@@ -46,7 +46,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cap": "npm run build && cap copy"
   },
   "eslintConfig": {
     "extends": [
