@@ -75,6 +75,12 @@ export interface BasePaymentOption {
   merchantDisplayName?: string | undefined;
 
   /**
+   * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet#ios-set-up-return-url
+   * @default ""
+   */
+  returnURL?: string | undefined;
+
+  /**
    * iOS Only
    * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet#userinterfacestyle
    * @default undefined
