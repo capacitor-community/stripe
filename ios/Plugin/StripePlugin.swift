@@ -34,6 +34,32 @@ public class StripePlugin: CAPPlugin {
         call.resolve()
     }
 
+    @objc func handleURLCallback(_ call: CAPPluginCall) {
+        self.paymentSheetExecutor.plugin = self
+        self.paymentFlowExecutor.plugin = self
+        self.applePayExecutor.plugin = self
+
+        let urlString = call.getString("url") ?? ""
+
+        if urlString == "" {
+            call.reject("you must provide url returned from browser")
+            return
+        }
+
+        let url = URL(string: urlString)!
+        DispatchQueue.main.async {
+            let stripeHandled = StripeAPI.handleURLCallback(with: url)
+            if (stripeHandled) {
+                call.resolve()
+            } else {
+                call.reject("This was not a Stripe url – handle the URL normally as you would")
+                return
+            }
+        }
+
+        
+    }
+
     @objc func createPaymentSheet(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.createPaymentSheet(call)
     }

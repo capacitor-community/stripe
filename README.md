@@ -90,6 +90,7 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled)
 * [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed)
 * [`initialize(...)`](#initialize)
+* [`handleURLCallback(...)`](#handleurlcallback)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -640,6 +641,21 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 --------------------
 
 
+### handleURLCallback(...)
+
+```typescript
+handleURLCallback(opts: StripeURLHandlingOptions) => Promise<void>
+```
+
+iOS Only
+
+| Param      | Type                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#stripeurlhandlingoptions">StripeURLHandlingOptions</a></code> |
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -717,11 +733,19 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 | **`stripeAccount`**  | <code>string</code> | Optional. Making API calls for connected accounts |
 
 
+#### StripeURLHandlingOptions
+
+| Prop      | Type                |
+| --------- | ------------------- |
+| **`url`** | <code>string</code> |
+
+
 #### StripePlugin
 
-| Method         | Signature                                                                                                |
-| -------------- | -------------------------------------------------------------------------------------------------------- |
-| **initialize** | (opts: <a href="#stripeinitializationoptions">StripeInitializationOptions</a>) =&gt; Promise&lt;void&gt; |
+| Method                | Signature                                                                                                | Description |
+| --------------------- | -------------------------------------------------------------------------------------------------------- | ----------- |
+| **initialize**        | (opts: <a href="#stripeinitializationoptions">StripeInitializationOptions</a>) =&gt; Promise&lt;void&gt; |             |
+| **handleURLCallback** | (opts: <a href="#stripeurlhandlingoptions">StripeURLHandlingOptions</a>) =&gt; Promise&lt;void&gt;       | iOS Only    |
 
 
 #### CapacitorStripeContext

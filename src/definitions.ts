@@ -13,6 +13,11 @@ type StripeDefinitions = PaymentSheetDefinitions & PaymentFlowDefinitions & Appl
 
 export interface StripePlugin extends StripeDefinitions {
   initialize(opts: StripeInitializationOptions): Promise<void>;
+  /**
+   * iOS Only
+   * @url https://stripe.com/docs/payments/3d-secure#return-url
+   */
+  handleURLCallback?(opts: StripeURLHandlingOptions): Promise<void>;
 }
 
 export interface StripeInitializationOptions {
@@ -23,6 +28,10 @@ export interface StripeInitializationOptions {
    * @info https://stripe.com/docs/connect/authentication
    */
   stripeAccount?: string;
+}
+
+export interface StripeURLHandlingOptions {
+  url: string;
 }
 
 export interface CapacitorStripeContext {
