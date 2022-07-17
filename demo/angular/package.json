@@ -10,7 +10,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "cap": "npm run build && cap copy"
+    "cap": "npm run build -- --configuration production && cap copy"
   },
   "private": true,
   "dependencies": {

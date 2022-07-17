@@ -9,7 +9,7 @@ import { Stripe } from '../../../../dist/esm';
 export class AppComponent {
   constructor() {
     Stripe.initialize({
-      publishableKey: 'pk_test_YssveZBA1kucfaTfZbeDwauN',
+      publishableKey: 'pk_test_51KFDksKRG9PRcrzzFTufGURQI0o6bpWmfKE2j38nn0bTHIrLDq0nWyD4j6Y6weguOBJL4y5qrmPJCWzGKioy4uOX00icJMyhaP',
 
       /**
        * Danger: This is production environment using production key.

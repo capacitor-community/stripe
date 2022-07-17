@@ -3,7 +3,6 @@ package com.getcapacitor.community.stripe.googlepay;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-
 import androidx.core.util.Supplier;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
