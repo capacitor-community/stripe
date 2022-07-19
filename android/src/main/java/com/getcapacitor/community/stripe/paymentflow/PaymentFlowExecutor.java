@@ -141,10 +141,8 @@ public class PaymentFlowExecutor extends Executor {
             );
             call.resolve(new JSObject().put("cardNumber", paymentOption.getLabel()));
         } else {
-            if (paymentOption != null) {
-                notifyListenersFunction.accept(PaymentFlowEvents.Canceled.getWebEventName(), emptyObject);
-                call.reject("User close PaymentFlow Sheet");
-            }
+            notifyListenersFunction.accept(PaymentFlowEvents.Canceled.getWebEventName(), emptyObject);
+            call.reject("User close PaymentFlow Sheet");
         }
     }
 
