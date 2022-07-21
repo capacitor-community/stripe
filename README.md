@@ -694,7 +694,8 @@ initialize(opts: StripeInitializationOptions) => Promise<void>
 
 | Prop                             | Type                                       | Description                                                                                      | Default                 |
 | -------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------- |
-| **`paymentIntentClientSecret`**  | <code>string</code>                        | Any documentation call 'paymentIntent'                                                           |                         |
+| **`paymentIntentClientSecret`**  | <code>string</code>                        | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
+| **`setupIntentClientSecret`**    | <code>string</code>                        | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
 | **`customerEphemeralKeySecret`** | <code>string</code>                        | Any documentation call 'ephemeralKey'                                                            |                         |
 | **`customerId`**                 | <code>string</code>                        | Any documentation call 'customer'                                                                |                         |
 | **`enableApplePay`**             | <code>boolean</code>                       | If you set payment method ApplePay, this set true                                                | <code>false</code>      |
