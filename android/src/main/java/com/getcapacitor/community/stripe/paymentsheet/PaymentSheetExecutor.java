@@ -32,7 +32,7 @@ public class PaymentSheetExecutor extends Executor {
         BiConsumer<String, JSObject> notifyListenersFunction,
         String pluginLogTag
     ) {
-        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "GooglePayExecutor");
+        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "PaymentSheetExecutor");
         this.contextSupplier = contextSupplier;
     }
 
