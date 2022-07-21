@@ -64,6 +64,7 @@ export class AppController {
     );
     const setupIntent = await this.stripe.setupIntents.create({
       customer: customerId,
+      usage: 'on_session'
     });
     return {
       setupIntent: setupIntent.client_secret,
