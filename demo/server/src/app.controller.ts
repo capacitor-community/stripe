@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Stripe } from 'stripe';
-import { CreatePaymentIntentDTO } from './payment-intent.dto';
+import {CreatePaymentIntentDTO, CreateSetupIntentDTO} from './payment-intent.dto';
 
 @Controller()
 export class AppController {
@@ -12,7 +12,7 @@ export class AppController {
   }
 
   @Post('intent')
-  async createIntent(
+  async createPaymentIntent(
     @Body() createPaymentIntentDto: CreatePaymentIntentDTO,
   ): Promise<{
     paymentIntent: string;
@@ -39,6 +39,35 @@ export class AppController {
     });
     return {
       paymentIntent: paymentIntent.client_secret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customerId,
+    };
+  }
+
+  @Post('intent/setup')
+  async createSetupIntent(
+    @Body() createSetupIntentDto: CreateSetupIntentDTO,
+  ): Promise<{
+    setupIntent: string;
+    ephemeralKey: string;
+    customer: string;
+  }> {
+    const customerId = await (async () => {
+      if (createSetupIntentDto.customer_id)
+        return createSetupIntentDto.customer_id;
+      const customer = await this.stripe.customers.create();
+      return customer.id;
+    })();
+    const ephemeralKey = await this.stripe.ephemeralKeys.create(
+      { customer: customerId },
+      { apiVersion: '2020-08-27' },
+    );
+    const setupIntent = await this.stripe.setupIntents.create({
+      customer: customerId,
+      usage: 'on_session'
+    });
+    return {
+      setupIntent: setupIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
       customer: customerId,
     };

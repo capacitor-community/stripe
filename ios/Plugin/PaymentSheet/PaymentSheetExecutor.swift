@@ -8,17 +8,19 @@ class PaymentSheetExecutor: NSObject {
 
     func createPaymentSheet(_ call: CAPPluginCall) {
         let paymentIntentClientSecret = call.getString("paymentIntentClientSecret") ?? nil
+        let setupIntentClientSecret = call.getString("setupIntentClientSecret") ?? nil
+        
         let customerId = call.getString("customerId") ?? nil
         let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? nil
-
-        if paymentIntentClientSecret == nil {
-            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
-            call.reject("Invalid Params. this method require paymentIntentClientSecret.")
+        
+        if paymentIntentClientSecret == nil && setupIntentClientSecret == nil {
+            self.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: [:])
+            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret.")
             return
         }
 
         if customerId != nil && customerEphemeralKeySecret == nil {
-            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
+            self.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: [:])
             call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.")
             return
         }
@@ -58,7 +60,11 @@ class PaymentSheetExecutor: NSObject {
             configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
         }
 
-        self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret!, configuration: configuration)
+        if setupIntentClientSecret != nil {
+            self.paymentSheet = PaymentSheet(setupIntentClientSecret: setupIntentClientSecret!, configuration: configuration)
+        } else {
+            self.paymentSheet = PaymentSheet(paymentIntentClientSecret: paymentIntentClientSecret!, configuration: configuration)
+        }
 
         self.plugin?.notifyListeners(PaymentSheetEvents.Loaded.rawValue, data: [:])
         call.resolve([:])

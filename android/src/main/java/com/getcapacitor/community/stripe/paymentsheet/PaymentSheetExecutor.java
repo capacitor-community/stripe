@@ -24,6 +24,7 @@ public class PaymentSheetExecutor extends Executor {
     private PaymentSheet.Configuration paymentConfiguration;
 
     private String paymentIntentClientSecret;
+    private String setupIntentClientSecret;
 
     public PaymentSheetExecutor(
         Supplier<Context> contextSupplier,
@@ -31,18 +32,20 @@ public class PaymentSheetExecutor extends Executor {
         BiConsumer<String, JSObject> notifyListenersFunction,
         String pluginLogTag
     ) {
-        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "GooglePayExecutor");
+        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "PaymentSheetExecutor");
         this.contextSupplier = contextSupplier;
     }
 
     public void createPaymentSheet(final PluginCall call) {
         paymentIntentClientSecret = call.getString("paymentIntentClientSecret", null);
+        setupIntentClientSecret = call.getString("setupIntentClientSecret", null);
+
         String customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null);
         String customerId = call.getString("customerId", null);
 
-        if (paymentIntentClientSecret == null) {
+        if (paymentIntentClientSecret == null && setupIntentClientSecret == null) {
             notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("Invalid Params. this method require paymentIntentClientSecret.");
+            call.reject("Invalid Params. This method require paymentIntentClientSecret or setupIntentClientSecret.");
             return;
         }
 
@@ -89,7 +92,11 @@ public class PaymentSheetExecutor extends Executor {
 
     public void presentPaymentSheet(final PluginCall call) {
         try {
-            paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret, paymentConfiguration);
+            if (paymentIntentClientSecret != null) {
+                paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret, paymentConfiguration);
+            } else {
+                paymentSheet.presentWithSetupIntent(setupIntentClientSecret, paymentConfiguration);
+            }
         } catch (Exception ex) {
             call.reject(ex.getLocalizedMessage(), ex);
         }

@@ -3,3 +3,7 @@ export class CreatePaymentIntentDTO {
   currency?: string;
   customer_id?: string;
 }
+
+export class CreateSetupIntentDTO {
+  customer_id?: string;
+}

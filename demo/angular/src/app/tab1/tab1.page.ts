@@ -161,8 +161,26 @@ export class Tab1Page implements OnInit {
     }
   }
 
+  async createPaymentSheetWithSetupIntent() {
+    const { setupIntent, ephemeralKey, customer } = await this.http.post<{
+      setupIntent: string;
+      ephemeralKey: string;
+      customer: string;
+    }>(environment.api + 'intent/setup', {}).pipe(first()).toPromise(Promise);
+
+    await Stripe.createPaymentSheet({
+      setupIntentClientSecret: setupIntent,
+      customerEphemeralKeySecret: ephemeralKey,
+      customerId: customer,
+      merchantDisplayName: 'rdlabo',
+      enableGooglePay: true,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      GooglePayIsTesting: true,
+    });
+  }
+
   presentPaymentSheet() {
-    Stripe.presentPaymentSheet();
+    return Stripe.presentPaymentSheet();
   }
 
   async createPaymentFlow(withCustomer = true) {
@@ -192,11 +210,11 @@ export class Tab1Page implements OnInit {
   }
 
   presentPaymentFlow() {
-    Stripe.presentPaymentFlow();
+    return Stripe.presentPaymentFlow();
   }
 
   confirmPaymentFlow() {
-    Stripe.confirmPaymentFlow();
+    return Stripe.confirmPaymentFlow();
   }
 
   async createApplePay() {
@@ -217,7 +235,7 @@ export class Tab1Page implements OnInit {
   }
 
   presentApplePay() {
-    Stripe.presentApplePay();
+    return Stripe.presentApplePay();
   }
 
   async createGooglePay() {
@@ -238,7 +256,6 @@ export class Tab1Page implements OnInit {
   }
 
   async presentGooglePay() {
-    const result = await Stripe.presentGooglePay();
-    console.log(result);
+    return Stripe.presentGooglePay();
   }
 }

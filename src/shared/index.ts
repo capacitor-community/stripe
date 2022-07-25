@@ -4,8 +4,15 @@
 export interface CreatePaymentSheetOption extends BasePaymentOption {
   /**
    * Any documentation call 'paymentIntent'
+   * Set paymentIntentClientSecret or setupIntentClientSecret
    */
-  paymentIntentClientSecret: string;
+  paymentIntentClientSecret?: string;
+
+  /**
+   * Any documentation call 'paymentIntent'
+   * Set paymentIntentClientSecret or setupIntentClientSecret
+   */
+  setupIntentClientSecret?: string;
 }
 
 /**

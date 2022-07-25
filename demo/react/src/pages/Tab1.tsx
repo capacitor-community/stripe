@@ -11,7 +11,7 @@ const Tab1: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Demo</IonTitle>
+          <IonTitle>React Demo</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
