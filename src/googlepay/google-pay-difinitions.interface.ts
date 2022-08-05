@@ -20,12 +20,7 @@ export interface GooglePayDefinitions {
 
   addListener(
     eventName: GooglePayEventsEnum.FailedToLoad,
-    listenerFunc: () => void,
-  ): PluginListenerHandle;
-
-  addListener(
-    eventName: GooglePayEventsEnum.FailedToLoad,
-    listenerFunc: () => void,
+    listenerFunc: () => string,
   ): PluginListenerHandle;
 
   addListener(

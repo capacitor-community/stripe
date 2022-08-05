@@ -58,7 +58,6 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`presentApplePay()`](#presentapplepay)
 * [`addListener(ApplePayEventsEnum.Loaded, ...)`](#addlistenerapplepayeventsenumloaded)
 * [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload)
-* [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload)
 * [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted)
 * [`addListener(ApplePayEventsEnum.Canceled, ...)`](#addlistenerapplepayeventsenumcanceled)
 * [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed)
@@ -66,7 +65,6 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`createGooglePay(...)`](#creategooglepay)
 * [`presentGooglePay()`](#presentgooglepay)
 * [`addListener(GooglePayEventsEnum.Loaded, ...)`](#addlistenergooglepayeventsenumloaded)
-* [`addListener(GooglePayEventsEnum.FailedToLoad, ...)`](#addlistenergooglepayeventsenumfailedtoload)
 * [`addListener(GooglePayEventsEnum.FailedToLoad, ...)`](#addlistenergooglepayeventsenumfailedtoload)
 * [`addListener(GooglePayEventsEnum.Completed, ...)`](#addlistenergooglepayeventsenumcompleted)
 * [`addListener(GooglePayEventsEnum.Canceled, ...)`](#addlistenergooglepayeventsenumcanceled)
@@ -77,7 +75,6 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(PaymentFlowEventsEnum.Loaded, ...)`](#addlistenerpaymentfloweventsenumloaded)
 * [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload)
 * [`addListener(PaymentFlowEventsEnum.Opened, ...)`](#addlistenerpaymentfloweventsenumopened)
-* [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload)
 * [`addListener(PaymentFlowEventsEnum.Completed, ...)`](#addlistenerpaymentfloweventsenumcompleted)
 * [`addListener(PaymentFlowEventsEnum.Canceled, ...)`](#addlistenerpaymentfloweventsenumcanceled)
 * [`addListener(PaymentFlowEventsEnum.Failed, ...)`](#addlistenerpaymentfloweventsenumfailed)
@@ -155,29 +152,13 @@ addListener(eventName: ApplePayEventsEnum.Loaded, listenerFunc: () => void) => P
 ### addListener(ApplePayEventsEnum.FailedToLoad, ...)
 
 ```typescript
-addListener(eventName: ApplePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: ApplePayEventsEnum.FailedToLoad, listenerFunc: () => string) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                           |
 | ------------------ | ------------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
-
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
-
---------------------
-
-
-### addListener(ApplePayEventsEnum.FailedToLoad, ...)
-
-```typescript
-addListener(eventName: ApplePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
-```
-
-| Param              | Type                                                                           |
-| ------------------ | ------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+| **`listenerFunc`** | <code>() =&gt; string</code>                                                   |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -219,13 +200,13 @@ addListener(eventName: ApplePayEventsEnum.Canceled, listenerFunc: () => void) =>
 ### addListener(ApplePayEventsEnum.Failed, ...)
 
 ```typescript
-addListener(eventName: ApplePayEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: ApplePayEventsEnum.Failed, listenerFunc: () => string) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                     |
 | ------------------ | ------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+| **`listenerFunc`** | <code>() =&gt; string</code>                                             |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -284,29 +265,13 @@ addListener(eventName: GooglePayEventsEnum.Loaded, listenerFunc: () => void) => 
 ### addListener(GooglePayEventsEnum.FailedToLoad, ...)
 
 ```typescript
-addListener(eventName: GooglePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: GooglePayEventsEnum.FailedToLoad, listenerFunc: () => string) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                             |
 | ------------------ | -------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
-
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
-
---------------------
-
-
-### addListener(GooglePayEventsEnum.FailedToLoad, ...)
-
-```typescript
-addListener(eventName: GooglePayEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
-```
-
-| Param              | Type                                                                             |
-| ------------------ | -------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+| **`listenerFunc`** | <code>() =&gt; string</code>                                                     |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -415,13 +380,13 @@ addListener(eventName: PaymentFlowEventsEnum.Loaded, listenerFunc: () => void) =
 ### addListener(PaymentFlowEventsEnum.FailedToLoad, ...)
 
 ```typescript
-addListener(eventName: PaymentFlowEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: PaymentFlowEventsEnum.FailedToLoad, listenerFunc: () => string) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                                 |
 | ------------------ | ------------------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                           |
+| **`listenerFunc`** | <code>() =&gt; string</code>                                                         |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -438,22 +403,6 @@ addListener(eventName: PaymentFlowEventsEnum.Opened, listenerFunc: () => void) =
 | ------------------ | ------------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Opened</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
-
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
-
---------------------
-
-
-### addListener(PaymentFlowEventsEnum.FailedToLoad, ...)
-
-```typescript
-addListener(eventName: PaymentFlowEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
-```
-
-| Param              | Type                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                           |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -495,13 +444,13 @@ addListener(eventName: PaymentFlowEventsEnum.Canceled, listenerFunc: () => void)
 ### addListener(PaymentFlowEventsEnum.Failed, ...)
 
 ```typescript
-addListener(eventName: PaymentFlowEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: PaymentFlowEventsEnum.Failed, listenerFunc: () => string) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                           |
 | ------------------ | ------------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Failed</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+| **`listenerFunc`** | <code>() =&gt; string</code>                                                   |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -567,13 +516,13 @@ addListener(eventName: PaymentSheetEventsEnum.Loaded, listenerFunc: () => void) 
 ### addListener(PaymentSheetEventsEnum.FailedToLoad, ...)
 
 ```typescript
-addListener(eventName: PaymentSheetEventsEnum.FailedToLoad, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: PaymentSheetEventsEnum.FailedToLoad, listenerFunc: () => string) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                                   |
 | ------------------ | -------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                             |
+| **`listenerFunc`** | <code>() =&gt; string</code>                                                           |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -615,13 +564,13 @@ addListener(eventName: PaymentSheetEventsEnum.Canceled, listenerFunc: () => void
 ### addListener(PaymentSheetEventsEnum.Failed, ...)
 
 ```typescript
-addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: () => string) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                             |
 | ------------------ | -------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+| **`listenerFunc`** | <code>() =&gt; string</code>                                                     |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

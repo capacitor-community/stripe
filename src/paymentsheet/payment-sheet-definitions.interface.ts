@@ -17,7 +17,7 @@ export interface PaymentSheetDefinitions {
 
   addListener(
     eventName: PaymentSheetEventsEnum.FailedToLoad,
-    listenerFunc: () => void,
+    listenerFunc: () => string,
   ): PluginListenerHandle;
 
   addListener(
@@ -32,6 +32,6 @@ export interface PaymentSheetDefinitions {
 
   addListener(
     eventName: PaymentSheetEventsEnum.Failed,
-    listenerFunc: () => void,
+    listenerFunc: () => string,
   ): PluginListenerHandle;
 }

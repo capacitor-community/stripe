@@ -14,14 +14,16 @@ class PaymentFlowExecutor: NSObject {
         let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? nil
 
         if paymentIntentClientSecret == nil && setupIntentClientSecret == nil {
-            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
-            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret.")
+            let errorText = "Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret."
+            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: ["error": errorText])
+            call.reject(errorText)
             return
         }
 
         if customerId != nil && customerEphemeralKeySecret == nil {
-            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
-            call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.")
+            let errorText = "Invalid Params. When you set customerId, you must set customerEphemeralKeySecret."
+            self.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: ["error": errorText])
+            call.reject(errorText)
             return
         }
 
@@ -65,7 +67,7 @@ class PaymentFlowExecutor: NSObject {
                                                configuration: configuration) { [weak self] result in
                 switch result {
                 case .failure(let error):
-                    self?.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
+                    self?.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: ["error": error.localizedDescription])
                     call.reject(error.localizedDescription)
                 case .success(let paymentSheetFlowController):
                     self?.paymentSheetFlowController = paymentSheetFlowController
@@ -78,7 +80,7 @@ class PaymentFlowExecutor: NSObject {
                                                configuration: configuration) { [weak self] result in
                 switch result {
                 case .failure(let error):
-                    self?.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: [:])
+                    self?.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: ["error": error.localizedDescription])
                     call.reject(error.localizedDescription)
                 case .success(let paymentSheetFlowController):
                     self?.paymentSheetFlowController = paymentSheetFlowController

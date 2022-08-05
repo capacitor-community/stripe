@@ -20,16 +20,11 @@ export interface PaymentFlowDefinitions {
 
   addListener(
     eventName: PaymentFlowEventsEnum.FailedToLoad,
-    listenerFunc: () => void,
+    listenerFunc: () => string,
   ): PluginListenerHandle;
 
   addListener(
     eventName: PaymentFlowEventsEnum.Opened,
-    listenerFunc: () => void,
-  ): PluginListenerHandle;
-
-  addListener(
-    eventName: PaymentFlowEventsEnum.FailedToLoad,
     listenerFunc: () => void,
   ): PluginListenerHandle;
 
@@ -45,7 +40,7 @@ export interface PaymentFlowDefinitions {
 
   addListener(
     eventName: PaymentFlowEventsEnum.Failed,
-    listenerFunc: () => void,
+    listenerFunc: () => string,
   ): PluginListenerHandle;
 
   addListener(

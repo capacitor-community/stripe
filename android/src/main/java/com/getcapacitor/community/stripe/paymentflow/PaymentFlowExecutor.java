@@ -42,14 +42,16 @@ public class PaymentFlowExecutor extends Executor {
         String customerId = call.getString("customerId", null);
 
         if (paymentIntentClientSecret == null && setupIntentClientSecret == null) {
-            notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("Invalid Params. This method require paymentIntentClientSecret or setupIntentClientSecret.");
+            String errorText = "Invalid Params. This method require paymentIntentClientSecret or setupIntentClientSecret.";
+            notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
+            call.reject(errorText);
             return;
         }
 
         if (customerId != null && customerEphemeralKeySecret == null) {
-            notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.");
+            String errorText = "Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.";
+            notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
+            call.reject(errorText);
             return;
         }
 
@@ -93,7 +95,10 @@ public class PaymentFlowExecutor extends Executor {
                         notifyListenersFunction.accept(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
                         call.resolve();
                     } else {
-                        notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
+                        notifyListenersFunction.accept(
+                            PaymentFlowEvents.FailedToLoad.getWebEventName(),
+                            new JSObject().put("error", error.getLocalizedMessage())
+                        );
                         call.reject(error.getLocalizedMessage());
                     }
                 }
@@ -107,7 +112,10 @@ public class PaymentFlowExecutor extends Executor {
                         notifyListenersFunction.accept(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
                         call.resolve();
                     } else {
-                        notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
+                        notifyListenersFunction.accept(
+                            PaymentFlowEvents.FailedToLoad.getWebEventName(),
+                            new JSObject().put("error", error.getLocalizedMessage())
+                        );
                         call.reject(error.getLocalizedMessage());
                     }
                 }

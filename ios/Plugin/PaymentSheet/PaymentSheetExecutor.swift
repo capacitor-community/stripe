@@ -14,14 +14,16 @@ class PaymentSheetExecutor: NSObject {
         let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? nil
 
         if paymentIntentClientSecret == nil && setupIntentClientSecret == nil {
-            self.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: [:])
-            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret.")
+            let errorText = "Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret."
+            self.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: ["error": errorText])
+            call.reject(errorText)
             return
         }
 
         if customerId != nil && customerEphemeralKeySecret == nil {
-            self.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: [:])
-            call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.")
+            let errorText = "Invalid Params. When you set customerId, you must set customerEphemeralKeySecret."
+            self.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: ["error": errorText])
+            call.reject(errorText)
             return
         }
 

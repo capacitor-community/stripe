@@ -43,14 +43,16 @@ public class PaymentSheetExecutor extends Executor {
         String customerId = call.getString("customerId", null);
 
         if (paymentIntentClientSecret == null && setupIntentClientSecret == null) {
-            notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("Invalid Params. This method require paymentIntentClientSecret or setupIntentClientSecret.");
+            String errorText = "Invalid Params. This method require paymentIntentClientSecret or setupIntentClientSecret.";
+            notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
+            call.reject(errorText);
             return;
         }
 
         if (customerId != null && customerEphemeralKeySecret == null) {
-            notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.");
+            String errorText = "Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.";
+            notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
+            call.reject(errorText);
             return;
         }
 

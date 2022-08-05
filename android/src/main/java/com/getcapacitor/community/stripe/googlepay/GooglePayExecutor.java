@@ -41,8 +41,9 @@ public class GooglePayExecutor extends Executor {
         this.clientSecret = call.getString("paymentIntentClientSecret");
 
         if (this.clientSecret == null) {
-            notifyListenersFunction.accept(GooglePayEvents.FailedToLoad.getWebEventName(), emptyObject);
-            call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.");
+            String errorText = "Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.";
+            notifyListenersFunction.accept(GooglePayEvents.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
+            call.reject(errorText);
             return;
         }
 
