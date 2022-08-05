@@ -49,15 +49,13 @@ public class StripePlugin: CAPPlugin {
         let url = URL(string: urlString)!
         DispatchQueue.main.async {
             let stripeHandled = StripeAPI.handleURLCallback(with: url)
-            if (stripeHandled) {
-                call.resolve()
-            } else {
+            if !stripeHandled {
                 call.reject("This was not a Stripe url – handle the URL normally as you would")
                 return
             }
+            call.resolve()
         }
 
-        
     }
 
     @objc func createPaymentSheet(_ call: CAPPluginCall) {

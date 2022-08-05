@@ -37,7 +37,7 @@ class PaymentFlowExecutor: NSObject {
         if returnURL != "" {
             configuration.returnURL = returnURL
         }
-        
+
         if #available(iOS 13.0, *) {
             let style = call.getString("style") ?? ""
             if style == "alwaysLight" {

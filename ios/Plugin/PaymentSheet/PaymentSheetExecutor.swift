@@ -9,10 +9,10 @@ class PaymentSheetExecutor: NSObject {
     func createPaymentSheet(_ call: CAPPluginCall) {
         let paymentIntentClientSecret = call.getString("paymentIntentClientSecret") ?? nil
         let setupIntentClientSecret = call.getString("setupIntentClientSecret") ?? nil
-        
+
         let customerId = call.getString("customerId") ?? nil
         let customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret") ?? nil
-        
+
         if paymentIntentClientSecret == nil && setupIntentClientSecret == nil {
             self.plugin?.notifyListeners(PaymentSheetEvents.FailedToLoad.rawValue, data: [:])
             call.reject("Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret.")
