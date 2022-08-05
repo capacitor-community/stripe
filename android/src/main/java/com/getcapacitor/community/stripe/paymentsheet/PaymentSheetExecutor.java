@@ -9,7 +9,6 @@ import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
-import com.getcapacitor.community.stripe.paymentflow.PaymentFlowEvents;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
@@ -50,7 +49,7 @@ public class PaymentSheetExecutor extends Executor {
         }
 
         if (customerId != null && customerEphemeralKeySecret == null) {
-            notifyListenersFunction.accept(PaymentFlowEvents.FailedToLoad.getWebEventName(), emptyObject);
+            notifyListenersFunction.accept(PaymentSheetEvents.FailedToLoad.getWebEventName(), emptyObject);
             call.reject("Invalid Params. When you set customerId, you must set customerEphemeralKeySecret.");
             return;
         }
