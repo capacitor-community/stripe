@@ -20,7 +20,7 @@ export interface ApplePayDefinitions {
 
   addListener(
     eventName: ApplePayEventsEnum.FailedToLoad,
-    listenerFunc: () => string,
+    listenerFunc: (error: string) => void,
   ): PluginListenerHandle;
 
   addListener(
@@ -35,6 +35,6 @@ export interface ApplePayDefinitions {
 
   addListener(
     eventName: ApplePayEventsEnum.Failed,
-    listenerFunc: () => string,
+    listenerFunc: (error: string) => void,
   ): PluginListenerHandle;
 }
