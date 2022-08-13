@@ -429,6 +429,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       throw new Error();
     }
 
+    this.notifyListeners(TokensEventsEnum.Completed, {});
     return token;
   }
 }
