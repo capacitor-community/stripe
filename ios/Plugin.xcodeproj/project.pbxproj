@@ -18,6 +18,8 @@
 		DB15233A2663D401003F8BF2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DB1523352663D401003F8BF2 /* Info.plist */; };
 		DB16470C269C457900E31818 /* PaymentSheetExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB16470B269C457900E31818 /* PaymentSheetExecutor.swift */; };
 		DB16470E269C468900E31818 /* PaymentSheetEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB16470D269C468900E31818 /* PaymentSheetEvents.swift */; };
+		DB17DC2928A72BC40089F5E5 /* TokensEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB17DC2828A72BC30089F5E5 /* TokensEvents.swift */; };
+		DB17DC2B28A72BD60089F5E5 /* TokensExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB17DC2A28A72BD60089F5E5 /* TokensExecutor.swift */; };
 		DB280E4226AD433900AAEA30 /* PaymentFlowExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB280E4126AD433900AAEA30 /* PaymentFlowExecutor.swift */; };
 		DB280E4426AD476100AAEA30 /* PaymentFlowEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB280E4326AD476100AAEA30 /* PaymentFlowEvents.swift */; };
 		DB9491A626D9FC9600E48032 /* ApplePay in Resources */ = {isa = PBXBuildFile; fileRef = DB9491A526D9FC9600E48032 /* ApplePay */; };
@@ -50,6 +52,8 @@
 		DB1523352663D401003F8BF2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DB16470B269C457900E31818 /* PaymentSheetExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentSheetExecutor.swift; sourceTree = "<group>"; };
 		DB16470D269C468900E31818 /* PaymentSheetEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentSheetEvents.swift; sourceTree = "<group>"; };
+		DB17DC2828A72BC30089F5E5 /* TokensEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensEvents.swift; sourceTree = "<group>"; };
+		DB17DC2A28A72BD60089F5E5 /* TokensExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensExecutor.swift; sourceTree = "<group>"; };
 		DB280E4126AD433900AAEA30 /* PaymentFlowExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentFlowExecutor.swift; sourceTree = "<group>"; };
 		DB280E4326AD476100AAEA30 /* PaymentFlowEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentFlowEvents.swift; sourceTree = "<group>"; };
 		DB9491A526D9FC9600E48032 /* ApplePay */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ApplePay; sourceTree = "<group>"; };
@@ -102,6 +106,7 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				DB17DC2728A72BAB0089F5E5 /* Tokens */,
 				DB9491A526D9FC9600E48032 /* ApplePay */,
 				DB280E4026AD432500AAEA30 /* PaymentFlow */,
 				DB16470A269C455D00E31818 /* PaymentSheet */,
@@ -151,6 +156,15 @@
 				DB16470D269C468900E31818 /* PaymentSheetEvents.swift */,
 			);
 			path = PaymentSheet;
+			sourceTree = "<group>";
+		};
+		DB17DC2728A72BAB0089F5E5 /* Tokens */ = {
+			isa = PBXGroup;
+			children = (
+				DB17DC2828A72BC30089F5E5 /* TokensEvents.swift */,
+				DB17DC2A28A72BD60089F5E5 /* TokensExecutor.swift */,
+			);
+			path = Tokens;
 			sourceTree = "<group>";
 		};
 		DB280E4026AD432500AAEA30 /* PaymentFlow */ = {
@@ -345,9 +359,11 @@
 			files = (
 				DB280E4226AD433900AAEA30 /* PaymentFlowExecutor.swift in Sources */,
 				DB280E4426AD476100AAEA30 /* PaymentFlowEvents.swift in Sources */,
+				DB17DC2B28A72BD60089F5E5 /* TokensExecutor.swift in Sources */,
 				DB16470E269C468900E31818 /* PaymentSheetEvents.swift in Sources */,
 				50E1A94820377CB70090CE1A /* StripePlugin.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* StripePlugin.m in Sources */,
+				DB17DC2928A72BC40089F5E5 /* TokensEvents.swift in Sources */,
 				DB16470C269C457900E31818 /* PaymentSheetExecutor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

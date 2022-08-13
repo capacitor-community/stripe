@@ -2,14 +2,20 @@ import type { ApplePayDefinitions } from './applepay';
 import type { GooglePayDefinitions } from './googlepay';
 import type { PaymentFlowDefinitions } from './paymentflow';
 import type { PaymentSheetDefinitions } from './paymentsheet';
+import type { TokensDefinitions } from './tokens';
 
 export * from './applepay/index';
 export * from './googlepay/index';
 export * from './paymentflow/index';
 export * from './paymentsheet/index';
+export * from './tokens/index';
 export * from './shared/index';
 
-type StripeDefinitions = PaymentSheetDefinitions & PaymentFlowDefinitions & ApplePayDefinitions & GooglePayDefinitions;
+type StripeDefinitions = PaymentSheetDefinitions &
+  PaymentFlowDefinitions &
+  ApplePayDefinitions &
+  GooglePayDefinitions &
+  TokensDefinitions;
 
 export interface StripePlugin extends StripeDefinitions {
   initialize(opts: StripeInitializationOptions): Promise<void>;

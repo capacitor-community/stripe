@@ -86,6 +86,9 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted)
 * [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled)
 * [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed)
+* [`createBankAccountToken(...)`](#createbankaccounttoken)
+* [`createPIIToken(...)`](#createpiitoken)
+* [`createCVCToken(...)`](#createcvctoken)
 * [`initialize(...)`](#initialize)
 * [`handleURLCallback(...)`](#handleurlcallback)
 * [Interfaces](#interfaces)
@@ -577,6 +580,58 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 --------------------
 
 
+### createBankAccountToken(...)
+
+```typescript
+createBankAccountToken(options: createBankAccountTokenOption) => Promise<Token>
+```
+
+Creates a single-use token that represents a bank account’s details. This token can be used with any API method in place of a bank account object. This token can be used only once, by attaching it to a Custom account.
+
+| Param         | Type                                                |
+| ------------- | --------------------------------------------------- |
+| **`options`** | <code><a href="#bankaccount">BankAccount</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#token">Token</a>&gt;</code>
+
+--------------------
+
+
+### createPIIToken(...)
+
+```typescript
+createPIIToken(options: createPIITokenOption) => Promise<Token>
+```
+
+Creates a single-use token that represents the details of personally identifiable information (PII). This token can be used in place of an id_number or id_number_secondary in Account or Person Update API methods. A PII token can be used only once.
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createpiitokenoption">createPIITokenOption</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#token">Token</a>&gt;</code>
+
+--------------------
+
+
+### createCVCToken(...)
+
+```typescript
+createCVCToken(options: createCVCTokenOption) => Promise<Token>
+```
+
+Creates a single-use token that represents an updated CVC value to be used for CVC re-collection. This token can be used when confirming a card payment using a saved card on a PaymentIntent with confirmation_method: manual.
+For most cases, use our JavaScript library instead of using the API. For a PaymentIntent with confirmation_method: automatic, use our recommended payments integration without tokenizing the CVC value.
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createcvctokenoption">createCVCTokenOption</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#token">Token</a>&gt;</code>
+
+--------------------
+
+
 ### initialize(...)
 
 ```typescript
@@ -675,6 +730,93 @@ iOS Only
 | **`withZipCode`**                | <code>boolean</code>                       | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
 
 
+#### Token
+
+The <a href="#token">Token</a> object.
+
+| Prop               | Type                                                | Description                                                                                                    |
+| ------------------ | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **`id`**           | <code>string</code>                                 | Unique identifier for the object.                                                                              |
+| **`object`**       | <code>'token'</code>                                | String representing the object's type. Objects of the same type share the same value.                          |
+| **`bank_account`** | <code><a href="#bankaccount">BankAccount</a></code> |                                                                                                                |
+| **`card`**         | <code><a href="#card">Card</a></code>               |                                                                                                                |
+| **`client_ip`**    | <code>string \| null</code>                         | IP address of the client that generated the token.                                                             |
+| **`created`**      | <code>number</code>                                 | Time at which the object was created. Measured in seconds since the Unix epoch.                                |
+| **`livemode`**     | <code>boolean</code>                                | Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. |
+| **`type`**         | <code>string</code>                                 | Type of the token: `account`, `bank_account`, `card`, or `pii`.                                                |
+| **`used`**         | <code>boolean</code>                                | Whether this token has already been used (tokens can be used only once).                                       |
+
+
+#### BankAccount
+
+The <a href="#bankaccount">BankAccount</a> object.
+
+| Prop                      | Type                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`id`**                  | <code>string</code>         | Unique identifier for the object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **`object`**              | <code>'bank_account'</code> | String representing the object's type. Objects of the same type share the same value.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **`account_holder_name`** | <code>string \| null</code> | The name of the person or business that owns the bank account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **`account_holder_type`** | <code>string \| null</code> | The type of entity that holds the account. This can be either `individual` or `company`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **`bank_name`**           | <code>string \| null</code> | Name of the bank associated with the routing number (e.g., `WELLS FARGO`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **`country`**             | <code>string</code>         | Two-letter ISO code representing the country the bank account is located in.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **`currency`**            | <code>string</code>         | Three-letter [ISO code for the currency](https://stripe.com/docs/payouts) paid out to the bank account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **`fingerprint`**         | <code>string \| null</code> | Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **`last4`**               | <code>string</code>         | The last four digits of the bank account number.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **`routing_number`**      | <code>string \| null</code> | The routing transit number for the bank account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **`status`**              | <code>string</code>         | For bank accounts, possible values are `new`, `validated`, `verified`, `verification_failed`, or `errored`. A bank account that hasn't had any activity or validation performed is `new`. If Stripe can determine that the bank account exists, its status will be `validated`. Note that there often isn't enough information to know (e.g., for smaller credit unions), and the validation is not always run. If customer bank account verification has succeeded, the bank account status will be `verified`. If the verification failed for any reason, such as microdeposit failure, the status will be `verification_failed`. If a transfer sent to this bank account fails, we'll set the status to `errored` and will not continue to send transfers until the bank details are updated. For external accounts, possible values are `new` and `errored`. Validations aren't run against external accounts because they're only used for payouts. This means the other statuses don't apply. If a transfer fails, the status is set to `errored` and transfers are stopped until account details are updated. |
+
+
+#### Card
+
+The <a href="#card">Card</a> object.
+
+| Prop                      | Type                                          | Description                                                                                                                                                                       |
+| ------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`id`**                  | <code>string</code>                           | Unique identifier for the object.                                                                                                                                                 |
+| **`object`**              | <code>'card'</code>                           | String representing the object's type. Objects of the same type share the same value.                                                                                             |
+| **`address_city`**        | <code>string \| null</code>                   | City/District/Suburb/Town/Village.                                                                                                                                                |
+| **`address_country`**     | <code>string \| null</code>                   | Billing address country, if provided when creating card.                                                                                                                          |
+| **`address_line1`**       | <code>string \| null</code>                   | Address line 1 (Street address/PO Box/Company name).                                                                                                                              |
+| **`address_line1_check`** | <code>string \| null</code>                   | If `address_line1` was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`.                                                                             |
+| **`address_line2`**       | <code>string \| null</code>                   | Address line 2 (Apartment/Suite/Unit/Building).                                                                                                                                   |
+| **`address_state`**       | <code>string \| null</code>                   | State/County/Province/Region.                                                                                                                                                     |
+| **`address_zip`**         | <code>string \| null</code>                   | ZIP or postal code.                                                                                                                                                               |
+| **`address_zip_check`**   | <code>string \| null</code>                   | If `address_zip` was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`.                                                                               |
+| **`brand`**               | <code>string</code>                           | <a href="#card">Card</a> brand. Can be `American Express`, `Diners Club`, `Discover`, `JCB`, `MasterCard`, `UnionPay`, `Visa`, or `Unknown`.                                      |
+| **`country`**             | <code>string \| null</code>                   | Two-letter ISO code representing the country of the card. You could use this attribute to get a sense of the international breakdown of cards you've collected.                   |
+| **`currency`**            | <code>string \| null</code>                   | Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).             |
+| **`customer`**            | <code>string \| null</code>                   | The customer that this card belongs to. This attribute will not be in the card object if the card belongs to an account or recipient instead.                                     |
+| **`cvc_check`**           | <code>string \| null</code>                   | If a CVC was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`.                                                                                       |
+| **`dynamic_last4`**       | <code>string \| null</code>                   | (For tokenized numbers only.) The last four digits of the device account number.                                                                                                  |
+| **`exp_month`**           | <code>number</code>                           | Two-digit number representing the card's expiration month.                                                                                                                        |
+| **`exp_year`**            | <code>number</code>                           | Four-digit number representing the card's expiration year.                                                                                                                        |
+| **`fingerprint`**         | <code>string \| null</code>                   | Uniquely identifies this particular card number. You can use this attribute to check whether two customers who've signed up with you are using the same card number, for example. |
+| **`funding`**             | <code>string</code>                           | <a href="#card">Card</a> funding type. Can be `credit`, `debit`, `prepaid`, or `unknown`.                                                                                         |
+| **`last4`**               | <code>string</code>                           | The last four digits of the card.                                                                                                                                                 |
+| **`metadata`**            | <code><a href="#metadata">Metadata</a></code> | Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.                           |
+| **`name`**                | <code>string \| null</code>                   | Cardholder name.                                                                                                                                                                  |
+| **`tokenization_method`** | <code>string \| null</code>                   | If the card number is tokenized, this is the method that was used. Can be `apple_pay` or `google_pay`.                                                                            |
+
+
+#### Metadata
+
+Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+
+
+#### createPIITokenOption
+
+| Prop           | Type                | Description                                  |
+| -------------- | ------------------- | -------------------------------------------- |
+| **`idNumber`** | <code>number</code> | The `id_number` for the PII, in string form. |
+
+
+#### createCVCTokenOption
+
+| Prop      | Type                | Description                    |
+| --------- | ------------------- | ------------------------------ |
+| **`cvc`** | <code>string</code> | The CVC value, in string form. |
+
+
 #### StripeInitializationOptions
 
 | Prop                 | Type                | Description                                       |
@@ -728,6 +870,11 @@ iOS Only
 #### PaymentSheetResultInterface
 
 <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code>
+
+
+#### createBankAccountTokenOption
+
+<code><a href="#bankaccount">BankAccount</a></code>
 
 
 ### Enums

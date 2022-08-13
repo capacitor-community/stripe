@@ -3,6 +3,8 @@ import type { Components } from '@stripe-elements/stripe-elements';
 import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
 import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
 import type { Stripe, StripeCardNumberElement } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import type { Token } from '@stripe/stripe-js/types/api/tokens';
 
 import type {
   ApplePayResultInterface,
@@ -16,8 +18,15 @@ import type {
   StripeInitializationOptions,
   StripePlugin,
 } from './definitions';
-import { ApplePayEventsEnum, GooglePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum } from './definitions';
+import {
+  ApplePayEventsEnum,
+  GooglePayEventsEnum,
+  PaymentFlowEventsEnum,
+  PaymentSheetEventsEnum,
+  TokensEventsEnum,
+} from './definitions';
 import { isPlatform } from './shared/platform';
+import type { createCVCTokenOption, createBankAccountTokenOption, createPIITokenOption } from './tokens';
 
 interface StripePaymentSheet extends Components.StripePaymentSheet, HTMLStencilElement, HTMLElement {}
 
@@ -36,6 +45,8 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
 
   private requestGooglePay: StripeRequestButton | undefined;
   private requestGooglePayOptions: CreateGooglePayOption | undefined;
+
+  private readonly pluginName = '@capacitor-community/stripe';
 
   constructor() {
     super({
@@ -71,7 +82,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       this.paymentSheet.stripeAccount = this.stripeAccount;
     }
 
-    this.paymentSheet.applicationName = '@capacitor-community/stripe';
+    this.paymentSheet.applicationName = this.pluginName;
 
     this.paymentSheet.intentClientSecret = options.paymentIntentClientSecret;
     this.paymentSheet.intentType = 'payment';
@@ -140,7 +151,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       this.paymentSheet.stripeAccount = this.stripeAccount;
     }
 
-    this.paymentSheet.applicationName = '@capacitor-community/stripe';
+    this.paymentSheet.applicationName = this.pluginName;
 
     // eslint-disable-next-line no-prototype-builtins
     if (options.hasOwnProperty('paymentIntentClientSecret')) {
@@ -291,7 +302,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       requestButton.stripeAccount = this.stripeAccount;
     }
 
-    requestButton.applicationName = '@capacitor-community/stripe';
+    requestButton.applicationName = this.pluginName;
     return await requestButton.isAvailable(type).finally(() => requestButton.remove());
   }
 
@@ -305,7 +316,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       requestButton.stripeAccount = this.stripeAccount;
     }
 
-    requestButton.applicationName = '@capacitor-community/stripe';
+    requestButton.applicationName = this.pluginName;
 
     return requestButton;
   }
@@ -373,5 +384,51 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
         showButton: false,
       });
     });
+  }
+
+  async createBankAccountToken(createBankAccountTokenOption: createBankAccountTokenOption): Promise<Token> {
+    return this.getTokenFromOption('bank_account', createBankAccountTokenOption);
+  }
+
+  async createPIIToken(createPIITokenOption: createPIITokenOption): Promise<Token> {
+    return this.getTokenFromOption('pii', createPIITokenOption);
+  }
+
+  async createCVCToken(createCVCTokenOption: createCVCTokenOption): Promise<Token> {
+    return this.getTokenFromOption('cvc_update', createCVCTokenOption);
+  }
+
+  private async getTokenFromOption(
+    tokenType: 'bank_account' | 'pii' | 'cvc_update',
+    options: createBankAccountTokenOption | createPIITokenOption | createCVCTokenOption
+  ): Promise<Token> {
+    if (!this.publishableKey) {
+      this.notifyListeners(TokensEventsEnum.FailedToLoad, null);
+      throw new Error();
+    }
+
+    const stripe = await loadStripe(this.publishableKey, {
+      stripeAccount: this.stripeAccount,
+    }).catch(() => undefined);
+
+    if (!stripe) {
+      this.notifyListeners(TokensEventsEnum.FailedToLoad, null);
+      throw new Error();
+    }
+
+    stripe.registerAppInfo({
+      name: this.pluginName,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const { token, error } = await stripe.createToken(tokenType, options);
+
+    if (token === undefined) {
+      this.notifyListeners(TokensEventsEnum.Failed, error);
+      throw new Error();
+    }
+
+    return token;
   }
 }
