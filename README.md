@@ -88,7 +88,6 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed)
 * [`createBankAccountToken(...)`](#createbankaccounttoken)
 * [`createPIIToken(...)`](#createpiitoken)
-* [`createCVCToken(...)`](#createcvctoken)
 * [`initialize(...)`](#initialize)
 * [`handleURLCallback(...)`](#handleurlcallback)
 * [Interfaces](#interfaces)
@@ -588,9 +587,9 @@ createBankAccountToken(options: createBankAccountTokenOption) => Promise<Token>
 
 Creates a single-use token that represents a bank account’s details. This token can be used with any API method in place of a bank account object. This token can be used only once, by attaching it to a Custom account.
 
-| Param         | Type                                                |
-| ------------- | --------------------------------------------------- |
-| **`options`** | <code><a href="#bankaccount">BankAccount</a></code> |
+| Param         | Type                                                                              |
+| ------------- | --------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createtokenbankaccountdata">CreateTokenBankAccountData</a></code> |
 
 **Returns:** <code>Promise&lt;<a href="#token">Token</a>&gt;</code>
 
@@ -605,27 +604,9 @@ createPIIToken(options: createPIITokenOption) => Promise<Token>
 
 Creates a single-use token that represents the details of personally identifiable information (PII). This token can be used in place of an id_number or id_number_secondary in Account or Person Update API methods. A PII token can be used only once.
 
-| Param         | Type                                                                  |
-| ------------- | --------------------------------------------------------------------- |
-| **`options`** | <code><a href="#createpiitokenoption">createPIITokenOption</a></code> |
-
-**Returns:** <code>Promise&lt;<a href="#token">Token</a>&gt;</code>
-
---------------------
-
-
-### createCVCToken(...)
-
-```typescript
-createCVCToken(options: createCVCTokenOption) => Promise<Token>
-```
-
-Creates a single-use token that represents an updated CVC value to be used for CVC re-collection. This token can be used when confirming a card payment using a saved card on a PaymentIntent with confirmation_method: manual.
-For most cases, use our JavaScript library instead of using the API. For a PaymentIntent with confirmation_method: automatic, use our recommended payments integration without tokenizing the CVC value.
-
-| Param         | Type                                                                  |
-| ------------- | --------------------------------------------------------------------- |
-| **`options`** | <code><a href="#createcvctokenoption">createCVCTokenOption</a></code> |
+| Param         | Type                                                              |
+| ------------- | ----------------------------------------------------------------- |
+| **`options`** | <code><a href="#createtokenpiidata">CreateTokenPiiData</a></code> |
 
 **Returns:** <code>Promise&lt;<a href="#token">Token</a>&gt;</code>
 
@@ -803,18 +784,24 @@ The <a href="#card">Card</a> object.
 Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
 
 
-#### createPIITokenOption
+#### CreateTokenBankAccountData
 
-| Prop           | Type                | Description                                  |
-| -------------- | ------------------- | -------------------------------------------- |
-| **`idNumber`** | <code>number</code> | The `id_number` for the PII, in string form. |
+| Prop                      | Type                |
+| ------------------------- | ------------------- |
+| **`country`**             | <code>string</code> |
+| **`currency`**            | <code>string</code> |
+| **`routing_number`**      | <code>string</code> |
+| **`account_number`**      | <code>string</code> |
+| **`account_holder_name`** | <code>string</code> |
+| **`account_holder_type`** | <code>string</code> |
+| **`account_type`**        | <code>string</code> |
 
 
-#### createCVCTokenOption
+#### CreateTokenPiiData
 
-| Prop      | Type                | Description                    |
-| --------- | ------------------- | ------------------------------ |
-| **`cvc`** | <code>string</code> | The CVC value, in string form. |
+| Prop                     | Type                |
+| ------------------------ | ------------------- |
+| **`personal_id_number`** | <code>string</code> |
 
 
 #### StripeInitializationOptions
@@ -874,7 +861,12 @@ Set of key-value pairs that you can attach to an object. This can be useful for 
 
 #### createBankAccountTokenOption
 
-<code><a href="#bankaccount">BankAccount</a></code>
+<code><a href="#createtokenbankaccountdata">CreateTokenBankAccountData</a></code>
+
+
+#### createPIITokenOption
+
+<code><a href="#createtokenpiidata">CreateTokenPiiData</a></code>
 
 
 ### Enums

@@ -26,7 +26,7 @@ import {
   TokensEventsEnum,
 } from './definitions';
 import { isPlatform } from './shared/platform';
-import type { createCVCTokenOption, createBankAccountTokenOption, createPIITokenOption } from './tokens';
+import type { createBankAccountTokenOption, createPIITokenOption } from './tokens';
 
 interface StripePaymentSheet extends Components.StripePaymentSheet, HTMLStencilElement, HTMLElement {}
 
@@ -394,13 +394,9 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     return this.getTokenFromOption('pii', createPIITokenOption);
   }
 
-  async createCVCToken(createCVCTokenOption: createCVCTokenOption): Promise<Token> {
-    return this.getTokenFromOption('cvc_update', createCVCTokenOption);
-  }
-
   private async getTokenFromOption(
-    tokenType: 'bank_account' | 'pii' | 'cvc_update',
-    options: createBankAccountTokenOption | createPIITokenOption | createCVCTokenOption
+    tokenType: 'bank_account' | 'pii',
+    options: createBankAccountTokenOption | createPIITokenOption
   ): Promise<Token> {
     if (!this.publishableKey) {
       this.notifyListeners(TokensEventsEnum.FailedToLoad, null);

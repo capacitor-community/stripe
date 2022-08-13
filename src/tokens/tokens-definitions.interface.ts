@@ -1,24 +1,16 @@
-import type { BankAccount } from '@stripe/stripe-js/types/api/bank-accounts';
 import type {Token} from '@stripe/stripe-js/types/api/tokens';
+import type {CreateTokenBankAccountData, CreateTokenPiiData} from '@stripe/stripe-js/types/stripe-js/token-and-sources';
 
 /**
- * @extends BankAccount
+ * @extends CreateTokenBankAccountData
  */
-export type createBankAccountTokenOption = BankAccount
+export type createBankAccountTokenOption = CreateTokenBankAccountData
 
-export interface createPIITokenOption {
-  /**
-   * The `id_number` for the PII, in string form.
-   */
-  idNumber: number;
-}
+/**
+ * @extends CreateTokenPiiData
+ */
+export type createPIITokenOption = CreateTokenPiiData
 
-export interface createCVCTokenOption {
-  /**
-   * The CVC value, in string form.
-   */
-  cvc: string;
-}
 
 
 export interface TokensDefinitions {
@@ -33,11 +25,4 @@ export interface TokensDefinitions {
    * @url https://stripe.com/docs/api/tokens/create_pii
    */
   createPIIToken(options: createPIITokenOption): Promise<Token>;
-
-  /**
-   * Creates a single-use token that represents an updated CVC value to be used for CVC re-collection. This token can be used when confirming a card payment using a saved card on a PaymentIntent with confirmation_method: manual.
-   * For most cases, use our JavaScript library instead of using the API. For a PaymentIntent with confirmation_method: automatic, use our recommended payments integration without tokenizing the CVC value.
-   * @url https://stripe.com/docs/api/tokens/create_cvc_update
-   */
-  createCVCToken(options: createCVCTokenOption): Promise<Token>
 }
