@@ -48,6 +48,7 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
         let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
+        paymentRequest.requiredShippingContactFields = Set([.postalAddress])
 
         self.appleClientSecret = paymentIntentClientSecret!
         self.paymentRequest = paymentRequest
@@ -76,6 +77,16 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
 }
 
 extension ApplePayExecutor {
+    func applePayContext(_ context: STPApplePayContext, didSelectShippingContact contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void) {
+        print("didSelectShippingContact")
+        print(contact.postalAddress?.country)
+        // update amount based on address, if desired
+        // let amount = NSDecimalNumber(value: 4242)
+        // let paymentItem = PKPaymentSummaryItem(label: "sku", amount: amount, type: .final)
+        // handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: [paymentItem]))
+        handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: []))
+    }
+
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: STPPaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
         let clientSecret = self.appleClientSecret
         let error = "" // Call the completion block with the client secret or an error
