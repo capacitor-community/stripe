@@ -78,13 +78,23 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
 
 extension ApplePayExecutor {
     func applePayContext(_ context: STPApplePayContext, didSelectShippingContact contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void) {
-        print("didSelectShippingContact")
-        print(contact.postalAddress?.country)
-        // update amount based on address, if desired
-        // let amount = NSDecimalNumber(value: 4242)
-        // let paymentItem = PKPaymentSummaryItem(label: "sku", amount: amount, type: .final)
-        // handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: [paymentItem]))
         handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: []))
+        if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
+            let postalCode = contact.postalAddress?.postalCode as? String ?? ""
+            let country = contact.postalAddress?.country as? String ?? ""
+            let dataString = "[{" +
+            "\"postalCode\":\"\(postalCode)\"," +
+            "\"country\":\"\(country)\"" +
+            "}]"
+            let dataStringUTF8 = dataString.data(using: .utf8)!
+            do {
+                if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
+                    call.resolve(["contact": jsonArray])
+                }
+            } catch let error as NSError {
+                print(error)
+            }
+        }
     }
 
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: STPPaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
