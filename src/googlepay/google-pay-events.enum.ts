@@ -4,8 +4,12 @@ export enum GooglePayEventsEnum {
   Completed = "googlePayCompleted",
   Canceled = "googlePayCanceled",
   Failed = "googlePayFailed",
+  DidSelectShippingContact = "didSelectShippingContact",
+  DidCreatePaymentMethod = "didCreatePaymentMethod",
 }
 export type  GooglePayResultInterface =
   | GooglePayEventsEnum.Completed
   | GooglePayEventsEnum.Canceled
-  | GooglePayEventsEnum.Failed;
+  | GooglePayEventsEnum.Failed
+  | GooglePayEventsEnum.DidSelectShippingContact
+  | GooglePayEventsEnum.DidCreatePaymentMethod;

@@ -37,4 +37,14 @@ export interface GooglePayDefinitions {
     eventName: GooglePayEventsEnum.Failed,
     listenerFunc: () => void,
   ): PluginListenerHandle;
+  
+  addListener(
+    eventName: GooglePayEventsEnum.DidSelectShippingContact,
+    listenerFunc: (data: any) => void,
+  ): PluginListenerHandle;
+
+  addListener(
+    eventName: GooglePayEventsEnum.DidCreatePaymentMethod,
+    listenerFunc: (data: any) => void,
+  ): PluginListenerHandle;
 }

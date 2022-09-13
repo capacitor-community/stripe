@@ -61,6 +61,8 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted)
 * [`addListener(ApplePayEventsEnum.Canceled, ...)`](#addlistenerapplepayeventsenumcanceled)
 * [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed)
+* [`addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenerapplepayeventsenumdidselectshippingcontact)
+* [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod)
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`createGooglePay(...)`](#creategooglepay)
 * [`presentGooglePay()`](#presentgooglepay)
@@ -69,6 +71,8 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(GooglePayEventsEnum.Completed, ...)`](#addlistenergooglepayeventsenumcompleted)
 * [`addListener(GooglePayEventsEnum.Canceled, ...)`](#addlistenergooglepayeventsenumcanceled)
 * [`addListener(GooglePayEventsEnum.Failed, ...)`](#addlistenergooglepayeventsenumfailed)
+* [`addListener(GooglePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenergooglepayeventsenumdidselectshippingcontact)
+* [`addListener(GooglePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenergooglepayeventsenumdidcreatepaymentmethod)
 * [`createPaymentFlow(...)`](#createpaymentflow)
 * [`presentPaymentFlow()`](#presentpaymentflow)
 * [`confirmPaymentFlow()`](#confirmpaymentflow)
@@ -86,6 +90,8 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted)
 * [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled)
 * [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed)
+* [`addListener(PaymentSheetEventsEnum.DidSelectShippingContact, ...)`](#addlistenerpaymentsheeteventsenumdidselectshippingcontact)
+* [`addListener(PaymentSheetEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerpaymentsheeteventsenumdidcreatepaymentmethod)
 * [`initialize(...)`](#initialize)
 * [`handleURLCallback(...)`](#handleurlcallback)
 * [Interfaces](#interfaces)
@@ -213,6 +219,38 @@ addListener(eventName: ApplePayEventsEnum.Failed, listenerFunc: (error: string) 
 --------------------
 
 
+### addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.DidSelectShippingContact, listenerFunc: (data: any) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a></code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                        |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: any) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                      |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
 ### isGooglePayAvailable()
 
 ```typescript
@@ -320,6 +358,38 @@ addListener(eventName: GooglePayEventsEnum.Failed, listenerFunc: () => void) => 
 | ------------------ | -------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.DidSelectShippingContact, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.DidSelectShippingContact, listenerFunc: (data: any) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.DidSelectShippingContact</a></code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                          |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.DidCreatePaymentMethod, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: any) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.DidCreatePaymentMethod</a></code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                        |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -577,6 +647,38 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 --------------------
 
 
+### addListener(PaymentSheetEventsEnum.DidSelectShippingContact, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.DidSelectShippingContact, listenerFunc: (data: any) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.DidSelectShippingContact</a></code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                                |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.DidCreatePaymentMethod, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: any) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.DidCreatePaymentMethod</a></code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                              |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
 ### initialize(...)
 
 ```typescript
@@ -712,12 +814,12 @@ iOS Only
 
 #### ApplePayResultInterface
 
-<code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a></code>
+<code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code>
 
 
 #### GooglePayResultInterface
 
-<code><a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code>
+<code><a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.DidSelectShippingContact</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.DidCreatePaymentMethod</a></code>
 
 
 #### PaymentFlowResultInterface
@@ -727,7 +829,7 @@ iOS Only
 
 #### PaymentSheetResultInterface
 
-<code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code>
+<code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.DidSelectShippingContact</a> | <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.DidCreatePaymentMethod</a></code>
 
 
 ### Enums
@@ -735,24 +837,28 @@ iOS Only
 
 #### ApplePayEventsEnum
 
-| Members            | Value                               |
-| ------------------ | ----------------------------------- |
-| **`Loaded`**       | <code>"applePayLoaded"</code>       |
-| **`FailedToLoad`** | <code>"applePayFailedToLoad"</code> |
-| **`Completed`**    | <code>"applePayCompleted"</code>    |
-| **`Canceled`**     | <code>"applePayCanceled"</code>     |
-| **`Failed`**       | <code>"applePayFailed"</code>       |
+| Members                        | Value                                   |
+| ------------------------------ | --------------------------------------- |
+| **`Loaded`**                   | <code>"applePayLoaded"</code>           |
+| **`FailedToLoad`**             | <code>"applePayFailedToLoad"</code>     |
+| **`Completed`**                | <code>"applePayCompleted"</code>        |
+| **`Canceled`**                 | <code>"applePayCanceled"</code>         |
+| **`Failed`**                   | <code>"applePayFailed"</code>           |
+| **`DidSelectShippingContact`** | <code>"didSelectShippingContact"</code> |
+| **`DidCreatePaymentMethod`**   | <code>"didCreatePaymentMethod"</code>   |
 
 
 #### GooglePayEventsEnum
 
-| Members            | Value                                |
-| ------------------ | ------------------------------------ |
-| **`Loaded`**       | <code>"googlePayLoaded"</code>       |
-| **`FailedToLoad`** | <code>"googlePayFailedToLoad"</code> |
-| **`Completed`**    | <code>"googlePayCompleted"</code>    |
-| **`Canceled`**     | <code>"googlePayCanceled"</code>     |
-| **`Failed`**       | <code>"googlePayFailed"</code>       |
+| Members                        | Value                                   |
+| ------------------------------ | --------------------------------------- |
+| **`Loaded`**                   | <code>"googlePayLoaded"</code>          |
+| **`FailedToLoad`**             | <code>"googlePayFailedToLoad"</code>    |
+| **`Completed`**                | <code>"googlePayCompleted"</code>       |
+| **`Canceled`**                 | <code>"googlePayCanceled"</code>        |
+| **`Failed`**                   | <code>"googlePayFailed"</code>          |
+| **`DidSelectShippingContact`** | <code>"didSelectShippingContact"</code> |
+| **`DidCreatePaymentMethod`**   | <code>"didCreatePaymentMethod"</code>   |
 
 
 #### PaymentFlowEventsEnum
@@ -770,13 +876,15 @@ iOS Only
 
 #### PaymentSheetEventsEnum
 
-| Members            | Value                                   |
-| ------------------ | --------------------------------------- |
-| **`Loaded`**       | <code>"paymentSheetLoaded"</code>       |
-| **`FailedToLoad`** | <code>"paymentSheetFailedToLoad"</code> |
-| **`Completed`**    | <code>"paymentSheetCompleted"</code>    |
-| **`Canceled`**     | <code>"paymentSheetCanceled"</code>     |
-| **`Failed`**       | <code>"paymentSheetFailed"</code>       |
+| Members                        | Value                                   |
+| ------------------------------ | --------------------------------------- |
+| **`Loaded`**                   | <code>"paymentSheetLoaded"</code>       |
+| **`FailedToLoad`**             | <code>"paymentSheetFailedToLoad"</code> |
+| **`Completed`**                | <code>"paymentSheetCompleted"</code>    |
+| **`Canceled`**                 | <code>"paymentSheetCanceled"</code>     |
+| **`Failed`**                   | <code>"paymentSheetFailed"</code>       |
+| **`DidSelectShippingContact`** | <code>"didSelectShippingContact"</code> |
+| **`DidCreatePaymentMethod`**   | <code>"didCreatePaymentMethod"</code>   |
 
 </docgen-api>
 
