@@ -10,4 +10,6 @@ export enum ApplePayEventsEnum {
 export type  ApplePayResultInterface =
   | ApplePayEventsEnum.Completed
   | ApplePayEventsEnum.Canceled
-  | ApplePayEventsEnum.Failed;
+  | ApplePayEventsEnum.Failed
+  | ApplePayEventsEnum.DidSelectShippingContact
+  | ApplePayEventsEnum.DidCreatePaymentMethod;
