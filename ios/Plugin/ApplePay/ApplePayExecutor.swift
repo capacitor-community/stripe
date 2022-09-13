@@ -89,7 +89,7 @@ extension ApplePayExecutor {
             let dataStringUTF8 = dataString.data(using: .utf8)!
             do {
                 if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
-                    call.resolve(["contact": jsonArray, "didSelectShippingContact": true])
+                    self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact":jsonArray])
                 }
             } catch let error as NSError {
                 print(error)
@@ -123,7 +123,7 @@ extension ApplePayExecutor {
             let dataStringUTF8 = dataString.data(using: .utf8)!
             do {
                 if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
-                    call.resolve(["contact": jsonArray, "didCreatePaymentMethod": true])
+                    self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact":jsonArray])
                 }
             } catch let error as NSError {
                 print(error)
