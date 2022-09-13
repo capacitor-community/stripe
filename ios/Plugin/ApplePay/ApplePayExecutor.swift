@@ -89,7 +89,7 @@ extension ApplePayExecutor {
             let dataStringUTF8 = dataString.data(using: .utf8)!
             do {
                 if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
-                    call.resolve(["contact": jsonArray])
+                    call.resolve(["contact": jsonArray, , "didSelectShippingContact": true])
                 }
             } catch let error as NSError {
                 print(error)
@@ -101,6 +101,34 @@ extension ApplePayExecutor {
         let clientSecret = self.appleClientSecret
         let error = "" // Call the completion block with the client secret or an error
         completion(clientSecret, error as? Error)
+        if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
+            let street = paymentInformation.shippingContact?.postalAddress?.street as? String ?? ""
+            let city = paymentInformation.shippingContact?.postalAddress?.city as? String ?? ""
+            let state = paymentInformation.shippingContact?.postalAddress?.state as? String ?? ""
+            let postalCode = paymentInformation.shippingContact?.postalAddress?.postalCode as? String ?? ""
+            let country = paymentInformation.shippingContact?.postalAddress?.country as? String ?? ""
+            let isoCountryCode = paymentInformation.shippingContact?.postalAddress?.isoCountryCode as? String ?? ""
+            let subAdministrativeArea = paymentInformation.shippingContact?.postalAddress?.subAdministrativeArea as? String ?? ""
+            let subLocality = paymentInformation.shippingContact?.postalAddress?.subLocality as? String ?? ""
+            let dataString = "[{" +
+            "\"street\":\"\(street)\"," +
+            "\"city\":\"\(city)\"," +
+            "\"state\":\"\(state)\"," +
+            "\"postalCode\":\"\(postalCode)\"," +
+            "\"country\":\"\(country)\"," +
+            "\"isoCountryCode\":\"\(isoCountryCode)\"," +
+            "\"subAdministrativeArea\":\"\(subAdministrativeArea)\"," +
+            "\"subLocality\":\"\(subLocality)\"" +
+            "}]"
+            let dataStringUTF8 = dataString.data(using: .utf8)!
+            do {
+                if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
+                    call.resolve(["contact": jsonArray, "didCreatePaymentMethod": true])
+                }
+            } catch let error as NSError {
+                print(error)
+            }
+        }
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPPaymentStatus, error: Error?) {
