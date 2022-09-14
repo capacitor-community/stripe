@@ -46,9 +46,12 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
         }
 
         let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
+        let requiredShippingContactFields = call.getBool("requiredShippingContactFields") ?? false
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
-        paymentRequest.requiredShippingContactFields = Set([.postalAddress])
+        if (requiredShippingContactFields) {
+            paymentRequest.requiredShippingContactFields = Set([.postalAddress])
+        }
 
         self.appleClientSecret = paymentIntentClientSecret!
         self.paymentRequest = paymentRequest
@@ -82,10 +85,11 @@ extension ApplePayExecutor {
         if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
             let postalCode = contact.postalAddress?.postalCode as? String ?? ""
             let country = contact.postalAddress?.country as? String ?? ""
-            let dataString = "[{" +
+            var dataString = "[{" +
             "\"postalCode\":\"\(postalCode)\"," +
             "\"country\":\"\(country)\"" +
             "}]"
+            dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
             let dataStringUTF8 = dataString.data(using: .utf8)!
             do {
                 if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
@@ -110,7 +114,7 @@ extension ApplePayExecutor {
             let isoCountryCode = paymentInformation.shippingContact?.postalAddress?.isoCountryCode as? String ?? ""
             let subAdministrativeArea = paymentInformation.shippingContact?.postalAddress?.subAdministrativeArea as? String ?? ""
             let subLocality = paymentInformation.shippingContact?.postalAddress?.subLocality as? String ?? ""
-            let dataString = "[{" +
+            var dataString = "[{" +
             "\"street\":\"\(street)\"," +
             "\"city\":\"\(city)\"," +
             "\"state\":\"\(state)\"," +
@@ -120,6 +124,7 @@ extension ApplePayExecutor {
             "\"subAdministrativeArea\":\"\(subAdministrativeArea)\"," +
             "\"subLocality\":\"\(subLocality)\"" +
             "}]"
+            dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
             let dataStringUTF8 = dataString.data(using: .utf8)!
             do {
                 if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
