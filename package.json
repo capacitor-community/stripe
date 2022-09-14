@@ -1,6 +1,6 @@
 {
-  "name": "@rgarciadelongoria/stripe",
-  "version": "0.0.1",
+  "name": "@capacitor-community/stripe",
+  "version": "4.0.0",
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -23,16 +23,16 @@
     "dist/",
     "src/",
     "ios/Plugin/",
-    "RgarciadelongoriaStripe.podspec"
+    "CapacitorCommunityStripe.podspec"
   ],
-  "author": "Rubén García de Longoria<rgarciadelongoria@gmail.com>",
+  "author": "Masahiko Sakakibara<sakakibara@rdlabo.jp>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rgarciadelongoria/stripe.git"
+    "url": "git+https://github.com/capacitor-community/stripe.git"
   },
   "bugs": {
-    "url": "https://github.com/rgarciadelongoria/stripe/issues"
+    "url": "https://github.com/capacitor-community/stripe/issues"
   },
   "keywords": [
     "capacitor",
