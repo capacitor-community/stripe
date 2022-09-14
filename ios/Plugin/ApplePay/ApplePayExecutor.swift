@@ -109,25 +109,6 @@ extension ApplePayExecutor {
         handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: []))
         let jsonArray = self.transformPKContactToJSON(contact: contact);
         self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact":jsonArray])
-        //if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
-//        let postalCode = contact.postalAddress?.postalCode as? String ?? ""
-//        let country = contact.postalAddress?.country as? String ?? ""
-//        let isoCountryCode = contact.postalAddress?.isoCountryCode as? String ?? ""
-//        var dataString = "[{" +
-//        "\"postalCode\":\"\(postalCode)\"," +
-//        "\"country\":\"\(country)\"" +
-//        "\"isoCountryCode\":\"\(isoCountryCode)\"," +
-//        "}]"
-//        dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
-//        let dataStringUTF8 = dataString.data(using: .utf8)!
-//        do {
-//            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
-//                self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact":jsonArray])
-//            }
-//        } catch let error as NSError {
-//            print(error)
-//        }
-        //}
     }
 
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: STPPaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
@@ -136,35 +117,6 @@ extension ApplePayExecutor {
         completion(clientSecret, error as? Error)
         let jsonArray = self.transformPKContactToJSON(contact: paymentInformation.shippingContact);
         self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact":jsonArray])
-        //if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
-//        let street = paymentInformation.shippingContact?.postalAddress?.street as? String ?? ""
-//        let city = paymentInformation.shippingContact?.postalAddress?.city as? String ?? ""
-//        let state = paymentInformation.shippingContact?.postalAddress?.state as? String ?? ""
-//        let postalCode = paymentInformation.shippingContact?.postalAddress?.postalCode as? String ?? ""
-//        let country = paymentInformation.shippingContact?.postalAddress?.country as? String ?? ""
-//        let isoCountryCode = paymentInformation.shippingContact?.postalAddress?.isoCountryCode as? String ?? ""
-//        let subAdministrativeArea = paymentInformation.shippingContact?.postalAddress?.subAdministrativeArea as? String ?? ""
-//        let subLocality = paymentInformation.shippingContact?.postalAddress?.subLocality as? String ?? ""
-//        var dataString = "[{" +
-//        "\"street\":\"\(street)\"," +
-//        "\"city\":\"\(city)\"," +
-//        "\"state\":\"\(state)\"," +
-//        "\"postalCode\":\"\(postalCode)\"," +
-//        "\"country\":\"\(country)\"," +
-//        "\"isoCountryCode\":\"\(isoCountryCode)\"," +
-//        "\"subAdministrativeArea\":\"\(subAdministrativeArea)\"," +
-//        "\"subLocality\":\"\(subLocality)\"" +
-//        "}]"
-//        dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
-//        let dataStringUTF8 = dataString.data(using: .utf8)!
-//        do {
-//            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
-//                self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact":jsonArray])
-//            }
-//        } catch let error as NSError {
-//            print(error)
-//        }
-        //}
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPPaymentStatus, error: Error?) {
