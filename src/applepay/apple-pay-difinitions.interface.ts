@@ -37,4 +37,14 @@ export interface ApplePayDefinitions {
     eventName: ApplePayEventsEnum.Failed,
     listenerFunc: (error: string) => void,
   ): PluginListenerHandle;
+
+  addListener(
+    eventName: ApplePayEventsEnum.DidSelectShippingContact,
+    listenerFunc: (data: any) => void,
+  ): PluginListenerHandle;
+
+  addListener(
+    eventName: ApplePayEventsEnum.DidCreatePaymentMethod,
+    listenerFunc: (data: any) => void,
+  ): PluginListenerHandle;
 }
