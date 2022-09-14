@@ -85,9 +85,11 @@ extension ApplePayExecutor {
         if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
             let postalCode = contact.postalAddress?.postalCode as? String ?? ""
             let country = contact.postalAddress?.country as? String ?? ""
+            let isoCountryCode = contact.postalAddress?.isoCountryCode as? String ?? ""
             var dataString = "[{" +
             "\"postalCode\":\"\(postalCode)\"," +
             "\"country\":\"\(country)\"" +
+            "\"isoCountryCode\":\"\(isoCountryCode)\"," +
             "}]"
             dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
             let dataStringUTF8 = dataString.data(using: .utf8)!
