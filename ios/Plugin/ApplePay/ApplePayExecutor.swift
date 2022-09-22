@@ -81,7 +81,19 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
 
 extension ApplePayExecutor {
     func transformPKContactToJSON(contact: PKContact?) -> Any {
+        var nameFormatted = "";
+        if #available(iOS 15.0, *) {
+            nameFormatted = (contact?.name?.nameSuffix as? String ?? "");
+        }
         var dataString = "[{" +
+        "\"givenName\":\"\(contact?.name?.givenName as? String ?? "")\"," +
+        "\"familyName\":\"\(contact?.name?.familyName as? String ?? "")\"," +
+        "\"middleName\":\"\(contact?.name?.middleName as? String ?? "")\"," +
+        "\"namePrefix\":\"\(contact?.name?.namePrefix as? String ?? "")\"," +
+        "\"nameSuffix\":\"\(contact?.name?.nameSuffix as? String ?? "")\"," +
+        "\"nameFormatted\":\"\(nameFormatted)\"," +
+        "\"phoneNumber\":\"\(contact?.phoneNumber?.stringValue as? String ?? "")\"," +
+        "\"nickname\":\"\(contact?.name?.nickname as? String ?? "")\"," +
         "\"street\":\"\(contact?.postalAddress?.street as? String ?? "")\"," +
         "\"city\":\"\(contact?.postalAddress?.city as? String ?? "")\"," +
         "\"state\":\"\(contact?.postalAddress?.state as? String ?? "")\"," +
