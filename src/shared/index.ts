@@ -111,7 +111,7 @@ export interface CreateApplePayOption {
   merchantIdentifier: string;
   countryCode: string;
   currency: string;
-  requiredShippingContactFields?: boolean;
+  requiredShippingContactFields?: string[];
 }
 
 export interface CreateGooglePayOption {

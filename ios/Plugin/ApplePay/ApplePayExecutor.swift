@@ -46,11 +46,24 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
         }
 
         let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
-        let requiredShippingContactFields = call.getBool("requiredShippingContactFields") ?? false
+        let requiredShippingContactFields = call.getArray("requiredShippingContactFields", String.self) ?? [""]
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
-        if (requiredShippingContactFields) {
-            paymentRequest.requiredShippingContactFields = Set([.postalAddress])
+        if (requiredShippingContactFields.count > 0) {
+            var contactFieldArray: [PKContactField] = [];
+            if requiredShippingContactFields.contains("postalAddress") {
+                contactFieldArray.append(.postalAddress)
+            }
+            if requiredShippingContactFields.contains("phoneNumber") {
+                contactFieldArray.append(.phoneNumber)
+            }
+            if requiredShippingContactFields.contains("emailAddress") {
+                contactFieldArray.append(.emailAddress)
+            }
+            if requiredShippingContactFields.contains("name") {
+                contactFieldArray.append(.name)
+            }
+            paymentRequest.requiredShippingContactFields = Set(contactFieldArray)
         }
 
         self.appleClientSecret = paymentIntentClientSecret!

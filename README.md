@@ -719,7 +719,7 @@ iOS Only
 | **`merchantIdentifier`**            | <code>string</code>                               |
 | **`countryCode`**                   | <code>string</code>                               |
 | **`currency`**                      | <code>string</code>                               |
-| **`requiredShippingContactFields`** | <code>boolean</code>                              |
+| **`requiredShippingContactFields`** | <code>string[]</code>                             |
 
 
 #### PluginListenerHandle
