@@ -46,11 +46,24 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
         }
 
         let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
-        let requiredShippingContactFields = call.getBool("requiredShippingContactFields") ?? false
+        let requiredShippingContactFields = call.getArray("requiredShippingContactFields", String.self) ?? [""]
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
-        if (requiredShippingContactFields) {
-            paymentRequest.requiredShippingContactFields = Set([.postalAddress])
+        if (requiredShippingContactFields.count > 0) {
+            var contactFieldArray: [PKContactField] = [];
+            if requiredShippingContactFields.contains("postalAddress") {
+                contactFieldArray.append(.postalAddress)
+            }
+            if requiredShippingContactFields.contains("phoneNumber") {
+                contactFieldArray.append(.phoneNumber)
+            }
+            if requiredShippingContactFields.contains("emailAddress") {
+                contactFieldArray.append(.emailAddress)
+            }
+            if requiredShippingContactFields.contains("name") {
+                contactFieldArray.append(.name)
+            }
+            paymentRequest.requiredShippingContactFields = Set(contactFieldArray)
         }
 
         self.appleClientSecret = paymentIntentClientSecret!
@@ -81,7 +94,19 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
 
 extension ApplePayExecutor {
     func transformPKContactToJSON(contact: PKContact?) -> Any {
+        var nameFormatted = "";
+        if #available(iOS 15.0, *) {
+            nameFormatted = (contact?.name?.nameSuffix as? String ?? "");
+        }
         var dataString = "[{" +
+        "\"givenName\":\"\(contact?.name?.givenName as? String ?? "")\"," +
+        "\"familyName\":\"\(contact?.name?.familyName as? String ?? "")\"," +
+        "\"middleName\":\"\(contact?.name?.middleName as? String ?? "")\"," +
+        "\"namePrefix\":\"\(contact?.name?.namePrefix as? String ?? "")\"," +
+        "\"nameSuffix\":\"\(contact?.name?.nameSuffix as? String ?? "")\"," +
+        "\"nameFormatted\":\"\(nameFormatted)\"," +
+        "\"phoneNumber\":\"\(contact?.phoneNumber?.stringValue as? String ?? "")\"," +
+        "\"nickname\":\"\(contact?.name?.nickname as? String ?? "")\"," +
         "\"street\":\"\(contact?.postalAddress?.street as? String ?? "")\"," +
         "\"city\":\"\(contact?.postalAddress?.city as? String ?? "")\"," +
         "\"state\":\"\(contact?.postalAddress?.state as? String ?? "")\"," +
