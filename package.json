@@ -80,7 +80,7 @@
   "peerDependencies": {
     "@capacitor/core": "^4.0.0",
     "@stripe-elements/stripe-elements": "^2.0.2",
-    "react": "^17.0.0"
+    "react": "^17.0.0 || ^18.0.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
