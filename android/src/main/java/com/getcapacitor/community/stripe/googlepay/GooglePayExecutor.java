@@ -17,6 +17,7 @@ public class GooglePayExecutor extends Executor {
     public GooglePayLauncher googlePayLauncher;
     private final JSObject emptyObject = new JSObject();
     private String clientSecret;
+    private String currency;
     public boolean isAvailable;
 
     public GooglePayExecutor(
@@ -39,6 +40,7 @@ public class GooglePayExecutor extends Executor {
 
     public void createGooglePay(final PluginCall call) {
         this.clientSecret = call.getString("paymentIntentClientSecret");
+        this.currency = call.getString("currency", "USD");
 
         if (this.clientSecret == null) {
             String errorText = "Invalid Params. this method require paymentIntentClientSecret or setupIntentClientSecret, and customerId.";
@@ -52,7 +54,11 @@ public class GooglePayExecutor extends Executor {
     }
 
     public void presentGooglePay(final PluginCall call) {
-        this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
+        if (this.clientSecret != null && this.clientSecret.startsWith("seti_")) {
+            this.googlePayLauncher.presentForSetupIntent(this.clientSecret, currency);
+        } else {
+            this.googlePayLauncher.presentForPaymentIntent(this.clientSecret);
+        }
     }
 
     public void onGooglePayResult(Bridge bridge, String callbackId, @NotNull GooglePayLauncher.Result result) {
