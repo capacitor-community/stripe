@@ -1,3 +1,10 @@
+/**
+ * @url https://github.com/ionic-team/ionic-framework/blob/main/core/src/utils/platform.ts
+ * So `@typescript-eslint/no-explicit-any` `@typescript-eslint/no-non-null-assertion` is disabled here
+ */
+
+/* eslint-disable  @typescript-eslint/no-explicit-any  */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 export type Platforms = keyof typeof PLATFORMS_MAP;
 
