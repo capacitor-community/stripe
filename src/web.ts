@@ -285,7 +285,9 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     document.querySelector('body')?.appendChild(requestButton);
     await customElements.whenDefined('stripe-payment-request-button');
 
-    requestButton.publishableKey = this.publishableKey!;
+    if (this.publishableKey) {
+      requestButton.publishableKey = this.publishableKey;
+    }
 
     if (this.stripeAccount) {
       requestButton.stripeAccount = this.stripeAccount;
@@ -299,7 +301,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     const requestButton = document.createElement('stripe-payment-request-button');
     document.querySelector('body')?.appendChild(requestButton);
     await customElements.whenDefined('stripe-payment-request-button');
-    requestButton.publishableKey = this.publishableKey!;
+
+    if (this.publishableKey) {
+      requestButton.publishableKey = this.publishableKey;
+    }
 
     if (this.stripeAccount) {
       requestButton.stripeAccount = this.stripeAccount;
@@ -326,6 +331,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
           paymentResult: EventsEnum.Failed,
         });
       }
+
       await requestButton.setPaymentRequestOption({
         country: requestButtonOptions.countryCode!.toUpperCase(),
         currency: requestButtonOptions.currency!.toLowerCase(),
