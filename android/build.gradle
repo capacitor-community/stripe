@@ -6,7 +6,7 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.6.0'
+    ext.kotlin_version = '1.7.0'
     repositories {
         google()
         mavenCentral()
@@ -58,10 +58,10 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation 'com.stripe:stripe-android:20.7.0'
+    implementation 'com.stripe:stripe-android:20.11.0'
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
     implementation 'com.google.code.gson:gson:2.8.6'
 
-    implementation "androidx.core:core-ktx:1.6.0"
+    implementation "androidx.core:core-ktx:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
