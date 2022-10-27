@@ -148,67 +148,67 @@ export interface DidSelectShippingContact {
 }
 export interface ShippingContact {
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   givenName?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   familyName?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   middleName?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   namePrefix?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   nameSuffix?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   nameFormatted?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   phoneNumber?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   nickname?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   street?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   city?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   state?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   postalCode?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   country?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   isoCountryCode?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   subAdministrativeArea?: string;
   /**
-   * ApplePay only
+   * Apple Pay only
    */
   subLocality?: string;
 }

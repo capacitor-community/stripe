@@ -4,8 +4,8 @@ export enum ApplePayEventsEnum {
   Completed = "applePayCompleted",
   Canceled = "applePayCanceled",
   Failed = "applePayFailed",
-  DidSelectShippingContact = "didSelectShippingContact",
-  DidCreatePaymentMethod = "didCreatePaymentMethod",
+  DidSelectShippingContact = "applePayDidSelectShippingContact",
+  DidCreatePaymentMethod = "applePayDidCreatePaymentMethod",
 }
 export type  ApplePayResultInterface =
   | ApplePayEventsEnum.Completed

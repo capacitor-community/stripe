@@ -3,14 +3,10 @@ export enum PaymentSheetEventsEnum {
     FailedToLoad = "paymentSheetFailedToLoad",
     Completed = "paymentSheetCompleted",
     Canceled = "paymentSheetCanceled",
-    Failed = "paymentSheetFailed",
-    DidSelectShippingContact = "didSelectShippingContact",
-    DidCreatePaymentMethod = "didCreatePaymentMethod",
+    Failed = "paymentSheetFailed"
 }
 
 export type PaymentSheetResultInterface =
     PaymentSheetEventsEnum.Completed
     | PaymentSheetEventsEnum.Canceled
     | PaymentSheetEventsEnum.Failed
-    | PaymentSheetEventsEnum.DidSelectShippingContact
-    | PaymentSheetEventsEnum.DidCreatePaymentMethod;

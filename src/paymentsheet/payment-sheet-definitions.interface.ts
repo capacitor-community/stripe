@@ -34,14 +34,4 @@ export interface PaymentSheetDefinitions {
     eventName: PaymentSheetEventsEnum.Failed,
     listenerFunc: (error: string) => void,
   ): PluginListenerHandle;
-
-  addListener(
-    eventName: PaymentSheetEventsEnum.DidSelectShippingContact,
-    listenerFunc: (data: any) => void,
-  ): PluginListenerHandle;
-
-  addListener(
-    eventName: PaymentSheetEventsEnum.DidCreatePaymentMethod,
-    listenerFunc: (data: any) => void,
-  ): PluginListenerHandle;
 }
