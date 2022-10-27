@@ -218,13 +218,13 @@ addListener(eventName: ApplePayEventsEnum.Failed, listenerFunc: (error: string) 
 ### addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)
 
 ```typescript
-addListener(eventName: ApplePayEventsEnum.DidSelectShippingContact, listenerFunc: (data: DidSelectShippingContact[]) => void) => PluginListenerHandle
+addListener(eventName: ApplePayEventsEnum.DidSelectShippingContact, listenerFunc: (data: DidSelectShippingContact) => void) => PluginListenerHandle
 ```
 
-| Param              | Type                                                                                       |
-| ------------------ | ------------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a></code> |
-| **`listenerFunc`** | <code>(data: DidSelectShippingContact[]) =&gt; void</code>                                 |
+| Param              | Type                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a></code>       |
+| **`listenerFunc`** | <code>(data: <a href="#didselectshippingcontact">DidSelectShippingContact</a>) =&gt; void</code> |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -234,13 +234,13 @@ addListener(eventName: ApplePayEventsEnum.DidSelectShippingContact, listenerFunc
 ### addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)
 
 ```typescript
-addListener(eventName: ApplePayEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: DidSelectShippingContact[]) => void) => PluginListenerHandle
+addListener(eventName: ApplePayEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: DidSelectShippingContact) => void) => PluginListenerHandle
 ```
 
-| Param              | Type                                                                                     |
-| ------------------ | ---------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code> |
-| **`listenerFunc`** | <code>(data: DidSelectShippingContact[]) =&gt; void</code>                               |
+| Param              | Type                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code>         |
+| **`listenerFunc`** | <code>(data: <a href="#didselectshippingcontact">DidSelectShippingContact</a>) =&gt; void</code> |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
