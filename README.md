@@ -644,14 +644,14 @@ iOS Only
 
 #### CreateApplePayOption
 
-| Prop                                | Type                                              |
-| ----------------------------------- | ------------------------------------------------- |
-| **`paymentIntentClientSecret`**     | <code>string</code>                               |
-| **`paymentSummaryItems`**           | <code>{ label: string; amount: number; }[]</code> |
-| **`merchantIdentifier`**            | <code>string</code>                               |
-| **`countryCode`**                   | <code>string</code>                               |
-| **`currency`**                      | <code>string</code>                               |
-| **`requiredShippingContactFields`** | <code>string[]</code>                             |
+| Prop                                | Type                                                                          |
+| ----------------------------------- | ----------------------------------------------------------------------------- |
+| **`paymentIntentClientSecret`**     | <code>string</code>                                                           |
+| **`paymentSummaryItems`**           | <code>{ label: string; amount: number; }[]</code>                             |
+| **`merchantIdentifier`**            | <code>string</code>                                                           |
+| **`countryCode`**                   | <code>string</code>                                                           |
+| **`currency`**                      | <code>string</code>                                                           |
+| **`requiredShippingContactFields`** | <code>('postalAddress' \| 'phoneNumber' \| 'emailAddress' \| 'name')[]</code> |
 
 
 #### PluginListenerHandle

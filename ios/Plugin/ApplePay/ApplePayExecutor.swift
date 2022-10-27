@@ -1,9 +1,9 @@
 import Foundation
 import Capacitor
 import PassKit
-import Stripe
+import StripeApplePay
 
-class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
+class ApplePayExecutor: NSObject, ApplePayContextDelegate {
     public weak var plugin: CAPPlugin?
     public var appleClientSecret: String = ""
     private var payCallId: String?
@@ -136,7 +136,7 @@ extension ApplePayExecutor {
         self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact":jsonArray])
     }
 
-    func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: STPPaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
+    func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
         let clientSecret = self.appleClientSecret
         let error = "" // Call the completion block with the client secret or an error
         completion(clientSecret, error as? Error)
@@ -144,7 +144,7 @@ extension ApplePayExecutor {
         self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact":jsonArray])
     }
 
-    func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPPaymentStatus, error: Error?) {
+    func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPApplePayContext.PaymentStatus, error: Error?) {
         if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
             switch status {
             case .success:
