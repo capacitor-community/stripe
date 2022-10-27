@@ -106,13 +106,11 @@ export class Tab1Page implements OnInit {
     });
 
     Stripe.addListener(ApplePayEventsEnum.DidCreatePaymentMethod, (data) => {
-      console.log('ApplePayEventsEnum.DidCreatePaymentMethod');
-      console.log(data);
+      console.log(['ApplePayEventsEnum.DidCreatePaymentMethod', data.hasOwnProperty('contact')]);
     });
 
     Stripe.addListener(ApplePayEventsEnum.DidSelectShippingContact, (data) => {
-      console.log('ApplePayEventsEnum.DidSelectShippingContact');
-      console.log(data);
+      console.log(['ApplePayEventsEnum.DidSelectShippingContact', data.hasOwnProperty('contact')]);
     });
 
     /** ------------------------------------------------------------------- **/
@@ -239,7 +237,7 @@ export class Tab1Page implements OnInit {
         amount: 1099.00
       }],
       merchantIdentifier: 'merchant.com.getcapacitor.stripe',
-      requiredShippingContactFields: ['name'],
+      requiredShippingContactFields: ['postalAddress', 'phoneNumber', 'emailAddress', 'name'],
       countryCode: 'US',
       currency: 'USD',
     });

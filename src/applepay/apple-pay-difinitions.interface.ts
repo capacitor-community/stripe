@@ -40,11 +40,11 @@ export interface ApplePayDefinitions {
 
   addListener(
     eventName: ApplePayEventsEnum.DidSelectShippingContact,
-    listenerFunc: (data: DidSelectShippingContact[]) => void,
+    listenerFunc: (data: DidSelectShippingContact) => void,
   ): PluginListenerHandle;
 
   addListener(
     eventName: ApplePayEventsEnum.DidCreatePaymentMethod,
-    listenerFunc: (data: DidSelectShippingContact[]) => void,
+    listenerFunc: (data: DidSelectShippingContact) => void,
   ): PluginListenerHandle;
 }
