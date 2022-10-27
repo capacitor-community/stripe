@@ -239,7 +239,7 @@ export class Tab1Page implements OnInit {
         amount: 1099.00
       }],
       merchantIdentifier: 'merchant.com.getcapacitor.stripe',
-      requiredShippingContactFields: true,
+      requiredShippingContactFields: ['name'],
       countryCode: 'US',
       currency: 'USD',
     });
