@@ -46,8 +46,25 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
         }
 
         let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
+        let requiredShippingContactFields = call.getArray("requiredShippingContactFields", String.self) ?? [""]
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
+        if (requiredShippingContactFields.count > 0) {
+            var contactFieldArray: [PKContactField] = [];
+            if requiredShippingContactFields.contains("postalAddress") {
+                contactFieldArray.append(.postalAddress)
+            }
+            if requiredShippingContactFields.contains("phoneNumber") {
+                contactFieldArray.append(.phoneNumber)
+            }
+            if requiredShippingContactFields.contains("emailAddress") {
+                contactFieldArray.append(.emailAddress)
+            }
+            if requiredShippingContactFields.contains("name") {
+                contactFieldArray.append(.name)
+            }
+            paymentRequest.requiredShippingContactFields = Set(contactFieldArray)
+        }
 
         self.appleClientSecret = paymentIntentClientSecret!
         self.paymentRequest = paymentRequest
@@ -76,10 +93,55 @@ class ApplePayExecutor: NSObject, STPApplePayContextDelegate {
 }
 
 extension ApplePayExecutor {
+    func transformPKContactToJSON(contact: PKContact?) -> Any {
+        var nameFormatted = "";
+        if #available(iOS 15.0, *) {
+            nameFormatted = (contact?.name?.nameSuffix as? String ?? "");
+        }
+        var dataString = "[{" +
+        "\"givenName\":\"\(contact?.name?.givenName as? String ?? "")\"," +
+        "\"familyName\":\"\(contact?.name?.familyName as? String ?? "")\"," +
+        "\"middleName\":\"\(contact?.name?.middleName as? String ?? "")\"," +
+        "\"namePrefix\":\"\(contact?.name?.namePrefix as? String ?? "")\"," +
+        "\"nameSuffix\":\"\(contact?.name?.nameSuffix as? String ?? "")\"," +
+        "\"nameFormatted\":\"\(nameFormatted)\"," +
+        "\"phoneNumber\":\"\(contact?.phoneNumber?.stringValue as? String ?? "")\"," +
+        "\"nickname\":\"\(contact?.name?.nickname as? String ?? "")\"," +
+        "\"street\":\"\(contact?.postalAddress?.street as? String ?? "")\"," +
+        "\"city\":\"\(contact?.postalAddress?.city as? String ?? "")\"," +
+        "\"state\":\"\(contact?.postalAddress?.state as? String ?? "")\"," +
+        "\"postalCode\":\"\(contact?.postalAddress?.postalCode as? String ?? "")\"," +
+        "\"country\":\"\(contact?.postalAddress?.country as? String ?? "")\"," +
+        "\"isoCountryCode\":\"\(contact?.postalAddress?.isoCountryCode as? String ?? "")\"," +
+        "\"subAdministrativeArea\":\"\(contact?.postalAddress?.subAdministrativeArea as? String ?? "")\"," +
+        "\"subLocality\":\"\(contact?.postalAddress?.subLocality as? String ?? "")\"" +
+        "}]"
+        dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
+        let dataStringUTF8 = dataString.data(using: .utf8)!
+        do {
+            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options : .allowFragments) as? [Dictionary<String,Any>] {
+                return jsonArray;
+            }
+        } catch let error as NSError {
+            print(error)
+            return {}
+        }
+        return {}
+    }
+    
+    // For security reasons, Apple does not return the full address until a successful payment has been made.
+    func applePayContext(_ context: STPApplePayContext, didSelectShippingContact contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void) {
+        handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: []))
+        let jsonArray = self.transformPKContactToJSON(contact: contact);
+        self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact":jsonArray])
+    }
+
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: STPPaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
         let clientSecret = self.appleClientSecret
         let error = "" // Call the completion block with the client secret or an error
         completion(clientSecret, error as? Error)
+        let jsonArray = self.transformPKContactToJSON(contact: paymentInformation.shippingContact);
+        self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact":jsonArray])
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPPaymentStatus, error: Error?) {

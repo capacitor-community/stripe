@@ -4,4 +4,6 @@ public enum ApplePayEvents: String {
     case Completed = "applePayCompleted"
     case Canceled = "applePayCanceled"
     case Failed = "applePayFailed"
+    case DidSelectShippingContact = "didSelectShippingContact"
+    case DidCreatePaymentMethod = "didCreatePaymentMethod"
 }

@@ -111,6 +111,7 @@ export interface CreateApplePayOption {
   merchantIdentifier: string;
   countryCode: string;
   currency: string;
+  requiredShippingContactFields?: string[];
 }
 
 export interface CreateGooglePayOption {
@@ -139,4 +140,75 @@ export interface CreateGooglePayOption {
    * need @stripe-elements/stripe-elements > 1.1.0
    */
   currency?: string;
+}
+
+// Apple doc: https://developer.apple.com/documentation/passkit/pkcontact
+export interface DidSelectShippingContact {
+  contact: ShippingContact;
+}
+export interface ShippingContact {
+  /**
+   * ApplePay only
+   */
+  givenName?: string;
+  /**
+   * ApplePay only
+   */
+  familyName?: string;
+  /**
+   * ApplePay only
+   */
+  middleName?: string;
+  /**
+   * ApplePay only
+   */
+  namePrefix?: string;
+  /**
+   * ApplePay only
+   */
+  nameSuffix?: string;
+  /**
+   * ApplePay only
+   */
+  nameFormatted?: string;
+  /**
+   * ApplePay only
+   */
+  phoneNumber?: string;
+  /**
+   * ApplePay only
+   */
+  nickname?: string;
+  /**
+   * ApplePay only
+   */
+  street?: string;
+  /**
+   * ApplePay only
+   */
+  city?: string;
+  /**
+   * ApplePay only
+   */
+  state?: string;
+  /**
+   * ApplePay only
+   */
+  postalCode?: string;
+  /**
+   * ApplePay only
+   */
+  country?: string;
+  /**
+   * ApplePay only
+   */
+  isoCountryCode?: string;
+  /**
+   * ApplePay only
+   */
+  subAdministrativeArea?: string;
+  /**
+   * ApplePay only
+   */
+  subLocality?: string;
 }
