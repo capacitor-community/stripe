@@ -1,3 +1,9 @@
+/**
+ * @url https://github.com/ionic-team/ionic-framework/blob/main/core/src/utils/platform.ts
+ * So `@typescript-eslint/no-explicit-any` is disabled here
+ */
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 
 export type Platforms = keyof typeof PLATFORMS_MAP;
 

@@ -1,3 +1,9 @@
+/**
+ * This is common rule. So `@typescript-eslint/no-explicit-any` is disabled here
+ */
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import type { PluginListenerHandle } from '@capacitor/core';
 
 type Contra<T> = (x: T) => void
