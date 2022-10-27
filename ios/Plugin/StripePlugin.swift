@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
-import Stripe
+import StripePaymentSheet
+import StripeApplePay
 import PassKit
 
 @objc(StripePlugin)

@@ -1,6 +1,6 @@
 import Foundation
 import Capacitor
-import Stripe
+import StripePaymentSheet
 
 class PaymentSheetExecutor: NSObject {
     public weak var plugin: CAPPlugin?
