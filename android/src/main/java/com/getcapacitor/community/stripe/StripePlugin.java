@@ -93,7 +93,7 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void initialize(final PluginCall call) {
         try {
-            if (publishableKey == null) {
+            // if (publishableKey == null) {
                 publishableKey = call.getString("publishableKey");
 
                 if (publishableKey == null || publishableKey.equals("")) {
@@ -105,9 +105,9 @@ public class StripePlugin extends Plugin {
 
                 PaymentConfiguration.init(getContext(), publishableKey, stripeAccountId);
                 Stripe.setAppInfo(AppInfo.create(APP_INFO_NAME));
-            } else {
-                Logger.info("PaymentConfiguration.init was run at load");
-            }
+            // } else {
+            //     Logger.info("PaymentConfiguration.init was run at load");
+            // }
             call.resolve();
         } catch (Exception e) {
             call.reject("unable to set publishable key: " + e.getLocalizedMessage(), e);
