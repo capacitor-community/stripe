@@ -21,7 +21,7 @@ This branch used stripe-android@20.19.0. stripe-android@20.19.0 require compileS
 | Plugin version | stripe-android version  |
 |----------------|-------------------------|
 | 4.1.1          | stripe-android@20.11.0  |
-| 4.1.1-0        | stripe-android@20.19.0  |
+| 4.1.2-0(next)  | stripe-android@20.19.0  |
 
 - Updated Google Pay button to match new brand guidelines.
 - [CHANGED]5679 Fix oversized verification_frames payloads leading to failed scans.
