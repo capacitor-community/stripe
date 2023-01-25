@@ -3,7 +3,7 @@ import Capacitor
 import StripePaymentSheet
 
 class PaymentSheetExecutor: NSObject {
-    public weak var plugin: CAPPlugin?
+    public weak var plugin: StripePlugin?
     var paymentSheet: PaymentSheet?
 
     func createPaymentSheet(_ call: CAPPluginCall) {
@@ -74,7 +74,7 @@ class PaymentSheetExecutor: NSObject {
 
     func presentPaymentSheet(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
-            if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+            if let rootViewController = self.plugin?.getRootVC() {
                 self.paymentSheet?.present(from: rootViewController) { paymentResult in
                     // MARK: Handle the payment result
                     switch paymentResult {

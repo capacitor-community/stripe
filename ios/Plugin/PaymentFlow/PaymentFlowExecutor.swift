@@ -3,7 +3,7 @@ import Capacitor
 import StripePaymentSheet
 
 class PaymentFlowExecutor: NSObject {
-    public weak var plugin: CAPPlugin?
+    public weak var plugin: StripePlugin?
     var paymentSheetFlowController: PaymentSheet.FlowController!
 
     func createPaymentFlow(_ call: CAPPluginCall) {
@@ -93,7 +93,7 @@ class PaymentFlowExecutor: NSObject {
 
     func presentPaymentFlow(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
-            if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+            if let rootViewController = self.plugin?.getRootVC() {
                 self.paymentSheetFlowController.presentPaymentOptions(from: rootViewController) {
                     self.plugin?.notifyListeners(PaymentFlowEvents.Opened.rawValue, data: [:])
                     self.updateFlow(call)
@@ -118,7 +118,7 @@ class PaymentFlowExecutor: NSObject {
 
     public func confirmPaymentFlow(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
-            if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+            if let rootViewController = self.plugin?.getRootVC() {
                 self.paymentSheetFlowController.confirm(from: rootViewController) { paymentResult in
                     switch paymentResult {
                     case .completed:

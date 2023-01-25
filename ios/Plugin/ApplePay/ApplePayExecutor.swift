@@ -4,7 +4,7 @@ import PassKit
 import StripeApplePay
 
 class ApplePayExecutor: NSObject, ApplePayContextDelegate {
-    public weak var plugin: CAPPlugin?
+    public weak var plugin: StripePlugin?
     public var appleClientSecret: String = ""
     private var payCallId: String?
     private var paymentRequest: PKPaymentRequest?
@@ -77,7 +77,7 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
         if let paymentRequest = self.paymentRequest {
             if let applePayContext = STPApplePayContext(paymentRequest: paymentRequest, delegate: self) {
                 DispatchQueue.main.async {
-                    if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
+                    if let rootViewController = self.plugin?.getRootVC() {
                         self.plugin?.bridge?.saveCall(call)
                         self.payCallId = call.callbackId
                         applePayContext.presentApplePay(on: rootViewController)
