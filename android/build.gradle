@@ -6,7 +6,7 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.7.0'
+    ext.kotlin_version = '1.7.20'
     repositories {
         google()
         mavenCentral()
@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.stripe:stripe-android:20.19.0'
     implementation 'com.stripe:stripecardscan:20.19.0'
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.9'
 
     implementation "androidx.core:core-ktx:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
