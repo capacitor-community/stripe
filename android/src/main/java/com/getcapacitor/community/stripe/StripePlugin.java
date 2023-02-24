@@ -1,5 +1,8 @@
 package com.getcapacitor.community.stripe;
 
+import android.net.Uri;
+import android.provider.ContactsContract;
+
 import com.getcapacitor.Logger;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
@@ -9,11 +12,13 @@ import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor;
 import com.getcapacitor.community.stripe.helper.MetaData;
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
+import com.getcapacitor.community.stripe.identityverification.IdentityVerificationSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
 import com.stripe.android.core.AppInfo;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
 import com.stripe.android.paymentsheet.PaymentSheet;
+import com.stripe.android.identity.IdentityVerificationSheet;
 import org.jetbrains.annotations.NotNull;
 
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
@@ -23,6 +28,8 @@ public class StripePlugin extends Plugin {
     private String paymentSheetCallbackId;
     private String paymentFlowCallbackId;
     private String googlePayCallbackId;
+
+    private String identityVerificationCallbackId;
 
     private MetaData metaData;
 
@@ -43,6 +50,13 @@ public class StripePlugin extends Plugin {
     );
 
     private final GooglePayExecutor googlePayExecutor = new GooglePayExecutor(
+        this::getContext,
+        this::getActivity,
+        this::notifyListeners,
+        getLogTag()
+    );
+
+    private final IdentityVerificationSheetExecutor identityVerificationSheetExecutor = new IdentityVerificationSheetExecutor(
         this::getContext,
         this::getActivity,
         this::notifyListeners,
@@ -88,6 +102,34 @@ public class StripePlugin extends Plugin {
                     this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
                 }
             );
+                
+
+        this.identityVerificationSheetExecutor.verificationSheet =
+        IdentityVerificationSheet.Companion.create(
+            getActivity(),
+            // pass your brand logo by creating it from local resource or
+            // Uri.parse("https://path/to/a/logo.jpg")
+            new IdentityVerificationSheet.Configuration(Uri.parse("https://source.unsplash.com/random/300×300")),
+            verificationFlowResult -> {
+                // handle verificationResult
+                if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Completed) {
+                    // The user has completed uploading their documents.
+                    // Let them know that the verification is processing.
+                
+                    Logger.info("Verification Flow Completed!");
+                } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Canceled) {
+                    // The user did not complete uploading their documents.
+                    // You should allow them to try again.
+
+                    Logger.info("Verification Flow Canceled!");
+                } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Failed) {
+                    // If the flow fails, you should display the localized error
+                    // message to your user using throwable.getLocalizedMessage()
+
+                    Logger.info("Verification Flow Failed!");
+                }
+            }
+        );
     }
 
     @PluginMethod
@@ -113,6 +155,19 @@ public class StripePlugin extends Plugin {
     @PluginMethod
     public void createPaymentSheet(final PluginCall call) {
         paymentSheetExecutor.createPaymentSheet(call);
+    }
+
+    @PluginMethod
+    public void createIdentityVerificationSheet(final PluginCall call) {
+        identityVerificationSheetExecutor.createIdentityVerificationSheet(call);
+    }
+
+    @PluginMethod
+    public void presentIdentityVerificationSheet(final PluginCall call) {
+        identityVerificationCallbackId = call.getCallbackId();
+        bridge.saveCall(call);
+
+        identityVerificationSheetExecutor.presentIdentityVerificationSheet(call);
     }
 
     @PluginMethod
