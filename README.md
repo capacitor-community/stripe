@@ -71,6 +71,13 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`addListener(GooglePayEventsEnum.Completed, ...)`](#addlistenergooglepayeventsenumcompleted)
 * [`addListener(GooglePayEventsEnum.Canceled, ...)`](#addlistenergooglepayeventsenumcanceled)
 * [`addListener(GooglePayEventsEnum.Failed, ...)`](#addlistenergooglepayeventsenumfailed)
+* [`createIdentityVerificationSheet(...)`](#createidentityverificationsheet)
+* [`presentIdentityVerificationSheet()`](#presentidentityverificationsheet)
+* [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded)
+* [`addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)`](#addlisteneridentityverificationsheeteventsenumfailedtoload)
+* [`addListener(IdentityVerificationSheetEventsEnum.Completed, ...)`](#addlisteneridentityverificationsheeteventsenumcompleted)
+* [`addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)`](#addlisteneridentityverificationsheeteventsenumcanceled)
+* [`addListener(IdentityVerificationSheetEventsEnum.Failed, ...)`](#addlisteneridentityverificationsheeteventsenumfailed)
 * [`createPaymentFlow(...)`](#createpaymentflow)
 * [`presentPaymentFlow()`](#presentpaymentflow)
 * [`confirmPaymentFlow()`](#confirmpaymentflow)
@@ -354,6 +361,110 @@ addListener(eventName: GooglePayEventsEnum.Failed, listenerFunc: () => void) => 
 | ------------------ | -------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### createIdentityVerificationSheet(...)
+
+```typescript
+createIdentityVerificationSheet(options: CreateIdentityVerificationSheetOption) => Promise<void>
+```
+
+| Param         | Type                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createidentityverificationsheetoption">CreateIdentityVerificationSheetOption</a></code> |
+
+--------------------
+
+
+### presentIdentityVerificationSheet()
+
+```typescript
+presentIdentityVerificationSheet() => Promise<{ identityVerificationResult: IdentityVerificationSheetResultInterface; }>
+```
+
+**Returns:** <code>Promise&lt;{ identityVerificationResult: <a href="#identityverificationsheetresultinterface">IdentityVerificationSheetResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: IdentityVerificationSheetEventsEnum.Loaded, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                                       |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                                                 |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: IdentityVerificationSheetEventsEnum.FailedToLoad, listenerFunc: (error: string) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                                                          |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(IdentityVerificationSheetEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: IdentityVerificationSheetEventsEnum.Completed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                                                    |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: IdentityVerificationSheetEventsEnum.Canceled, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                                                   |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(IdentityVerificationSheetEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc: (error: string) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                                       |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                                                    |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -701,6 +812,14 @@ iOS Only
 | **`currency`**                  | <code>string</code>                               | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
 
 
+#### CreateIdentityVerificationSheetOption
+
+| Prop                     | Type                |
+| ------------------------ | ------------------- |
+| **`verificationId`**     | <code>string</code> |
+| **`ephemeralKeySecret`** | <code>string</code> |
+
+
 #### CreatePaymentFlowOption
 
 | Prop                             | Type                                       | Description                                                                                      | Default                 |
@@ -784,6 +903,11 @@ iOS Only
 <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code>
 
 
+#### IdentityVerificationSheetResultInterface
+
+<code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Completed</a> | <a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Canceled</a> | <a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Failed</a></code>
+
+
 #### PaymentFlowResultInterface
 
 <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Completed</a> | <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Canceled</a> | <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Failed</a></code>
@@ -819,6 +943,17 @@ iOS Only
 | **`Completed`**    | <code>"googlePayCompleted"</code>    |
 | **`Canceled`**     | <code>"googlePayCanceled"</code>     |
 | **`Failed`**       | <code>"googlePayFailed"</code>       |
+
+
+#### IdentityVerificationSheetEventsEnum
+
+| Members            | Value                                                |
+| ------------------ | ---------------------------------------------------- |
+| **`Loaded`**       | <code>"identityVerificationSheetLoaded"</code>       |
+| **`FailedToLoad`** | <code>"identityVerificationSheetFailedToLoad"</code> |
+| **`Completed`**    | <code>"identityVerificationSheetCompleted"</code>    |
+| **`Canceled`**     | <code>"identityVerificationSheetCanceled"</code>     |
+| **`Failed`**       | <code>"identityVerificationSheetFailed"</code>       |
 
 
 #### PaymentFlowEventsEnum
