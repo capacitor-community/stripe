@@ -102,31 +102,26 @@ public class StripePlugin extends Plugin {
                     this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
                 }
             );
-                
 
         this.identityVerificationSheetExecutor.verificationSheet =
         IdentityVerificationSheet.Companion.create(
             getActivity(),
-            // pass your brand logo by creating it from local resource or
-            // Uri.parse("https://path/to/a/logo.jpg")
-            new IdentityVerificationSheet.Configuration(Uri.parse("https://source.unsplash.com/random/300×300")),
+            // TODO: update this to a resource
+            new IdentityVerificationSheet.Configuration(Uri.parse("https://raw.githubusercontent.com/ionic-team/capacitor/2d9f058c8d48c8468225ab7af1cc2a7073a54ab5/android-template/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png")),
             verificationFlowResult -> {
                 // handle verificationResult
                 if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Completed) {
                     // The user has completed uploading their documents.
                     // Let them know that the verification is processing.
-                
-                    Logger.info("Verification Flow Completed!");
+                    this.identityVerificationSheetExecutor.onVerificationCompleted(bridge, identityVerificationCallbackId);
                 } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Canceled) {
                     // The user did not complete uploading their documents.
                     // You should allow them to try again.
-
-                    Logger.info("Verification Flow Canceled!");
+                    this.identityVerificationSheetExecutor.onVerificationCancelled(bridge, identityVerificationCallbackId);
                 } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Failed) {
                     // If the flow fails, you should display the localized error
                     // message to your user using throwable.getLocalizedMessage()
-
-                    Logger.info("Verification Flow Failed!");
+                    this.identityVerificationSheetExecutor.onVerificationFailed(bridge, identityVerificationCallbackId);
                 }
             }
         );

@@ -5,7 +5,9 @@ import android.content.Context;
 
 import androidx.core.util.Supplier;
 
+import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.Logger;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
 import com.google.android.gms.common.util.BiConsumer;
@@ -33,9 +35,6 @@ public class IdentityVerificationSheetExecutor extends Executor {
         verificationId = call.getString("verificationId", null);
         ephemeralKeySecret = call.getString("ephemeralKeySecret", null);
 
-        String customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null);
-        String customerId = call.getString("customerId", null);
-
         if (verificationId == null && ephemeralKeySecret == null) {
             String errorText = "Invalid Params. This method require verificationId or ephemeralKeySecret.";
             notifyListenersFunction.accept(IdentityVerificationSheetEvent.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
@@ -50,8 +49,29 @@ public class IdentityVerificationSheetExecutor extends Executor {
     public void presentIdentityVerificationSheet(final PluginCall call) {
         try {
             verificationSheet.present(this.verificationId, this.ephemeralKeySecret);
+            Logger.info("Presented Identity Verification Sheet");
         } catch (Exception ex) {
             call.reject(ex.getLocalizedMessage(), ex);
         }
+    }
+
+    public void onVerificationCompleted(Bridge bridge, String callbackId) {
+        PluginCall call = bridge.getSavedCall(callbackId);
+        notifyListenersFunction.accept(IdentityVerificationSheetEvent.Completed.getWebEventName(), emptyObject);
+        call.resolve();
+    }
+
+    public void onVerificationCancelled(Bridge bridge, String callbackId) {
+        PluginCall call = bridge.getSavedCall(callbackId);
+        String errorText = "Identity verification was cancelled";
+        notifyListenersFunction.accept(IdentityVerificationSheetEvent.Canceled.getWebEventName(), new JSObject().put("error", errorText));
+        call.reject(errorText);
+    }
+
+    public void onVerificationFailed(Bridge bridge, String callbackId) {
+        PluginCall call = bridge.getSavedCall(callbackId);
+        String errorText = "Identity verification failed";
+        notifyListenersFunction.accept(IdentityVerificationSheetEvent.Canceled.getWebEventName(), new JSObject().put("error", errorText));
+        call.reject(errorText);
     }
 }
