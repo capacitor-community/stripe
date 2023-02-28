@@ -58,7 +58,7 @@ public class IdentityVerificationSheetExecutor extends Executor {
     public void onVerificationCompleted(Bridge bridge, String callbackId) {
         PluginCall call = bridge.getSavedCall(callbackId);
         notifyListenersFunction.accept(IdentityVerificationSheetEvent.Completed.getWebEventName(), emptyObject);
-        call.resolve();
+        call.resolve(new JSObject().put("identityVerificationResult", IdentityVerificationSheetEvent.Completed.getWebEventName()));
     }
 
     public void onVerificationCancelled(Bridge bridge, String callbackId) {
