@@ -35,7 +35,7 @@ public class IdentityVerificationSheetExecutor extends Executor {
         verificationId = call.getString("verificationId", null);
         ephemeralKeySecret = call.getString("ephemeralKeySecret", null);
 
-        if (verificationId == null && ephemeralKeySecret == null) {
+        if (verificationId == null || ephemeralKeySecret == null) {
             String errorText = "Invalid Params. This method require verificationId or ephemeralKeySecret.";
             notifyListenersFunction.accept(IdentityVerificationSheetEvent.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
             call.reject(errorText);
