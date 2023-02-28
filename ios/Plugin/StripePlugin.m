@@ -17,4 +17,6 @@ CAP_PLUGIN(StripePlugin, "Stripe",
            CAP_PLUGIN_METHOD(isGooglePayAvailable, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(createGooglePay, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(presentGooglePay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(createIdentityVerificationSheet, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(presentIdentityVerificationSheet, CAPPluginReturnPromise);
 )

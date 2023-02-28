@@ -7,11 +7,13 @@ import PassKit
 @objc(StripePlugin)
 public class StripePlugin: CAPPlugin {
     private let paymentSheetExecutor = PaymentSheetExecutor()
+    private let identityVerificationSheetExecutor = IdentityVerificationSheetExecutor()
     private let paymentFlowExecutor = PaymentFlowExecutor()
     private let applePayExecutor = ApplePayExecutor()
 
     @objc func initialize(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.plugin = self
+        self.identityVerificationSheetExecutor.plugin = self
         self.paymentFlowExecutor.plugin = self
         self.applePayExecutor.plugin = self
 
@@ -37,6 +39,7 @@ public class StripePlugin: CAPPlugin {
 
     @objc func handleURLCallback(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.plugin = self
+        self.identityVerificationSheetExecutor.plugin = self
         self.paymentFlowExecutor.plugin = self
         self.applePayExecutor.plugin = self
 
@@ -65,6 +68,14 @@ public class StripePlugin: CAPPlugin {
 
     @objc func presentPaymentSheet(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.presentPaymentSheet(call)
+    }
+
+    @objc func createIdentityVerificationSheet(_ call: CAPPluginCall) {
+        self.identityVerificationSheetExecutor.createIdentityVerificationSheet(call)
+    }
+
+    @objc func presentIdentityVerificationSheet(_ call: CAPPluginCall) {
+        self.identityVerificationSheetExecutor.presentIdentityVerificationSheet(call)
     }
 
     @objc func createPaymentFlow(_ call: CAPPluginCall) {
