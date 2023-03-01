@@ -32,7 +32,6 @@ class IdentityVerificationSheetExecutor: NSObject {
     }
 
     func presentIdentityVerificationSheet(_ call: CAPPluginCall) {
-
         DispatchQueue.main.async {
             if let rootViewController = self.plugin?.getRootVC() {
                 self.identityVerificationSheet!.present(from: rootViewController, completion: { result in
@@ -41,20 +40,20 @@ class IdentityVerificationSheetExecutor: NSObject {
                         // The user has completed uploading their documents.
                         // Let them know that the verification is processing.
                         print("Verification Flow Completed!")
-                        self.plugin?.notifyListeners(PaymentSheetEvents.Completed.rawValue, data: [:])
-                        call.resolve(["identityVerificationResult": PaymentSheetEvents.Completed.rawValue])
+                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Completed.rawValue, data: [:])
+                        call.resolve(["identityVerificationResult": IdentityVerificationSheetEvents.Completed.rawValue])
                     case .flowCanceled:
                         // The user did not complete uploading their documents.
                         // You should allow them to try again.
                         print("Verification Flow Canceled!")
-                        self.plugin?.notifyListeners(PaymentSheetEvents.Canceled.rawValue, data: [:])
-                        call.reject(PaymentSheetEvents.Canceled.rawValue)
+                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Canceled.rawValue, data: [:])
+                        call.reject(IdentityVerificationSheetEvents.Canceled.rawValue)
                     case .flowFailed(let error):
                         // If the flow fails, you should display the localized error
                         // message to your user using error.localizedDescription
                         print("Verification Flow Failed!")
                         print(error.localizedDescription)
-                        self.plugin?.notifyListeners(PaymentSheetEvents.Failed.rawValue, data: ["error": error.localizedDescription])
+                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Failed.rawValue, data: ["error": error.localizedDescription])
                         call.reject(error.localizedDescription)
                     }
                 })
