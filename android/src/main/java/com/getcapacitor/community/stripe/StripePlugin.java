@@ -1,8 +1,8 @@
 package com.getcapacitor.community.stripe;
 
+import android.content.ContentResolver;
+import android.content.res.Resources;
 import android.net.Uri;
-import android.provider.ContactsContract;
-
 import com.getcapacitor.Logger;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
@@ -103,11 +103,19 @@ public class StripePlugin extends Plugin {
                 }
             );
 
+        Resources resources = getActivity().getApplicationContext().getResources();
+        int resourceId = resources.getIdentifier("ic_launcher", "mipmap", getActivity().getPackageName());
+        Uri icon = new Uri.Builder()
+            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            .authority(resources.getResourcePackageName(resourceId))
+            .appendPath(resources.getResourceTypeName(resourceId))
+            .appendPath(resources.getResourceEntryName(resourceId))
+            .build();
+
         this.identityVerificationSheetExecutor.verificationSheet =
         IdentityVerificationSheet.Companion.create(
             getActivity(),
-            // TODO: update this to a resource
-            new IdentityVerificationSheet.Configuration(Uri.parse("https://raw.githubusercontent.com/ionic-team/capacitor/2d9f058c8d48c8468225ab7af1cc2a7073a54ab5/android-template/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png")),
+            new IdentityVerificationSheet.Configuration(icon),
             verificationFlowResult -> {
                 // handle verificationResult
                 if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Completed) {
