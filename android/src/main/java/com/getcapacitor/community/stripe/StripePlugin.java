@@ -10,15 +10,15 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor;
 import com.getcapacitor.community.stripe.helper.MetaData;
+import com.getcapacitor.community.stripe.identityverification.IdentityVerificationSheetExecutor;
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor;
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor;
-import com.getcapacitor.community.stripe.identityverification.IdentityVerificationSheetExecutor;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
 import com.stripe.android.core.AppInfo;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
-import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.identity.IdentityVerificationSheet;
+import com.stripe.android.paymentsheet.PaymentSheet;
 import org.jetbrains.annotations.NotNull;
 
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
@@ -113,26 +113,26 @@ public class StripePlugin extends Plugin {
             .build();
 
         this.identityVerificationSheetExecutor.verificationSheet =
-        IdentityVerificationSheet.Companion.create(
-            getActivity(),
-            new IdentityVerificationSheet.Configuration(icon),
-            verificationFlowResult -> {
-                // handle verificationResult
-                if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Completed) {
-                    // The user has completed uploading their documents.
-                    // Let them know that the verification is processing.
-                    this.identityVerificationSheetExecutor.onVerificationCompleted(bridge, identityVerificationCallbackId);
-                } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Canceled) {
-                    // The user did not complete uploading their documents.
-                    // You should allow them to try again.
-                    this.identityVerificationSheetExecutor.onVerificationCancelled(bridge, identityVerificationCallbackId);
-                } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Failed) {
-                    // If the flow fails, you should display the localized error
-                    // message to your user using throwable.getLocalizedMessage()
-                    this.identityVerificationSheetExecutor.onVerificationFailed(bridge, identityVerificationCallbackId);
+            IdentityVerificationSheet.Companion.create(
+                getActivity(),
+                new IdentityVerificationSheet.Configuration(icon),
+                verificationFlowResult -> {
+                    // handle verificationResult
+                    if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Completed) {
+                        // The user has completed uploading their documents.
+                        // Let them know that the verification is processing.
+                        this.identityVerificationSheetExecutor.onVerificationCompleted(bridge, identityVerificationCallbackId);
+                    } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Canceled) {
+                        // The user did not complete uploading their documents.
+                        // You should allow them to try again.
+                        this.identityVerificationSheetExecutor.onVerificationCancelled(bridge, identityVerificationCallbackId);
+                    } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Failed) {
+                        // If the flow fails, you should display the localized error
+                        // message to your user using throwable.getLocalizedMessage()
+                        this.identityVerificationSheetExecutor.onVerificationFailed(bridge, identityVerificationCallbackId);
+                    }
                 }
-            }
-        );
+            );
     }
 
     @PluginMethod

@@ -3,7 +3,7 @@ import Capacitor
 import StripeIdentity
 
 class IdentityVerificationSheetExecutor: NSObject {
-    public weak var plugin: StripePlugin?
+    weak var plugin: StripePlugin?
     var identityVerificationSheet: IdentityVerificationSheet?
 
     func createIdentityVerificationSheet(_ call: CAPPluginCall) {

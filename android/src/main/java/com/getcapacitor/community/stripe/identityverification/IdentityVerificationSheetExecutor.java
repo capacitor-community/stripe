@@ -2,9 +2,7 @@ package com.getcapacitor.community.stripe.identityverification;
 
 import android.app.Activity;
 import android.content.Context;
-
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Logger;
@@ -37,7 +35,10 @@ public class IdentityVerificationSheetExecutor extends Executor {
 
         if (verificationId == null || ephemeralKeySecret == null) {
             String errorText = "Invalid Params. This method require verificationId or ephemeralKeySecret.";
-            notifyListenersFunction.accept(IdentityVerificationSheetEvent.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
+            notifyListenersFunction.accept(
+                IdentityVerificationSheetEvent.FailedToLoad.getWebEventName(),
+                new JSObject().put("error", errorText)
+            );
             call.reject(errorText);
             return;
         }

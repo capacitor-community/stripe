@@ -11,7 +11,11 @@ export * from './paymentsheet/index';
 export * from './identityverificationsheet/index';
 export * from './shared/index';
 
-type StripeDefinitions = PaymentSheetDefinitions & PaymentFlowDefinitions & ApplePayDefinitions & GooglePayDefinitions & IdentityVerificationSheetDefinitions;
+type StripeDefinitions = PaymentSheetDefinitions &
+  PaymentFlowDefinitions &
+  ApplePayDefinitions &
+  GooglePayDefinitions &
+  IdentityVerificationSheetDefinitions;
 
 export interface StripePlugin extends StripeDefinitions {
   initialize(opts: StripeInitializationOptions): Promise<void>;

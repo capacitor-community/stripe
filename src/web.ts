@@ -59,10 +59,12 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async createIdentityVerificationSheet(_options: CreateIdentityVerificationSheetOption): Promise<void> {
-      // TODO: what is web.ts for?
+    // TODO: what is web.ts for?
   }
-    
-  presentIdentityVerificationSheet(): Promise<{ identityVerificationResult: IdentityVerificationSheetResultInterface; }> {
+
+  presentIdentityVerificationSheet(): Promise<{
+    identityVerificationResult: IdentityVerificationSheetResultInterface;
+  }> {
     throw new Error('Method not implemented.');
   }
 
