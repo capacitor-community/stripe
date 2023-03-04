@@ -3,7 +3,7 @@ import Capacitor
 import StripePaymentSheet
 
 class PaymentSheetExecutor: NSObject {
-    public weak var plugin: StripePlugin?
+    weak var plugin: StripePlugin?
     var paymentSheet: PaymentSheet?
 
     func createPaymentSheet(_ call: CAPPluginCall) {

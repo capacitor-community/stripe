@@ -113,7 +113,7 @@ public class StripePlugin: CAPPlugin {
     @objc func presentGooglePay(_ call: CAPPluginCall) {
         call.unavailable("Not implemented on iOS.")
     }
-    
+
     func getRootVC() -> UIViewController? {
         var window: UIWindow? = UIApplication.shared.delegate?.window ?? nil
 

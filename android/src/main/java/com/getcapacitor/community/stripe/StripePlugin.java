@@ -107,33 +107,33 @@ public class StripePlugin extends Plugin {
             Resources resources = getActivity().getApplicationContext().getResources();
             int resourceId = resources.getIdentifier("ic_launcher", "mipmap", getActivity().getPackageName());
             Uri icon = new Uri.Builder()
-                    .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                    .authority(resources.getResourcePackageName(resourceId))
-                    .appendPath(resources.getResourceTypeName(resourceId))
-                    .appendPath(resources.getResourceEntryName(resourceId))
-                    .build();
+                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                .authority(resources.getResourcePackageName(resourceId))
+                .appendPath(resources.getResourceTypeName(resourceId))
+                .appendPath(resources.getResourceEntryName(resourceId))
+                .build();
 
             this.identityVerificationSheetExecutor.verificationSheet =
-                    IdentityVerificationSheet.Companion.create(
-                            getActivity(),
-                            new IdentityVerificationSheet.Configuration(icon),
-                            verificationFlowResult -> {
-                                // handle verificationResult
-                                if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Completed) {
-                                    // The user has completed uploading their documents.
-                                    // Let them know that the verification is processing.
-                                    this.identityVerificationSheetExecutor.onVerificationCompleted(bridge, identityVerificationCallbackId);
-                                } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Canceled) {
-                                    // The user did not complete uploading their documents.
-                                    // You should allow them to try again.
-                                    this.identityVerificationSheetExecutor.onVerificationCancelled(bridge, identityVerificationCallbackId);
-                                } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Failed) {
-                                    // If the flow fails, you should display the localized error
-                                    // message to your user using throwable.getLocalizedMessage()
-                                    this.identityVerificationSheetExecutor.onVerificationFailed(bridge, identityVerificationCallbackId);
-                                }
-                            }
-                    );
+                IdentityVerificationSheet.Companion.create(
+                    getActivity(),
+                    new IdentityVerificationSheet.Configuration(icon),
+                    verificationFlowResult -> {
+                        // handle verificationResult
+                        if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Completed) {
+                            // The user has completed uploading their documents.
+                            // Let them know that the verification is processing.
+                            this.identityVerificationSheetExecutor.onVerificationCompleted(bridge, identityVerificationCallbackId);
+                        } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Canceled) {
+                            // The user did not complete uploading their documents.
+                            // You should allow them to try again.
+                            this.identityVerificationSheetExecutor.onVerificationCancelled(bridge, identityVerificationCallbackId);
+                        } else if (verificationFlowResult instanceof IdentityVerificationSheet.VerificationFlowResult.Failed) {
+                            // If the flow fails, you should display the localized error
+                            // message to your user using throwable.getLocalizedMessage()
+                            this.identityVerificationSheetExecutor.onVerificationFailed(bridge, identityVerificationCallbackId);
+                        }
+                    }
+                );
         }
     }
 
