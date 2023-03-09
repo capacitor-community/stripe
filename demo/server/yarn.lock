@@ -7100,13 +7100,13 @@
   dependencies:
     "escape-string-regexp" "^1.0.2"
 
-"stripe@^8.222.0":
-  "integrity" "sha512-hrA79fjmN2Eb6K3kxkDzU4ODeVGGjXQsuVaAPSUro6I9MM3X+BvIsVqdphm3BXWfimAGFvUqWtPtHy25mICY1w=="
-  "resolved" "https://registry.npmjs.org/stripe/-/stripe-8.222.0.tgz"
-  "version" "8.222.0"
+"stripe@^11.13.0":
+  "integrity" "sha512-Jx0nDbdvRsTtDSX5OFQ+4rLmYIftoiOE9HAXWIgyhAz1QjRFI3UIiJ/kCyhkdJBoHu019O5Ya6EmQ5Zf635XDw=="
+  "resolved" "https://registry.npmjs.org/stripe/-/stripe-11.13.0.tgz"
+  "version" "11.13.0"
   dependencies:
     "@types/node" ">=8.1.0"
-    "qs" "^6.10.3"
+    "qs" "^6.11.0"
 
 "strtok3@^6.2.4":
   "integrity" "sha512-fZtbhtvI9I48xDSywd/somNqgUHl2L2cstmXCCif0itOf96jeW18MBSyrLuNicYQVkvpOxkZtkzujiTJ9LW5Jw=="

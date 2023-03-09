@@ -90,4 +90,28 @@ export class AppController {
       paymentIntent: paymentIntent.client_secret,
     };
   }
+
+  @Post('identify')
+  async createVerificationSessions(): Promise<{
+    verficationSessionId: string;
+    ephemeralKeySecret: string;
+  }> {
+    /**
+     * https://stripe.com/docs/payments/accept-a-payment?platform=ios
+     */
+    const verificationSession = await this.stripe.identity.verificationSessions.create({
+      type: 'document',
+      metadata: {
+        user_id: '1',
+      },
+    });
+    const ephemeralKey = await this.stripe.ephemeralKeys.create(
+      {verification_session: verificationSession.id},
+      {apiVersion: '2022-11-15'}
+    );
+    return {
+      verficationSessionId: verificationSession.id,
+      ephemeralKeySecret: ephemeralKey.secret,
+    };
+  }
 }
