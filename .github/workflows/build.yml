@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v1
+      uses: actions/checkout@v3
 
     - name: Use cached node_modules
       uses: actions/cache@v2
@@ -36,15 +36,11 @@ jobs:
 
     - name: Install test app node_modules
       working-directory: ./demo/angular
-      run: npm ci
+      run: npm ci && npm run cap
 
     - name: Build test React app
       working-directory: ./demo/react
       run: npm ci && npm run build
-
-    - name: Build test app
-      working-directory: ./demo/angular
-      run: npm run cap
 
     - name: Update & Sync Capacitor Project
       working-directory: ./demo/angular
@@ -58,3 +54,13 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         path: ./demo/angular/android/app/build/outputs/apk/debug/app-debug.apk
+
+  verify-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm run verify:android
