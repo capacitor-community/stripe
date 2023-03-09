@@ -8,16 +8,20 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'tab1',
+        path: 'demo',
         loadChildren: () => import('../demo/demo.module').then(m => m.DemoPageModule)
       },
       {
-        path: 'tab2',
+        path: 'sheet',
         loadChildren: () => import('../sheet/sheet.module').then(m => m.SheetPageModule)
       },
       {
-        path: 'tab3',
+        path: 'flow',
         loadChildren: () => import('../flow/flow.module').then(m => m.FlowPageModule)
+      },
+      {
+        path: 'identify',
+        loadChildren: () => import('../identity/identity.module').then(m => m.IdentityPageModule)
       },
       {
         path: '',
@@ -28,7 +32,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/tabs/tab1',
+    redirectTo: '/tabs/demo',
     pathMatch: 'full'
   }
 ];
