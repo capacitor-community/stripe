@@ -3,7 +3,7 @@ import Capacitor
 import StripePaymentSheet
 
 class PaymentFlowExecutor: NSObject {
-    public weak var plugin: StripePlugin?
+    weak var plugin: StripePlugin?
     var paymentSheetFlowController: PaymentSheet.FlowController!
 
     func createPaymentFlow(_ call: CAPPluginCall) {
@@ -116,7 +116,7 @@ class PaymentFlowExecutor: NSObject {
         }
     }
 
-    public func confirmPaymentFlow(_ call: CAPPluginCall) {
+    func confirmPaymentFlow(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             if let rootViewController = self.plugin?.getRootVC() {
                 self.paymentSheetFlowController.confirm(from: rootViewController) { paymentResult in

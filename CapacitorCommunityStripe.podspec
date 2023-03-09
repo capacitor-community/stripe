@@ -15,5 +15,6 @@ Pod::Spec.new do |s|
   s.dependency 'Capacitor'
   s.dependency 'StripePaymentSheet', '23.3.2'
   s.dependency 'StripeApplePay', '23.3.2'
+  s.dependency 'StripeIdentity', '23.3.2'
   s.swift_version = '5.1'
 end
