@@ -67,11 +67,11 @@ const cancelPathItems: ITestItems [] = [
 ];
 
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss']
+  selector: 'app-flow',
+  templateUrl: 'flow.page.html',
+  styleUrls: ['flow.page.scss']
 })
-export class Tab3Page {
+export class FlowPage {
   public eventItems: ITestItems [] = [];
   private readonly listenerHandlers: PluginListenerHandle[] = [];
 

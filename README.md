@@ -30,24 +30,6 @@ See more info: https://github.com/stripe/stripe-android/releases
 
 Most of the time it will be fine, but it may conflict with other plugins. If this, you should use released version. We can't support conflict with other plugins.
 
-## How to use pre-release
-
-Install pre-release version using npm:
-
-```bash
-% npm i @capacitor-community/stripe@next
-% npm run cap update
-```
-
-And update project `android/variables.gradle`:
-
-```diff
--    compileSdkVersion = 32
--    targetSdkVersion = 32
-+    compileSdkVersion = 33
-+    targetSdkVersion = 33
-```
-
 ## Maintainers
 
 | Maintainer          | GitHub                              | Social                                | Sponsoring Company                             |

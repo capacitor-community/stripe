@@ -3,18 +3,17 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Tab3Page } from './tab3.page';
+import { SheetPage } from './sheet.page';
 
-import { Tab3PageRoutingModule } from './tab3-routing.module';
+import { SheetPageRoutingModule } from './sheet-routing.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: Tab3Page }]),
-    Tab3PageRoutingModule,
+    SheetPageRoutingModule
   ],
-  declarations: [Tab3Page]
+  declarations: [SheetPage]
 })
-export class Tab3PageModule {}
+export class SheetPageModule {}

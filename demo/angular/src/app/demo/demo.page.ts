@@ -6,11 +6,11 @@ import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-tab1',
-  templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss']
+  selector: 'app-demo',
+  templateUrl: 'demo.page.html',
+  styleUrls: ['demo.page.scss']
 })
-export class Tab1Page implements OnInit {
+export class DemoPage implements OnInit {
   processSheet: 'willReady' | 'Ready' = 'willReady';
   processFlow: 'willReady' | 'Ready' | 'canConfirm' = 'willReady';
   processApplePay: 'willReady' | 'Ready' = 'willReady';

@@ -56,11 +56,11 @@ const cancelPathItems: ITestItems [] = [
 ];
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss']
+  selector: 'app-sheet',
+  templateUrl: 'sheet.page.html',
+  styleUrls: ['sheet.page.scss']
 })
-export class Tab2Page {
+export class SheetPage {
   public eventItems: ITestItems [] = [];
   private readonly listenerHandlers: PluginListenerHandle[] = [];
 
