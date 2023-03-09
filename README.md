@@ -14,6 +14,40 @@
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/v/@capacitor-community/stripe?style=flat-square" /></a>
 </p>
 
+## This is pre-release Branch
+
+This branch used stripe-android@20.19.0. stripe-android@20.19.0 require compileSdkVersion "33". (Capacitor 4's default compileSdkVersion is "32"). 
+
+| Plugin version | stripe-android version  |
+|----------------|-------------------------|
+| 4.1.1          | stripe-android@20.11.0  |
+| 4.1.2-0(next)  | stripe-android@20.19.0  |
+
+- Updated Google Pay button to match new brand guidelines.
+- [CHANGED]5679 Fix oversized verification_frames payloads leading to failed scans.
+
+See more info: https://github.com/stripe/stripe-android/releases
+
+Most of the time it will be fine, but it may conflict with other plugins. If this, you should use released version. We can't support conflict with other plugins.
+
+## How to use pre-release
+
+Install pre-release version using npm:
+
+```bash
+% npm i @capacitor-community/stripe@next
+% npm run cap update
+```
+
+And update project `android/variables.gradle`:
+
+```diff
+-    compileSdkVersion = 32
+-    targetSdkVersion = 32
++    compileSdkVersion = 33
++    targetSdkVersion = 33
+```
+
 ## Maintainers
 
 | Maintainer          | GitHub                              | Social                                | Sponsoring Company                             |
