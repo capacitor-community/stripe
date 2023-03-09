@@ -14,14 +14,14 @@
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/v/@capacitor-community/stripe?style=flat-square" /></a>
 </p>
 
-## This is pre-release Branch
+## Since 4.2.0, require compileSdkVersion "33" at Android
 
-This branch used stripe-android@20.19.0. stripe-android@20.19.0 require compileSdkVersion "33". (Capacitor 4's default compileSdkVersion is "32"). 
+Since version 4.2.0, this plugin requires compileSdkVersion "33". (Capacitor 4's default compileSdkVersion is "32"). 
 
-| Plugin version | stripe-android version  |
-|----------------|-------------------------|
-| 4.1.1          | stripe-android@20.11.0  |
-| 4.1.2-0(next)  | stripe-android@20.19.0  |
+| Plugin version | compileSdkVersion |
+|----------------|-------------------|
+| 4.1.2          | 32                |
+| 4.2.0          | 33                |
 
 - Updated Google Pay button to match new brand guidelines.
 - [CHANGED]5679 Fix oversized verification_frames payloads leading to failed scans.
