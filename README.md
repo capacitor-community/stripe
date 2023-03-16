@@ -58,12 +58,13 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 
 ### Screenshots
 
-|  |  Android  |  iOS  |                     Web                     |
-| :---: | :---: | :---: |:-------------------------------------------:|
-|  PaymentSheet  | ![](demo/screenshots/payment-sheet-android.png)  | ![](demo/screenshots/payment-sheet-ios.png)  | ![](demo/screenshots/payment-sheet-web.png) |
-|  PaymentFlow   | ![](demo/screenshots/payment-flow-android.png) |  ![](demo/screenshots/payment-flow-ios.png) | ![](demo/screenshots/payment-sheet-web.png) |
-|  ApplePay   | Not supported |  ![](demo/screenshots/apple-pay-ios.png) |                    beta.                    |
-|  GooglePay   |  ![](demo/screenshots/google-pay-android.png) | Not supported |  ![](demo/screenshots/google-pay-web.png)   |
+|              |                     Android                     |                     iOS                     |                     Web                     |
+|:------------:|:-----------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|
+| PaymentSheet | ![](demo/screenshots/payment-sheet-android.png) | ![](demo/screenshots/payment-sheet-ios.png) | ![](demo/screenshots/payment-sheet-web.png) |
+| PaymentFlow  | ![](demo/screenshots/payment-flow-android.png)  | ![](demo/screenshots/payment-flow-ios.png)  | ![](demo/screenshots/payment-sheet-web.png) |
+|   ApplePay   |                  Not supported                  |   ![](demo/screenshots/apple-pay-ios.png)   |                    beta.                    |
+|  GooglePay   |  ![](demo/screenshots/google-pay-android.png)   |                Not supported                |  ![](demo/screenshots/google-pay-web.png)   |
+|   Identity   |   ![](demo/screenshots/identity-android.png)    |    ![](demo/screenshots/identity-ios.png)     |  Not supported   |
 
 ## API
 
