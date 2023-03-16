@@ -5,7 +5,7 @@
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
 
-    <string name="publishable_key">pk_test_51KFDksKRG9PRcrzzFTufGURQI0o6bpWmfKE2j38nn0bTHIrLDq0nWyD4j6Y6weguOBJL4y5qrmPJCWzGKioy4uOX00icJMyhaP</string>
+    <string name="publishable_key">pk_test_51MmARtKzMYim9cy3tOI5vOdHbai4G26V1AiDJmiE4aiAXc8BaSzh9Z0b0f8Novn0Jyyi8JqNdzLzcI2rUGT4g8ct00gfUVdLuM</string>
     <bool name="enable_google_pay">true</bool>
     <string name="country_code">US</string>
     <string name="merchant_display_name">Widget Store</string>

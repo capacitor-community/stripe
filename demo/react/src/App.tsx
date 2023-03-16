@@ -44,7 +44,7 @@ setupIonicReact();
 
 const App: React.FC = () => (
   <CapacitorStripeProvider
-    publishableKey="pk_test_51KFDksKRG9PRcrzzFTufGURQI0o6bpWmfKE2j38nn0bTHIrLDq0nWyD4j6Y6weguOBJL4y5qrmPJCWzGKioy4uOX00icJMyhaP"
+    publishableKey="pk_test_51MmARtKzMYim9cy3tOI5vOdHbai4G26V1AiDJmiE4aiAXc8BaSzh9Z0b0f8Novn0Jyyi8JqNdzLzcI2rUGT4g8ct00gfUVdLuM"
     fallback={<p>Loading...</p>}
   >
     <IonApp>

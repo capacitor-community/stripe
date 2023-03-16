@@ -8,7 +8,7 @@ export class AppController {
   private stripe: Stripe;
   constructor(private readonly appService: AppService) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this.stripe = require('stripe')('sk_test_51KFDksKRG9PRcrzzyIsYt4JJhmc4PR8TllnqECXl9SS7lx36QU3DvcayVfZWGMIHxTByo4RL95RluKQBIiDpQ8Vg006SIkClLG');
+    this.stripe = require('stripe')('sk_test_51MmARtKzMYim9cy3l0jRblHOagmulcxNgJpXRLB3yDDyObnep8C5Eo70FrT5oDJr60G3CPAqdLVHagSyXizvk0ko00645CTaT5');
   }
 
   @Post('intent')
