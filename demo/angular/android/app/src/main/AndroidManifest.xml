@@ -61,6 +61,10 @@
           android:name="com.getcapacitor.community.stripe.google_pay_is_testing"
           android:value="@bool/google_pay_is_testing"/>
 
+      <meta-data
+        android:name="com.getcapacitor.community.stripe.enableIdentifier"
+        android:value="@bool/enableIdentifier"/>
+
 <!--      <meta-data-->
 <!--        android:name="com.getcapacitor.community.stripe.stripe_account"-->
 <!--        android:value="@string/stripe_account"/>-->

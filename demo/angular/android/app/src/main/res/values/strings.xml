@@ -10,5 +10,6 @@
     <string name="country_code">US</string>
     <string name="merchant_display_name">Widget Store</string>
     <bool name="google_pay_is_testing">true</bool>
+    <bool name="enableIdentifier">true</bool>
   <!--    <string name="stripe_account"></string>-->
 </resources>
