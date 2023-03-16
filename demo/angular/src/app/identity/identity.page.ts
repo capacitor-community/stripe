@@ -105,10 +105,6 @@ export class IdentityPage {
     await Stripe.presentIdentityVerificationSheet()
       .then((data) => {
         return this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult);
-      })
-      .catch((e) => {
-        console.log(e);
-        return this.helper.updateItem(this.eventItems,'presentIdentityVerificationSheet', undefined, e.errorMessage);
       });
 
     this.listenerHandlers.forEach(handler => handler.remove());
