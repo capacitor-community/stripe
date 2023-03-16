@@ -51,7 +51,7 @@ const cancelPathItems: ITestItems [] = [
   },
   {
     type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Completed,
+    name: IdentityVerificationSheetEventsEnum.Canceled,
   },
 ];
 
@@ -103,8 +103,13 @@ export class IdentityPage {
       .catch(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', false));
 
     await Stripe.presentIdentityVerificationSheet()
-      .then((data) => this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult))
-      .catch((e) => this.helper.updateItem(this.eventItems,'presentIdentityVerificationSheet', undefined, e));
+      .then((data) => {
+        return this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult);
+      })
+      .catch((e) => {
+        console.log(e);
+        return this.helper.updateItem(this.eventItems,'presentIdentityVerificationSheet', undefined, e.errorMessage);
+      });
 
     this.listenerHandlers.forEach(handler => handler.remove());
   }
