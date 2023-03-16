@@ -47,14 +47,14 @@ class IdentityVerificationSheetExecutor: NSObject {
                         // You should allow them to try again.
                         print("Verification Flow Canceled!")
                         self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Canceled.rawValue, data: [:])
-                        call.reject(IdentityVerificationSheetEvents.Canceled.rawValue)
+                        call.resolve(["identityVerificationResult": IdentityVerificationSheetEvents.Canceled.rawValue])
                     case .flowFailed(let error):
                         // If the flow fails, you should display the localized error
                         // message to your user using error.localizedDescription
                         print("Verification Flow Failed!")
                         print(error.localizedDescription)
                         self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Failed.rawValue, data: ["error": error.localizedDescription])
-                        call.reject(error.localizedDescription)
+                        call.resolve(["identityVerificationResult": IdentityVerificationSheetEvents.Failed.rawValue])
                     }
                 })
             }

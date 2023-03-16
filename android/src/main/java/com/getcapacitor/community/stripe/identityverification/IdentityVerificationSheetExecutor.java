@@ -64,15 +64,13 @@ public class IdentityVerificationSheetExecutor extends Executor {
 
     public void onVerificationCancelled(Bridge bridge, String callbackId) {
         PluginCall call = bridge.getSavedCall(callbackId);
-        String errorText = "Identity verification was cancelled";
-        notifyListenersFunction.accept(IdentityVerificationSheetEvent.Canceled.getWebEventName(), new JSObject().put("error", errorText));
-        call.reject(errorText);
+        notifyListenersFunction.accept(IdentityVerificationSheetEvent.Canceled.getWebEventName(), emptyObject);
+        call.resolve(new JSObject().put("identityVerificationResult", IdentityVerificationSheetEvent.Canceled.getWebEventName()));
     }
 
     public void onVerificationFailed(Bridge bridge, String callbackId) {
         PluginCall call = bridge.getSavedCall(callbackId);
-        String errorText = "Identity verification failed";
-        notifyListenersFunction.accept(IdentityVerificationSheetEvent.Canceled.getWebEventName(), new JSObject().put("error", errorText));
-        call.reject(errorText);
+        notifyListenersFunction.accept(IdentityVerificationSheetEvent.Failed.getWebEventName(), emptyObject);
+        call.resolve(new JSObject().put("identityVerificationResult", IdentityVerificationSheetEvent.Failed.getWebEventName()));
     }
 }
