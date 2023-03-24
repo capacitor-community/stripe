@@ -18,3 +18,14 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
+
+**Usage Product**
+If you adopt this plugin, please let us know which product you are using.
+
+Product Name:
+Product URL :
+Using Function:
+- [ ] Payment Sheet / Payment Flow
+- [ ] Apple Pay
+- [ ] Google Pay
+- [ ] Identity Verification Sheet
