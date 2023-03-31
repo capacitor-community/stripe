@@ -15,6 +15,10 @@ public class MetaData {
     public String countryCode;
     public String displayName;
     public String stripeAccount;
+    public Boolean emailAddressRequired;
+    public Boolean phoneNumberRequired;
+    public Boolean billingAddressRequired;
+    public String billingAddressFormat;
     public GooglePayEnvironment googlePayEnvironment;
 
     public boolean enableIdentifier;
@@ -32,6 +36,10 @@ public class MetaData {
             countryCode = appInfo.metaData.getString("com.getcapacitor.community.stripe.country_code");
             displayName = appInfo.metaData.getString("com.getcapacitor.community.stripe.merchant_display_name");
             stripeAccount = appInfo.metaData.getString("com.getcapacitor.community.stripe.stripe_account");
+            emailAddressRequired = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.email_address_required");
+            phoneNumberRequired = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.phone_number_required");
+            billingAddressRequired = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.billing_address_required");
+            billingAddressFormat = appInfo.metaData.getString("com.getcapacitor.community.stripe.billing_address_format");
             enableIdentifier = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.enableIdentifier");
 
             boolean isTest = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing");
