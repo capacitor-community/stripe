@@ -21,6 +21,8 @@ import com.stripe.android.identity.IdentityVerificationSheet;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 @NativePlugin(name = "Stripe", requestCodes = { 9972, 50000, 50001, 6000 })
 public class StripePlugin extends Plugin {
 
@@ -75,7 +77,19 @@ public class StripePlugin extends Plugin {
             this.googlePayExecutor.googlePayLauncher =
                 new GooglePayLauncher(
                     getActivity(),
-                    new GooglePayLauncher.Config(metaData.googlePayEnvironment, metaData.countryCode, metaData.displayName),
+                    new GooglePayLauncher.Config(
+                        metaData.googlePayEnvironment,
+                        metaData.countryCode,
+                        metaData.displayName,
+                        metaData.emailAddressRequired,
+                        new GooglePayLauncher.BillingAddressConfig(
+                            metaData.billingAddressRequired,
+                            Objects.equals(metaData.billingAddressFormat, "Full")
+                                ? GooglePayLauncher.BillingAddressConfig.Format.Full
+                                : GooglePayLauncher.BillingAddressConfig.Format.Min,
+                            metaData.phoneNumberRequired
+                        )
+                    ),
                     (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
                     (@NotNull GooglePayLauncher.Result result) ->
                         this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
