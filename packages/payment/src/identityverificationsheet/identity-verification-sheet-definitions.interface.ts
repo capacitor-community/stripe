@@ -3,13 +3,20 @@ import type { PluginListenerHandle } from '@capacitor/core';
 import type {IdentityVerificationSheetEventsEnum, IdentityVerificationSheetResultInterface} from './identity-verification-sheet-events.enum';
 
 export interface CreateIdentityVerificationSheetOption {
-  verificationId: string; 
+  verificationId: string;
   ephemeralKeySecret: string;
 }
 
 
 export interface IdentityVerificationSheetDefinitions {
+  /**
+   * @deprecated Use `@capacitor-community/stripe-identity` instead.
+   */
   createIdentityVerificationSheet(options: CreateIdentityVerificationSheetOption): Promise<void>;
+
+  /**
+   * @deprecated Use `@capacitor-community/stripe-identity` instead.
+   */
   presentIdentityVerificationSheet(): Promise<{
     identityVerificationResult: IdentityVerificationSheetResultInterface;
   }>;

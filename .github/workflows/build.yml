@@ -26,13 +26,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-v1-dependencies-
 
-    - name: Install node_modules
-      run: npm ci
+    - name: Build Payment package
+      run: npm ci && npm run build
       working-directory: ./packages/payment
 
-    - name: Build Capacitor project
-      run: npm run build
-      working-directory: ./packages/payment
+    - name: Build Identity package
+      run: npm ci && npm run build
+      working-directory: ./packages/identity
 
     #- name: Test web implementation
     #  working-directory: ./packages/plugin
