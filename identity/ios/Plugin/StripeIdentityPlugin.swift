@@ -1,5 +1,7 @@
 import Foundation
 import Capacitor
+import StripeIdentity
+import PassKit
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -9,10 +11,30 @@ import Capacitor
 public class StripeIdentityPlugin: CAPPlugin {
     private let implementation = StripeIdentity()
 
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
+    override public func load() {
+        super.load()
+        self.implementation.plugin = self
+        STPAPIClient.shared.appInfo = STPAppInfo(name: "@capacitor-community/stripe", partnerId: nil, version: nil, url: nil)
+    }
+
+    @objc func createIdentityVerificationSheet(_ call: CAPPluginCall) {
+        self.implementation.createIdentityVerificationSheet(call)
+    }
+
+    @objc func presentIdentityVerificationSheet(_ call: CAPPluginCall) {
+        self.implementation.presentIdentityVerificationSheet(call)
+    }
+    
+    func getRootVC() -> UIViewController? {
+        var window: UIWindow? = UIApplication.shared.delegate?.window ?? nil
+
+        if window == nil {
+            let scene: UIWindowScene? = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            window = scene?.windows.filter({$0.isKeyWindow}).first
+            if window == nil {
+                window = scene?.windows.first
+            }
+        }
+        return window?.rootViewController
     }
 }

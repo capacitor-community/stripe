@@ -2,7 +2,6 @@ import Foundation
 import Capacitor
 import StripePaymentSheet
 import StripeApplePay
-import PassKit
 
 @objc(StripePlugin)
 public class StripePlugin: CAPPlugin {

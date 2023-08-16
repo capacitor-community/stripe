@@ -1,13 +1,25 @@
-import { WebPlugin } from '@capacitor/core';
+import { WebPlugin} from '@capacitor/core';
 
 import type { StripeIdentityPlugin } from './definitions';
+import type {IdentityVerificationSheetResultInterface} from './events.enum';
+
+export interface CreateIdentityVerificationSheetOption {
+  verificationId: string;
+  ephemeralKeySecret: string;
+}
 
 export class StripeIdentityWeb
   extends WebPlugin
   implements StripeIdentityPlugin
 {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
+  async createIdentityVerificationSheet(_options: CreateIdentityVerificationSheetOption): Promise<void> {
+    console.log(_options);
+    throw new Error('Method not implemented.');
+  }
+
+  presentIdentityVerificationSheet(): Promise<{
+    identityVerificationResult: IdentityVerificationSheetResultInterface;
+  }> {
+    throw new Error('Method not implemented.');
   }
 }

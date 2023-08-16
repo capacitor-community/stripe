@@ -2,5 +2,9 @@
 	{
 		"pkg": "@capacitor-community/stripe",
 		"classpath": "com.getcapacitor.community.stripe.StripePlugin"
+	},
+	{
+		"pkg": "@capacitor-community/stripe-identity",
+		"classpath": "com.getcapacitor.community.stripe.identity.StripeIdentityPlugin"
 	}
 ]
