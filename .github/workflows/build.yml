@@ -43,7 +43,7 @@ jobs:
 
     - name: Install test app node_modules
       working-directory: ./demo/angular
-      run: npm ci && npm run cap
+      run: npm install && npm run cap
 
     - name: Build test React app
       working-directory: ./demo/react
