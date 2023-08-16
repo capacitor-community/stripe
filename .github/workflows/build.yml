@@ -4,7 +4,7 @@ on:
 - push
 
 jobs:
-  default:
+  verify-demo:
     name: Build & Test
     runs-on: ubuntu-latest
 
@@ -26,11 +26,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-v1-dependencies-
 
-    - name: Install node_modules
-      run: npm ci
+    - name: Build Payment package
+      run: npm ci && npm run build
+      working-directory: ./packages/payment
 
-    - name: Build Capacitor project
-      run: npm run build
+    - name: Build Identity package
+      run: npm ci && npm run build
+      working-directory: ./packages/identity
 
     #- name: Test web implementation
     #  working-directory: ./packages/plugin
@@ -41,7 +43,7 @@ jobs:
 
     - name: Install test app node_modules
       working-directory: ./demo/angular
-      run: npm ci && npm run cap
+      run: npm install && npm run cap
 
     - name: Build test React app
       working-directory: ./demo/react
@@ -60,7 +62,7 @@ jobs:
       with:
         path: ./demo/angular/android/app/build/outputs/apk/debug/app-debug.apk
 
-  verify-android:
+  verify-payment-android:
     runs-on: ubuntu-latest
     steps:
       - name: set up JDK 17
@@ -72,5 +74,28 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm install
-      - run: npm run verify:android
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/payment
+      - name: verify
+        run: npm run verify:android
+        working-directory: ./packages/payment
+
+  verify-identity-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/identity
+      - name: verify
+        run: npm run verify:android
+        working-directory: ./packages/identity

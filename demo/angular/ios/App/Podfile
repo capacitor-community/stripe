@@ -11,7 +11,8 @@ install! 'cocoapods', :disable_input_output_paths => true
 def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
-  pod 'CapacitorCommunityStripe', :path => '../../../..'
+  pod 'CapacitorCommunityStripe', :path => '../../../../packages/payment'
+  pod 'CapacitorCommunityStripeIdentity', :path => '../../../../packages/identity'
 end
 
 target 'App' do
