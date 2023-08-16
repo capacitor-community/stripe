@@ -9,5 +9,6 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         registerPlugin(com.getcapacitor.community.stripe.StripePlugin.class);
+      registerPlugin(com.getcapacitor.community.stripe.identity.StripeIdentityPlugin.class);
     }
 }

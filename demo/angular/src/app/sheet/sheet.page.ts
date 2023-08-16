@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {PaymentSheetEventsEnum, Stripe} from '../../../../../dist/esm';
+import {PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
 import {ITestItems} from '../shared/interfaces';
 import {environment} from '../../environments/environment';
 import {first} from 'rxjs/operators';

@@ -3,6 +3,7 @@ import type {PluginListenerHandle} from '@capacitor/core';
 import type {IdentityVerificationSheetEventsEnum, IdentityVerificationSheetResultInterface} from './events.enum';
 import type {CreateIdentityVerificationSheetOption} from './web';
 
+export * from './events.enum';
 export interface StripeIdentityPlugin {
   createIdentityVerificationSheet(options: CreateIdentityVerificationSheetOption): Promise<void>;
   presentIdentityVerificationSheet(): Promise<{

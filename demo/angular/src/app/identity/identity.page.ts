@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {ITestItems} from '../shared/interfaces';
-import {IdentityVerificationSheetEventsEnum, Stripe} from '../../../../../dist/esm';
+import {IdentityVerificationSheetEventsEnum, StripeIdentity} from '@capacitor-community/stripe-identity';
 import {PluginListenerHandle} from '@capacitor/core';
 import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
@@ -80,7 +80,7 @@ export class IdentityPage {
   async create(type: 'happyPath' | 'cancelPath') {
     const eventKeys = Object.keys(IdentityVerificationSheetEventsEnum);
     eventKeys.forEach(key => {
-      const handler = Stripe.addListener(IdentityVerificationSheetEventsEnum[key], (value) => {
+      const handler = StripeIdentity.addListener(IdentityVerificationSheetEventsEnum[key], (value) => {
         this.helper.updateItem(this.eventItems, IdentityVerificationSheetEventsEnum[key], true, value);
       });
       this.listenerHandlers.push(handler);
@@ -103,14 +103,14 @@ export class IdentityPage {
 
     await this.helper.updateItem(this.eventItems,'HttpClient', true);
 
-    await Stripe.createIdentityVerificationSheet({
+    await StripeIdentity.createIdentityVerificationSheet({
       ephemeralKeySecret,
       verificationId: verficationSessionId,
     })
       .then(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', true))
       .catch(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', false));
 
-    await Stripe.presentIdentityVerificationSheet()
+    await StripeIdentity.presentIdentityVerificationSheet()
       .then((data) => {
         return this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult);
       });
