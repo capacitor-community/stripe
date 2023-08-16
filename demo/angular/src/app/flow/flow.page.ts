@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ITestItems} from '../shared/interfaces';
 import {PaymentFlowEventsEnum, Stripe} from '../../../../../dist/esm';
 import {PluginListenerHandle} from '@capacitor/core';
@@ -6,6 +6,8 @@ import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
 import {environment} from '../../environments/environment';
 import {first} from 'rxjs/operators';
+import {NgFor, NgIf} from '@angular/common';
+import {IonicModule} from '@ionic/angular';
 
 const happyPathItems: ITestItems [] = [
   {
@@ -67,9 +69,11 @@ const cancelPathItems: ITestItems [] = [
 ];
 
 @Component({
-  selector: 'app-flow',
-  templateUrl: 'flow.page.html',
-  styleUrls: ['flow.page.scss']
+    selector: 'app-flow',
+    templateUrl: 'flow.page.html',
+    styleUrls: ['flow.page.scss'],
+    standalone: true,
+    imports: [IonicModule, NgIf, NgFor]
 })
 export class FlowPage {
   public eventItems: ITestItems [] = [];

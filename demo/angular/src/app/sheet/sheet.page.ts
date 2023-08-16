@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
-import { PaymentSheetEventsEnum, Stripe } from '../../../../../dist/esm';
-import { ITestItems } from '../shared/interfaces';
-import { environment } from '../../environments/environment';
-import { first } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { HelperService } from '../shared/helper.service';
-import { PluginListenerHandle } from '@capacitor/core';
+import {Component} from '@angular/core';
+import {PaymentSheetEventsEnum, Stripe} from '../../../../../dist/esm';
+import {ITestItems} from '../shared/interfaces';
+import {environment} from '../../environments/environment';
+import {first} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {HelperService} from '../shared/helper.service';
+import {PluginListenerHandle} from '@capacitor/core';
+import {NgFor, NgIf} from '@angular/common';
+import {IonicModule} from '@ionic/angular';
 
 const happyPathItems: ITestItems [] = [
   {
@@ -56,9 +58,11 @@ const cancelPathItems: ITestItems [] = [
 ];
 
 @Component({
-  selector: 'app-sheet',
-  templateUrl: 'sheet.page.html',
-  styleUrls: ['sheet.page.scss']
+    selector: 'app-sheet',
+    templateUrl: 'sheet.page.html',
+    styleUrls: ['sheet.page.scss'],
+    standalone: true,
+    imports: [IonicModule, NgIf, NgFor]
 })
 export class SheetPage {
   public eventItems: ITestItems [] = [];

@@ -1,5 +1,5 @@
-import { Injectable, NgZone } from '@angular/core';
-import { ITestItems } from './interfaces';
+import {Injectable, NgZone} from '@angular/core';
+import {ITestItems} from './interfaces';
 
 @Injectable({
   providedIn: 'root'

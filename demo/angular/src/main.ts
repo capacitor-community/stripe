@@ -1,15 +1,27 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import {enableProdMode, importProvidersFrom} from '@angular/core';
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
 
-import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
+import {environment} from './environments/environment';
+
+import {defineCustomElements} from '@stripe-elements/stripe-elements/loader';
+import {AppComponent} from './app/app.component';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {routes} from './app/app.routes';
+import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
+import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
+import {provideRouter, RouteReuseStrategy} from '@angular/router';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
+bootstrapApplication(AppComponent, {
+    providers: [
+      provideRouter(routes),
+        importProvidersFrom(BrowserModule, IonicModule.forRoot()),
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        provideHttpClient(withInterceptorsFromDi())
+    ]
+})
   .then(() => defineCustomElements(window))
   .catch(err => console.log(err));

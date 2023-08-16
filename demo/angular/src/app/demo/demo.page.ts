@@ -1,14 +1,23 @@
 import {Component, OnInit} from '@angular/core';
-import {ApplePayEventsEnum, GooglePayEventsEnum, PaymentFlowEventsEnum, PaymentSheetEventsEnum, Stripe} from '@capacitor-community/stripe';
+import {
+  ApplePayEventsEnum,
+  GooglePayEventsEnum,
+  PaymentFlowEventsEnum,
+  PaymentSheetEventsEnum,
+  Stripe
+} from '@capacitor-community/stripe';
 
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
+import {IonicModule} from '@ionic/angular';
 
 @Component({
-  selector: 'app-demo',
-  templateUrl: 'demo.page.html',
-  styleUrls: ['demo.page.scss']
+    selector: 'app-demo',
+    templateUrl: 'demo.page.html',
+    styleUrls: ['demo.page.scss'],
+    standalone: true,
+    imports: [IonicModule]
 })
 export class DemoPage implements OnInit {
   processSheet: 'willReady' | 'Ready' = 'willReady';
