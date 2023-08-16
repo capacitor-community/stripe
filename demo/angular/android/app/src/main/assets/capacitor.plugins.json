@@ -6,5 +6,9 @@
 	{
 		"pkg": "@capacitor-community/stripe-identity",
 		"classpath": "com.getcapacitor.community.stripe.identity.StripeIdentityPlugin"
+	},
+	{
+		"pkg": "@capacitor-community/stripe-terminal",
+		"classpath": "com.getcapacitor.community.stripe.terminal.StripeTerminalPlugin"
 	}
 ]

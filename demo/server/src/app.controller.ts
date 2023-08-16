@@ -114,4 +114,14 @@ export class AppController {
       ephemeralKeySecret: ephemeralKey.secret,
     };
   }
+
+  @Post('connection/token')
+  async createConnectionToken(): Promise<{
+    secret: string;
+  }> {
+    const connectionToken = await this.stripe.terminal.connectionTokens.create();
+    return {
+      secret: connectionToken.secret,
+    };
+  }
 }
