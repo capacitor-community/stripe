@@ -28,9 +28,11 @@ jobs:
 
     - name: Install node_modules
       run: npm ci
+      working-directory: ./packages/payment
 
     - name: Build Capacitor project
       run: npm run build
+      working-directory: ./packages/payment
 
     #- name: Test web implementation
     #  working-directory: ./packages/plugin
@@ -72,5 +74,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm install
-      - run: npm run verify:android
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/payment
+      - name: verify
+        run: npm run verify:android
+        working-directory: ./packages/payment
