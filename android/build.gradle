@@ -66,6 +66,7 @@ dependencies {
     implementation 'com.stripe:stripe-android:20.28.2'
     implementation('com.stripe:stripecardscan:20.28.2') {
         exclude module: 'stripecardscan-tflite'
+        exclude module: 'ml-core-cardscan'
     }
 
     implementation 'com.stripe:identity:20.28.2'
