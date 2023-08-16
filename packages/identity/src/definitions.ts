@@ -5,8 +5,8 @@ import type {CreateIdentityVerificationSheetOption} from './web';
 
 export * from './events.enum';
 export interface StripeIdentityPlugin {
-  createIdentityVerificationSheet(options: CreateIdentityVerificationSheetOption): Promise<void>;
-  presentIdentityVerificationSheet(): Promise<{
+  create(options: CreateIdentityVerificationSheetOption): Promise<void>;
+  present(): Promise<{
     identityVerificationResult: IdentityVerificationSheetResultInterface;
   }>;
 

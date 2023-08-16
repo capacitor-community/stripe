@@ -6,7 +6,7 @@ import StripeIdentity
     weak var plugin: StripeIdentityPlugin?
     var identityVerificationSheet: IdentityVerificationSheet?
 
-    func createIdentityVerificationSheet(_ call: CAPPluginCall) {
+    func create(_ call: CAPPluginCall) {
         let verificationId = call.getString("verificationId") ?? nil
         let ephemeralKeySecret = call.getString("ephemeralKeySecret") ?? nil
 
@@ -31,7 +31,7 @@ import StripeIdentity
         call.resolve([:])
     }
 
-    func presentIdentityVerificationSheet(_ call: CAPPluginCall) {
+    func present(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             if let rootViewController = self.plugin?.getRootVC() {
                 self.identityVerificationSheet!.present(from: rootViewController, completion: { result in

@@ -17,14 +17,14 @@ public class StripeIdentityPlugin: CAPPlugin {
         STPAPIClient.shared.appInfo = STPAppInfo(name: "@capacitor-community/stripe", partnerId: nil, version: nil, url: nil)
     }
 
-    @objc func createIdentityVerificationSheet(_ call: CAPPluginCall) {
-        self.implementation.createIdentityVerificationSheet(call)
+    @objc func create(_ call: CAPPluginCall) {
+        self.implementation.create(call)
     }
 
-    @objc func presentIdentityVerificationSheet(_ call: CAPPluginCall) {
-        self.implementation.presentIdentityVerificationSheet(call)
+    @objc func present(_ call: CAPPluginCall) {
+        self.implementation.present(call)
     }
-    
+
     func getRootVC() -> UIViewController? {
         var window: UIWindow? = UIApplication.shared.delegate?.window ?? nil
 

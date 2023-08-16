@@ -41,7 +41,7 @@ public class StripeIdentity extends Executor {
         this.contextSupplier = contextSupplier;
     }
 
-    public void createIdentityVerificationSheet(final PluginCall call) {
+    public void create(final PluginCall call) {
         verificationId = call.getString("verificationId", null);
         ephemeralKeySecret = call.getString("ephemeralKeySecret", null);
 
@@ -59,7 +59,7 @@ public class StripeIdentity extends Executor {
         call.resolve();
     }
 
-    public void presentIdentityVerificationSheet(final PluginCall call) {
+    public void present(final PluginCall call) {
         try {
             verificationSheet.present(this.verificationId, this.ephemeralKeySecret);
             Logger.info("Presented Identity Verification Sheet");

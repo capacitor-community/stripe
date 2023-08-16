@@ -13,8 +13,8 @@ npx cap sync
 
 <docgen-index>
 
-* [`createIdentityVerificationSheet(...)`](#createidentityverificationsheet)
-* [`presentIdentityVerificationSheet()`](#presentidentityverificationsheet)
+* [`create(...)`](#create)
+* [`present()`](#present)
 * [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded)
 * [`addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)`](#addlisteneridentityverificationsheeteventsenumfailedtoload)
 * [`addListener(IdentityVerificationSheetEventsEnum.Completed, ...)`](#addlisteneridentityverificationsheeteventsenumcompleted)
@@ -29,10 +29,10 @@ npx cap sync
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### createIdentityVerificationSheet(...)
+### create(...)
 
 ```typescript
-createIdentityVerificationSheet(options: CreateIdentityVerificationSheetOption) => Promise<void>
+create(options: CreateIdentityVerificationSheetOption) => Promise<void>
 ```
 
 | Param         | Type                                                                                                    |
@@ -42,10 +42,10 @@ createIdentityVerificationSheet(options: CreateIdentityVerificationSheetOption) 
 --------------------
 
 
-### presentIdentityVerificationSheet()
+### present()
 
 ```typescript
-presentIdentityVerificationSheet() => Promise<{ identityVerificationResult: IdentityVerificationSheetResultInterface; }>
+present() => Promise<{ identityVerificationResult: IdentityVerificationSheetResultInterface; }>
 ```
 
 **Returns:** <code>Promise&lt;{ identityVerificationResult: <a href="#identityverificationsheetresultinterface">IdentityVerificationSheetResultInterface</a>; }&gt;</code>

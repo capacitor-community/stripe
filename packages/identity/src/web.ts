@@ -12,12 +12,12 @@ export class StripeIdentityWeb
   extends WebPlugin
   implements StripeIdentityPlugin
 {
-  async createIdentityVerificationSheet(_options: CreateIdentityVerificationSheetOption): Promise<void> {
+  async create(_options: CreateIdentityVerificationSheetOption): Promise<void> {
     console.log(_options);
     throw new Error('Method not implemented.');
   }
 
-  presentIdentityVerificationSheet(): Promise<{
+  present(): Promise<{
     identityVerificationResult: IdentityVerificationSheetResultInterface;
   }> {
     throw new Error('Method not implemented.');

@@ -103,14 +103,14 @@ export class IdentityPage {
 
     await this.helper.updateItem(this.eventItems,'HttpClient', true);
 
-    await StripeIdentity.createIdentityVerificationSheet({
+    await StripeIdentity.create({
       ephemeralKeySecret,
       verificationId: verficationSessionId,
     })
       .then(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', true))
       .catch(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', false));
 
-    await StripeIdentity.presentIdentityVerificationSheet()
+    await StripeIdentity.present()
       .then((data) => {
         return this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult);
       });

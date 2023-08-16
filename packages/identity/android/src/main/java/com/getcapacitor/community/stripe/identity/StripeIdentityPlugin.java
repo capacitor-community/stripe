@@ -63,15 +63,15 @@ public class StripeIdentityPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void createIdentityVerificationSheet(final PluginCall call) {
-        implementation.createIdentityVerificationSheet(call);
+    public void create(final PluginCall call) {
+        implementation.create(call);
     }
 
     @PluginMethod
-    public void presentIdentityVerificationSheet(final PluginCall call) {
+    public void present(final PluginCall call) {
         identityVerificationCallbackId = call.getCallbackId();
         bridge.saveCall(call);
 
-        implementation.presentIdentityVerificationSheet(call);
+        implementation.present(call);
     }
 }
