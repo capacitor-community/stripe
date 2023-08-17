@@ -1,6 +1,9 @@
 {
   "name": "@capacitor-community/stripe-identity",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "description": "Stripe Identity SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
