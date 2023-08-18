@@ -8,7 +8,7 @@
   "private": true,
   "description": "Stripe SDK bindings for Capacitor Applications",
   "scripts": {
-    "release": "np --release-draft-only && node ./release.js"
+    "release": "np --no-publish --no-tests && node ./release.js"
   },
   "devDependencies": {
     "np": "^7.5.0",
