@@ -5,7 +5,7 @@
     "node": ">=16.0.0"
   },
   "type": "module",
-  "private": true,
+  "private": false,
   "description": "Stripe SDK bindings for Capacitor Applications",
   "scripts": {
     "release": "np --no-publish --no-tests && node ./release.js"
