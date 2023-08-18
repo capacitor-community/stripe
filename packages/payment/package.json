@@ -28,7 +28,7 @@
     "ios/Plugin/",
     "CapacitorCommunityStripe.podspec"
   ],
-  "author": "Masahiko Sakakibara<sakakibara@rdlabo.jp>",
+  "author": "Masahiko Sakakibara <sakakibara@rdlabo.jp>",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -1,0 +1,17 @@
+{
+  "name": "@capacitor-community/stripe",
+  "version": "5.0.2",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "type": "module",
+  "private": true,
+  "description": "Stripe SDK bindings for Capacitor Applications",
+  "scripts": {
+    "release": "np --release-draft-only && node ./release.js"
+  },
+  "devDependencies": {
+    "np": "^7.5.0",
+    "write-pkg": "^6.0.0"
+  }
+}
