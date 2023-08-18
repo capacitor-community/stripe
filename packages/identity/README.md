@@ -1,12 +1,38 @@
 # @capacitor-community/stripe-identity
 
-Stripe Identity SDK bindings for Capacitor Applications
+Stripe Identity SDK bindings for Capacitor Applications.
 
 ## Install
 
 ```bash
 npm install @capacitor-community/stripe-identity
 npx cap sync
+```
+
+### Initialize Android
+
+change base application theme to `Theme.MaterialComponents.DayNight` at `res/values/styles.xml`:
+
+```diff xml: res/values/styles.xml
+- <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
++ <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+```
+
+parent can be any MaterialComponents. [See here for other options](https://m2.material.io/develop/android/theming/dark/).
+All process is here: https://github.com/capacitor-community/stripe/commit/f514d893e9193bed2edbaf52c0d3ed1d534c7890asU
+
+## Usage
+
+If you want to implement, we recommend to read https://stripe.com/docs/identity .
+
+```ts
+import { StripeIdentity } from '@capacitor-community/stripe-identity';
+
+await StripeIdentity.create({
+  ephemeralKeySecret,
+  verificationId,
+});
+const result = await Stripe.present();
 ```
 
 ## API
