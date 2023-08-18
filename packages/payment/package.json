@@ -1,6 +1,9 @@
 {
   "name": "@capacitor-community/stripe",
-  "version": "5.0.2",
+  "version": "5.0.4",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -25,7 +28,7 @@
     "ios/Plugin/",
     "CapacitorCommunityStripe.podspec"
   ],
-  "author": "Masahiko Sakakibara<sakakibara@rdlabo.jp>",
+  "author": "Masahiko Sakakibara <sakakibara@rdlabo.jp>",
   "license": "MIT",
   "repository": {
     "type": "git",
