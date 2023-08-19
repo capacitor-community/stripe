@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
-import { StripeTerminal } from '@capacitor-community/stripe-terminal';
+import {StripeTerminal, TerminalConnectType} from '@capacitor-community/stripe-terminal';
 import {environment} from '../../environments/environment';
 
 @Component({
@@ -27,7 +27,7 @@ export class TerminalPage {
 
   async connect() {
     await StripeTerminal.connect({
-      type: 'tap-to-pay',
+      type: TerminalConnectType.TapToPay,
       locationId: 55,
     });
   }
