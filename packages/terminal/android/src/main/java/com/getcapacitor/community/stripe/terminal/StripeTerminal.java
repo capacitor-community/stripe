@@ -3,6 +3,7 @@ package com.getcapacitor.community.stripe.terminal;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Supplier;
@@ -89,7 +90,7 @@ public class StripeTerminal extends Executor {
     }
 
     private boolean isApplicationDebuggable() {
-        return 0 != ( this.activitySupplier.get().getApplicationInfo().flags & this.activitySupplier.get().getApplicationInfo().FLAG_DEBUGGABLE );
+        return 0 != ( this.activitySupplier.get().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE);
     }
 
     public void cancelDiscovering(final PluginCall call) {
