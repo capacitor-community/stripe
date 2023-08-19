@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { StripeTerminalPlugin } from './definitions';
+import type { StripeTerminalPlugin, TerminalConnectType } from './definitions';
 
 export class StripeTerminalWeb
   extends WebPlugin
@@ -10,6 +10,7 @@ export class StripeTerminalWeb
     console.log('initialize', options);
   }
   async connect(options: {
+    type: typeof TerminalConnectType,
     location?: {
       display_name: string;
       address: {
@@ -21,7 +22,7 @@ export class StripeTerminalWeb
       },
     }
   }): Promise<void> {
-    console.log('connectReader', options);
+    console.log('connect', options);
   }
   async collect(options: {
     paymentIntent: string;

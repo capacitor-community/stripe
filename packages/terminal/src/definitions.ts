@@ -1,7 +1,15 @@
+export enum TerminalConnectType {
+  Simulated = 'simulated',
+  Internet = 'internet',
+  Bluetooth = 'bluetooth',
+  Usb = 'usb',
+  TapToPay = 'tap-to-pay',
+}
+
 export interface StripeTerminalPlugin {
   initialize(options: { tokenProviderEndpoint: string }): Promise<void>;
   connect(options: {
-    type: 'simulated' | 'internet' | 'bluetooth' | 'usb' | 'tap-to-pay'
+    type: typeof TerminalConnectType,
     location?: {
       display_name: string;
       address: {
