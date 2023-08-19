@@ -14,6 +14,8 @@ import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 import com.stripe.stripeterminal.external.models.TerminalException;
 
+import java.util.Objects;
+
 @RequiresApi(api = Build.VERSION_CODES.S)
 @CapacitorPlugin(
         name = "StripeTerminal",
@@ -23,7 +25,7 @@ import com.stripe.stripeterminal.external.models.TerminalException;
                         strings = { Manifest.permission.ACCESS_FINE_LOCATION }
                 ),
                 @Permission(
-                        alias = "device",
+                        alias = "bluetooth",
                         strings = {
                                 Manifest.permission.BLUETOOTH,
                                 Manifest.permission.BLUETOOTH_ADMIN,
@@ -44,35 +46,43 @@ public class StripeTerminalPlugin extends Plugin {
 
     @PluginMethod
     public void initialize(PluginCall call) throws TerminalException {
-        if (getPermissionState("location") != PermissionState.GRANTED) {
-            requestPermissionForAlias("location", call, "locationPermsCallback");
-        } else if (getPermissionState("device") != PermissionState.GRANTED) {
-            requestPermissionForAlias("device", call, "devicePermsCallback");
-        } else {
-            this._initialize(call);
-        }
+        this._initialize(call);
     }
 
     @PermissionCallback
     private void locationPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("location") == PermissionState.GRANTED) {
-            this.initialize(call);
+            this._initialize(call);
         } else {
             call.reject("Permission is required to get location");
         }
     }
 
     @PermissionCallback
-    private void devicePermsCallback(PluginCall call) throws TerminalException {
-        if (getPermissionState("device") == PermissionState.GRANTED) {
-            this.initialize(call);
+    private void bluetoothPermsCallback(PluginCall call) throws TerminalException {
+        if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
+            this._initialize(call);
         } else {
-            call.reject("Permission is required to get device");
+            call.reject("Permission is required to get bluetooth");
         }
     }
 
     private void _initialize(PluginCall call) throws TerminalException {
-        this.implementation.initialize(call);
+        if (getPermissionState("location") != PermissionState.GRANTED) {
+            requestPermissionForAlias("location", call, "locationPermsCallback");
+        } else if (getPermissionState("bluetooth") != PermissionState.GRANTED) {
+            requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
+        } else {
+            this.implementation.initialize(call);
+        }
+    }
+
+    @PluginMethod
+    public void connect(PluginCall call) {
+        if (!Objects.equals(call.getString("type"), "tap-to-pay")) {
+            call.unimplemented();
+        }
+        this.implementation.onDiscoverReaders(call);
     }
 }
 

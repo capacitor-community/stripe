@@ -26,7 +26,10 @@ export class TerminalPage {
   }
 
   async connect() {
-    await StripeTerminal.connect({ type: 'internet' });
+    await StripeTerminal.connect({
+      type: 'tap-to-pay',
+      locationId: 55,
+    });
   }
 
   async collect() {

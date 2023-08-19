@@ -38,12 +38,12 @@ initialize(options: { tokenProviderEndpoint: string; }) => Promise<void>
 ### connect(...)
 
 ```typescript
-connect(options: { type: 'simulated' | 'internet' | 'bluetooth' | 'usb' | 'tap-to-pay'; location?: { display_name: string; address: { line1: string; city: string; state: string; country: string; postal_code: string; }; }; }) => Promise<void>
+connect(options: { type: typeof TerminalConnectType; locationId?: number; }) => Promise<void>
 ```
 
-| Param         | Type                                                                                                                                                                                                                            |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ type: 'simulated' \| 'internet' \| 'bluetooth' \| 'usb' \| 'tap-to-pay'; location?: { display_name: string; address: { line1: string; city: string; state: string; country: string; postal_code: string; }; }; }</code> |
+| Param         | Type                                                                    |
+| ------------- | ----------------------------------------------------------------------- |
+| **`options`** | <code>{ type: typeof TerminalConnectType; locationId?: number; }</code> |
 
 --------------------
 
