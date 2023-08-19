@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
 import { StripeTerminal } from '@capacitor-community/stripe-terminal';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-terminal',
@@ -21,7 +22,7 @@ export class TerminalPage {
   ) { }
 
   async initialize() {
-    await StripeTerminal.initialize({ tokenProviderEndpoint: 'https://stripe-terminal-backend.herokuapp.com/' });
+    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token' });
   }
 
   async connect() {

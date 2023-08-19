@@ -1,47 +1,78 @@
 package com.getcapacitor.community.stripe.terminal;
 
-import com.getcapacitor.JSObject;
+import android.Manifest;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
+import com.stripe.stripeterminal.external.models.TerminalException;
 
-@CapacitorPlugin(name = "StripeTerminal")
+@RequiresApi(api = Build.VERSION_CODES.S)
+@CapacitorPlugin(
+        name = "StripeTerminal",
+        permissions = {
+                @Permission(
+                        alias = "location",
+                        strings = { Manifest.permission.ACCESS_FINE_LOCATION }
+                ),
+                @Permission(
+                        alias = "device",
+                        strings = {
+                                Manifest.permission.BLUETOOTH,
+                                Manifest.permission.BLUETOOTH_ADMIN,
+                                Manifest.permission.BLUETOOTH_SCAN,
+                                Manifest.permission.BLUETOOTH_ADVERTISE,
+                                Manifest.permission.BLUETOOTH_CONNECT
+                        }
+                ),
+        }
+)
 public class StripeTerminalPlugin extends Plugin {
-
-    private StripeTerminal implementation = new StripeTerminal();
-
-    @Override
-    public void load() {
-	    if (ContextCompat.checkSelfPermission(getActivity(),
-	      Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-	        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-	        // REQUEST_CODE_LOCATION should be defined on your app level
-	        ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_CODE_LOCATION);
-	    }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(
-      int requestCode,
-      @NonNull String[] permissions,
-      @NonNull int[] grantResults
-    ) {
-      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-      if (requestCode == REQUEST_CODE_LOCATION && grantResults.length > 0
-          && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-        throw new RuntimeException("Location services are required in order to " +
-                    "connect to a reader.");
-      }
-    }
+    private final StripeTerminal implementation = new StripeTerminal(
+            this::getContext,
+            this::getActivity,
+            this::notifyListeners,
+            getLogTag()
+    );
 
     @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
+    public void initialize(PluginCall call) throws TerminalException {
+        if (getPermissionState("location") != PermissionState.GRANTED) {
+            requestPermissionForAlias("location", call, "locationPermsCallback");
+        } else if (getPermissionState("device") != PermissionState.GRANTED) {
+            requestPermissionForAlias("device", call, "devicePermsCallback");
+        } else {
+            this._initialize(call);
+        }
+    }
 
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
+    @PermissionCallback
+    private void locationPermsCallback(PluginCall call) throws TerminalException {
+        if (getPermissionState("location") == PermissionState.GRANTED) {
+            this.initialize(call);
+        } else {
+            call.reject("Permission is required to get location");
+        }
+    }
+
+    @PermissionCallback
+    private void devicePermsCallback(PluginCall call) throws TerminalException {
+        if (getPermissionState("device") == PermissionState.GRANTED) {
+            this.initialize(call);
+        } else {
+            call.reject("Permission is required to get device");
+        }
+    }
+
+    private void _initialize(PluginCall call) throws TerminalException {
+        this.implementation.initialize(call);
     }
 }
+

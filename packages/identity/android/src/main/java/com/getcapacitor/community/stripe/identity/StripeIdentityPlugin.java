@@ -9,7 +9,6 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-import com.getcapacitor.community.stripe.identity.helper.MetaData;
 import com.stripe.android.identity.IdentityVerificationSheet;
 
 @CapacitorPlugin(name = "StripeIdentity")

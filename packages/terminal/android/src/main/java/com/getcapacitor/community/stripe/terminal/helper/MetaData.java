@@ -1,4 +1,4 @@
-package com.getcapacitor.community.stripe.identity.helper;
+package com.getcapacitor.community.stripe.terminal.helper;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
