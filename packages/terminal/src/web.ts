@@ -10,14 +10,12 @@ export class StripeTerminalWeb
     console.log('initialize', options);
   }
   async connect(options: {
-    type: TerminalConnectType,
-    locationId?: number,
+    type: TerminalConnectType;
+    locationId?: number;
   }): Promise<void> {
     console.log('connect', options);
   }
-  async collect(options: {
-    paymentIntent: string;
-  }) : Promise<void> {
+  async collect(options: { paymentIntent: string }): Promise<void> {
     console.log('collect', options);
-  };
+  }
 }
