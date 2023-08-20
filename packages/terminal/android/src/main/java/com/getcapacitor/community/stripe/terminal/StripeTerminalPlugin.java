@@ -88,7 +88,6 @@ public class StripeTerminalPlugin extends Plugin {
         this.implementation.connectReader(call);
     }
 
-
     @PluginMethod
     public void collect(PluginCall call) {
         this.implementation.collect(call);
