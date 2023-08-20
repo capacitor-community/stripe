@@ -124,4 +124,38 @@ export class AppController {
       secret: connectionToken.secret,
     };
   }
+
+  @Post('connection/location')
+  async createConnectionLocation(): Promise<{
+    locationId: string;
+  }> {
+    const location = await this.stripe.terminal.locations.create({
+      display_name: 'Venice Burrito Shop',
+      address: {
+        line1: '1272 Valencia Street',
+        city: 'San Francisco',
+        state: 'CA',
+        country: 'US',
+        postal_code: '94110',
+      },
+    });
+    return {
+      locationId: location.id,
+    };
+  }
+
+  @Post('connection/intent')
+  async createConnectionIntent(): Promise<{
+    paymentIntent: string;
+  }> {
+    const intent = await this.stripe.paymentIntents.create({
+      amount: 1000,
+      currency: 'usd',
+      payment_method_types: ['card_present'],
+      capture_method: 'manual',
+    });
+    return {
+      paymentIntent: intent.client_secret,
+    };
+  }
 }
