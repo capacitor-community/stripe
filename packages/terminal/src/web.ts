@@ -10,7 +10,7 @@ export class StripeTerminalWeb
     console.log('initialize', options);
   }
   async connect(options: {
-    type: typeof TerminalConnectType,
+    type: TerminalConnectType,
     locationId?: number,
   }): Promise<void> {
     console.log('connect', options);

@@ -16,6 +16,7 @@ npx cap sync
 * [`initialize(...)`](#initialize)
 * [`connect(...)`](#connect)
 * [`collect(...)`](#collect)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -38,12 +39,12 @@ initialize(options: { tokenProviderEndpoint: string; }) => Promise<void>
 ### connect(...)
 
 ```typescript
-connect(options: { type: typeof TerminalConnectType; locationId?: number; }) => Promise<void>
+connect(options: { type: TerminalConnectType; locationId?: number; }) => Promise<void>
 ```
 
-| Param         | Type                                                                    |
-| ------------- | ----------------------------------------------------------------------- |
-| **`options`** | <code>{ type: typeof TerminalConnectType; locationId?: number; }</code> |
+| Param         | Type                                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ type: <a href="#terminalconnecttype">TerminalConnectType</a>; locationId?: number; }</code> |
 
 --------------------
 
@@ -59,5 +60,19 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 | **`options`** | <code>{ paymentIntent: string; }</code> |
 
 --------------------
+
+
+### Enums
+
+
+#### TerminalConnectType
+
+| Members         | Value                     |
+| --------------- | ------------------------- |
+| **`Simulated`** | <code>'simulated'</code>  |
+| **`Internet`**  | <code>'internet'</code>   |
+| **`Bluetooth`** | <code>'bluetooth'</code>  |
+| **`Usb`**       | <code>'usb'</code>        |
+| **`TapToPay`**  | <code>'tap-to-pay'</code> |
 
 </docgen-api>

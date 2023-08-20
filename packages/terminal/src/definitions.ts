@@ -9,7 +9,7 @@ export enum TerminalConnectType {
 export interface StripeTerminalPlugin {
   initialize(options: { tokenProviderEndpoint: string }): Promise<void>;
   connect(options: {
-    type: typeof TerminalConnectType,
+    type: TerminalConnectType,
     locationId?: number,
   }): Promise<void>;
   collect(options: {
