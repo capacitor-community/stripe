@@ -14,8 +14,10 @@ npx cap sync
 <docgen-index>
 
 * [`initialize(...)`](#initialize)
-* [`connect(...)`](#connect)
+* [`discoverReaders(...)`](#discoverreaders)
+* [`connectReader(...)`](#connectreader)
 * [`collect(...)`](#collect)
+* [Type Aliases](#type-aliases)
 * [Enums](#enums)
 
 </docgen-index>
@@ -36,15 +38,30 @@ initialize(options: { tokenProviderEndpoint: string; }) => Promise<void>
 --------------------
 
 
-### connect(...)
+### discoverReaders(...)
 
 ```typescript
-connect(options: { type: TerminalConnectType; locationId?: string; }) => Promise<void>
+discoverReaders(options: { type: TerminalConnectType; locationId?: string; }) => Promise<{ readers: ReaderInterface[]; }>
 ```
 
 | Param         | Type                                                                                                |
 | ------------- | --------------------------------------------------------------------------------------------------- |
 | **`options`** | <code>{ type: <a href="#terminalconnecttype">TerminalConnectType</a>; locationId?: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ readers: ReaderInterface[]; }&gt;</code>
+
+--------------------
+
+
+### connectReader(...)
+
+```typescript
+connectReader(options: { readerIndex: number; }) => Promise<void>
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ readerIndex: number; }</code> |
 
 --------------------
 
@@ -60,6 +77,14 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 | **`options`** | <code>{ paymentIntent: string; }</code> |
 
 --------------------
+
+
+### Type Aliases
+
+
+#### ReaderInterface
+
+<code>{ index: number; serialNumber: string; }</code>
 
 
 ### Enums

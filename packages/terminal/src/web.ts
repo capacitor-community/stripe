@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { StripeTerminalPlugin, TerminalConnectType } from './definitions';
+import type { StripeTerminalPlugin, TerminalConnectType, ReaderInterface } from './definitions';
 
 export class StripeTerminalWeb
   extends WebPlugin
@@ -9,12 +9,25 @@ export class StripeTerminalWeb
   async initialize(options: { tokenProviderEndpoint: string }): Promise<void> {
     console.log('initialize', options);
   }
-  async connect(options: {
+
+  async discoverReaders(options: {
     type: TerminalConnectType;
     locationId?: string;
-  }): Promise<void> {
-    console.log('connect', options);
+  }): Promise<{
+    readers: ReaderInterface[]
+  }> {
+    console.log('discoverReaders', options);
+    return {
+      readers: [],
+    }
   }
+
+  async connectReader(options: {
+    readerIndex: number;
+  }): Promise<void> {
+    console.log('connectReader', options);
+  }
+
   async collect(options: { paymentIntent: string }): Promise<void> {
     console.log('collect', options);
   }

@@ -11,6 +11,9 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 import com.stripe.stripeterminal.external.models.TerminalException;
+
+import org.json.JSONException;
+
 import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
@@ -73,10 +76,15 @@ public class StripeTerminalPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void connect(PluginCall call) {
+    public void discoverReaders(PluginCall call) {
         if (!Objects.equals(call.getString("type"), "tap-to-pay")) {
             call.unimplemented();
         }
         this.implementation.onDiscoverReaders(call);
+    }
+
+    @PluginMethod
+    public void connectReader(PluginCall call) {
+        this.implementation.connectReader(call);
     }
 }

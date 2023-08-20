@@ -35,9 +35,13 @@ export class TerminalPage {
       //   throw e;
       // });
 
-    await StripeTerminal.connect({
+    const result = await StripeTerminal.discoverReaders({
       type: TerminalConnectType.TapToPay,
       locationId: locationId,
+    });
+    console.log("====================================");
+    await StripeTerminal.connectReader({
+      readerIndex: 0,
     });
   }
 
