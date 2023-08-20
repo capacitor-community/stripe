@@ -6,5 +6,7 @@
 	<array>
 		<string>merchant.com.capacitor.stripe</string>
 	</array>
+	<key>com.apple.developer.proximity-reader.payment.acceptance</key>
+  <true/>
 </dict>
 </plist>

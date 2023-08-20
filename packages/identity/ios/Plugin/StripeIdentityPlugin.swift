@@ -14,7 +14,7 @@ public class StripeIdentityPlugin: CAPPlugin {
     override public func load() {
         super.load()
         self.implementation.plugin = self
-        STPAPIClient.shared.appInfo = STPAppInfo(name: "@capacitor-community/stripe", partnerId: nil, version: nil, url: nil)
+        STPAPIClient.shared.appInfo = STPAppInfo(name: "@capacitor-community/stripe-identity", partnerId: nil, version: nil, url: nil)
     }
 
     @objc func create(_ call: CAPPluginCall) {
