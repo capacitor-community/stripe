@@ -38,6 +38,7 @@ public class StripeTerminal extends Executor {
     private Cancelable discoveryCancelable;
     private List<Reader> readers;
     private String locationId;
+    private PluginCall collectCall;
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -174,36 +175,53 @@ public class StripeTerminal extends Executor {
     }
 
     public void collect(final PluginCall call) {
+        // メソッドを分割するためcallを永続化
+        this.collectCall = call;
+
         Terminal
             .getInstance()
             .retrievePaymentIntent(
                 call.getString("paymentIntent"),
-                new PaymentIntentCallback() {
-                    @Override
-                    public void onSuccess(PaymentIntent paymentIntent) {
-                        Cancelable cancelable = Terminal
-                            .getInstance()
-                            .collectPaymentMethod(
-                                paymentIntent,
-                                new PaymentIntentCallback() {
-                                    @Override
-                                    public void onSuccess(PaymentIntent paymentIntent) {
-                                        call.resolve();
-                                    }
-
-                                    @Override
-                                    public void onFailure(TerminalException ex) {
-                                        call.reject(ex.getLocalizedMessage(), ex);
-                                    }
-                                }
-                            );
-                    }
-
-                    @Override
-                    public void onFailure(TerminalException ex) {
-                        call.reject(ex.getLocalizedMessage(), ex);
-                    }
-                }
+                createPaymentIntentCallback
             );
     }
+
+    private final PaymentIntentCallback createPaymentIntentCallback = new PaymentIntentCallback() {
+        @Override
+        public void onSuccess(@NonNull PaymentIntent paymentIntent) {
+            Terminal.getInstance()
+                    .collectPaymentMethod(paymentIntent, collectPaymentMethodCallback);
+        }
+
+        @Override
+        public void onFailure(@NonNull TerminalException ex) {
+            collectCall.reject(ex.getLocalizedMessage(), ex);
+        }
+    };
+
+    // Step 3 - we've collected the payment method, so it's time to process the payment
+    private final PaymentIntentCallback collectPaymentMethodCallback = new PaymentIntentCallback() {
+        @Override
+        public void onSuccess(@NonNull PaymentIntent paymentIntent) {
+            Terminal.getInstance().processPayment(paymentIntent, processPaymentCallback);
+        }
+
+        @Override
+        public void onFailure(@NonNull TerminalException ex) {
+            collectCall.reject(ex.getLocalizedMessage(), ex);
+        }
+    };
+
+    // Step 4 - we've processed the payment! Show a success screen
+    private final PaymentIntentCallback processPaymentCallback = new PaymentIntentCallback() {
+        @Override
+        public void onSuccess(@NonNull PaymentIntent paymentIntent) {
+            collectCall.resolve();
+        }
+
+        @Override
+        public void onFailure(@NonNull TerminalException ex) {
+            collectCall.reject(ex.getLocalizedMessage(), ex);
+        }
+    };
 }
