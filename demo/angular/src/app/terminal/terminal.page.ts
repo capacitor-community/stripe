@@ -6,6 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
 import {StripeTerminal, TerminalConnectType} from '@capacitor-community/stripe-terminal';
 import {environment} from '../../environments/environment';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-terminal',
@@ -26,13 +27,28 @@ export class TerminalPage {
   }
 
   async connect() {
+    const { locationId } = await this.http.post<{
+      locationId: string;
+    }>(environment.api + 'connection/location', {}).pipe(first()).toPromise(Promise)
+      // .catch(async (e) => {
+      //   await this.helper.updateItem(this.eventItems,'HttpClient', false);
+      //   throw e;
+      // });
+
     await StripeTerminal.connect({
       type: TerminalConnectType.TapToPay,
-      locationId: 55,
+      locationId: locationId,
     });
   }
 
   async collect() {
-    await StripeTerminal.collect({ paymentIntent: 'pi_1JXj4s2eZvKYlo2CzK4BZqyK' });
+    const { paymentIntent } = await this.http.post<{
+      paymentIntent: string;
+    }>(environment.api + 'connection/intent', {}).pipe(first()).toPromise(Promise)
+    // .catch(async (e) => {
+    //   await this.helper.updateItem(this.eventItems,'HttpClient', false);
+    //   throw e;
+    // });
+    await StripeTerminal.collect({ paymentIntent });
   }
 }

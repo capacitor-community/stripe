@@ -39,12 +39,12 @@ initialize(options: { tokenProviderEndpoint: string; }) => Promise<void>
 ### connect(...)
 
 ```typescript
-connect(options: { type: TerminalConnectType; locationId?: number; }) => Promise<void>
+connect(options: { type: TerminalConnectType; locationId?: string; }) => Promise<void>
 ```
 
 | Param         | Type                                                                                                |
 | ------------- | --------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ type: <a href="#terminalconnecttype">TerminalConnectType</a>; locationId?: number; }</code> |
+| **`options`** | <code>{ type: <a href="#terminalconnecttype">TerminalConnectType</a>; locationId?: string; }</code> |
 
 --------------------
 
