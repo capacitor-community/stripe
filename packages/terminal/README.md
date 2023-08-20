@@ -56,12 +56,12 @@ discoverReaders(options: { type: TerminalConnectType; locationId?: string; }) =>
 ### connectReader(...)
 
 ```typescript
-connectReader(options: { readerIndex: number; }) => Promise<void>
+connectReader(options: { reader: ReaderInterface; }) => Promise<void>
 ```
 
-| Param         | Type                                  |
-| ------------- | ------------------------------------- |
-| **`options`** | <code>{ readerIndex: number; }</code> |
+| Param         | Type                                                                     |
+| ------------- | ------------------------------------------------------------------------ |
+| **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; }</code> |
 
 --------------------
 

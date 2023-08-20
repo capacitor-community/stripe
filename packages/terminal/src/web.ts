@@ -23,7 +23,7 @@ export class StripeTerminalWeb
   }
 
   async connectReader(options: {
-    readerIndex: number;
+    reader: ReaderInterface;
   }): Promise<void> {
     console.log('connectReader', options);
   }

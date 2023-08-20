@@ -1,6 +1,8 @@
 package com.getcapacitor.community.stripe.terminal;
 
 import android.content.Context;
+import android.util.Log;
+
 import androidx.core.util.Supplier;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,6 +38,7 @@ public class TokenProvider implements ConnectionTokenProvider {
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
+                            Log.d("TokenProvider", jsonObject.getString("secret"));
                             callback.onSuccess(jsonObject.getString("secret"));
                         } catch (JSONException e) {
                             throw new RuntimeException(e);

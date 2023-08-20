@@ -8,6 +8,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Supplier;
+
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.terminal.models.Executor;
@@ -17,12 +19,14 @@ import com.stripe.stripeterminal.TerminalApplicationDelegate;
 import com.stripe.stripeterminal.external.callable.Callback;
 import com.stripe.stripeterminal.external.callable.Cancelable;
 import com.stripe.stripeterminal.external.callable.DiscoveryListener;
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback;
 import com.stripe.stripeterminal.external.callable.ReaderCallback;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionStatus;
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration;
 import com.stripe.stripeterminal.external.models.DiscoveryMethod;
+import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
 import com.stripe.stripeterminal.external.models.Reader;
 import com.stripe.stripeterminal.external.models.TerminalException;
@@ -93,29 +97,16 @@ public class StripeTerminal extends Executor {
             // 検索したReaderの一覧をListenerで渡す
             Log.d(logTag, String.valueOf(readers.get(0).getSerialNumber()));
             this.readers = readers;
-            List<JSObject> readersJSObject = new ArrayList<JSObject>();
+            JSArray readersJSObject = new JSArray();
 
             int i = 0;
             for (Reader reader: this.readers) {
-                readersJSObject.add(new JSObject()
+                readersJSObject.put(new JSObject()
                         .put("index", String.valueOf(i))
                         .put("serialNumber", reader.getSerialNumber()));
             }
             this.notifyListeners("readers", new JSObject().put("readers", readersJSObject));
-        };
-        final Callback discoveryCallback = new Callback() {
-            @Override
-            public void onSuccess() {
-                Log.d(logTag, "===========================");
-                Log.d(logTag, "Finished discovering readers");
-                call.resolve();
-            }
-            @Override
-            public void onFailure(@NonNull TerminalException ex) {
-                Log.d(logTag, "===========================");
-                Log.d(logTag, ex.getLocalizedMessage());
-                call.reject(ex.getLocalizedMessage(), ex);
-            }
+            call.resolve(new JSObject().put("readers", readersJSObject));
         };
         discoveryCancelable =
             Terminal
@@ -123,7 +114,17 @@ public class StripeTerminal extends Executor {
                 .discoverReaders(
                     config,
                     discoveryListener,
-                    discoveryCallback
+                        // Callback run after connectReader
+                        new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(logTag, "Finished discovering readers");
+                            }
+                            @Override
+                            public void onFailure(@NonNull TerminalException ex) {
+                                Log.d(logTag, ex.getLocalizedMessage());
+                            }
+                        }
                 );
     }
 
@@ -132,12 +133,9 @@ public class StripeTerminal extends Executor {
     }
 
     public void connectReader(final PluginCall call) {
-        int readerIndex = call.getInt("readerIndex");
-        Log.d(this.logTag, "==============");
-        Log.d(this.logTag, String.valueOf(readerIndex));
-
+        JSObject reader = call.getObject("reader");
         ConnectionConfiguration.LocalMobileConnectionConfiguration config = new ConnectionConfiguration.LocalMobileConnectionConfiguration(this.locationId);
-        Terminal.getInstance().connectLocalMobileReader(this.readers.get(readerIndex), config, new ReaderCallback() {
+        Terminal.getInstance().connectLocalMobileReader(this.readers.get(reader.getInteger("index")), config, new ReaderCallback() {
             @Override
             public void onSuccess(Reader r) {
                 call.resolve();
@@ -170,5 +168,31 @@ public class StripeTerminal extends Executor {
         } else {
             call.resolve();
         }
+    }
+
+    public void collect(final PluginCall call) {
+        Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"),
+                new PaymentIntentCallback() {
+                    @Override
+                    public void onSuccess(PaymentIntent paymentIntent) {
+                        Cancelable cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent,
+                                new PaymentIntentCallback() {
+                                    @Override
+                                    public void onSuccess(PaymentIntent paymentIntent) {
+                                        call.resolve();
+                                    }
+
+                                    @Override
+                                    public void onFailure(TerminalException ex) {
+                                        call.reject(ex.getLocalizedMessage(), ex);
+                                    }
+                                });
+                    }
+                    @Override
+                    public void onFailure(TerminalException ex) {
+                        call.reject(ex.getLocalizedMessage(), ex);
+                    }
+                }
+        );
     }
 }

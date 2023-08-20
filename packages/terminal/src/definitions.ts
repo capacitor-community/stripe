@@ -20,7 +20,7 @@ export interface StripeTerminalPlugin {
     readers: ReaderInterface[]
   }>;
   connectReader(options: {
-    readerIndex: number;
+    reader: ReaderInterface;
   }): Promise<void>;
   collect(options: { paymentIntent: string }): Promise<void>;
 }

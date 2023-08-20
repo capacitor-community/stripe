@@ -39,9 +39,8 @@ export class TerminalPage {
       type: TerminalConnectType.TapToPay,
       locationId: locationId,
     });
-    console.log("====================================");
     await StripeTerminal.connectReader({
-      readerIndex: 0,
+      reader: result.readers[0],
     });
   }
 
