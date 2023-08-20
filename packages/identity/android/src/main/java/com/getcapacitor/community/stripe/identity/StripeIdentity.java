@@ -37,7 +37,7 @@ public class StripeIdentity extends Executor {
             BiConsumer<String, JSObject> notifyListenersFunction,
             String pluginLogTag
     ) {
-        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "VerificationSheetExecutor");
+        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "StripeIdentityExecutor");
         this.contextSupplier = contextSupplier;
     }
 

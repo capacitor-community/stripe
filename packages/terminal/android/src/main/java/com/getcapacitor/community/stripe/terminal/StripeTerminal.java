@@ -49,7 +49,7 @@ public class StripeTerminal extends Executor {
         BiConsumer<String, JSObject> notifyListenersFunction,
         String pluginLogTag
     ) {
-        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "VerificationSheetExecutor");
+        super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "StripeTerminalExecutor");
         this.contextSupplier = contextSupplier;
         this.readers = new ArrayList<Reader>();
     }
