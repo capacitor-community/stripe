@@ -11,10 +11,8 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 import com.stripe.stripeterminal.external.models.TerminalException;
-
-import org.json.JSONException;
-
 import java.util.Objects;
+import org.json.JSONException;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
 @CapacitorPlugin(
@@ -93,4 +91,3 @@ public class StripeTerminalPlugin extends Plugin {
         this.implementation.collect(call);
     }
 }
-

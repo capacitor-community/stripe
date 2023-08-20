@@ -9,7 +9,7 @@ export enum TerminalConnectType {
 export type ReaderInterface = {
   index: number;
   serialNumber: string;
-}
+};
 
 export interface StripeTerminalPlugin {
   initialize(options: { tokenProviderEndpoint: string }): Promise<void>;
@@ -17,10 +17,8 @@ export interface StripeTerminalPlugin {
     type: TerminalConnectType;
     locationId?: string;
   }): Promise<{
-    readers: ReaderInterface[]
+    readers: ReaderInterface[];
   }>;
-  connectReader(options: {
-    reader: ReaderInterface;
-  }): Promise<void>;
+  connectReader(options: { reader: ReaderInterface }): Promise<void>;
   collect(options: { paymentIntent: string }): Promise<void>;
 }

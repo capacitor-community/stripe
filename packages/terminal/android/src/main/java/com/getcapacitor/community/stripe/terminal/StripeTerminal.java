@@ -5,10 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
@@ -31,11 +29,9 @@ import com.stripe.stripeterminal.external.models.PaymentStatus;
 import com.stripe.stripeterminal.external.models.Reader;
 import com.stripe.stripeterminal.external.models.TerminalException;
 import com.stripe.stripeterminal.log.LogLevel;
-
-import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONException;
 
 public class StripeTerminal extends Executor {
 
@@ -66,16 +62,16 @@ public class StripeTerminal extends Executor {
             public void onUnexpectedReaderDisconnect(@NonNull Reader reader) {
                 // TODO: Listenerを追加
             }
-//
-//            @Override
-//            public void onConnectionStatusChange(@NonNull ConnectionStatus status) {
-//                // TODO: Listenerを追加
-//            }
-//
-//            @Override
-//            public void onPaymentStatusChange(@NonNull PaymentStatus status) {
-//                // TODO: Listenerを追加
-//            }
+            //
+            //            @Override
+            //            public void onConnectionStatusChange(@NonNull ConnectionStatus status) {
+            //                // TODO: Listenerを追加
+            //            }
+            //
+            //            @Override
+            //            public void onPaymentStatusChange(@NonNull PaymentStatus status) {
+            //                // TODO: Listenerを追加
+            //            }
         };
         LogLevel logLevel = LogLevel.VERBOSE;
         TokenProvider tokenProvider = new TokenProvider(this.contextSupplier, call.getString("tokenProviderEndpoint"));
@@ -100,10 +96,8 @@ public class StripeTerminal extends Executor {
             JSArray readersJSObject = new JSArray();
 
             int i = 0;
-            for (Reader reader: this.readers) {
-                readersJSObject.put(new JSObject()
-                        .put("index", String.valueOf(i))
-                        .put("serialNumber", reader.getSerialNumber()));
+            for (Reader reader : this.readers) {
+                readersJSObject.put(new JSObject().put("index", String.valueOf(i)).put("serialNumber", reader.getSerialNumber()));
             }
             this.notifyListeners("readers", new JSObject().put("readers", readersJSObject));
             call.resolve(new JSObject().put("readers", readersJSObject));
@@ -114,17 +108,18 @@ public class StripeTerminal extends Executor {
                 .discoverReaders(
                     config,
                     discoveryListener,
-                        // Callback run after connectReader
-                        new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                Log.d(logTag, "Finished discovering readers");
-                            }
-                            @Override
-                            public void onFailure(@NonNull TerminalException ex) {
-                                Log.d(logTag, ex.getLocalizedMessage());
-                            }
+                    // Callback run after connectReader
+                    new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(logTag, "Finished discovering readers");
                         }
+
+                        @Override
+                        public void onFailure(@NonNull TerminalException ex) {
+                            Log.d(logTag, ex.getLocalizedMessage());
+                        }
+                    }
                 );
     }
 
@@ -134,19 +129,27 @@ public class StripeTerminal extends Executor {
 
     public void connectReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
-        ConnectionConfiguration.LocalMobileConnectionConfiguration config = new ConnectionConfiguration.LocalMobileConnectionConfiguration(this.locationId);
-        Terminal.getInstance().connectLocalMobileReader(this.readers.get(reader.getInteger("index")), config, new ReaderCallback() {
-            @Override
-            public void onSuccess(Reader r) {
-                call.resolve();
-            }
+        ConnectionConfiguration.LocalMobileConnectionConfiguration config = new ConnectionConfiguration.LocalMobileConnectionConfiguration(
+            this.locationId
+        );
+        Terminal
+            .getInstance()
+            .connectLocalMobileReader(
+                this.readers.get(reader.getInteger("index")),
+                config,
+                new ReaderCallback() {
+                    @Override
+                    public void onSuccess(Reader r) {
+                        call.resolve();
+                    }
 
-            @Override
-            public void onFailure(@NonNull TerminalException ex) {
-                ex.printStackTrace();
-                call.reject(ex.getLocalizedMessage(), ex);
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull TerminalException ex) {
+                        ex.printStackTrace();
+                        call.reject(ex.getLocalizedMessage(), ex);
+                    }
+                }
+            );
     }
 
     public void cancelDiscovering(final PluginCall call) {
@@ -171,11 +174,17 @@ public class StripeTerminal extends Executor {
     }
 
     public void collect(final PluginCall call) {
-        Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"),
+        Terminal
+            .getInstance()
+            .retrievePaymentIntent(
+                call.getString("paymentIntent"),
                 new PaymentIntentCallback() {
                     @Override
                     public void onSuccess(PaymentIntent paymentIntent) {
-                        Cancelable cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent,
+                        Cancelable cancelable = Terminal
+                            .getInstance()
+                            .collectPaymentMethod(
+                                paymentIntent,
                                 new PaymentIntentCallback() {
                                     @Override
                                     public void onSuccess(PaymentIntent paymentIntent) {
@@ -186,13 +195,15 @@ public class StripeTerminal extends Executor {
                                     public void onFailure(TerminalException ex) {
                                         call.reject(ex.getLocalizedMessage(), ex);
                                     }
-                                });
+                                }
+                            );
                     }
+
                     @Override
                     public void onFailure(TerminalException ex) {
                         call.reject(ex.getLocalizedMessage(), ex);
                     }
                 }
-        );
+            );
     }
 }
