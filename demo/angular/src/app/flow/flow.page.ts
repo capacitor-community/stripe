@@ -8,6 +8,7 @@ import {environment} from '../../environments/environment';
 import {first} from 'rxjs/operators';
 import {NgFor, NgIf} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
+import {firstValueFrom} from 'rxjs';
 
 const happyPathItems: ITestItems [] = [
   {
@@ -99,11 +100,11 @@ export class FlowPage {
       this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
     }
 
-    const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+    const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
       paymentIntent: string;
       ephemeralKey: string;
       customer: string;
-    }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise)
+    }>(environment.api + 'intent', {}))
       .catch(async (e) => {
         await this.helper.updateItem(this.eventItems,'HttpClient', false);
         throw e;

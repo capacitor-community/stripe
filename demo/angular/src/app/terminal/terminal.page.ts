@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import {HttpClient} from '@angular/common/http';
-import {HelperService} from '../shared/helper.service';
-import {StripeTerminal, TerminalConnectType} from '@capacitor-community/stripe-terminal';
-import {environment} from '../../environments/environment';
-import {first} from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { HelperService } from '../shared/helper.service';
+import { StripeTerminal, TerminalConnectType } from '@capacitor-community/stripe-terminal';
+import { environment } from '../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-terminal',
@@ -27,9 +27,9 @@ export class TerminalPage {
   }
 
   async connect() {
-    const { locationId } = await this.http.post<{
+    const { locationId } = await firstValueFrom(this.http.post<{
       locationId: string;
-    }>(environment.api + 'connection/location', {}).pipe(first()).toPromise(Promise)
+    }>(environment.api + 'connection/location', {}))
       // .catch(async (e) => {
       //   await this.helper.updateItem(this.eventItems,'HttpClient', false);
       //   throw e;
@@ -45,9 +45,9 @@ export class TerminalPage {
   }
 
   async collect() {
-    const { paymentIntent } = await this.http.post<{
+    const { paymentIntent } = await firstValueFrom(this.http.post<{
       paymentIntent: string;
-    }>(environment.api + 'connection/intent', {}).pipe(first()).toPromise(Promise)
+    }>(environment.api + 'connection/intent', {}))
     // .catch(async (e) => {
     //   await this.helper.updateItem(this.eventItems,'HttpClient', false);
     //   throw e;
