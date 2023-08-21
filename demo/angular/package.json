@@ -28,7 +28,7 @@
     "@capacitor/ios": "5.0.0",
     "@ionic/angular": "^7.3.0",
     "@stripe-elements/stripe-elements": "^2.0.2",
-    "rxjs": "~7.4.0",
+    "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.1"
   },
