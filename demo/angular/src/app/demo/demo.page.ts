@@ -191,7 +191,6 @@ export class DemoPage implements OnInit {
       customerId: customer,
       merchantDisplayName: 'rdlabo',
       enableGooglePay: true,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       GooglePayIsTesting: true,
     });
   }

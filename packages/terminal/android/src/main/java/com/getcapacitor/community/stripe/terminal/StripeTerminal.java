@@ -39,6 +39,7 @@ public class StripeTerminal extends Executor {
     private List<Reader> readers;
     private String locationId;
     private PluginCall collectCall;
+    private final JSObject emptyObject = new JSObject();
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -56,6 +57,8 @@ public class StripeTerminal extends Executor {
             .runOnUiThread(
                 () -> {
                     TerminalApplicationDelegate.onCreate((Application) this.contextSupplier.get().getApplicationContext());
+                    notifyListeners(TerminalEnumEvent.Loaded.getWebEventName(), emptyObject);
+                    call.resolve();
                 }
             );
         TerminalListener listener = new TerminalListener() {
@@ -100,7 +103,7 @@ public class StripeTerminal extends Executor {
             for (Reader reader : this.readers) {
                 readersJSObject.put(new JSObject().put("index", String.valueOf(i)).put("serialNumber", reader.getSerialNumber()));
             }
-            this.notifyListeners("readers", new JSObject().put("readers", readersJSObject));
+            this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), new JSObject().put("readers", readersJSObject));
             call.resolve(new JSObject().put("readers", readersJSObject));
         };
         discoveryCancelable =
@@ -141,6 +144,7 @@ public class StripeTerminal extends Executor {
                 new ReaderCallback() {
                     @Override
                     public void onSuccess(Reader r) {
+                        notifyListeners(TerminalEnumEvent.ConnectedReader.getWebEventName(), emptyObject);
                         call.resolve();
                     }
 
@@ -195,6 +199,7 @@ public class StripeTerminal extends Executor {
 
         @Override
         public void onFailure(@NonNull TerminalException ex) {
+            notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
             collectCall.reject(ex.getLocalizedMessage(), ex);
         }
     };
@@ -208,6 +213,7 @@ public class StripeTerminal extends Executor {
 
         @Override
         public void onFailure(@NonNull TerminalException ex) {
+            notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
             collectCall.reject(ex.getLocalizedMessage(), ex);
         }
     };
@@ -216,11 +222,13 @@ public class StripeTerminal extends Executor {
     private final PaymentIntentCallback processPaymentCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(@NonNull PaymentIntent paymentIntent) {
+            notifyListeners(TerminalEnumEvent.Completed.getWebEventName(), emptyObject);
             collectCall.resolve();
         }
 
         @Override
         public void onFailure(@NonNull TerminalException ex) {
+            notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
             collectCall.reject(ex.getLocalizedMessage(), ex);
         }
     };

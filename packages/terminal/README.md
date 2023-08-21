@@ -17,6 +17,13 @@ npx cap sync
 * [`discoverReaders(...)`](#discoverreaders)
 * [`connectReader(...)`](#connectreader)
 * [`collect(...)`](#collect)
+* [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
+* [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
+* [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
+* [`addListener(TerminalEventsEnum.Completed, ...)`](#addlistenerterminaleventsenumcompleted)
+* [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
+* [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
+* [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
 
@@ -79,6 +86,112 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 --------------------
 
 
+### addListener(TerminalEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.DiscoveredReaders, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () => { reader: ReaderInterface; }) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.DiscoveredReaders</a></code> |
+| **`listenerFunc`** | <code>() =&gt; { reader: <a href="#readerinterface">ReaderInterface</a>; }</code>   |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.ConnectedReader, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                              |
+| ------------------ | --------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConnectedReader</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                        |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.Completed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                        |
+| ------------------ | --------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                  |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### Interfaces
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
 ### Type Aliases
 
 
@@ -99,5 +212,17 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 | **`Bluetooth`** | <code>'bluetooth'</code>  |
 | **`Usb`**       | <code>'usb'</code>        |
 | **`TapToPay`**  | <code>'tap-to-pay'</code> |
+
+
+#### TerminalEventsEnum
+
+| Members                 | Value                                    |
+| ----------------------- | ---------------------------------------- |
+| **`Loaded`**            | <code>'terminalLoaded'</code>            |
+| **`DiscoveredReaders`** | <code>'terminalDiscoveredReaders'</code> |
+| **`ConnectedReader`**   | <code>'terminalConnectedReader'</code>   |
+| **`Completed`**         | <code>'terminalCompleted'</code>         |
+| **`Canceled`**          | <code>'terminalCanceled'</code>          |
+| **`Failed`**            | <code>'terminalFailed'</code>            |
 
 </docgen-api>

@@ -1,3 +1,6 @@
+import {TerminalEventsEnum} from './events.enum';
+import {PluginListenerHandle} from '@capacitor/core';
+
 export enum TerminalConnectType {
   Simulated = 'simulated',
   Internet = 'internet',
@@ -11,6 +14,7 @@ export type ReaderInterface = {
   serialNumber: string;
 };
 
+export * from './events.enum';
 export interface StripeTerminalPlugin {
   initialize(options: { tokenProviderEndpoint: string }): Promise<void>;
   discoverReaders(options: {
@@ -21,4 +25,28 @@ export interface StripeTerminalPlugin {
   }>;
   connectReader(options: { reader: ReaderInterface }): Promise<void>;
   collect(options: { paymentIntent: string }): Promise<void>;
+  addListener(
+    eventName: TerminalEventsEnum.Loaded,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.DiscoveredReaders,
+    listenerFunc: () => { reader: ReaderInterface },
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.ConnectedReader,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.Completed,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.Canceled,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.Failed,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
 }

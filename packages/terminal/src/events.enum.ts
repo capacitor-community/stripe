@@ -1,12 +1,13 @@
-export enum IdentityVerificationSheetEventsEnum {
-  Loaded = 'identityVerificationSheetLoaded',
-  FailedToLoad = 'identityVerificationSheetFailedToLoad',
-  Completed = 'identityVerificationSheetCompleted',
-  Canceled = 'identityVerificationSheetCanceled',
-  Failed = 'identityVerificationSheetFailed',
+export enum TerminalEventsEnum {
+  Loaded = 'terminalLoaded',
+  DiscoveredReaders = 'terminalDiscoveredReaders',
+  ConnectedReader = 'terminalConnectedReader',
+  Completed = 'terminalCompleted',
+  Canceled = 'terminalCanceled',
+  Failed = 'terminalFailed',
 }
 
-export type IdentityVerificationSheetResultInterface =
-  | IdentityVerificationSheetEventsEnum.Completed
-  | IdentityVerificationSheetEventsEnum.Canceled
-  | IdentityVerificationSheetEventsEnum.Failed;
+export type TerminalResultInterface =
+  | TerminalEventsEnum.Completed
+  | TerminalEventsEnum.Canceled
+  | TerminalEventsEnum.Failed;

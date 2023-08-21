@@ -5,6 +5,7 @@ import type {
   TerminalConnectType,
   ReaderInterface,
 } from './definitions';
+import {TerminalEventsEnum} from './events.enum';
 
 export class StripeTerminalWeb
   extends WebPlugin
@@ -12,6 +13,7 @@ export class StripeTerminalWeb
 {
   async initialize(options: { tokenProviderEndpoint: string }): Promise<void> {
     console.log('initialize', options);
+    this.notifyListeners(TerminalEventsEnum.Loaded, null);
   }
 
   async discoverReaders(options: {
@@ -21,6 +23,9 @@ export class StripeTerminalWeb
     readers: ReaderInterface[];
   }> {
     console.log('discoverReaders', options);
+    this.notifyListeners(TerminalEventsEnum.DiscoveredReaders, {
+      readers: [],
+    });
     return {
       readers: [],
     };
@@ -28,9 +33,11 @@ export class StripeTerminalWeb
 
   async connectReader(options: { reader: ReaderInterface }): Promise<void> {
     console.log('connectReader', options);
+    this.notifyListeners(TerminalEventsEnum.ConnectedReader, null);
   }
 
   async collect(options: { paymentIntent: string }): Promise<void> {
     console.log('collect', options);
+    this.notifyListeners(TerminalEventsEnum.Completed, null);
   }
 }
