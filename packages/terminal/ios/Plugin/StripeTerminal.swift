@@ -3,41 +3,41 @@ import Capacitor
 import StripeTerminal
 
 public class StripeTerminal: NSObject, DiscoveryDelegate {
-    
+
     weak var plugin: StripeTerminalPlugin?
     var discoverCancelable: Cancelable?
-    
-    @objc public func initialize(_ call: CAPPluginCall) -> Void {
+
+    @objc public func initialize(_ call: CAPPluginCall) {
         Terminal.setTokenProvider(APIClient(tokenProviderEndpoint: call.getString("tokenProviderEndpoint", "")))
         call.resolve()
     }
-    
+
     func discoverReaders(_ call: CAPPluginCall) {
         let config = DiscoveryConfiguration(
-          discoveryMethod: .localMobile,
-          simulated: false
+            discoveryMethod: .localMobile,
+            simulated: false
         )
 
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
             if let error = error {
                 print("discoverReaders failed: \(error)")
-                call.reject(error.localizedDescription);
+                call.reject(error.localizedDescription)
             } else {
-                call.resolve();
+                call.resolve()
             }
         }
     }
-    
+
     public func terminal(_ terminal: Terminal, didUpdateDiscoveredReaders readers: [Reader]) {
-        print(readers);
+        print(readers)
     }
 }
 
 class APIClient: ConnectionTokenProvider {
-    var tokenProviderEndpoint: String = "";
+    var tokenProviderEndpoint: String = ""
 
     init(tokenProviderEndpoint: String) {
-        self.tokenProviderEndpoint = tokenProviderEndpoint;
+        self.tokenProviderEndpoint = tokenProviderEndpoint
     }
 
     // Fetches a ConnectionToken from your backend
@@ -49,26 +49,23 @@ class APIClient: ConnectionTokenProvider {
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        let task = session.dataTask(with: request) { (data, response, error) in
+        let task = session.dataTask(with: request) { (data, _, error) in
             if let data = data {
                 do {
                     // Warning: casting using `as? [String: String]` looks simpler, but isn't safe:
                     let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                     if let secret = json?["secret"] as? String {
                         completion(secret, nil)
-                    }
-                    else {
+                    } else {
                         let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
                                             code: 2000,
                                             userInfo: [NSLocalizedDescriptionKey: "Missing `secret` in ConnectionToken JSON response"])
                         completion(nil, error)
                     }
-                }
-                catch {
+                } catch {
                     completion(nil, error)
                 }
-            }
-            else {
+            } else {
                 let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
                                     code: 1000,
                                     userInfo: [NSLocalizedDescriptionKey: "No data in response from ConnectionToken endpoint"])

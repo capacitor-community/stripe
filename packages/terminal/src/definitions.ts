@@ -1,5 +1,6 @@
-import {TerminalEventsEnum} from './events.enum';
-import {PluginListenerHandle} from '@capacitor/core';
+import type { PluginListenerHandle } from '@capacitor/core';
+
+import type { TerminalEventsEnum } from './events.enum';
 
 export enum TerminalConnectType {
   Simulated = 'simulated',

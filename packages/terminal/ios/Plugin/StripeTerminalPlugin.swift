@@ -10,7 +10,7 @@ import PassKit
 @objc(StripeTerminalPlugin)
 public class StripeTerminalPlugin: CAPPlugin {
     private let implementation = StripeTerminal()
-    
+
     override public func load() {
         super.load()
         self.implementation.plugin = self
@@ -20,16 +20,13 @@ public class StripeTerminalPlugin: CAPPlugin {
     @objc func initialize(_ call: CAPPluginCall) {
         self.implementation.initialize(call)
     }
-    
 
     @objc func discoverReaders(_ call: CAPPluginCall) {
         self.implementation.discoverReaders(call)
     }
-    
 
     @objc func connectReader(_ call: CAPPluginCall) {
     }
-    
 
     @objc func collect(_ call: CAPPluginCall) {
     }

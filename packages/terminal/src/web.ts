@@ -5,7 +5,7 @@ import type {
   TerminalConnectType,
   ReaderInterface,
 } from './definitions';
-import {TerminalEventsEnum} from './events.enum';
+import { TerminalEventsEnum } from './events.enum';
 
 export class StripeTerminalWeb
   extends WebPlugin

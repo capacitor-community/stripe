@@ -182,19 +182,13 @@ public class StripeTerminal extends Executor {
         // メソッドを分割するためcallを永続化
         this.collectCall = call;
 
-        Terminal
-            .getInstance()
-            .retrievePaymentIntent(
-                call.getString("paymentIntent"),
-                createPaymentIntentCallback
-            );
+        Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"), createPaymentIntentCallback);
     }
 
     private final PaymentIntentCallback createPaymentIntentCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(@NonNull PaymentIntent paymentIntent) {
-            Terminal.getInstance()
-                    .collectPaymentMethod(paymentIntent, collectPaymentMethodCallback);
+            Terminal.getInstance().collectPaymentMethod(paymentIntent, collectPaymentMethodCallback);
         }
 
         @Override
