@@ -8,11 +8,13 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     var discoverCancelable: Cancelable?
     var discoverCall: CAPPluginCall?
     var locationId: String?
+    var isTest: Bool?
     var collectCancelable: Cancelable?
 
     var readers: [Reader]?
 
     @objc public func initialize(_ call: CAPPluginCall) {
+        self.isTest = call.getBool("isTest", true)
         Terminal.setTokenProvider(APIClient(tokenProviderEndpoint: call.getString("tokenProviderEndpoint", "")))
         self.plugin?.notifyListeners(TerminalEvents.Loaded.rawValue, data: [:])
         call.resolve()
@@ -21,7 +23,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     func discoverReaders(_ call: CAPPluginCall) {
         let config = DiscoveryConfiguration(
             discoveryMethod: .localMobile,
-            simulated: true
+            simulated: self.isTest
         )
         self.discoverCall = call
         self.locationId = call.getString("locationId")

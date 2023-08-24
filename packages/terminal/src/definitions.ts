@@ -17,7 +17,7 @@ export type ReaderInterface = {
 
 export * from './events.enum';
 export interface StripeTerminalPlugin {
-  initialize(options: { tokenProviderEndpoint: string }): Promise<void>;
+  initialize(options: { tokenProviderEndpoint: string, isTest: boolean }): Promise<void>;
   discoverReaders(options: {
     type: TerminalConnectType;
     locationId?: string;

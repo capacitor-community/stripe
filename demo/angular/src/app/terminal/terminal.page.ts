@@ -81,7 +81,7 @@ export class TerminalPage {
       this.eventItems =  JSON.parse(JSON.stringify(happyPathItems));
     }
 
-    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token' })
+    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token', isTest: true })
       .then(() => this.helper.updateItem(this.eventItems,'initialize', true))
       .catch(() => this.helper.updateItem(this.eventItems,'initialize', false));
 

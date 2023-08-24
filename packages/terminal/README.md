@@ -35,12 +35,12 @@ npx cap sync
 ### initialize(...)
 
 ```typescript
-initialize(options: { tokenProviderEndpoint: string; }) => Promise<void>
+initialize(options: { tokenProviderEndpoint: string; isTest: boolean; }) => Promise<void>
 ```
 
-| Param         | Type                                            |
-| ------------- | ----------------------------------------------- |
-| **`options`** | <code>{ tokenProviderEndpoint: string; }</code> |
+| Param         | Type                                                             |
+| ------------- | ---------------------------------------------------------------- |
+| **`options`** | <code>{ tokenProviderEndpoint: string; isTest: boolean; }</code> |
 
 --------------------
 

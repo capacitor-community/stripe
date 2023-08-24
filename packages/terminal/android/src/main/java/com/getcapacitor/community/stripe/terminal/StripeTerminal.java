@@ -40,6 +40,7 @@ public class StripeTerminal extends Executor {
     private String locationId;
     private PluginCall collectCall;
     private final JSObject emptyObject = new JSObject();
+    private Boolean isTest;
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -53,6 +54,7 @@ public class StripeTerminal extends Executor {
     }
 
     public void initialize(final PluginCall call) throws TerminalException {
+        this.isTest = call.getBoolean("isTest", true);
         this.activitySupplier.get()
             .runOnUiThread(
                 () -> {
@@ -90,7 +92,7 @@ public class StripeTerminal extends Executor {
         final DiscoveryConfiguration config = new DiscoveryConfiguration(
             0,
             DiscoveryMethod.LOCAL_MOBILE,
-            this.isApplicationDebuggable(),
+            this.isTest,
             call.getString("locationId")
         );
         final DiscoveryListener discoveryListener = readers -> {
@@ -125,10 +127,6 @@ public class StripeTerminal extends Executor {
                         }
                     }
                 );
-    }
-
-    private boolean isApplicationDebuggable() {
-        return 0 != (this.activitySupplier.get().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE);
     }
 
     public void connectReader(final PluginCall call) {

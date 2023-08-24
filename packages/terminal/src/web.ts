@@ -11,7 +11,7 @@ export class StripeTerminalWeb
   extends WebPlugin
   implements StripeTerminalPlugin
 {
-  async initialize(options: { tokenProviderEndpoint: string }): Promise<void> {
+  async initialize(options: { tokenProviderEndpoint: string, isTest: boolean }): Promise<void> {
     console.log('initialize', options);
     this.notifyListeners(TerminalEventsEnum.Loaded, null);
   }
