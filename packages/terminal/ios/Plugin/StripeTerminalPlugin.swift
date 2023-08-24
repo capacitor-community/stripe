@@ -26,8 +26,10 @@ public class StripeTerminalPlugin: CAPPlugin {
     }
 
     @objc func connectReader(_ call: CAPPluginCall) {
+        self.implementation.connectReader(call)
     }
 
     @objc func collect(_ call: CAPPluginCall) {
+        self.implementation.collect(call)
     }
 }

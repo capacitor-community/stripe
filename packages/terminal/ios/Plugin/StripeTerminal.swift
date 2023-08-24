@@ -2,10 +2,15 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate {
+public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate {
 
     weak var plugin: StripeTerminalPlugin?
     var discoverCancelable: Cancelable?
+    var discoverCall: CAPPluginCall?
+    var locationId: String?
+    var collectCancelable: Cancelable?
+
+    var readers: [Reader]?
 
     @objc public func initialize(_ call: CAPPluginCall) {
         Terminal.setTokenProvider(APIClient(tokenProviderEndpoint: call.getString("tokenProviderEndpoint", "")))
@@ -17,19 +22,84 @@ public class StripeTerminal: NSObject, DiscoveryDelegate {
             discoveryMethod: .localMobile,
             simulated: true
         )
+        self.discoverCall = call
+        self.locationId = call.getString("locationId")
 
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
             if let error = error {
                 print("discoverReaders failed: \(error)")
                 call.reject(error.localizedDescription)
+                self.discoverCall = nil
             } else {
-                call.resolve()
             }
         }
     }
 
     public func terminal(_ terminal: Terminal, didUpdateDiscoveredReaders readers: [Reader]) {
-        print(readers)
+        var readersJSObject: JSArray = []
+        var i = 0
+        for reader in readers {
+            readersJSObject.append([
+                "index": i,
+                "serialNumber": reader.serialNumber
+            ])
+            i += 1
+        }
+        self.readers = readers
+
+        self.discoverCall?.resolve([
+            "readers": readersJSObject
+        ])
+    }
+
+    public func connectReader(_ call: CAPPluginCall) {
+        let connectionConfig = LocalMobileConnectionConfiguration(locationId: self.locationId!)
+        let reader: JSObject = call.getObject("reader")!
+        let index: Int = reader["index"] as! Int
+
+        Terminal.shared.connectLocalMobileReader(self.readers![index], delegate: self, connectionConfig: connectionConfig) { reader, error in
+            if let reader = reader {
+                call.resolve()
+            } else if let error = error {
+                call.reject(error.localizedDescription)
+            }
+        }
+    }
+
+    public func collect(_ call: CAPPluginCall) {
+        Terminal.shared.retrievePaymentIntent(clientSecret: call.getString("paymentIntent")!) { retrieveResult, retrieveError in
+            if let error = retrieveError {
+                print("retrievePaymentIntent failed: \(error)")
+            } else if let paymentIntent = retrieveResult {
+                self.collectCancelable = Terminal.shared.collectPaymentMethod(paymentIntent) { collectResult, collectError in
+                    if let error = collectError {
+                        call.reject(error.localizedDescription)
+                    } else if let paymentIntent = collectResult {
+                        call.resolve()                                    }
+                }
+            }
+        }
+
+    }
+
+    public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+        // TODO
+    }
+
+    public func localMobileReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
+        // TODO
+    }
+
+    public func localMobileReader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
+        // TODO
+    }
+
+    public func localMobileReader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
+        // TODO
+    }
+
+    public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
+        // TODO
     }
 }
 
