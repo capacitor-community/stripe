@@ -14,6 +14,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     @objc public func initialize(_ call: CAPPluginCall) {
         Terminal.setTokenProvider(APIClient(tokenProviderEndpoint: call.getString("tokenProviderEndpoint", "")))
+        self.plugin?.notifyListeners(TerminalEvents.Loaded.rawValue, data: [:])
         call.resolve()
     }
 
@@ -46,7 +47,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             i += 1
         }
         self.readers = readers
-
+        
+        self.plugin?.notifyListeners(TerminalEvents.DiscoveredReaders.rawValue, data: ["readers": readersJSObject])
         self.discoverCall?.resolve([
             "readers": readersJSObject
         ])
@@ -59,6 +61,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
         Terminal.shared.connectLocalMobileReader(self.readers![index], delegate: self, connectionConfig: connectionConfig) { reader, error in
             if let reader = reader {
+                self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
             } else if let error = error {
                 call.reject(error.localizedDescription)
@@ -73,9 +76,12 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             } else if let paymentIntent = retrieveResult {
                 self.collectCancelable = Terminal.shared.collectPaymentMethod(paymentIntent) { collectResult, collectError in
                     if let error = collectError {
+                        self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: [:])
                         call.reject(error.localizedDescription)
                     } else if let paymentIntent = collectResult {
-                        call.resolve()                                    }
+                        self.plugin?.notifyListeners(TerminalEvents.Completed.rawValue, data: [:])
+                        call.resolve()
+                    }
                 }
             }
         }
