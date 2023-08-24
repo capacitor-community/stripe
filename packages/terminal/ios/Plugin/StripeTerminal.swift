@@ -15,7 +15,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate {
     func discoverReaders(_ call: CAPPluginCall) {
         let config = DiscoveryConfiguration(
             discoveryMethod: .localMobile,
-            simulated: false
+            simulated: true
         )
 
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
