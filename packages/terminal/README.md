@@ -1,12 +1,47 @@
 # @capacitor-community/stripe-terminal
 
-Stripe SDK bindings for Capacitor Applications
+Stripe SDK bindings for Capacitor Applications. __This plugin is still in beta.__
+We have confirmed that it works well in the demo project. Please refer to https://github.com/capacitor-community/stripe/tree/main/demo/angular for the implementation.
+
+- [x] Tap To Pay
+- [ ] Internet
+- [ ] Bluetooth
+- [ ] USB
 
 ## Install
 
 ```bash
 npm install @capacitor-community/stripe-terminal
 npx cap sync
+```
+
+### iOS
+
+- [iOS Configure your app](https://stripe.com/docs/terminal/payments/setup-integration?terminal-sdk-platform=ios#configure)
+
+### Android
+
+Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
+
+```diff
++ <uses-permission android:name="android.permission.BLUETOOTH" />
++ <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
++ <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
++ <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
++ <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+```
+
+If used in conjunction with the `@capacitor-community/stripe` plugin, the following settings may be necessary
+
+Add packagingOptions to your `android/app/build.gradle` file:
+
+```diff
+android {
+...
++  packagingOptions {
++    resources.excludes.add("org/bouncycastle/x509/*")
++  }
+}
 ```
 
 ## API
