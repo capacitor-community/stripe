@@ -9,13 +9,11 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-import com.getcapacitor.community.stripe.identity.helper.MetaData;
 import com.stripe.android.identity.IdentityVerificationSheet;
 
 @CapacitorPlugin(name = "StripeIdentity")
 public class StripeIdentityPlugin extends Plugin {
 
-    private MetaData metaData;
     private String identityVerificationCallbackId;
 
     private final StripeIdentity implementation = new StripeIdentity(this::getContext,
@@ -26,8 +24,6 @@ public class StripeIdentityPlugin extends Plugin {
 
     @Override
     public void load() {
-        metaData = new MetaData(this::getContext);
-
         Resources resources = getActivity().getApplicationContext().getResources();
         int resourceId = resources.getIdentifier("ic_launcher", "mipmap", getActivity().getPackageName());
         Uri icon = new Uri.Builder()

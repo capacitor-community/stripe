@@ -15,7 +15,7 @@
     "url": "git+https://github.com/capacitor-community/stripe.git"
   },
   "devDependencies": {
-    "np": "^7.5.0",
+    "np": "^7.7.0",
     "write-pkg": "^6.0.0"
   }
 }

@@ -13,6 +13,7 @@ def capacitor_pods
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCommunityStripe', :path => '../../../../packages/payment'
   pod 'CapacitorCommunityStripeIdentity', :path => '../../../../packages/identity'
+  pod 'CapacitorCommunityStripeTerminal', :path => '../../../../packages/terminal'
 end
 
 target 'App' do
@@ -20,14 +21,6 @@ target 'App' do
   # Add your Pods here
 end
 
-
 post_install do |installer|
   assertDeploymentTarget(installer)
-    installer.generated_projects.each do |project|
-      project.targets.each do |target|
-          target.build_configurations.each do |config|
-              config.build_settings["DEVELOPMENT_TEAM"] = "P7E2DJ2G49"
-           end
-      end
-    end
 end

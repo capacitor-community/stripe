@@ -9,8 +9,8 @@ import {
 
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {first} from 'rxjs/operators';
 import {IonicModule} from '@ionic/angular';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
     selector: 'app-demo',
@@ -154,11 +154,11 @@ export class DemoPage implements OnInit {
 
   async createPaymentSheet(withCustomer = true) {
     if (withCustomer) {
-      const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+      const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
         paymentIntent: string;
         ephemeralKey: string;
         customer: string;
-      }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
+      }>(environment.api + 'intent', {}));
 
       await Stripe.createPaymentSheet({
         paymentIntentClientSecret: paymentIntent,
@@ -167,9 +167,9 @@ export class DemoPage implements OnInit {
         merchantDisplayName: 'rdlabo',
       });
     } else {
-      const { paymentIntent } = await this.http.post<{
+      const { paymentIntent } = await firstValueFrom(this.http.post<{
         paymentIntent: string;
-      }>(environment.api + 'intent/without-customer', {}).pipe(first()).toPromise(Promise);
+      }>(environment.api + 'intent/without-customer', {}));
 
       await Stripe.createPaymentSheet({
         paymentIntentClientSecret: paymentIntent,
@@ -179,11 +179,11 @@ export class DemoPage implements OnInit {
   }
 
   async createPaymentSheetWithSetupIntent() {
-    const { setupIntent, ephemeralKey, customer } = await this.http.post<{
+    const { setupIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
       setupIntent: string;
       ephemeralKey: string;
       customer: string;
-    }>(environment.api + 'intent/setup', {}).pipe(first()).toPromise(Promise);
+    }>(environment.api + 'intent/setup', {}));
 
     await Stripe.createPaymentSheet({
       setupIntentClientSecret: setupIntent,
@@ -191,7 +191,6 @@ export class DemoPage implements OnInit {
       customerId: customer,
       merchantDisplayName: 'rdlabo',
       enableGooglePay: true,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       GooglePayIsTesting: true,
     });
   }
@@ -202,11 +201,11 @@ export class DemoPage implements OnInit {
 
   async createPaymentFlow(withCustomer = true) {
     if (withCustomer) {
-      const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+      const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
         paymentIntent: string;
         ephemeralKey: string;
         customer: string;
-      }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
+      }>(environment.api + 'intent', {}));
 
       await Stripe.createPaymentFlow({
         paymentIntentClientSecret: paymentIntent,
@@ -215,9 +214,9 @@ export class DemoPage implements OnInit {
         merchantDisplayName: 'rdlabo',
       });
     } else {
-      const { paymentIntent } = await this.http.post<{
+      const { paymentIntent } = await firstValueFrom(this.http.post<{
         paymentIntent: string;
-      }>(environment.api + 'intent/without-customer', {}).pipe(first()).toPromise(Promise);
+      }>(environment.api + 'intent/without-customer', {}));
 
       await Stripe.createPaymentFlow({
         paymentIntentClientSecret: paymentIntent,
@@ -235,9 +234,9 @@ export class DemoPage implements OnInit {
   }
 
   async createApplePay() {
-    const { paymentIntent } = await this.http.post<{
+    const { paymentIntent } = await firstValueFrom(this.http.post<{
       paymentIntent: string;
-    }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
+    }>(environment.api + 'intent', {}));
 
     await Stripe.createApplePay({
       paymentIntentClientSecret: paymentIntent,
@@ -257,9 +256,9 @@ export class DemoPage implements OnInit {
   }
 
   async createGooglePay() {
-    const { paymentIntent } = await this.http.post<{
+    const { paymentIntent } = await firstValueFrom(this.http.post<{
       paymentIntent: string;
-    }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise);
+    }>(environment.api + 'intent', {}));
 
     await Stripe.createGooglePay({
       paymentIntentClientSecret: paymentIntent,

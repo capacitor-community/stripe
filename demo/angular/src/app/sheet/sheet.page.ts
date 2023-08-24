@@ -8,6 +8,7 @@ import {HelperService} from '../shared/helper.service';
 import {PluginListenerHandle} from '@capacitor/core';
 import {NgFor, NgIf} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
+import {firstValueFrom} from 'rxjs';
 
 const happyPathItems: ITestItems [] = [
   {
@@ -88,11 +89,11 @@ export class SheetPage {
       this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
     }
 
-    const { paymentIntent, ephemeralKey, customer } = await this.http.post<{
+    const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
       paymentIntent: string;
       ephemeralKey: string;
       customer: string;
-    }>(environment.api + 'intent', {}).pipe(first()).toPromise(Promise)
+    }>(environment.api + 'intent', {}))
       .catch(async (e) => {
         await this.helper.updateItem(this.eventItems,'HttpClient', false);
         throw e;

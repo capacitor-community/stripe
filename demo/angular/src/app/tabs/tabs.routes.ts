@@ -1,5 +1,10 @@
 import {Routes} from '@angular/router';
 import {TabsPage} from './tabs.page';
+import {DemoPage} from '../demo/demo.page';
+import {SheetPage} from '../sheet/sheet.page';
+import {FlowPage} from '../flow/flow.page';
+import {IdentityPage} from '../identity/identity.page';
+import {TerminalPage} from '../terminal/terminal.page';
 
 export const routes: Routes = [
   {
@@ -8,19 +13,23 @@ export const routes: Routes = [
     children: [
       {
         path: 'demo',
-        loadChildren: () => import('../demo/demo.routes').then(m => m.routes)
+        component: DemoPage,
       },
       {
         path: 'sheet',
-        loadChildren: () => import('../sheet/sheet.routes').then(m => m.routes)
+        component: SheetPage,
       },
       {
         path: 'flow',
-        loadChildren: () => import('../flow/flow.routes').then(m => m.routes)
+        component: FlowPage,
       },
       {
         path: 'identify',
-        loadChildren: () => import('../identity/identity.routes').then(m => m.routes)
+        component: IdentityPage,
+      },
+      {
+        path: 'terminal',
+        component: TerminalPage,
       },
       {
         path: '',

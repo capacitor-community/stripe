@@ -8,6 +8,7 @@ import {environment} from '../../environments/environment';
 import {first} from 'rxjs/operators';
 import {NgFor, NgIf} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
+import {firstValueFrom} from 'rxjs';
 
 const happyPathItems: ITestItems [] = [
   {
@@ -92,10 +93,10 @@ export class IdentityPage {
       this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
     }
 
-    const { verficationSessionId, ephemeralKeySecret } = await this.http.post<{
+    const { verficationSessionId, ephemeralKeySecret } = await firstValueFrom(this.http.post<{
       verficationSessionId: string;
       ephemeralKeySecret: string;
-    }>(environment.api + 'identify', {}).pipe(first()).toPromise(Promise)
+    }>(environment.api + 'identify', {}))
       .catch(async (e) => {
         await this.helper.updateItem(this.eventItems,'HttpClient', false);
         throw e;

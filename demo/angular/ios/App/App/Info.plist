@@ -45,8 +45,17 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-    
-    <key>NSCameraUsageDescription</key>
-    <string>Need camera access for read credit card.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Need camera access for read credit card.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location access is required to accept payments.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+	</array>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth access is required to connect to supported card readers.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>このアプリは、Bluetooth を使用してサポート対象のカードリーダーに接続します。</string>
 </dict>
 </plist>
