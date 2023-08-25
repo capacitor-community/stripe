@@ -4,7 +4,7 @@ Stripe SDK bindings for Capacitor Applications. __This plugin is still in beta._
 We have confirmed that it works well in the demo project. Please refer to https://github.com/capacitor-community/stripe/tree/main/demo/angular for the implementation.
 
 - [x] Tap To Pay
-- [ ] Internet
+- [x] Internet
 - [ ] Bluetooth
 - [ ] USB
 
