@@ -3,7 +3,7 @@ import path from 'path';
 import pkg from './package.json' assert { type: 'json' };
 import { exec } from 'child_process';
 
-const workspaces = ['packages/payment', 'packages/identity'];
+const workspaces = ['packages/payment', 'packages/identity', 'packages/terminal'];
 
 workspaces.forEach(async (workspace) => {
   const releasePackagePath = path.resolve('./' + workspace);
