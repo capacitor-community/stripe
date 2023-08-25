@@ -30,6 +30,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             self.type = .internet
         } else {
             call.unimplemented(connectType! + " is not support now")
+            return
         }
         
         let config = DiscoveryConfiguration(
