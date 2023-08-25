@@ -31,6 +31,8 @@ import com.stripe.stripeterminal.external.models.TerminalException;
 import com.stripe.stripeterminal.log.LogLevel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import org.json.JSONException;
 
 public class StripeTerminal extends Executor {
@@ -41,6 +43,7 @@ public class StripeTerminal extends Executor {
     private PluginCall collectCall;
     private final JSObject emptyObject = new JSObject();
     private Boolean isTest;
+    private DiscoveryMethod type;
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -89,9 +92,18 @@ public class StripeTerminal extends Executor {
 
     public void onDiscoverReaders(final PluginCall call) {
         this.locationId = call.getString("locationId");
+        if (Objects.equals(call.getString("type"), TerminalConnectTypes.TapToPay.getWebEventName())) {
+            this.type = DiscoveryMethod.LOCAL_MOBILE;
+        } else if (Objects.equals(call.getString("type"), TerminalConnectTypes.Internet.getWebEventName())) {
+            this.type = DiscoveryMethod.INTERNET;
+        } else {
+            call.unimplemented(call.getString("type") + " is not support now");
+            return;
+        }
+
         final DiscoveryConfiguration config = new DiscoveryConfiguration(
             0,
-            DiscoveryMethod.LOCAL_MOBILE,
+            this.type,
             this.isTest,
             call.getString("locationId")
         );
@@ -130,29 +142,56 @@ public class StripeTerminal extends Executor {
     }
 
     public void connectReader(final PluginCall call) {
+        if (this.type == DiscoveryMethod.LOCAL_MOBILE) {
+            this.connectLocalMobileReader(call);
+        } else if (this.type == DiscoveryMethod.INTERNET) {
+            this.connectInternetReader(call);
+        }
+    }
+
+    private void connectLocalMobileReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
         ConnectionConfiguration.LocalMobileConnectionConfiguration config = new ConnectionConfiguration.LocalMobileConnectionConfiguration(
-            this.locationId
+                this.locationId
         );
         Terminal
-            .getInstance()
-            .connectLocalMobileReader(
-                this.readers.get(reader.getInteger("index")),
-                config,
-                new ReaderCallback() {
-                    @Override
-                    public void onSuccess(Reader r) {
-                        notifyListeners(TerminalEnumEvent.ConnectedReader.getWebEventName(), emptyObject);
-                        call.resolve();
-                    }
+                .getInstance()
+                .connectLocalMobileReader(
+                        this.readers.get(reader.getInteger("index")),
+                        config,
+                        new ReaderCallback() {
+                            @Override
+                            public void onSuccess(Reader r) {
+                                notifyListeners(TerminalEnumEvent.ConnectedReader.getWebEventName(), emptyObject);
+                                call.resolve();
+                            }
 
-                    @Override
-                    public void onFailure(@NonNull TerminalException ex) {
-                        ex.printStackTrace();
-                        call.reject(ex.getLocalizedMessage(), ex);
-                    }
-                }
-            );
+                            @Override
+                            public void onFailure(@NonNull TerminalException ex) {
+                                ex.printStackTrace();
+                                call.reject(ex.getLocalizedMessage(), ex);
+                            }
+                        }
+                );
+    }
+
+    private void connectInternetReader(final PluginCall call) {
+        JSObject reader = call.getObject("reader");
+        ConnectionConfiguration.InternetConnectionConfiguration config =
+                new ConnectionConfiguration.InternetConnectionConfiguration();
+        Terminal.getInstance().connectInternetReader(this.readers.get(reader.getInteger("index")), config, new ReaderCallback() {
+            @Override
+            public void onSuccess(@NonNull Reader r) {
+                notifyListeners(TerminalEnumEvent.ConnectedReader.getWebEventName(), emptyObject);
+                call.resolve();
+            }
+
+            @Override
+            public void onFailure(@NonNull TerminalException ex) {
+                ex.printStackTrace();
+                call.reject(ex.getLocalizedMessage(), ex);
+            }
+        });
     }
 
     public void cancelDiscovering(final PluginCall call) {

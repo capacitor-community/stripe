@@ -2,7 +2,7 @@ import type { PluginListenerHandle } from '@capacitor/core';
 
 import type { TerminalEventsEnum } from './events.enum';
 
-export enum TerminalConnectType {
+export enum TerminalConnectTypes {
   Simulated = 'simulated',
   Internet = 'internet',
   Bluetooth = 'bluetooth',
@@ -19,7 +19,7 @@ export * from './events.enum';
 export interface StripeTerminalPlugin {
   initialize(options: { tokenProviderEndpoint: string, isTest: boolean }): Promise<void>;
   discoverReaders(options: {
-    type: TerminalConnectType;
+    type: TerminalConnectTypes;
     locationId?: string;
   }): Promise<{
     readers: ReaderInterface[];

@@ -75,9 +75,6 @@ public class StripeTerminalPlugin extends Plugin {
 
     @PluginMethod
     public void discoverReaders(PluginCall call) {
-        if (!Objects.equals(call.getString("type"), "tap-to-pay")) {
-            call.unimplemented();
-        }
         this.implementation.onDiscoverReaders(call);
     }
 

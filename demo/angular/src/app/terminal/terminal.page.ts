@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { HelperService } from '../shared/helper.service';
-import { StripeTerminal, TerminalConnectType, TerminalEventsEnum } from '@capacitor-community/stripe-terminal';
+import { StripeTerminal, TerminalConnectTypes, TerminalEventsEnum } from '@capacitor-community/stripe-terminal';
 import { environment } from '../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import {ITestItems} from '../shared/interfaces';
@@ -19,10 +19,10 @@ const happyPathItems: ITestItems [] = [
     type: 'event',
     name: TerminalEventsEnum.Loaded,
   },
-  {
-    type: 'method',
-    name: 'HttpClientLocation',
-  },
+  // {
+  //   type: 'method',
+  //   name: 'HttpClientLocation',
+  // },
   {
     type: 'method',
     name: 'discoverReaders',
@@ -68,7 +68,7 @@ export class TerminalPage {
     private helper: HelperService,
   ) { }
 
-  async create(type: 'happyPath' | 'cancelPath') {
+  async create(type: 'happyPath' | 'cancelPath', readerType: number) {
     const eventKeys = Object.keys(TerminalEventsEnum);
     eventKeys.forEach(key => {
       const handler = StripeTerminal.addListener(TerminalEventsEnum[key], () => {
@@ -81,22 +81,22 @@ export class TerminalPage {
       this.eventItems =  JSON.parse(JSON.stringify(happyPathItems));
     }
 
-    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token', isTest: true })
+    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token', isTest: readerType === 0 })
       .then(() => this.helper.updateItem(this.eventItems,'initialize', true))
       .catch(() => this.helper.updateItem(this.eventItems,'initialize', false));
 
-    const { locationId } = await firstValueFrom(this.http.post<{
-      locationId: string;
-    }>(environment.api + 'connection/location', {}))
-      .catch(async (e) => {
-        await this.helper.updateItem(this.eventItems,'HttpClientLocation', false);
-        throw e;
-      });
-    await this.helper.updateItem(this.eventItems,'HttpClientLocation', true);
+    // const { locationId } = await firstValueFrom(this.http.post<{
+    //   locationId: string;
+    // }>(environment.api + 'connection/location', {}))
+    //   .catch(async (e) => {
+    //     await this.helper.updateItem(this.eventItems,'HttpClientLocation', false);
+    //     throw e;
+    //   });
+    // await this.helper.updateItem(this.eventItems,'HttpClientLocation', true);
 
     const result = await StripeTerminal.discoverReaders({
-      type: TerminalConnectType.TapToPay,
-      locationId: locationId,
+      type: readerType === 0 ? TerminalConnectTypes.TapToPay : TerminalConnectTypes.Internet,
+      locationId: "tml_FOUOdQVIxvVdvN",
     })
       .catch((e) => {
         this.helper.updateItem(this.eventItems,'discoverReaders', false)
