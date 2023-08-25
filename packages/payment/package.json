@@ -58,7 +58,7 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
     "release": "np --no-tests",
-    "update:elements": "npm i @stripe-elements/stripe-elements@latest && cd demo/angular && npm i @stripe-elements/stripe-elements@latest"
+    "update:elements": "npm i stripe-pwa-elements@latest && cd demo/angular && npm i stripe-pwa-elements@latest"
   },
   "devDependencies": {
     "@capacitor/android": "^5.0.0",
@@ -82,8 +82,8 @@
   },
   "peerDependencies": {
     "@capacitor/core": "^5.0.0",
-    "@stripe-elements/stripe-elements": "^2.0.2",
-    "react": "^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0",
+    "stripe-pwa-elements": "^2.1.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
