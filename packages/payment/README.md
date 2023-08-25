@@ -763,13 +763,13 @@ iOS Only
 
 #### CreateGooglePayOption
 
-| Prop                            | Type                                              | Description                                               |
-| ------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
-| **`paymentIntentClientSecret`** | <code>string</code>                               |                                                           |
-| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
-| **`merchantIdentifier`**        | <code>string</code>                               | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
-| **`countryCode`**               | <code>string</code>                               | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
-| **`currency`**                  | <code>string</code>                               | Web only need @stripe-elements/stripe-elements &gt; 1.1.0 |
+| Prop                            | Type                                              | Description                                  |
+| ------------------------------- | ------------------------------------------------- | -------------------------------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code>                               |                                              |
+| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only need stripe-pwa-elements &gt; 1.1.0 |
+| **`merchantIdentifier`**        | <code>string</code>                               | Web only need stripe-pwa-elements &gt; 1.1.0 |
+| **`countryCode`**               | <code>string</code>                               | Web only need stripe-pwa-elements &gt; 1.1.0 |
+| **`currency`**                  | <code>string</code>                               | Web only need stripe-pwa-elements &gt; 1.1.0 |
 
 
 #### CreateIdentityVerificationSheetOption

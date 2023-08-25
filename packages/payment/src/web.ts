@@ -1,8 +1,8 @@
 import { WebPlugin } from '@capacitor/core';
 import type { Stripe, StripeCardNumberElement } from '@stripe/stripe-js';
-import type { Components } from '@stripe-elements/stripe-elements';
-import type { FormSubmitEvent } from '@stripe-elements/stripe-elements/dist/types/interfaces';
-import type { HTMLStencilElement } from '@stripe-elements/stripe-elements/dist/types/stencil-public-runtime';
+import type { Components } from 'stripe-pwa-elements';
+import type { FormSubmitEvent } from 'stripe-pwa-elements/dist/types/interfaces';
+import type { HTMLStencilElement } from 'stripe-pwa-elements/dist/types/stencil-public-runtime';
 
 import type {
   ApplePayResultInterface,

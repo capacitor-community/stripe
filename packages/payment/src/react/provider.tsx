@@ -1,13 +1,13 @@
 import { Capacitor } from '@capacitor/core';
-import { defineCustomElements } from '@stripe-elements/stripe-elements/loader';
 import type { FC, PropsWithChildren, ReactNode } from "react";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { defineCustomElements } from 'stripe-pwa-elements/loader';
 
 import type { StripePlugin, StripeInitializationOptions, CapacitorStripeContext } from '../index';
 import { Stripe } from '../index';
 
 const StripeContext = createContext<CapacitorStripeContext>({
-    stripe: undefined as any,
+    stripe: undefined as unknown as StripePlugin,
     isApplePayAvailable: false,
     isGooglePayAvailable: false,
 })
