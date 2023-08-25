@@ -12,11 +12,11 @@
 
 ## packages
 
-| package name                         | description | path |
-|--------------------------------------|-------------|-----|
-| @capacitor-community/stripe          | Support for non-personal payments using Stripe | https://github.com/capacitor-community/stripe/tree/main/packages/payment#capacitor-communitystripe |
-| @capacitor-community/stripe-identity | Supports identity verification using Stripe | https://github.com/capacitor-community/stripe/tree/main/packages/identity#readme |
-| @capacitor-community/stripe-terminal | Support for in-person payments using Stripe  | https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme |
+| package name                         | description | path                                                                                                   |
+|--------------------------------------|-------------|--------------------------------------------------------------------------------------------------------|
+| @capacitor-community/stripe          | Support for non-personal payments using Stripe | [/packages/payment](https://github.com/capacitor-community/stripe/tree/main/packages/payment#readme)   |
+| @capacitor-community/stripe-identity | Supports identity verification using Stripe | [/packages/identity](https://github.com/capacitor-community/stripe/tree/main/packages/identity#readme) |
+| @capacitor-community/stripe-terminal | Support for in-person payments using Stripe  | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) |
 
 
 ## Maintainers
