@@ -2,7 +2,7 @@ import { WebPlugin } from '@capacitor/core';
 
 import type {
   StripeTerminalPlugin,
-  TerminalConnectType,
+  TerminalConnectTypes,
   ReaderInterface,
 } from './definitions';
 import { TerminalEventsEnum } from './events.enum';
@@ -17,7 +17,7 @@ export class StripeTerminalWeb
   }
 
   async discoverReaders(options: {
-    type: TerminalConnectType;
+    type: TerminalConnectTypes;
     locationId?: string;
   }): Promise<{
     readers: ReaderInterface[];

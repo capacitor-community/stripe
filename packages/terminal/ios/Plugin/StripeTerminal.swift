@@ -10,6 +10,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     var locationId: String?
     var isTest: Bool?
     var collectCancelable: Cancelable?
+    var type: DiscoveryMethod?
 
     var readers: [Reader]?
 
@@ -21,9 +22,19 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     func discoverReaders(_ call: CAPPluginCall) {
+        let connectType = call.getString("type")
+        
+        if TerminalConnectTypes.TapToPay.rawValue == connectType {
+            self.type = .localMobile
+        } else if TerminalConnectTypes.Internet.rawValue == connectType {
+            self.type = .internet
+        } else {
+            call.unimplemented(connectType! + " is not support now")
+        }
+        
         let config = DiscoveryConfiguration(
-            discoveryMethod: .localMobile,
-            simulated: self.isTest
+            discoveryMethod: self.type!,
+            simulated: self.isTest!
         )
         self.discoverCall = call
         self.locationId = call.getString("locationId")
@@ -57,6 +68,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func connectReader(_ call: CAPPluginCall) {
+        if (self.type == .localMobile) {
+            self.connectLocalMobileReader(call)
+        } else if (self.type == .internet) {
+            self.connectInternetReader(call)
+        }
+    }
+    
+    private func connectLocalMobileReader(_ call: CAPPluginCall) {
         let connectionConfig = LocalMobileConnectionConfiguration(locationId: self.locationId!)
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
@@ -68,6 +87,21 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             } else if let error = error {
                 call.reject(error.localizedDescription)
             }
+        }
+    }
+    
+    private func connectInternetReader(_ call: CAPPluginCall) {
+        let config = InternetConnectionConfiguration(failIfInUse: true)
+        let reader: JSObject = call.getObject("reader")!
+        let index: Int = reader["index"] as! Int
+                
+        Terminal.shared.connectInternetReader(self.readers![index], connectionConfig: config) { reader, error in
+          if let reader = reader {
+              self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
+              call.resolve()
+          } else if let error = error {
+              call.reject(error.localizedDescription)
+          }
         }
     }
 

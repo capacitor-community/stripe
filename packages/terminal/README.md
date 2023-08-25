@@ -83,12 +83,12 @@ initialize(options: { tokenProviderEndpoint: string; isTest: boolean; }) => Prom
 ### discoverReaders(...)
 
 ```typescript
-discoverReaders(options: { type: TerminalConnectType; locationId?: string; }) => Promise<{ readers: ReaderInterface[]; }>
+discoverReaders(options: { type: TerminalConnectTypes; locationId?: string; }) => Promise<{ readers: ReaderInterface[]; }>
 ```
 
-| Param         | Type                                                                                                |
-| ------------- | --------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ type: <a href="#terminalconnecttype">TerminalConnectType</a>; locationId?: string; }</code> |
+| Param         | Type                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ type: <a href="#terminalconnecttypes">TerminalConnectTypes</a>; locationId?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ readers: ReaderInterface[]; }&gt;</code>
 
@@ -238,7 +238,7 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 ### Enums
 
 
-#### TerminalConnectType
+#### TerminalConnectTypes
 
 | Members         | Value                     |
 | --------------- | ------------------------- |
