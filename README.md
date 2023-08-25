@@ -10,13 +10,22 @@
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/l/@capacitor-community/stripe?style=flat-square" /></a>
 </p>
 
+## packages
+
+| package name                         | description | path |
+|--------------------------------------|-------------|-----|
+| @capacitor-community/stripe          | Support for non-personal payments using Stripe | https://github.com/capacitor-community/stripe/tree/main/packages/payment#capacitor-communitystripe |
+| @capacitor-community/stripe-identity | Supports identity verification using Stripe | https://github.com/capacitor-community/stripe/tree/main/packages/identity#readme |
+| @capacitor-community/stripe-terminal | Support for in-person payments using Stripe  | https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme |
+
+
 ## Maintainers
 
-| Maintainer          | GitHub                              | Social                                | Sponsoring Company                             |
-| ------------------- | ----------------------------------- | ------------------------------------- | ---------------------------------------------- |
-| Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) |  |
+| Maintainer          | GitHub                              | Social                                |
+| ------------------- | ----------------------------------- | ------------------------------------- |
+| Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) |
 | Ibby Hadeed | [ihadeed](https://github.com/ihadeed) | |
-| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | RELATION DESIGN LABO, GENERAL INC. ASSOCIATION |
+| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) |
 
 ## Contributors ✨
 <a href="https://github.com/capacitor-community/stripe/graphs/contributors">
@@ -24,12 +33,6 @@
 </a>
 
 Made with [contributors-img](https://contrib.rocks).
-
-## How to use
-
-Learn at [the official @capacitor-community/stripe documentation](https://stripe.capacitorjs.jp/).
-
-日本語版をご利用の際は [ja.stripe.capacitorjs.jp](https://ja.stripe.capacitorjs.jp/) をご確認ください。
 
 ## Demo
 

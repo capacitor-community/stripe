@@ -9,6 +9,12 @@ npm install @capacitor-community/stripe
 npx cap sync
 ```
 
+## How to use
+
+Learn at [the official @capacitor-community/stripe documentation](https://stripe.capacitorjs.jp/).
+
+日本語版をご利用の際は [ja.stripe.capacitorjs.jp](https://ja.stripe.capacitorjs.jp/) をご確認ください。
+
 ## API
 
 <docgen-index>
