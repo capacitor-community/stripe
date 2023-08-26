@@ -54,6 +54,23 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
+    func cancelDiscoverReaders(_ call: CAPPluginCall) {
+
+        if let cancelable = self.discoverCancelable {
+            cancelable.cancel { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    self.collectCancelable = nil
+                    call.resolve()
+                }
+            }
+            return
+        }
+
+        call.resolve()
+    }
+
     public func terminal(_ terminal: Terminal, didUpdateDiscoveredReaders readers: [Reader]) {
         var readersJSObject: JSArray = []
         var i = 0

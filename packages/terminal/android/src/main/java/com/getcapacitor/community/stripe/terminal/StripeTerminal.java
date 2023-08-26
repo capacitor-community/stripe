@@ -243,12 +243,13 @@ public class StripeTerminal extends Executor {
             );
     }
 
-    public void cancelDiscovering(final PluginCall call) {
+    public void cancelDiscoverReaders(final PluginCall call) {
         if (discoveryCancelable != null) {
             discoveryCancelable.cancel(
                 new Callback() {
                     @Override
                     public void onSuccess() {
+                        notifyListeners(TerminalEnumEvent.CancelDiscoveredReaders.getWebEventName(), emptyObject);
                         call.resolve();
                     }
 

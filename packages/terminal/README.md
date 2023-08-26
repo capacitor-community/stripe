@@ -53,6 +53,7 @@ android {
 * [`connectReader(...)`](#connectreader)
 * [`getConnectedReader()`](#getconnectedreader)
 * [`disconnectReader()`](#disconnectreader)
+* [`cancelDiscoverReaders()`](#canceldiscoverreaders)
 * [`collect(...)`](#collect)
 * [`cancelCollect()`](#cancelcollect)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
@@ -126,6 +127,15 @@ getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
 
 ```typescript
 disconnectReader() => Promise<void>
+```
+
+--------------------
+
+
+### cancelDiscoverReaders()
+
+```typescript
+cancelDiscoverReaders() => Promise<void>
 ```
 
 --------------------
@@ -283,14 +293,15 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 
 #### TerminalEventsEnum
 
-| Members                  | Value                                     |
-| ------------------------ | ----------------------------------------- |
-| **`Loaded`**             | <code>'terminalLoaded'</code>             |
-| **`DiscoveredReaders`**  | <code>'terminalDiscoveredReaders'</code>  |
-| **`ConnectedReader`**    | <code>'terminalConnectedReader'</code>    |
-| **`DisconnectedReader`** | <code>'terminalDisconnectedReader'</code> |
-| **`Completed`**          | <code>'terminalCompleted'</code>          |
-| **`Canceled`**           | <code>'terminalCanceled'</code>           |
-| **`Failed`**             | <code>'terminalFailed'</code>             |
+| Members                       | Value                                          |
+| ----------------------------- | ---------------------------------------------- |
+| **`Loaded`**                  | <code>'terminalLoaded'</code>                  |
+| **`DiscoveredReaders`**       | <code>'terminalDiscoveredReaders'</code>       |
+| **`CancelDiscoveredReaders`** | <code>'terminalCancelDiscoveredReaders'</code> |
+| **`ConnectedReader`**         | <code>'terminalConnectedReader'</code>         |
+| **`DisconnectedReader`**      | <code>'terminalDisconnectedReader'</code>      |
+| **`Completed`**               | <code>'terminalCompleted'</code>               |
+| **`Canceled`**                | <code>'terminalCanceled'</code>                |
+| **`Failed`**                  | <code>'terminalFailed'</code>                  |
 
 </docgen-api>

@@ -70,6 +70,11 @@ public class StripeTerminalPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void cancelDiscoverReaders(PluginCall call) {
+        this.implementation.cancelDiscoverReaders(call);
+    }
+
+    @PluginMethod
     public void connectReader(PluginCall call) {
         this.implementation.connectReader(call);
     }

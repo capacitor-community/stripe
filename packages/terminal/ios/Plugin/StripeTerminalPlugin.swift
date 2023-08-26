@@ -25,6 +25,10 @@ public class StripeTerminalPlugin: CAPPlugin {
         self.implementation.discoverReaders(call)
     }
 
+    @objc func cancelDiscoverReaders(_ call: CAPPluginCall) {
+        self.implementation.cancelDiscoverReaders(call)
+    }
+
     @objc func connectReader(_ call: CAPPluginCall) {
         self.implementation.connectReader(call)
     }

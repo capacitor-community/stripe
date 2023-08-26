@@ -30,6 +30,7 @@ export interface StripeTerminalPlugin {
   connectReader(options: { reader: ReaderInterface }): Promise<void>;
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
   disconnectReader(): Promise<void>;
+  cancelDiscoverReaders(): Promise<void>;
   collect(options: { paymentIntent: string }): Promise<void>;
   cancelCollect(): Promise<void>;
   addListener(
