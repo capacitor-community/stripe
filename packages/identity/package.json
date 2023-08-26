@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-community/stripe-identity",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "engines": {
     "node": ">=16.0.0"
   },
@@ -44,8 +44,7 @@
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "release": "np --no-tests"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@capacitor/android": "^5.0.0",
@@ -56,7 +55,6 @@
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
     "eslint": "^7.11.0",
-    "np": "^7.7.0",
     "prettier": "~2.3.0",
     "prettier-plugin-java": "~1.0.2",
     "rimraf": "^3.0.2",
