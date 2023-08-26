@@ -8,7 +8,7 @@ const workspaces = ['packages/payment', 'packages/identity', 'packages/terminal'
 workspaces.forEach(async (workspace) => {
   const releasePackagePath = path.resolve('./' + workspace);
   await updatePackage(releasePackagePath + '/package.json', { version: pkg.version });
-  exec(`cd ${releasePackagePath} && npm publish`, (err, stdout, stderr) => {
+  exec(`cd ${releasePackagePath} && npm install && npm run build && npm publish`, (err, stdout, stderr) => {
     if (err) {
       console.error(err);
       return;
