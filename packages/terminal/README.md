@@ -51,7 +51,11 @@ android {
 * [`initialize(...)`](#initialize)
 * [`discoverReaders(...)`](#discoverreaders)
 * [`connectReader(...)`](#connectreader)
+* [`getConnectedReader()`](#getconnectedreader)
+* [`disconnectReader()`](#disconnectreader)
+* [`cancelDiscoverReaders()`](#canceldiscoverreaders)
 * [`collect(...)`](#collect)
+* [`cancelCollect()`](#cancelcollect)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
 * [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
@@ -108,6 +112,35 @@ connectReader(options: { reader: ReaderInterface; }) => Promise<void>
 --------------------
 
 
+### getConnectedReader()
+
+```typescript
+getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
+```
+
+**Returns:** <code>Promise&lt;{ reader: <a href="#readerinterface">ReaderInterface</a> | null; }&gt;</code>
+
+--------------------
+
+
+### disconnectReader()
+
+```typescript
+disconnectReader() => Promise<void>
+```
+
+--------------------
+
+
+### cancelDiscoverReaders()
+
+```typescript
+cancelDiscoverReaders() => Promise<void>
+```
+
+--------------------
+
+
 ### collect(...)
 
 ```typescript
@@ -117,6 +150,15 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 | Param         | Type                                    |
 | ------------- | --------------------------------------- |
 | **`options`** | <code>{ paymentIntent: string; }</code> |
+
+--------------------
+
+
+### cancelCollect()
+
+```typescript
+cancelCollect() => Promise<void>
+```
 
 --------------------
 
@@ -251,13 +293,15 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 
 #### TerminalEventsEnum
 
-| Members                 | Value                                    |
-| ----------------------- | ---------------------------------------- |
-| **`Loaded`**            | <code>'terminalLoaded'</code>            |
-| **`DiscoveredReaders`** | <code>'terminalDiscoveredReaders'</code> |
-| **`ConnectedReader`**   | <code>'terminalConnectedReader'</code>   |
-| **`Completed`**         | <code>'terminalCompleted'</code>         |
-| **`Canceled`**          | <code>'terminalCanceled'</code>          |
-| **`Failed`**            | <code>'terminalFailed'</code>            |
+| Members                       | Value                                          |
+| ----------------------------- | ---------------------------------------------- |
+| **`Loaded`**                  | <code>'terminalLoaded'</code>                  |
+| **`DiscoveredReaders`**       | <code>'terminalDiscoveredReaders'</code>       |
+| **`CancelDiscoveredReaders`** | <code>'terminalCancelDiscoveredReaders'</code> |
+| **`ConnectedReader`**         | <code>'terminalConnectedReader'</code>         |
+| **`DisconnectedReader`**      | <code>'terminalDisconnectedReader'</code>      |
+| **`Completed`**               | <code>'terminalCompleted'</code>               |
+| **`Canceled`**                | <code>'terminalCanceled'</code>                |
+| **`Failed`**                  | <code>'terminalFailed'</code>                  |
 
 </docgen-api>

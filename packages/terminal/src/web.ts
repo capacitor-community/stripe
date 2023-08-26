@@ -11,7 +11,10 @@ export class StripeTerminalWeb
   extends WebPlugin
   implements StripeTerminalPlugin
 {
-  async initialize(options: { tokenProviderEndpoint: string, isTest: boolean }): Promise<void> {
+  async initialize(options: {
+    tokenProviderEndpoint: string;
+    isTest: boolean;
+  }): Promise<void> {
     console.log('initialize', options);
     this.notifyListeners(TerminalEventsEnum.Loaded, null);
   }
@@ -31,13 +34,34 @@ export class StripeTerminalWeb
     };
   }
 
+  async cancelDiscoverReaders(): Promise<void> {
+    console.log('cancelDiscoverReaders');
+    this.notifyListeners(TerminalEventsEnum.CancelDiscoveredReaders, null);
+  }
+
   async connectReader(options: { reader: ReaderInterface }): Promise<void> {
     console.log('connectReader', options);
     this.notifyListeners(TerminalEventsEnum.ConnectedReader, null);
   }
 
+  async getConnectedReader(): Promise<{ reader: ReaderInterface | null }> {
+    return {
+      reader: null,
+    };
+  }
+
+  async disconnectReader(): Promise<void> {
+    console.log('disconnectReader');
+    this.notifyListeners(TerminalEventsEnum.DisconnectedReader, null);
+  }
+
   async collect(options: { paymentIntent: string }): Promise<void> {
     console.log('collect', options);
     this.notifyListeners(TerminalEventsEnum.Completed, null);
+  }
+
+  async cancelCollect(): Promise<void> {
+    console.log('cancelCollect');
+    this.notifyListeners(TerminalEventsEnum.Canceled, null);
   }
 }
