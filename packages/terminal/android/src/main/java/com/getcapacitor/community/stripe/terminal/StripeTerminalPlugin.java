@@ -79,10 +79,12 @@ public class StripeTerminalPlugin extends Plugin {
         this.implementation.connectReader(call);
     }
 
+    @PluginMethod
     public void getConnectedReader(final PluginCall call) {
         this.implementation.getConnectedReader(call);
     }
 
+    @PluginMethod
     public void disconnectReader(final PluginCall call) {
         this.implementation.disconnectReader(call);
     }

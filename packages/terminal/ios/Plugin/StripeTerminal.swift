@@ -118,6 +118,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 if let error = error {
                     call.reject(error.localizedDescription)
                 } else {
+                    self.plugin?.notifyListeners(TerminalEvents.DisconnectedReader.rawValue, data: [:])
                     call.resolve()
                 }
             }
@@ -178,13 +179,13 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 if let error = error {
                     call.reject(error.localizedDescription)
                 } else {
+                    self.plugin?.notifyListeners(TerminalEvents.Canceled.rawValue, data: [:])
                     self.collectCancelable = nil
                     call.resolve()
                 }
             }
             return
         }
-
         call.resolve()
     }
 
