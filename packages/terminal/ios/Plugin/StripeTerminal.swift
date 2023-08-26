@@ -11,19 +11,23 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     var isTest: Bool?
     var collectCancelable: Cancelable?
     var type: DiscoveryMethod?
+    var isInitialize: Bool = false
 
     var readers: [Reader]?
 
     @objc public func initialize(_ call: CAPPluginCall) {
         self.isTest = call.getBool("isTest", true)
-        Terminal.setTokenProvider(APIClient(tokenProviderEndpoint: call.getString("tokenProviderEndpoint", "")))
+        if self.isInitialize == false {
+            Terminal.setTokenProvider(APIClient(tokenProviderEndpoint: call.getString("tokenProviderEndpoint", "")))
+        }
+        self.isInitialize = true
         self.plugin?.notifyListeners(TerminalEvents.Loaded.rawValue, data: [:])
         call.resolve()
     }
 
     func discoverReaders(_ call: CAPPluginCall) {
         let connectType = call.getString("type")
-        
+
         if TerminalConnectTypes.TapToPay.rawValue == connectType {
             self.type = .localMobile
         } else if TerminalConnectTypes.Internet.rawValue == connectType {
@@ -32,7 +36,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             call.unimplemented(connectType! + " is not support now")
             return
         }
-        
+
         let config = DiscoveryConfiguration(
             discoveryMethod: self.type!,
             simulated: self.isTest!
@@ -50,6 +54,23 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
+    func cancelDiscoverReaders(_ call: CAPPluginCall) {
+
+        if let cancelable = self.discoverCancelable {
+            cancelable.cancel { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    self.collectCancelable = nil
+                    call.resolve()
+                }
+            }
+            return
+        }
+
+        call.resolve()
+    }
+
     public func terminal(_ terminal: Terminal, didUpdateDiscoveredReaders readers: [Reader]) {
         var readersJSObject: JSArray = []
         var i = 0
@@ -61,7 +82,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             i += 1
         }
         self.readers = readers
-        
+
         self.plugin?.notifyListeners(TerminalEvents.DiscoveredReaders.rawValue, data: ["readers": readersJSObject])
         self.discoverCall?.resolve([
             "readers": readersJSObject
@@ -69,13 +90,41 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func connectReader(_ call: CAPPluginCall) {
-        if (self.type == .localMobile) {
+        if self.type == .localMobile {
             self.connectLocalMobileReader(call)
-        } else if (self.type == .internet) {
+        } else if self.type == .internet {
             self.connectInternetReader(call)
         }
     }
-    
+
+    public func getConnectedReader(_ call: CAPPluginCall) {
+        if let reader = Terminal.shared.connectedReader {
+            call.resolve(["reader": [
+                "serialNumber": reader.serialNumber
+            ]])
+        } else {
+            call.resolve(["reader": nil])
+        }
+    }
+
+    public func disconnectReader(_ call: CAPPluginCall) {
+        if Terminal.shared.connectedReader == nil {
+            call.resolve()
+            return
+        }
+
+        DispatchQueue.main.async {
+            Terminal.shared.disconnectReader { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    self.plugin?.notifyListeners(TerminalEvents.DisconnectedReader.rawValue, data: [:])
+                    call.resolve()
+                }
+            }
+        }
+    }
+
     private func connectLocalMobileReader(_ call: CAPPluginCall) {
         let connectionConfig = LocalMobileConnectionConfiguration(locationId: self.locationId!)
         let reader: JSObject = call.getObject("reader")!
@@ -90,19 +139,19 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             }
         }
     }
-    
+
     private func connectInternetReader(_ call: CAPPluginCall) {
         let config = InternetConnectionConfiguration(failIfInUse: true)
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
-                
+
         Terminal.shared.connectInternetReader(self.readers![index], connectionConfig: config) { reader, error in
-          if let reader = reader {
-              self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
-              call.resolve()
-          } else if let error = error {
-              call.reject(error.localizedDescription)
-          }
+            if let reader = reader {
+                self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
+                call.resolve()
+            } else if let error = error {
+                call.reject(error.localizedDescription)
+            }
         }
     }
 
@@ -122,7 +171,22 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 }
             }
         }
+    }
 
+    public func cancelCollect(_ call: CAPPluginCall) {
+        if let cancelable = self.collectCancelable {
+            cancelable.cancel { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    self.plugin?.notifyListeners(TerminalEvents.Canceled.rawValue, data: [:])
+                    self.collectCancelable = nil
+                    call.resolve()
+                }
+            }
+            return
+        }
+        call.resolve()
     }
 
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {

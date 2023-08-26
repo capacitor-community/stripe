@@ -19,13 +19,7 @@ import org.json.JSONException;
     name = "StripeTerminal",
     permissions = {
         @Permission(alias = "location", strings = { Manifest.permission.ACCESS_FINE_LOCATION }),
-        @Permission(
-            alias = "bluetooth",
-            strings = {
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT
-            }
-        )
+        @Permission(alias = "bluetooth", strings = { Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT })
     }
 )
 public class StripeTerminalPlugin extends Plugin {
@@ -76,12 +70,32 @@ public class StripeTerminalPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void cancelDiscoverReaders(PluginCall call) {
+        this.implementation.cancelDiscoverReaders(call);
+    }
+
+    @PluginMethod
     public void connectReader(PluginCall call) {
         this.implementation.connectReader(call);
     }
 
     @PluginMethod
+    public void getConnectedReader(final PluginCall call) {
+        this.implementation.getConnectedReader(call);
+    }
+
+    @PluginMethod
+    public void disconnectReader(final PluginCall call) {
+        this.implementation.disconnectReader(call);
+    }
+
+    @PluginMethod
     public void collect(PluginCall call) {
         this.implementation.collect(call);
+    }
+
+    @PluginMethod
+    public void cancelCollect(final PluginCall call) {
+        this.implementation.cancelCollect(call);
     }
 }
