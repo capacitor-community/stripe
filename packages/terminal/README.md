@@ -24,10 +24,7 @@ npx cap sync
 Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 
 ```diff
-+ <uses-permission android:name="android.permission.BLUETOOTH" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 + <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 + <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
 
