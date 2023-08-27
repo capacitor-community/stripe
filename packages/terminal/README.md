@@ -41,6 +41,25 @@ android {
 }
 ```
 
+## Usage
+
+```typescript
+(async ()=> {
+  /**
+   * tokenProviderEndpoint: The URL of your backend to provide a token. Use Post request to get a token.
+   */
+  await StripeTerminal.initialize({ tokenProviderEndpoint: 'https://example.com/token', isTest: true })
+  const { readers } = await StripeTerminal.discoverReaders({
+    type: TerminalConnectTypes.TapToPay,
+    locationId: "**************",
+  });
+  await StripeTerminal.connectReader({
+    reader: readers[0],
+  });
+  await StripeTerminal.collect({ paymentIntent: "**************" });
+});
+```
+
 ## API
 
 <docgen-index>
