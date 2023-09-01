@@ -19,7 +19,13 @@ change base application theme to `Theme.MaterialComponents.DayNight` at `res/val
 ```
 
 parent can be any MaterialComponents. [See here for other options](https://m2.material.io/develop/android/theming/dark/).
-All process is here: https://github.com/capacitor-community/stripe/commit/f514d893e9193bed2edbaf52c0d3ed1d534c7890asU
+see more details on Stripe's native Android SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=android&type=new-integration#set-up-material-theme).
+
+
+### Initialize iOS
+
+set up camera authorization by adding `NSCameraUsageDescription` in `Info.plist` and add a string value that explains the usage.
+see more details on Stripe's native iOS SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=ios&type=new-integration#set-up-camera-authorization).
 
 ## Usage
 
@@ -32,7 +38,7 @@ await StripeIdentity.create({
   ephemeralKeySecret,
   verificationId,
 });
-const result = await Stripe.present();
+const result = await StripeIdentity.present();
 ```
 
 ## API
