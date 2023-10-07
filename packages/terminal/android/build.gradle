@@ -3,17 +3,22 @@ ext {
     androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.6.1'
     androidxJunitVersion = project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.5'
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.5.1'
+
+    playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
+    volleyVersion = project.hasProperty('volleyVersion') ? rootProject.ext.volleyVersion : '1.2.1'
+    stripeterminalLocalmobileVersion = project.hasProperty('stripeterminalLocalmobileVersion') ? rootProject.ext.stripeterminalLocalmobileVersion : '3.0.+'
+    stripeterminalCoreVersion = project.hasProperty('stripeterminalCoreVersion') ? rootProject.ext.stripeterminalCoreVersion : '3.0.+'
 }
 
 buildscript {
-    ext.kotlin_version = project.hasProperty("kotlin_version") ? rootProject.ext.kotlin_version : '1.8.20'
+    ext.kotlinVersion = project.hasProperty("kotlinVersion") ? rootProject.ext.kotlinVersion : '1.8.20'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.0.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
@@ -62,9 +67,10 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
-    implementation "com.stripe:stripeterminal-localmobile:3.0.+"
-    implementation "com.stripe:stripeterminal-core:3.0.+"
-    implementation 'com.android.volley:volley:1.2.1'
-    implementation 'com.google.android.gms:play-services-wallet:19.1.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
+    implementation "com.stripe:stripeterminal-core:$stripeterminalCoreVersion"
+    implementation "com.stripe:stripeterminal-localmobile:$stripeterminalLocalmobileVersion"
+    implementation "com.android.volley:volley:$volleyVersion"
+    implementation "com.google.android.gms:play-services-wallet:$playServicesWalletVersion"
 }
