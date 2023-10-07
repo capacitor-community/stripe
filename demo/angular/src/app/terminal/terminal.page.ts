@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
-import { HelperService } from '../shared/helper.service';
-import { StripeTerminal, TerminalConnectTypes, TerminalEventsEnum } from '@capacitor-community/stripe-terminal';
-import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {IonicModule} from '@ionic/angular';
+import {HttpClient} from '@angular/common/http';
+import {HelperService} from '../shared/helper.service';
+import {StripeTerminal, TerminalConnectTypes, TerminalEventsEnum} from '@capacitor-community/stripe-terminal';
+import {environment} from '../../environments/environment';
+import {firstValueFrom} from 'rxjs';
 import {ITestItems} from '../shared/interfaces';
 import {PluginListenerHandle} from '@capacitor/core';
 
@@ -141,13 +141,14 @@ const checkDiscoverMethodItems: ITestItems [] = [
 })
 export class TerminalPage {
   public eventItems: ITestItems [] = [];
+  public terminalConnectTypes = TerminalConnectTypes;
   private readonly listenerHandlers: PluginListenerHandle[] = [];
   constructor(
     private http: HttpClient,
     private helper: HelperService,
   ) { }
 
-  async create(type: 'happyPath' | 'cancelPath', readerType: number) {
+  async create(type: 'happyPath' | 'cancelPath', readerType: TerminalConnectTypes) {
     const eventKeys = Object.keys(TerminalEventsEnum);
     eventKeys.forEach(key => {
       const handler = StripeTerminal.addListener(TerminalEventsEnum[key], () => {
@@ -162,12 +163,12 @@ export class TerminalPage {
       this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
     }
 
-    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token', isTest: readerType === 0 })
+    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token', isTest: readerType === TerminalConnectTypes.TapToPay })
       .then(() => this.helper.updateItem(this.eventItems,'initialize', true))
       .catch(() => this.helper.updateItem(this.eventItems,'initialize', false));
 
     const result = await StripeTerminal.discoverReaders({
-      type: readerType === 0 ? TerminalConnectTypes.TapToPay : TerminalConnectTypes.Internet,
+      type: readerType,
       locationId: "tml_FOUOdQVIxvVdvN",
     })
       .catch((e) => {
