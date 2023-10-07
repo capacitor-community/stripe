@@ -24,8 +24,11 @@ npx cap sync
 Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 
 ```diff
-+ <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
++ <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
++ <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
++ <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 + <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
++ <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 ```
 
 If used in conjunction with the `@capacitor-community/stripe` plugin, the following settings may be necessary

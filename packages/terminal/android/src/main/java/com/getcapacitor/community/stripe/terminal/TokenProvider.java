@@ -2,7 +2,9 @@ package com.getcapacitor.community.stripe.terminal;
 
 import android.content.Context;
 import android.util.Log;
+
 import androidx.core.util.Supplier;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -12,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 import com.stripe.stripeterminal.external.callable.ConnectionTokenCallback;
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider;
 import com.stripe.stripeterminal.external.models.ConnectionTokenException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

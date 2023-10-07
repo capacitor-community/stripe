@@ -62,8 +62,8 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
-    implementation "com.stripe:stripeterminal-localmobile:2.23.0"
-    implementation "com.stripe:stripeterminal-core:2.23.0"
+    implementation "com.stripe:stripeterminal-localmobile:3.0.+"
+    implementation "com.stripe:stripeterminal-core:3.0.+"
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

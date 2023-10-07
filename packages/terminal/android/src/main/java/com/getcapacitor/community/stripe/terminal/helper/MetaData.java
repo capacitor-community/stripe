@@ -3,7 +3,9 @@ package com.getcapacitor.community.stripe.terminal.helper;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+
 import androidx.core.util.Supplier;
+
 import com.getcapacitor.Logger;
 
 public class MetaData {

@@ -2,19 +2,16 @@ package com.getcapacitor.community.stripe.paymentsheet;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
-import androidx.activity.ComponentActivity;
+
 import androidx.core.util.Supplier;
+
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
 import com.google.android.gms.common.util.BiConsumer;
-import com.stripe.android.PaymentConfiguration;
-import com.stripe.android.Stripe;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
-import com.stripe.android.paymentsheet.PaymentSheetResultCallback;
 
 public class PaymentSheetExecutor extends Executor {
 

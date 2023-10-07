@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.res.Resources;
 import android.net.Uri;
 
-import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;

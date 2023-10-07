@@ -2,7 +2,9 @@ package com.getcapacitor.community.stripe.identityverification;
 
 import android.app.Activity;
 import android.content.Context;
+
 import androidx.core.util.Supplier;
+
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Logger;
