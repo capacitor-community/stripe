@@ -1,6 +1,5 @@
 import type { ApplePayDefinitions } from './applepay';
 import type { GooglePayDefinitions } from './googlepay';
-import type { IdentityVerificationSheetDefinitions } from './identityverificationsheet';
 import type { PaymentFlowDefinitions } from './paymentflow';
 import type { PaymentSheetDefinitions } from './paymentsheet';
 
@@ -8,14 +7,12 @@ export * from './applepay/index';
 export * from './googlepay/index';
 export * from './paymentflow/index';
 export * from './paymentsheet/index';
-export * from './identityverificationsheet/index';
 export * from './shared/index';
 
 type StripeDefinitions = PaymentSheetDefinitions &
   PaymentFlowDefinitions &
   ApplePayDefinitions &
-  GooglePayDefinitions &
-  IdentityVerificationSheetDefinitions;
+  GooglePayDefinitions;
 
 export interface StripePlugin extends StripeDefinitions {
   initialize(opts: StripeInitializationOptions): Promise<void>;

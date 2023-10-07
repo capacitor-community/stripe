@@ -63,14 +63,8 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
     implementation 'com.stripe:stripe-android:20.32.+'
-    implementation('com.stripe:stripecardscan:20.32.+') {
-        exclude module: 'stripecardscan-tflite'
-        exclude module: 'ml-core-cardscan'
-    }
-
-    implementation 'com.stripe:identity:20.32.+'
-    implementation 'com.google.android.gms:play-services-wallet:19.1.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.android.gms:play-services-wallet:19.2.+'
+    implementation 'com.google.code.gson:gson:2.10.+'
 
     implementation "androidx.core:core-ktx:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
