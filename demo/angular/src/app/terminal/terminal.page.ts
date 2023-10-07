@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {IonicModule} from '@ionic/angular';
+import {IonicModule, Platform} from '@ionic/angular';
 import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
 import {StripeTerminal, TerminalConnectTypes, TerminalEventsEnum} from '@capacitor-community/stripe-terminal';
@@ -144,6 +144,7 @@ export class TerminalPage {
   public terminalConnectTypes = TerminalConnectTypes;
   private readonly listenerHandlers: PluginListenerHandle[] = [];
   constructor(
+    public platform: Platform,
     private http: HttpClient,
     private helper: HelperService,
   ) { }

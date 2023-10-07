@@ -11,11 +11,11 @@
     <ion-item (click)="create('happyPath', terminalConnectTypes.TapToPay)" button="true" detail="true"><ion-label>Expect Happy Path - Tap To Pay</ion-label></ion-item>
     <ion-item (click)="create('happyPath', terminalConnectTypes.Internet)" button="true" detail="true"><ion-label>Expect Happy Path - Internet</ion-label></ion-item>
     <ion-item (click)="create('happyPath', terminalConnectTypes.Bluetooth)" button="true" detail="true"><ion-label>Expect Happy Path - Bluetooth</ion-label></ion-item>
-    <ion-item (click)="create('happyPath', terminalConnectTypes.Usb)" button="true" detail="true"><ion-label>Expect Happy Path - Usb</ion-label></ion-item>
+    <ion-item (click)="create('happyPath', terminalConnectTypes.Usb)" button="true" detail="true" *ngIf="platform.is('android')"><ion-label>Expect Happy Path - Usb</ion-label></ion-item>
     <ion-item-divider><ion-label>Cancel Path</ion-label></ion-item-divider>
     <ion-item (click)="create('cancelPath', terminalConnectTypes.Internet)" button="true" detail="true"><ion-label>Expect Cancel Path - Internet</ion-label></ion-item>
     <ion-item (click)="create('cancelPath', terminalConnectTypes.Bluetooth)" button="true" detail="true"><ion-label>Expect Cancel Path - Bluetooth</ion-label></ion-item>
-    <ion-item (click)="create('cancelPath', terminalConnectTypes.Usb)" button="true" detail="true"><ion-label>Expect Cancel Path - Usb</ion-label></ion-item>
+    <ion-item (click)="create('cancelPath', terminalConnectTypes.Usb)" button="true" detail="true" *ngIf="platform.is('android')"><ion-label>Expect Cancel Path - Usb</ion-label></ion-item>
     <ion-item (click)="checkDiscoverMethod()" button="true" detail="true"><ion-label>checkDiscoverMethod</ion-label></ion-item>
   </ion-list>
 
