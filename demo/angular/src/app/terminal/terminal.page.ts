@@ -197,7 +197,7 @@ export class TerminalPage {
     });
     await this.helper.updateItem(this.eventItems,'HttpClientPaymentIntent', true);
 
-    StripeTerminal.collect({ paymentIntent })
+    await StripeTerminal.collect({ paymentIntent })
       .then(() => this.helper.updateItem(this.eventItems,'collect', true))
       .catch(async (e) => {
         await this.helper.updateItem(this.eventItems,'collect', false);

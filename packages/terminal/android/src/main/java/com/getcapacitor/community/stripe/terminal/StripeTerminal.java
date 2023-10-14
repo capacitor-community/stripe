@@ -56,7 +56,7 @@ public class StripeTerminal extends Executor {
     private List<Reader> readers;
     private String locationId;
     private PluginCall collectCall;
-    private final JSObject emptyObject = this.emptyObject;
+    private final JSObject emptyObject = new JSObject();
     private Boolean isTest;
     private TerminalConnectTypes terminalConnectType;
 
@@ -150,10 +150,10 @@ public class StripeTerminal extends Executor {
 
             int i = 0;
             for (Reader reader : this.readers) {
-                readersJSObject.put(this.emptyObject.put("index", String.valueOf(i)).put("serialNumber", reader.getSerialNumber()));
+                readersJSObject.put(new JSObject().put("index", String.valueOf(i)).put("serialNumber", reader.getSerialNumber()));
             }
-            this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), this.emptyObject.put("readers", readersJSObject));
-            call.resolve(this.emptyObject.put("readers", readersJSObject));
+            this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), new JSObject().put("readers", readersJSObject));
+            call.resolve(new JSObject().put("readers", readersJSObject));
         };
         discoveryCancelable =
                 Terminal.getInstance()
@@ -190,9 +190,9 @@ public class StripeTerminal extends Executor {
     public void getConnectedReader(final PluginCall call) {
         Reader reader = Terminal.getInstance().getConnectedReader();
         if (reader == null) {
-            call.resolve(this.emptyObject.put("reader", JSObject.NULL));
+            call.resolve(new JSObject().put("reader", JSObject.NULL));
         } else {
-            call.resolve(this.emptyObject.put("reader", this.emptyObject.put("serialNumber", reader.getSerialNumber())));
+            call.resolve(new JSObject().put("reader", new JSObject().put("serialNumber", reader.getSerialNumber())));
         }
     }
 
@@ -360,7 +360,7 @@ public class StripeTerminal extends Executor {
                     : pm.getInteracPresentDetails();
 
             if (card != null) {
-                collectCall.resolve(emptyObject
+                collectCall.resolve(new JSObject()
                         .put("brand", card.getBrand())
                         .put("cardholderName", card.getCardholderName())
                         .put("country", card.getCountry())
