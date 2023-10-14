@@ -3,6 +3,10 @@ ext {
     androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.6.1'
     androidxJunitVersion = project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.5'
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.5.1'
+
+    playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
+    stripeAndroidVersion = project.hasProperty('stripeAndroidVersion') ? rootProject.ext.stripeAndroidVersion : '20.32.+'
+    gsonVersion = project.hasProperty('gsonVersion') ? rootProject.ext.gsonVersion : '2.10.+'
 }
 
 buildscript {
@@ -62,16 +66,9 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
-    implementation 'com.stripe:stripe-android:20.28.2'
-    implementation('com.stripe:stripecardscan:20.28.2') {
-        exclude module: 'stripecardscan-tflite'
-        exclude module: 'ml-core-cardscan'
-    }
-
-    implementation 'com.stripe:identity:20.28.2'
-    implementation 'com.google.android.gms:play-services-wallet:19.1.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
-
-    implementation "androidx.core:core-ktx:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation "com.stripe:stripe-android:$stripeAndroidVersion"
+    implementation "com.google.android.gms:play-services-wallet:$playServicesWalletVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
 }

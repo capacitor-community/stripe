@@ -2,9 +2,10 @@ package com.getcapacitor.community.stripe.identity.models;
 
 import android.app.Activity;
 import android.content.Context;
+
 import androidx.core.util.Supplier;
+
 import com.getcapacitor.JSObject;
-import com.getcapacitor.Plugin;
 import com.google.android.gms.common.util.BiConsumer;
 
 public abstract class Executor {

@@ -2,7 +2,7 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate {
+public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate {
 
     weak var plugin: StripeTerminalPlugin?
     var discoverCancelable: Cancelable?
@@ -25,22 +25,26 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         call.resolve()
     }
 
-    func discoverReaders(_ call: CAPPluginCall) {
+    func discoverReaders(_ call: CAPPluginCall) throws {
         let connectType = call.getString("type")
 
         if TerminalConnectTypes.TapToPay.rawValue == connectType {
             self.type = .localMobile
         } else if TerminalConnectTypes.Internet.rawValue == connectType {
             self.type = .internet
+        }  else if TerminalConnectTypes.Bluetooth.rawValue == connectType {
+            self.type = DiscoveryMethod.bluetoothScan
         } else {
             call.unimplemented(connectType! + " is not support now")
             return
         }
 
+        
         let config = DiscoveryConfiguration(
             discoveryMethod: self.type!,
             simulated: self.isTest!
         )
+
         self.discoverCall = call
         self.locationId = call.getString("locationId")
 
@@ -154,6 +158,21 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             }
         }
     }
+    
+    private func connectBluetoothReader(_ call: CAPPluginCall) {
+        let config = BluetoothConnectionConfiguration(locationId: self.locationId!)
+        let reader: JSObject = call.getObject("reader")!
+        let index: Int = reader["index"] as! Int
+
+        Terminal.shared.connectBluetoothReader(self.readers![index], delegate: self, connectionConfig: config) { reader, error in
+            if let reader = reader {
+                self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
+                call.resolve()
+            } else if let error = error {
+                call.reject(error.localizedDescription)
+            }
+        }
+    }
 
     public func collect(_ call: CAPPluginCall) {
         Terminal.shared.retrievePaymentIntent(clientSecret: call.getString("paymentIntent")!) { retrieveResult, retrieveError in
@@ -188,7 +207,10 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
         call.resolve()
     }
+    
 
+    // localMobile
+    
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         // TODO
     }
@@ -206,6 +228,33 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
+        // TODO
+    }
+    
+    
+    // bluetooth
+    
+    public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
+        // TODO
+    }
+    
+    public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+        // TODO
+    }
+    
+    public func reader(_: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
+        // TODO
+    }
+    
+    public func reader(_: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
+        // TODO
+    }
+    
+    public func reader(_: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
+        // TODO
+    }
+    
+    public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         // TODO
     }
 }

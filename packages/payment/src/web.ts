@@ -8,11 +8,9 @@ import type {
   ApplePayResultInterface,
   CreateApplePayOption,
   CreateGooglePayOption,
-  CreateIdentityVerificationSheetOption,
   CreatePaymentFlowOption,
   CreatePaymentSheetOption,
   GooglePayResultInterface,
-  IdentityVerificationSheetResultInterface,
   PaymentFlowResultInterface,
   PaymentSheetResultInterface,
   StripeInitializationOptions,
@@ -55,17 +53,6 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     if (options.stripeAccount) {
       this.stripeAccount = options.stripeAccount;
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async createIdentityVerificationSheet(_options: CreateIdentityVerificationSheetOption): Promise<void> {
-    // TODO: what is web.ts for?
-  }
-
-  presentIdentityVerificationSheet(): Promise<{
-    identityVerificationResult: IdentityVerificationSheetResultInterface;
-  }> {
-    throw new Error('Method not implemented.');
   }
 
   async createPaymentSheet(options: CreatePaymentSheetOption): Promise<void> {

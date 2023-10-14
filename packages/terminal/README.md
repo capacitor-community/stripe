@@ -24,11 +24,11 @@ npx cap sync
 Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 
 ```diff
-+ <uses-permission android:name="android.permission.BLUETOOTH" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
++ <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
++ <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
++ <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 + <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
++ <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 ```
 
 If used in conjunction with the `@capacitor-community/stripe` plugin, the following settings may be necessary
@@ -42,6 +42,35 @@ android {
 +    resources.excludes.add("org/bouncycastle/x509/*")
 +  }
 }
+```
+
+And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/build.gradle` file:
+
+```diff
+  ext {
+-    minSdkVersion = 22
+-    compileSdkVersion = 33
++    minSdkVersion = 26
++    compileSdkVersion = 34
+```
+
+## Usage
+
+```typescript
+(async ()=> {
+  /**
+   * tokenProviderEndpoint: The URL of your backend to provide a token. Use Post request to get a token.
+   */
+  await StripeTerminal.initialize({ tokenProviderEndpoint: 'https://example.com/token', isTest: true })
+  const { readers } = await StripeTerminal.discoverReaders({
+    type: TerminalConnectTypes.TapToPay,
+    locationId: "**************",
+  });
+  await StripeTerminal.connectReader({
+    reader: readers[0],
+  });
+  await StripeTerminal.collect({ paymentIntent: "**************" });
+});
 ```
 
 ## API
