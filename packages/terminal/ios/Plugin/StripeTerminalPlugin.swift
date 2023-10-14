@@ -22,7 +22,11 @@ public class StripeTerminalPlugin: CAPPlugin {
     }
 
     @objc func discoverReaders(_ call: CAPPluginCall) {
-        self.implementation.discoverReaders(call)
+        do {
+            try self.implementation.discoverReaders(call)
+        } catch {
+            call.reject("discoverReaders throw error.")
+        }
     }
 
     @objc func cancelDiscoverReaders(_ call: CAPPluginCall) {
