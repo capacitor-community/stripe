@@ -32,7 +32,31 @@ export interface CreatePaymentFlowOption extends BasePaymentOption {
   setupIntentClientSecret?: string;
 }
 
+/**
+ * Billing details collection options.
+ */
+export type AddressCollectionMode = 'automatic' | 'full';
+
+/**
+ * Billing details collection options.
+ */
+export type CollectionMode = 'automatic' | 'always';
+
+interface BillingDetailsCollectionConfiguration {
+  /**
+   * Configuration for how billing details are collected during checkout.
+   */
+  email?: CollectionMode,
+  name?: CollectionMode,
+  phone?: CollectionMode,
+  address?: AddressCollectionMode
+}
+
 export interface BasePaymentOption {
+  /**
+   * Optional billingDetailsCollectionConfiguration
+   */
+  billingDetailsCollectionConfiguration?: BillingDetailsCollectionConfiguration;
 
   /**
    * Any documentation call 'ephemeralKey'
