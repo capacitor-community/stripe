@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/demo/angular/android" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/demo/angular/android" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/demo/react/android" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/demo/react/android" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/packages/identity/android" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/packages/identity/android" />
+            <option value="$PROJECT_DIR$/packages/identity/node_modules/@capacitor/android/capacitor" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/packages/payment/android" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/packages/payment/android" />
+            <option value="$PROJECT_DIR$/packages/payment/node_modules/@capacitor/android/capacitor" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/packages/terminal/android" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/packages/terminal/android" />
+            <option value="$PROJECT_DIR$/packages/terminal/node_modules/@capacitor/android/capacitor" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

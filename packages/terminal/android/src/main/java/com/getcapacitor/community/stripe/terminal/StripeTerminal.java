@@ -24,6 +24,7 @@ import com.stripe.stripeterminal.external.callable.Callback;
 import com.stripe.stripeterminal.external.callable.Cancelable;
 import com.stripe.stripeterminal.external.callable.DiscoveryListener;
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback;
+import com.stripe.stripeterminal.external.callable.SetupIntentCallback;
 import com.stripe.stripeterminal.external.callable.ReaderCallback;
 import com.stripe.stripeterminal.external.callable.ReaderListener;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
@@ -36,6 +37,7 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConn
 import com.stripe.stripeterminal.external.models.ConnectionStatus;
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
+import com.stripe.stripeterminal.external.models.SetupIntent;
 import com.stripe.stripeterminal.external.models.PaymentMethod;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
 import com.stripe.stripeterminal.external.models.Reader;
@@ -52,10 +54,11 @@ import java.util.Objects;
 public class StripeTerminal extends Executor {
 
     private Cancelable discoveryCancelable;
-    private Cancelable collectCancelable;
+    private Cancelable collectPaymentCancelable;
     private List<Reader> readers;
     private String locationId;
-    private PluginCall collectCall;
+    private PluginCall collectPaymentCall;
+    private PluginCall collectPaymentMethodCall;
     private final JSObject emptyObject = new JSObject();
     private Boolean isTest;
     private TerminalConnectTypes terminalConnectType;
@@ -299,26 +302,64 @@ public class StripeTerminal extends Executor {
         }
     }
 
-    public void collect(final PluginCall call) {
+    public void collectPaymentMethod(final PluginCall call) {
+        if (call.getString("setupIntent") == null) {
+            call.reject("The value of setupIntent is not set correctly.");
+            return;
+        }
+        this.collectPaymentMethodCall = call;
+        // Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"), createPaymentIntentCallback);
+        Terminal.getInstance().collectSetupIntentPaymentMethod(call.getString("setupIntent"), true, collectSetupIntentPaymentMethodCallback);
+
+    }
+
+    private final SetupIntentCallback collectSetupIntentPaymentMethodCallback = new SetupIntentCallback() {
+        @Override
+        public void onSuccess(@NonNull SetupIntent setupIntent) {
+            Terminal.getInstance().confirmSetupIntent(setupIntent, confirmSetupIntentCallback);
+        }
+
+        @Override
+        public void onFailure(@NonNull TerminalException ex) {
+            notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
+            collectPaymentMethodCall.reject(ex.getLocalizedMessage(), ex);
+        }
+    };
+
+    private final SetupIntentCallback confirmSetupIntentCallback = new SetupIntentCallback() {
+        @Override
+        public void onSuccess(@NonNull SetupIntent setupIntent) {
+            this.collectPaymentMethodCall.resolve()
+            notifyListeners(TerminalEnumEvent.Completed.getWebEventName(), emptyObject);
+        }
+
+        @Override
+        public void onFailure(@NonNull TerminalException ex) {
+            notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
+            collectPaymentMethodCall.reject(ex.getLocalizedMessage(), ex);
+        }
+    };
+
+    public void collectPayment(final PluginCall call) {
         if (call.getString("paymentIntent") == null) {
             call.reject("The value of paymentIntent is not set correctly.");
             return;
         }
-        this.collectCall = call;
+        this.collectPaymentCall = call;
         Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"), createPaymentIntentCallback);
     }
 
     public void cancelCollect(final PluginCall call) {
-        if (this.collectCancelable == null || this.collectCancelable.isCompleted()) {
+        if (this.collectPaymentCancelable == null || this.collectPaymentCancelable.isCompleted()) {
             call.resolve();
             return;
         }
 
-        this.collectCancelable.cancel(
+        this.collectPaymentCancelable.cancel(
                 new Callback() {
                     @Override
                     public void onSuccess() {
-                        collectCancelable = null;
+                        collectPaymentCancelable = null;
                         notifyListeners(TerminalEnumEvent.Canceled.getWebEventName(), emptyObject);
                         call.resolve();
                     }
@@ -337,13 +378,13 @@ public class StripeTerminal extends Executor {
             CollectConfiguration collectConfig = new CollectConfiguration.Builder()
                     .updatePaymentIntent(true)
                     .build();
-            collectCancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, collectPaymentMethodCallback, collectConfig);
+            collectPaymentCancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, collectPaymentMethodCallback, collectConfig);
         }
 
         @Override
         public void onFailure(@NonNull TerminalException ex) {
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
-            collectCall.reject(ex.getLocalizedMessage(), ex);
+            collectPaymentCall.reject(ex.getLocalizedMessage(), ex);
         }
     };
 
@@ -351,7 +392,7 @@ public class StripeTerminal extends Executor {
     private final PaymentIntentCallback collectPaymentMethodCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
-            collectCancelable = null;
+            collectPaymentCancelable = null;
             notifyListeners(TerminalEnumEvent.Completed.getWebEventName(), emptyObject);
 
             PaymentMethod pm = paymentIntent.getPaymentMethod();
@@ -360,7 +401,7 @@ public class StripeTerminal extends Executor {
                     : pm.getInteracPresentDetails();
 
             if (card != null) {
-                collectCall.resolve(new JSObject()
+                collectPaymentCall.resolve(new JSObject()
                         .put("brand", card.getBrand())
                         .put("cardholderName", card.getCardholderName())
                         .put("country", card.getCountry())
@@ -376,15 +417,15 @@ public class StripeTerminal extends Executor {
 
                 );
             } else {
-                collectCall.resolve();
+                collectPaymentCall.resolve();
             }
         }
 
         @Override
         public void onFailure(@NonNull TerminalException ex) {
-            collectCancelable = null;
+            collectPaymentCancelable = null;
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
-            collectCall.reject(ex.getLocalizedMessage(), ex);
+            collectPaymentCall.reject(ex.getLocalizedMessage(), ex);
         }
     };
 
