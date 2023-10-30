@@ -669,40 +669,52 @@ iOS Only
 
 #### CreatePaymentFlowOption
 
-| Prop                             | Type                                       | Description                                                                                      | Default                 |
-| -------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------- |
-| **`paymentIntentClientSecret`**  | <code>string</code>                        | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`setupIntentClientSecret`**    | <code>string</code>                        | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`customerEphemeralKeySecret`** | <code>string</code>                        | Any documentation call 'ephemeralKey'                                                            |                         |
-| **`customerId`**                 | <code>string</code>                        | Any documentation call 'customer'                                                                |                         |
-| **`enableApplePay`**             | <code>boolean</code>                       | If you set payment method ApplePay, this set true                                                | <code>false</code>      |
-| **`applePayMerchantId`**         | <code>string</code>                        | If set enableApplePay false, Plugin ignore here.                                                 |                         |
-| **`enableGooglePay`**            | <code>boolean</code>                       | If you set payment method GooglePay, this set true                                               | <code>false</code>      |
-| **`GooglePayIsTesting`**         | <code>boolean</code>                       |                                                                                                  | <code>false,</code>     |
-| **`countryCode`**                | <code>string</code>                        | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here. | <code>"US"</code>       |
-| **`merchantDisplayName`**        | <code>string</code>                        |                                                                                                  | <code>"App Name"</code> |
-| **`returnURL`**                  | <code>string</code>                        |                                                                                                  | <code>""</code>         |
-| **`style`**                      | <code>'alwaysLight' \| 'alwaysDark'</code> | iOS Only                                                                                         | <code>undefined</code>  |
-| **`withZipCode`**                | <code>boolean</code>                       | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
+| Prop                                        | Type                                                                                                    | Description                                                                                      | Default                 |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------- |
+| **`paymentIntentClientSecret`**             | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
+| **`setupIntentClientSecret`**               | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
+| **`billingDetailsCollectionConfiguration`** | <code><a href="#billingdetailscollectionconfiguration">BillingDetailsCollectionConfiguration</a></code> | Optional billingDetailsCollectionConfiguration                                                   |                         |
+| **`customerEphemeralKeySecret`**            | <code>string</code>                                                                                     | Any documentation call 'ephemeralKey'                                                            |                         |
+| **`customerId`**                            | <code>string</code>                                                                                     | Any documentation call 'customer'                                                                |                         |
+| **`enableApplePay`**                        | <code>boolean</code>                                                                                    | If you set payment method ApplePay, this set true                                                | <code>false</code>      |
+| **`applePayMerchantId`**                    | <code>string</code>                                                                                     | If set enableApplePay false, Plugin ignore here.                                                 |                         |
+| **`enableGooglePay`**                       | <code>boolean</code>                                                                                    | If you set payment method GooglePay, this set true                                               | <code>false</code>      |
+| **`GooglePayIsTesting`**                    | <code>boolean</code>                                                                                    |                                                                                                  | <code>false,</code>     |
+| **`countryCode`**                           | <code>string</code>                                                                                     | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here. | <code>"US"</code>       |
+| **`merchantDisplayName`**                   | <code>string</code>                                                                                     |                                                                                                  | <code>"App Name"</code> |
+| **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                  | <code>""</code>         |
+| **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                         | <code>undefined</code>  |
+| **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
+
+
+#### BillingDetailsCollectionConfiguration
+
+| Prop          | Type                                                                    | Description                                                          |
+| ------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **`email`**   | <code><a href="#collectionmode">CollectionMode</a></code>               | Configuration for how billing details are collected during checkout. |
+| **`name`**    | <code><a href="#collectionmode">CollectionMode</a></code>               |                                                                      |
+| **`phone`**   | <code><a href="#collectionmode">CollectionMode</a></code>               |                                                                      |
+| **`address`** | <code><a href="#addresscollectionmode">AddressCollectionMode</a></code> |                                                                      |
 
 
 #### CreatePaymentSheetOption
 
-| Prop                             | Type                                       | Description                                                                                      | Default                 |
-| -------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------- |
-| **`paymentIntentClientSecret`**  | <code>string</code>                        | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`setupIntentClientSecret`**    | <code>string</code>                        | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`customerEphemeralKeySecret`** | <code>string</code>                        | Any documentation call 'ephemeralKey'                                                            |                         |
-| **`customerId`**                 | <code>string</code>                        | Any documentation call 'customer'                                                                |                         |
-| **`enableApplePay`**             | <code>boolean</code>                       | If you set payment method ApplePay, this set true                                                | <code>false</code>      |
-| **`applePayMerchantId`**         | <code>string</code>                        | If set enableApplePay false, Plugin ignore here.                                                 |                         |
-| **`enableGooglePay`**            | <code>boolean</code>                       | If you set payment method GooglePay, this set true                                               | <code>false</code>      |
-| **`GooglePayIsTesting`**         | <code>boolean</code>                       |                                                                                                  | <code>false,</code>     |
-| **`countryCode`**                | <code>string</code>                        | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here. | <code>"US"</code>       |
-| **`merchantDisplayName`**        | <code>string</code>                        |                                                                                                  | <code>"App Name"</code> |
-| **`returnURL`**                  | <code>string</code>                        |                                                                                                  | <code>""</code>         |
-| **`style`**                      | <code>'alwaysLight' \| 'alwaysDark'</code> | iOS Only                                                                                         | <code>undefined</code>  |
-| **`withZipCode`**                | <code>boolean</code>                       | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
+| Prop                                        | Type                                                                                                    | Description                                                                                      | Default                 |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------- |
+| **`paymentIntentClientSecret`**             | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
+| **`setupIntentClientSecret`**               | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
+| **`billingDetailsCollectionConfiguration`** | <code><a href="#billingdetailscollectionconfiguration">BillingDetailsCollectionConfiguration</a></code> | Optional billingDetailsCollectionConfiguration                                                   |                         |
+| **`customerEphemeralKeySecret`**            | <code>string</code>                                                                                     | Any documentation call 'ephemeralKey'                                                            |                         |
+| **`customerId`**                            | <code>string</code>                                                                                     | Any documentation call 'customer'                                                                |                         |
+| **`enableApplePay`**                        | <code>boolean</code>                                                                                    | If you set payment method ApplePay, this set true                                                | <code>false</code>      |
+| **`applePayMerchantId`**                    | <code>string</code>                                                                                     | If set enableApplePay false, Plugin ignore here.                                                 |                         |
+| **`enableGooglePay`**                       | <code>boolean</code>                                                                                    | If you set payment method GooglePay, this set true                                               | <code>false</code>      |
+| **`GooglePayIsTesting`**                    | <code>boolean</code>                                                                                    |                                                                                                  | <code>false,</code>     |
+| **`countryCode`**                           | <code>string</code>                                                                                     | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here. | <code>"US"</code>       |
+| **`merchantDisplayName`**                   | <code>string</code>                                                                                     |                                                                                                  | <code>"App Name"</code> |
+| **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                  | <code>""</code>         |
+| **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                         | <code>undefined</code>  |
+| **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
 
 
 #### StripeInitializationOptions
@@ -748,6 +760,20 @@ iOS Only
 #### GooglePayResultInterface
 
 <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a> | <a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code>
+
+
+#### CollectionMode
+
+Billing details collection options.
+
+<code>'automatic' | 'always'</code>
+
+
+#### AddressCollectionMode
+
+Billing details collection options.
+
+<code>'automatic' | 'full'</code>
 
 
 #### PaymentFlowResultInterface
