@@ -1,13 +1,19 @@
-<p align="center"><br><img src="https://user-images.githubusercontent.com/236501/85893648-1c92e880-b7a8-11ea-926d-95355b8175c7.png" width="128" height="128" /></p>
+<p align="center">
+<br>
+<img src="https://user-images.githubusercontent.com/236501/85893648-1c92e880-b7a8-11ea-926d-95355b8175c7.png" width="128" height="128" /> 
+<img src="https://cdn1.iconfinder.com/data/icons/basic-ui-elements-28/512/1034_Add_new_plus_sign-512.png" width="128" height="128">
+<img src="https://avatars.githubusercontent.com/u/61980303?s=96&v=4" width="128" height="128" >
+</p>
 
-<h3 align="center">Stripe</h3>
+<h3 align="center">VendPark Capacitor Stripe</h3>
 <p align="center">
   VendPark fork of the Capacitor community plugin for native Stripe.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/maintenance/yes/2023?style=flat-square" />
-  <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/l/@capacitor-community/stripe?style=flat-square" /></a>
+<img src="https://img.shields.io/npm/l/@capacitor-community/stripe?style=flat-square" /></a>
+<img src="https://github.com/vendpark/capacitor-stripe/actions/workflows/build.yml/badge.svg?branch=main">
 </p>
 
 ## packages

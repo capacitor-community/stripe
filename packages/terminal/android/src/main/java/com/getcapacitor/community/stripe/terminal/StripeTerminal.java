@@ -329,7 +329,7 @@ public class StripeTerminal extends Executor {
     private final SetupIntentCallback confirmSetupIntentCallback = new SetupIntentCallback() {
         @Override
         public void onSuccess(@NonNull SetupIntent setupIntent) {
-            this.collectPaymentMethodCall.resolve()
+            this.collectPaymentMethodCall.resolve();
             notifyListeners(TerminalEnumEvent.Completed.getWebEventName(), emptyObject);
         }
 
