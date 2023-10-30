@@ -1,6 +1,6 @@
 {
   "name": "@vendpark/stripe-terminal",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
