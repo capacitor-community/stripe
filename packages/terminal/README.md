@@ -11,7 +11,7 @@ We have confirmed that it works well in the demo project. Please refer to https:
 ## Install
 
 ```bash
-npm install @cvendpark/stripe-terminal
+npm install @vendpark/stripe-terminal
 npx cap sync
 ```
 
