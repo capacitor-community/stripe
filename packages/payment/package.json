@@ -1,6 +1,6 @@
 {
   "name": "@vendpark/stripe-payment",
-  "version": "7.0.3",
+  "version": "7.0.4",
   "engines": {
     "node": ">=16.0.0"
   },
