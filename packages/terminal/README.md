@@ -80,23 +80,23 @@ async () => {
 
 <docgen-index>
 
-- [`initialize(...)`](#initialize)
-- [`discoverReaders(...)`](#discoverreaders)
-- [`connectReader(...)`](#connectreader)
-- [`getConnectedReader()`](#getconnectedreader)
-- [`disconnectReader()`](#disconnectreader)
-- [`cancelDiscoverReaders()`](#canceldiscoverreaders)
-- [`collect(...)`](#collect)
-- [`cancelCollect()`](#cancelcollect)
-- [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
-- [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
-- [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
-- [`addListener(TerminalEventsEnum.Completed, ...)`](#addlistenerterminaleventsenumcompleted)
-- [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
-- [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
-- [Interfaces](#interfaces)
-- [Type Aliases](#type-aliases)
-- [Enums](#enums)
+* [`initialize(...)`](#initialize)
+* [`discoverReaders(...)`](#discoverreaders)
+* [`connectReader(...)`](#connectreader)
+* [`getConnectedReader()`](#getconnectedreader)
+* [`disconnectReader()`](#disconnectreader)
+* [`cancelDiscoverReaders()`](#canceldiscoverreaders)
+* [`collect(...)`](#collect)
+* [`cancelCollect()`](#cancelcollect)
+* [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
+* [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
+* [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
+* [`addListener(TerminalEventsEnum.Completed, ...)`](#addlistenerterminaleventsenumcompleted)
+* [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
+* [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
+* [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -113,7 +113,8 @@ initialize(options: { tokenProviderEndpoint: string; isTest: boolean; }) => Prom
 | ------------- | ---------------------------------------------------------------- |
 | **`options`** | <code>{ tokenProviderEndpoint: string; isTest: boolean; }</code> |
 
----
+--------------------
+
 
 ### discoverReaders(...)
 
@@ -127,7 +128,8 @@ discoverReaders(options: { type: TerminalConnectTypes; locationId?: string; }) =
 
 **Returns:** <code>Promise&lt;{ readers: ReaderInterface[]; }&gt;</code>
 
----
+--------------------
+
 
 ### connectReader(...)
 
@@ -139,7 +141,8 @@ connectReader(options: { reader: ReaderInterface; }) => Promise<void>
 | ------------- | ------------------------------------------------------------------------ |
 | **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; }</code> |
 
----
+--------------------
+
 
 ### getConnectedReader()
 
@@ -149,7 +152,8 @@ getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
 
 **Returns:** <code>Promise&lt;{ reader: <a href="#readerinterface">ReaderInterface</a> | null; }&gt;</code>
 
----
+--------------------
+
 
 ### disconnectReader()
 
@@ -157,7 +161,8 @@ getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
 disconnectReader() => Promise<void>
 ```
 
----
+--------------------
+
 
 ### cancelDiscoverReaders()
 
@@ -165,7 +170,8 @@ disconnectReader() => Promise<void>
 cancelDiscoverReaders() => Promise<void>
 ```
 
----
+--------------------
+
 
 ### collect(...)
 
@@ -177,7 +183,8 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 | ------------- | --------------------------------------- |
 | **`options`** | <code>{ paymentIntent: string; }</code> |
 
----
+--------------------
+
 
 ### cancelCollect()
 
@@ -185,7 +192,8 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 cancelCollect() => Promise<void>
 ```
 
----
+--------------------
+
 
 ### addListener(TerminalEventsEnum.Loaded, ...)
 
@@ -200,7 +208,8 @@ addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => P
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(TerminalEventsEnum.DiscoveredReaders, ...)
 
@@ -215,7 +224,8 @@ addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () =>
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(TerminalEventsEnum.ConnectedReader, ...)
 
@@ -230,7 +240,8 @@ addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => v
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(TerminalEventsEnum.Completed, ...)
 
@@ -245,7 +256,8 @@ addListener(eventName: TerminalEventsEnum.Completed, listenerFunc: () => void) =
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(TerminalEventsEnum.Canceled, ...)
 
@@ -260,7 +272,8 @@ addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void) =>
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(TerminalEventsEnum.Failed, ...)
 
@@ -275,9 +288,11 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### Interfaces
+
 
 #### PluginListenerHandle
 
@@ -285,13 +300,17 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
+
 ### Type Aliases
+
 
 #### ReaderInterface
 
 <code>{ index: number; serialNumber: string; }</code>
 
+
 ### Enums
+
 
 #### TerminalConnectTypes
 
@@ -302,6 +321,7 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | **`Bluetooth`** | <code>'bluetooth'</code>  |
 | **`Usb`**       | <code>'usb'</code>        |
 | **`TapToPay`**  | <code>'tap-to-pay'</code> |
+
 
 #### TerminalEventsEnum
 

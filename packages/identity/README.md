@@ -44,16 +44,16 @@ const result = await StripeIdentity.present();
 
 <docgen-index>
 
-- [`create(...)`](#create)
-- [`present()`](#present)
-- [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded)
-- [`addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)`](#addlisteneridentityverificationsheeteventsenumfailedtoload)
-- [`addListener(IdentityVerificationSheetEventsEnum.Completed, ...)`](#addlisteneridentityverificationsheeteventsenumcompleted)
-- [`addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)`](#addlisteneridentityverificationsheeteventsenumcanceled)
-- [`addListener(IdentityVerificationSheetEventsEnum.Failed, ...)`](#addlisteneridentityverificationsheeteventsenumfailed)
-- [Interfaces](#interfaces)
-- [Type Aliases](#type-aliases)
-- [Enums](#enums)
+* [`create(...)`](#create)
+* [`present()`](#present)
+* [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded)
+* [`addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)`](#addlisteneridentityverificationsheeteventsenumfailedtoload)
+* [`addListener(IdentityVerificationSheetEventsEnum.Completed, ...)`](#addlisteneridentityverificationsheeteventsenumcompleted)
+* [`addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)`](#addlisteneridentityverificationsheeteventsenumcanceled)
+* [`addListener(IdentityVerificationSheetEventsEnum.Failed, ...)`](#addlisteneridentityverificationsheeteventsenumfailed)
+* [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -70,7 +70,8 @@ create(options: CreateIdentityVerificationSheetOption) => Promise<void>
 | ------------- | ------------------------------------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#createidentityverificationsheetoption">CreateIdentityVerificationSheetOption</a></code> |
 
----
+--------------------
+
 
 ### present()
 
@@ -80,7 +81,8 @@ present() => Promise<{ identityVerificationResult: IdentityVerificationSheetResu
 
 **Returns:** <code>Promise&lt;{ identityVerificationResult: <a href="#identityverificationsheetresultinterface">IdentityVerificationSheetResultInterface</a>; }&gt;</code>
 
----
+--------------------
+
 
 ### addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)
 
@@ -95,7 +97,8 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Loaded, listenerFunc:
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)
 
@@ -110,7 +113,8 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.FailedToLoad, listene
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(IdentityVerificationSheetEventsEnum.Completed, ...)
 
@@ -125,7 +129,8 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Completed, listenerFu
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)
 
@@ -140,7 +145,8 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Canceled, listenerFun
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### addListener(IdentityVerificationSheetEventsEnum.Failed, ...)
 
@@ -155,9 +161,11 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
----
+--------------------
+
 
 ### Interfaces
+
 
 #### CreateIdentityVerificationSheetOption
 
@@ -166,19 +174,24 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 | **`verificationId`**     | <code>string</code> |
 | **`ephemeralKeySecret`** | <code>string</code> |
 
+
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
+
 ### Type Aliases
+
 
 #### IdentityVerificationSheetResultInterface
 
 <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Completed</a> | <a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Canceled</a> | <a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Failed</a></code>
 
+
 ### Enums
+
 
 #### IdentityVerificationSheetEventsEnum
 
