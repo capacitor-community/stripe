@@ -62,6 +62,25 @@ class PaymentSheetExecutor: NSObject {
             configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
         }
 
+        let billingDetailsCollectionConfiguration = call.getObject("billingDetailsCollectionConfiguration") ?? nil
+        if billingDetailsCollectionConfiguration != nil {
+            billingDetailsCollectionConfiguration?.forEach({ (key: String, value: JSValue) in
+                let val: String = value as? String ?? "automatic"
+                switch key {
+                case "email":
+                    configuration.billingDetailsCollectionConfiguration.email = getCollectionModeValue(mode: val)
+                case "name":
+                    configuration.billingDetailsCollectionConfiguration.name = getCollectionModeValue(mode: val)
+                case "phone":
+                    configuration.billingDetailsCollectionConfiguration.phone = getCollectionModeValue(mode: val)
+                case "address":
+                    configuration.billingDetailsCollectionConfiguration.address = getAddressCollectionModeValue(mode: val)
+                default:
+                    return
+                }
+            })
+        }
+
         if setupIntentClientSecret != nil {
             self.paymentSheet = PaymentSheet(setupIntentClientSecret: setupIntentClientSecret!, configuration: configuration)
         } else {
@@ -90,6 +109,24 @@ class PaymentSheetExecutor: NSObject {
                     }
                 }
             }
+        }
+    }
+
+    func getCollectionModeValue(mode: String) -> PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode {
+        switch mode {
+        case "always":
+            return .always
+        default:
+            return .automatic
+        }
+    }
+
+    func getAddressCollectionModeValue(mode: String) -> PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode {
+        switch mode {
+        case "full":
+            return .full
+        default:
+            return .automatic
         }
     }
 }
