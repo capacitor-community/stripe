@@ -1,5 +1,5 @@
 {
-  "name": "@capacitor-community/stripe-terminal",
+  "name": "@vendpark/stripe-terminal",
   "version": "6.0.2",
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
@@ -13,14 +13,17 @@
     "ios/Plugin/",
     "CapacitorCommunityStripeTerminal.podspec"
   ],
-  "author": "Masahiko Sakakibara",
+  "author": "Isaiah Moran",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/capacitor-community/stripe.git"
+    "url": "git+https://github.com/vendpark/capacitor-stripe.git"
   },
   "bugs": {
-    "url": "https://github.com/capacitor-community/stripe/issues"
+    "url": "https://github.com/vendpark/capacitor-stripe/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/vendpark"
   },
   "keywords": [
     "capacitor",

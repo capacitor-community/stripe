@@ -1,5 +1,5 @@
 {
-  "name": "@capacitor-community/stripe-identity",
+  "name": "@vendpark/capacitor-stripe",
   "version": "6.0.2",
   "engines": {
     "node": ">=16.0.0"
@@ -16,14 +16,17 @@
     "ios/Plugin/",
     "CapacitorCommunityStripeIdentity.podspec"
   ],
-  "author": "Masahiko Sakakibara",
+  "author": "Isaiah Moran",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/capacitor-community/stripe.git"
+    "url": "git+https://github.com/vendpark/capacitor-stripe.git"
   },
   "bugs": {
-    "url": "https://github.com/capacitor-community/stripe/issues"
+    "url": "https://github.com/vendpark/capacitor-stripe/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/vendpark"
   },
   "keywords": [
     "capacitor",
