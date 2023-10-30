@@ -1,7 +1,7 @@
-# @capacitor-community/stripe-terminal
+# @vendpark/stripe-terminal
 
-Stripe SDK bindings for Capacitor Applications. __This plugin is still in beta.__
-We have confirmed that it works well in the demo project. Please refer to https://github.com/capacitor-community/stripe/tree/main/demo/angular for the implementation.
+Stripe SDK bindings for Capacitor Applications. **This plugin is still in beta.**
+We have confirmed that it works well in the demo project. Please refer to https://github.com/vendpark/capacitor-stripe/tree/main/demo/angular for the implementation.
 
 - [x] Tap To Pay
 - [x] Internet
@@ -11,7 +11,7 @@ We have confirmed that it works well in the demo project. Please refer to https:
 ## Install
 
 ```bash
-npm install @capacitor-community/stripe-terminal
+npm install @cvendpark/stripe-terminal
 npx cap sync
 ```
 
@@ -57,43 +57,46 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 ## Usage
 
 ```typescript
-(async ()=> {
+async () => {
   /**
    * tokenProviderEndpoint: The URL of your backend to provide a token. Use Post request to get a token.
    */
-  await StripeTerminal.initialize({ tokenProviderEndpoint: 'https://example.com/token', isTest: true })
+  await StripeTerminal.initialize({
+    tokenProviderEndpoint: 'https://example.com/token',
+    isTest: true,
+  });
   const { readers } = await StripeTerminal.discoverReaders({
     type: TerminalConnectTypes.TapToPay,
-    locationId: "**************",
+    locationId: '**************',
   });
   await StripeTerminal.connectReader({
     reader: readers[0],
   });
-  await StripeTerminal.collect({ paymentIntent: "**************" });
-});
+  await StripeTerminal.collect({ paymentIntent: '**************' });
+};
 ```
 
 ## API
 
 <docgen-index>
 
-* [`initialize(...)`](#initialize)
-* [`discoverReaders(...)`](#discoverreaders)
-* [`connectReader(...)`](#connectreader)
-* [`getConnectedReader()`](#getconnectedreader)
-* [`disconnectReader()`](#disconnectreader)
-* [`cancelDiscoverReaders()`](#canceldiscoverreaders)
-* [`collect(...)`](#collect)
-* [`cancelCollect()`](#cancelcollect)
-* [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
-* [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
-* [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
-* [`addListener(TerminalEventsEnum.Completed, ...)`](#addlistenerterminaleventsenumcompleted)
-* [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
-* [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
-* [Interfaces](#interfaces)
-* [Type Aliases](#type-aliases)
-* [Enums](#enums)
+- [`initialize(...)`](#initialize)
+- [`discoverReaders(...)`](#discoverreaders)
+- [`connectReader(...)`](#connectreader)
+- [`getConnectedReader()`](#getconnectedreader)
+- [`disconnectReader()`](#disconnectreader)
+- [`cancelDiscoverReaders()`](#canceldiscoverreaders)
+- [`collect(...)`](#collect)
+- [`cancelCollect()`](#cancelcollect)
+- [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
+- [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
+- [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
+- [`addListener(TerminalEventsEnum.Completed, ...)`](#addlistenerterminaleventsenumcompleted)
+- [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
+- [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
+- [Interfaces](#interfaces)
+- [Type Aliases](#type-aliases)
+- [Enums](#enums)
 
 </docgen-index>
 
@@ -110,8 +113,7 @@ initialize(options: { tokenProviderEndpoint: string; isTest: boolean; }) => Prom
 | ------------- | ---------------------------------------------------------------- |
 | **`options`** | <code>{ tokenProviderEndpoint: string; isTest: boolean; }</code> |
 
---------------------
-
+---
 
 ### discoverReaders(...)
 
@@ -125,8 +127,7 @@ discoverReaders(options: { type: TerminalConnectTypes; locationId?: string; }) =
 
 **Returns:** <code>Promise&lt;{ readers: ReaderInterface[]; }&gt;</code>
 
---------------------
-
+---
 
 ### connectReader(...)
 
@@ -138,8 +139,7 @@ connectReader(options: { reader: ReaderInterface; }) => Promise<void>
 | ------------- | ------------------------------------------------------------------------ |
 | **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; }</code> |
 
---------------------
-
+---
 
 ### getConnectedReader()
 
@@ -149,8 +149,7 @@ getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
 
 **Returns:** <code>Promise&lt;{ reader: <a href="#readerinterface">ReaderInterface</a> | null; }&gt;</code>
 
---------------------
-
+---
 
 ### disconnectReader()
 
@@ -158,8 +157,7 @@ getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
 disconnectReader() => Promise<void>
 ```
 
---------------------
-
+---
 
 ### cancelDiscoverReaders()
 
@@ -167,8 +165,7 @@ disconnectReader() => Promise<void>
 cancelDiscoverReaders() => Promise<void>
 ```
 
---------------------
-
+---
 
 ### collect(...)
 
@@ -180,8 +177,7 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 | ------------- | --------------------------------------- |
 | **`options`** | <code>{ paymentIntent: string; }</code> |
 
---------------------
-
+---
 
 ### cancelCollect()
 
@@ -189,8 +185,7 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 cancelCollect() => Promise<void>
 ```
 
---------------------
-
+---
 
 ### addListener(TerminalEventsEnum.Loaded, ...)
 
@@ -205,8 +200,7 @@ addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => P
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(TerminalEventsEnum.DiscoveredReaders, ...)
 
@@ -221,8 +215,7 @@ addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () =>
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(TerminalEventsEnum.ConnectedReader, ...)
 
@@ -237,8 +230,7 @@ addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => v
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(TerminalEventsEnum.Completed, ...)
 
@@ -253,8 +245,7 @@ addListener(eventName: TerminalEventsEnum.Completed, listenerFunc: () => void) =
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(TerminalEventsEnum.Canceled, ...)
 
@@ -269,8 +260,7 @@ addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void) =>
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(TerminalEventsEnum.Failed, ...)
 
@@ -285,11 +275,9 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### Interfaces
-
 
 #### PluginListenerHandle
 
@@ -297,17 +285,13 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
-
 ### Type Aliases
-
 
 #### ReaderInterface
 
 <code>{ index: number; serialNumber: string; }</code>
 
-
 ### Enums
-
 
 #### TerminalConnectTypes
 
@@ -318,7 +302,6 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | **`Bluetooth`** | <code>'bluetooth'</code>  |
 | **`Usb`**       | <code>'usb'</code>        |
 | **`TapToPay`**  | <code>'tap-to-pay'</code> |
-
 
 #### TerminalEventsEnum
 

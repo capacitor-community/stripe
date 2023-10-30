@@ -1,11 +1,11 @@
-# @capacitor-community/stripe-identity
+# @vendpark/stripe-identity
 
 Stripe Identity SDK bindings for Capacitor Applications.
 
 ## Install
 
 ```bash
-npm install @capacitor-community/stripe-identity
+npm install @vendpark/stripe-identity
 npx cap sync
 ```
 
@@ -21,7 +21,6 @@ change base application theme to `Theme.MaterialComponents.DayNight` at `res/val
 parent can be any MaterialComponents. [See here for other options](https://m2.material.io/develop/android/theming/dark/).
 see more details on Stripe's native Android SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=android&type=new-integration#set-up-material-theme).
 
-
 ### Initialize iOS
 
 set up camera authorization by adding `NSCameraUsageDescription` in `Info.plist` and add a string value that explains the usage.
@@ -32,7 +31,7 @@ see more details on Stripe's native iOS SDK page [here](https://stripe.com/docs/
 If you want to implement, we recommend to read https://stripe.com/docs/identity .
 
 ```ts
-import { StripeIdentity } from '@capacitor-community/stripe-identity';
+import { StripeIdentity } from '@vendpark/stripe-identity';
 
 await StripeIdentity.create({
   ephemeralKeySecret,
@@ -45,16 +44,16 @@ const result = await StripeIdentity.present();
 
 <docgen-index>
 
-* [`create(...)`](#create)
-* [`present()`](#present)
-* [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded)
-* [`addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)`](#addlisteneridentityverificationsheeteventsenumfailedtoload)
-* [`addListener(IdentityVerificationSheetEventsEnum.Completed, ...)`](#addlisteneridentityverificationsheeteventsenumcompleted)
-* [`addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)`](#addlisteneridentityverificationsheeteventsenumcanceled)
-* [`addListener(IdentityVerificationSheetEventsEnum.Failed, ...)`](#addlisteneridentityverificationsheeteventsenumfailed)
-* [Interfaces](#interfaces)
-* [Type Aliases](#type-aliases)
-* [Enums](#enums)
+- [`create(...)`](#create)
+- [`present()`](#present)
+- [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded)
+- [`addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)`](#addlisteneridentityverificationsheeteventsenumfailedtoload)
+- [`addListener(IdentityVerificationSheetEventsEnum.Completed, ...)`](#addlisteneridentityverificationsheeteventsenumcompleted)
+- [`addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)`](#addlisteneridentityverificationsheeteventsenumcanceled)
+- [`addListener(IdentityVerificationSheetEventsEnum.Failed, ...)`](#addlisteneridentityverificationsheeteventsenumfailed)
+- [Interfaces](#interfaces)
+- [Type Aliases](#type-aliases)
+- [Enums](#enums)
 
 </docgen-index>
 
@@ -71,8 +70,7 @@ create(options: CreateIdentityVerificationSheetOption) => Promise<void>
 | ------------- | ------------------------------------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#createidentityverificationsheetoption">CreateIdentityVerificationSheetOption</a></code> |
 
---------------------
-
+---
 
 ### present()
 
@@ -82,8 +80,7 @@ present() => Promise<{ identityVerificationResult: IdentityVerificationSheetResu
 
 **Returns:** <code>Promise&lt;{ identityVerificationResult: <a href="#identityverificationsheetresultinterface">IdentityVerificationSheetResultInterface</a>; }&gt;</code>
 
---------------------
-
+---
 
 ### addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)
 
@@ -98,8 +95,7 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Loaded, listenerFunc:
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)
 
@@ -114,8 +110,7 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.FailedToLoad, listene
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(IdentityVerificationSheetEventsEnum.Completed, ...)
 
@@ -130,8 +125,7 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Completed, listenerFu
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)
 
@@ -146,8 +140,7 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Canceled, listenerFun
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener(IdentityVerificationSheetEventsEnum.Failed, ...)
 
@@ -162,11 +155,9 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### Interfaces
-
 
 #### CreateIdentityVerificationSheetOption
 
@@ -175,24 +166,19 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 | **`verificationId`**     | <code>string</code> |
 | **`ephemeralKeySecret`** | <code>string</code> |
 
-
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
-
 ### Type Aliases
-
 
 #### IdentityVerificationSheetResultInterface
 
 <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Completed</a> | <a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Canceled</a> | <a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Failed</a></code>
 
-
 ### Enums
-
 
 #### IdentityVerificationSheetEventsEnum
 
