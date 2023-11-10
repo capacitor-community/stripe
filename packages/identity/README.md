@@ -220,10 +220,10 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 
 | Members            | Value                                                |
 | ------------------ | ---------------------------------------------------- |
-| **`Loaded`**       | <code>"identityVerificationSheetLoaded"</code>       |
-| **`FailedToLoad`** | <code>"identityVerificationSheetFailedToLoad"</code> |
-| **`Completed`**    | <code>"identityVerificationSheetCompleted"</code>    |
-| **`Canceled`**     | <code>"identityVerificationSheetCanceled"</code>     |
-| **`Failed`**       | <code>"identityVerificationSheetFailed"</code>       |
+| **`Loaded`**       | <code>'identityVerificationSheetLoaded'</code>       |
+| **`FailedToLoad`** | <code>'identityVerificationSheetFailedToLoad'</code> |
+| **`Completed`**    | <code>'identityVerificationSheetCompleted'</code>    |
+| **`Canceled`**     | <code>'identityVerificationSheetCanceled'</code>     |
+| **`Failed`**       | <code>'identityVerificationSheetFailed'</code>       |
 
 </docgen-api>
