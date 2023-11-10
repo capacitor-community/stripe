@@ -2,9 +2,7 @@ package com.getcapacitor.community.stripe.identity;
 
 import android.app.Activity;
 import android.content.Context;
-
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Logger;
@@ -22,10 +20,10 @@ public class StripeIdentity extends Executor {
     private String ephemeralKeySecret;
 
     public StripeIdentity(
-            Supplier<Context> contextSupplier,
-            Supplier<Activity> activitySupplier,
-            BiConsumer<String, JSObject> notifyListenersFunction,
-            String pluginLogTag
+        Supplier<Context> contextSupplier,
+        Supplier<Activity> activitySupplier,
+        BiConsumer<String, JSObject> notifyListenersFunction,
+        String pluginLogTag
     ) {
         super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "StripeIdentityExecutor");
         this.contextSupplier = contextSupplier;
@@ -37,10 +35,7 @@ public class StripeIdentity extends Executor {
 
         if (verificationId == null || ephemeralKeySecret == null) {
             String errorText = "Invalid Params. This method require verificationId or ephemeralKeySecret.";
-            notifyListeners(
-                    IdentityVerificationSheetEvent.FailedToLoad.getWebEventName(),
-                    new JSObject().put("error", errorText)
-            );
+            notifyListeners(IdentityVerificationSheetEvent.FailedToLoad.getWebEventName(), new JSObject().put("error", errorText));
             call.reject(errorText);
             return;
         }
