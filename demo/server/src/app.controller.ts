@@ -95,6 +95,7 @@ export class AppController {
   async createVerificationSessions(): Promise<{
     verficationSessionId: string;
     ephemeralKeySecret: string;
+    clientSecret: string;
   }> {
     /**
      * https://stripe.com/docs/payments/accept-a-payment?platform=ios
@@ -112,6 +113,7 @@ export class AppController {
     return {
       verficationSessionId: verificationSession.id,
       ephemeralKeySecret: ephemeralKey.secret,
+      clientSecret: verificationSession.client_secret,
     };
   }
 

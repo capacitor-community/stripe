@@ -93,9 +93,10 @@ export class IdentityPage {
       this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
     }
 
-    const { verficationSessionId, ephemeralKeySecret } = await firstValueFrom(this.http.post<{
+    const { verficationSessionId, ephemeralKeySecret, clientSecret } = await firstValueFrom(this.http.post<{
       verficationSessionId: string;
       ephemeralKeySecret: string;
+      clientSecret: string;
     }>(environment.api + 'identify', {}))
       .catch(async (e) => {
         await this.helper.updateItem(this.eventItems,'HttpClient', false);
@@ -106,6 +107,7 @@ export class IdentityPage {
 
     await StripeIdentity.create({
       ephemeralKeySecret,
+      clientSecret,
       verificationId: verficationSessionId,
     })
       .then(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', true))

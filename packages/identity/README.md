@@ -45,6 +45,7 @@ const result = await StripeIdentity.present();
 
 <docgen-index>
 
+* [`initialize(...)`](#initialize)
 * [`create(...)`](#create)
 * [`present()`](#present)
 * [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded)
@@ -60,6 +61,19 @@ const result = await StripeIdentity.present();
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+### initialize(...)
+
+```typescript
+initialize(options: InitializeIdentityVerificationSheetOption) => Promise<void>
+```
+
+| Param         | Type                                                                                                            |
+| ------------- | --------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#initializeidentityverificationsheetoption">InitializeIdentityVerificationSheetOption</a></code> |
+
+--------------------
+
 
 ### create(...)
 
@@ -168,12 +182,20 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 ### Interfaces
 
 
+#### InitializeIdentityVerificationSheetOption
+
+| Prop                 | Type                |
+| -------------------- | ------------------- |
+| **`publishableKey`** | <code>string</code> |
+
+
 #### CreateIdentityVerificationSheetOption
 
-| Prop                     | Type                |
-| ------------------------ | ------------------- |
-| **`verificationId`**     | <code>string</code> |
-| **`ephemeralKeySecret`** | <code>string</code> |
+| Prop                     | Type                | Description                                           |
+| ------------------------ | ------------------- | ----------------------------------------------------- |
+| **`verificationId`**     | <code>string</code> |                                                       |
+| **`ephemeralKeySecret`** | <code>string</code> |                                                       |
+| **`clientSecret`**       | <code>string</code> | This client secret is used only for the web platform. |
 
 
 #### PluginListenerHandle

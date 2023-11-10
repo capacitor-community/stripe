@@ -1,25 +1,70 @@
-import { WebPlugin} from '@capacitor/core';
+import { WebPlugin } from '@capacitor/core';
+import type { Stripe } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 import type { StripeIdentityPlugin } from './definitions';
-import type {IdentityVerificationSheetResultInterface} from './events.enum';
+import { IdentityVerificationSheetEventsEnum } from './definitions';
+import type { IdentityVerificationSheetResultInterface } from './events.enum';
+
+export interface InitializeIdentityVerificationSheetOption {
+  publishableKey: string;
+}
 
 export interface CreateIdentityVerificationSheetOption {
   verificationId: string;
   ephemeralKeySecret: string;
+
+  /**
+   * This client secret is used only for the web platform.
+   */
+  clientSecret?: string;
 }
 
 export class StripeIdentityWeb
   extends WebPlugin
   implements StripeIdentityPlugin
 {
-  async create(_options: CreateIdentityVerificationSheetOption): Promise<void> {
-    console.log(_options);
-    throw new Error('Method not implemented.');
+  private stripe: Stripe | null | undefined;
+  private clientSecret: string | undefined;
+  async initialize(
+    options: InitializeIdentityVerificationSheetOption,
+  ): Promise<void> {
+    this.stripe = await loadStripe(options.publishableKey);
   }
-
-  present(): Promise<{
+  async create(options: CreateIdentityVerificationSheetOption): Promise<void> {
+    this.clientSecret = options.clientSecret;
+    this.notifyListeners(IdentityVerificationSheetEventsEnum.Loaded, null);
+  }
+  async present(): Promise<{
     identityVerificationResult: IdentityVerificationSheetResultInterface;
   }> {
-    throw new Error('Method not implemented.');
+    if (!this.stripe) {
+      throw new Error('Stripe is not initialized.');
+    }
+    if (!this.clientSecret) {
+      throw new Error('clientSecret is not set.');
+    }
+    const { error } = await this.stripe.verifyIdentity(this.clientSecret);
+    if (error) {
+      const { code } = error;
+      if (code === 'session_cancelled') {
+        this.notifyListeners(
+          IdentityVerificationSheetEventsEnum.Canceled,
+          null,
+        );
+        return {
+          identityVerificationResult:
+            IdentityVerificationSheetEventsEnum.Canceled,
+        };
+      }
+      this.notifyListeners(IdentityVerificationSheetEventsEnum.Failed, null);
+      return {
+        identityVerificationResult: IdentityVerificationSheetEventsEnum.Failed,
+      };
+    }
+    this.notifyListeners(IdentityVerificationSheetEventsEnum.Completed, null);
+    return {
+      identityVerificationResult: IdentityVerificationSheetEventsEnum.Completed,
+    };
   }
 }
