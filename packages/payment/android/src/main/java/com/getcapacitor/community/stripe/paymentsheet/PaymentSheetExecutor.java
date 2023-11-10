@@ -82,10 +82,16 @@ public class PaymentSheetExecutor extends Executor {
         }
 
         if (!enableGooglePay) {
-            paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
-                    .customer(customer)
-                    .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                    .build();
+            if (bdCollectionConfiguration != null) {
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                        .customer(customer)
+                        .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                        .build();
+            } else {
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                        .customer(customer)
+                        .build();
+            }
         } else {
             Boolean GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false);
 
@@ -95,11 +101,19 @@ public class PaymentSheetExecutor extends Executor {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test;
             }
 
-            paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
-                    .customer(customer)
-                    .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
-                    .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                    .build();
+            if (bdCollectionConfiguration != null) {
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                        .customer(customer)
+                        .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
+                        .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                        .build();
+            } else {
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                        .customer(customer)
+                        .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
+                        .build();
+            }
+
         }
 
         notifyListenersFunction.accept(PaymentSheetEvents.Loaded.getWebEventName(), emptyObject);
