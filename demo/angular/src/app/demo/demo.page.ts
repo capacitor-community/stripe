@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {
-  ApplePayEventsEnum,
+  AddressCollectionMode,
+  ApplePayEventsEnum, CollectionMode, CreatePaymentSheetOption,
   GooglePayEventsEnum,
   PaymentFlowEventsEnum,
   PaymentSheetEventsEnum,
@@ -152,7 +153,7 @@ export class DemoPage implements OnInit {
     Stripe.isGooglePayAvailable().then(() => this.isGooglePayAvailable = true).catch(() => undefined);
   }
 
-  async createPaymentSheet(withCustomer = true) {
+  async createPaymentSheet(withCustomer = true, withBillingDetails = false) {
     if (withCustomer) {
       const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
         paymentIntent: string;
@@ -171,10 +172,23 @@ export class DemoPage implements OnInit {
         paymentIntent: string;
       }>(environment.api + 'intent/without-customer', {}));
 
-      await Stripe.createPaymentSheet({
+      const base: CreatePaymentSheetOption = {
         paymentIntentClientSecret: paymentIntent,
         merchantDisplayName: 'rdlabo',
-      });
+      };
+
+      if (withBillingDetails) {
+        Object.assign(base, {
+          billingDetailsCollectionConfiguration: {
+            email: 'always',
+            name: 'always',
+            phone: 'always',
+            address: 'full'
+          }
+        })
+      }
+
+      await Stripe.createPaymentSheet(base);
     }
   }
 
