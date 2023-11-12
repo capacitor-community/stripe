@@ -27,7 +27,7 @@ export interface StripeIdentityPlugin {
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.FailedToLoad,
-    listenerFunc: (error: StripeIdentityError) => void,
+    listenerFunc: (info: StripeIdentityError) => void,
   ): PluginListenerHandle;
 
   addListener(
@@ -42,6 +42,6 @@ export interface StripeIdentityPlugin {
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.Failed,
-    listenerFunc: (error: StripeIdentityError) => void,
+    listenerFunc: (info: StripeIdentityError) => void,
   ): PluginListenerHandle;
 }

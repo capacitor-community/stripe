@@ -118,13 +118,13 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Loaded, listenerFunc:
 ### addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)
 
 ```typescript
-addListener(eventName: IdentityVerificationSheetEventsEnum.FailedToLoad, listenerFunc: (error: string) => void) => PluginListenerHandle
+addListener(eventName: IdentityVerificationSheetEventsEnum.FailedToLoad, listenerFunc: (info: StripeIdentityError) => void) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                                                             |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.FailedToLoad</a></code> |
-| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                                                          |
+| **`listenerFunc`** | <code>(info: <a href="#stripeidentityerror">StripeIdentityError</a>) =&gt; void</code>                           |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -166,13 +166,13 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Canceled, listenerFun
 ### addListener(IdentityVerificationSheetEventsEnum.Failed, ...)
 
 ```typescript
-addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc: (error: string) => void) => PluginListenerHandle
+addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc: (info: StripeIdentityError) => void) => PluginListenerHandle
 ```
 
 | Param              | Type                                                                                                       |
 | ------------------ | ---------------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Failed</a></code> |
-| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                                                    |
+| **`listenerFunc`** | <code>(info: <a href="#stripeidentityerror">StripeIdentityError</a>) =&gt; void</code>                     |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -203,6 +203,13 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+#### StripeIdentityError
+
+| Prop          | Type                |
+| ------------- | ------------------- |
+| **`message`** | <code>string</code> |
 
 
 ### Type Aliases
