@@ -10,6 +10,9 @@ import type {
 } from './web';
 
 export * from './events.enum';
+export interface StripeIdentityError {
+  message: string;
+}
 export interface StripeIdentityPlugin {
   initialize(options: InitializeIdentityVerificationSheetOption): Promise<void>;
   create(options: CreateIdentityVerificationSheetOption): Promise<void>;
@@ -24,7 +27,7 @@ export interface StripeIdentityPlugin {
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.FailedToLoad,
-    listenerFunc: (error: string) => void,
+    listenerFunc: (error: StripeIdentityError) => void,
   ): PluginListenerHandle;
 
   addListener(
@@ -39,6 +42,6 @@ export interface StripeIdentityPlugin {
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.Failed,
-    listenerFunc: (error: string) => void,
+    listenerFunc: (error: StripeIdentityError) => void,
   ): PluginListenerHandle;
 }

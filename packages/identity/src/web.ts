@@ -46,18 +46,19 @@ export class StripeIdentityWeb
     }
     const { error } = await this.stripe.verifyIdentity(this.clientSecret);
     if (error) {
-      const { code } = error;
+      const { code, message } = error;
       if (code === 'session_cancelled') {
         this.notifyListeners(
           IdentityVerificationSheetEventsEnum.Canceled,
-          null,
+          { message },
         );
         return {
           identityVerificationResult:
             IdentityVerificationSheetEventsEnum.Canceled,
         };
       }
-      this.notifyListeners(IdentityVerificationSheetEventsEnum.Failed, null);
+      this.notifyListeners(IdentityVerificationSheetEventsEnum.Failed,
+        { message });
       return {
         identityVerificationResult: IdentityVerificationSheetEventsEnum.Failed,
       };

@@ -12,7 +12,7 @@ import StripeIdentity
 
         if verificationId == nil || ephemeralKeySecret == nil {
             let errorText = "Invalid Params. this method require verificationId or ephemeralKeySecret."
-            self.plugin?.notifyListeners(IdentityVerificationSheetEvents.FailedToLoad.rawValue, data: ["error": errorText])
+            self.plugin?.notifyListeners(IdentityVerificationSheetEvents.FailedToLoad.rawValue, data: ["message": errorText])
             call.reject(errorText)
             return
         }
@@ -53,7 +53,7 @@ import StripeIdentity
                         // message to your user using error.localizedDescription
                         print("Verification Flow Failed!")
                         print(error.localizedDescription)
-                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Failed.rawValue, data: ["error": error.localizedDescription])
+                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Failed.rawValue, data: ["message": error.localizedDescription])
                         call.resolve(["identityVerificationResult": IdentityVerificationSheetEvents.Failed.rawValue])
                     }
                 })

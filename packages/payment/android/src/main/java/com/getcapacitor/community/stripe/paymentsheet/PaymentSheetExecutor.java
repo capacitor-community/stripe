@@ -141,7 +141,7 @@ public class PaymentSheetExecutor extends Executor {
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             notifyListenersFunction.accept(
                 PaymentSheetEvents.Failed.getWebEventName(),
-                new JSObject().put("error", ((PaymentSheetResult.Failed) paymentSheetResult).getError().getLocalizedMessage())
+                new JSObject().put("message", ((PaymentSheetResult.Failed) paymentSheetResult).getError().getLocalizedMessage())
             );
             notifyListenersFunction.accept(PaymentSheetEvents.Failed.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", PaymentSheetEvents.Failed.getWebEventName()));
