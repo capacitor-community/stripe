@@ -6,6 +6,10 @@ import StripeIdentity
     weak var plugin: StripeIdentityPlugin?
     var identityVerificationSheet: IdentityVerificationSheet?
 
+    func initialize(_ call: CAPPluginCall) {
+        call.resolve();
+    }
+
     func create(_ call: CAPPluginCall) {
         let verificationId = call.getString("verificationId") ?? nil
         let ephemeralKeySecret = call.getString("ephemeralKeySecret") ?? nil

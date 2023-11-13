@@ -56,6 +56,11 @@ public class StripeIdentityPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void initialize(final PluginCall call) {
+        implementation.initialize(call);
+    }
+
+    @PluginMethod
     public void create(final PluginCall call) {
         implementation.create(call);
     }

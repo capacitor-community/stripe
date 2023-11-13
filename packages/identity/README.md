@@ -34,9 +34,16 @@ If you want to implement, we recommend to read https://stripe.com/docs/identity 
 ```ts
 import { StripeIdentity } from '@capacitor-community/stripe-identity';
 
+// initialize is needed only for Web Platform
+await StripeIdentity.initialize({
+  publishableKey,
+});
+
 await StripeIdentity.create({
   ephemeralKeySecret,
   verificationId,
+  // clientSecret is needed only for Web Platform
+  clientSecret
 });
 const result = await StripeIdentity.present();
 ```

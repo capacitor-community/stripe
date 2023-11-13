@@ -29,6 +29,10 @@ public class StripeIdentity extends Executor {
         this.contextSupplier = contextSupplier;
     }
 
+    public void initialize(final PluginCall call) {
+        call.resolve();
+    }
+
     public void create(final PluginCall call) {
         verificationId = call.getString("verificationId", null);
         ephemeralKeySecret = call.getString("ephemeralKeySecret", null);
