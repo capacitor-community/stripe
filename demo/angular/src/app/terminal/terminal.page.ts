@@ -142,7 +142,7 @@ const checkDiscoverMethodItems: ITestItems [] = [
 export class TerminalPage {
   public eventItems: ITestItems [] = [];
   public terminalConnectTypes = TerminalConnectTypes;
-  private readonly listenerHandlers: PluginListenerHandle[] = [];
+  private readonly listenerHandlers: Promise<PluginListenerHandle>[] = [];
   constructor(
     public platform: Platform,
     private http: HttpClient,
@@ -214,7 +214,7 @@ export class TerminalPage {
       await this.helper.updateItem(this.eventItems,'cancelCollect', true);
     }
 
-    this.listenerHandlers.forEach(handler => handler.remove());
+    this.listenerHandlers.forEach(async (handler) => (await handler).remove());
   }
 
   async checkDiscoverMethod() {
@@ -266,7 +266,6 @@ export class TerminalPage {
       });
     await this.helper.updateItem(this.eventItems,'disconnectReader', true);
 
-
-    this.listenerHandlers.forEach(handler => handler.remove());
+    this.listenerHandlers.forEach(async (handler) => (await handler).remove());
   }
 }

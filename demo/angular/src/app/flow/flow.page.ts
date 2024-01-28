@@ -78,7 +78,7 @@ const cancelPathItems: ITestItems [] = [
 })
 export class FlowPage {
   public eventItems: ITestItems [] = [];
-  private readonly listenerHandlers: PluginListenerHandle[] = [];
+  private readonly listenerHandlers: Promise<PluginListenerHandle>[] = [];
 
   constructor(
     private http: HttpClient,
@@ -135,6 +135,6 @@ export class FlowPage {
         .catch(() => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', true));
     }
 
-    this.listenerHandlers.forEach(handler => handler.remove());
+    this.listenerHandlers.forEach(async (handler) => (await handler).remove());
   }
 }

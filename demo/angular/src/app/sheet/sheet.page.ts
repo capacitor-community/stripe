@@ -67,7 +67,7 @@ const cancelPathItems: ITestItems [] = [
 })
 export class SheetPage {
   public eventItems: ITestItems [] = [];
-  private readonly listenerHandlers: PluginListenerHandle[] = [];
+  private readonly listenerHandlers: Promise<PluginListenerHandle>[] = [];
 
   constructor(
     private http: HttpClient,
@@ -114,6 +114,6 @@ export class SheetPage {
       .then((data) => this.helper.updateItem(this.eventItems,'presentPaymentSheet', undefined, data.paymentResult))
       .catch(() => this.helper.updateItem(this.eventItems,'presentPaymentSheet', false));
 
-    this.listenerHandlers.forEach(handler => handler.remove());
+    this.listenerHandlers.forEach(async (handler) => (await handler).remove());
   }
 }

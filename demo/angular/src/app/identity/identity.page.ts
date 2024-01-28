@@ -71,7 +71,7 @@ const cancelPathItems: ITestItems [] = [
 })
 export class IdentityPage {
   public eventItems: ITestItems [] = [];
-  private readonly listenerHandlers: PluginListenerHandle[] = [];
+  private readonly listenerHandlers: Promise<PluginListenerHandle>[] = [];
 
   constructor(
     private http: HttpClient,
@@ -118,6 +118,6 @@ export class IdentityPage {
         return this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult);
       });
 
-    this.listenerHandlers.forEach(handler => handler.remove());
+    this.listenerHandlers.forEach(async (handler) => (await handler).remove());
   }
 }
