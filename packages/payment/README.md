@@ -618,6 +618,8 @@ iOS Only
 | **`countryCode`**                   | <code>string</code>                                                           |
 | **`currency`**                      | <code>string</code>                                                           |
 | **`requiredShippingContactFields`** | <code>('postalAddress' \| 'phoneNumber' \| 'emailAddress' \| 'name')[]</code> |
+| **`allowedCountries`**              | <code>string[]</code>                                                         |
+| **`allowedCountriesError`**         | <code>string</code>                                                           |
 
 
 #### PluginListenerHandle
