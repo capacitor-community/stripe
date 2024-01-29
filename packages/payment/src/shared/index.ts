@@ -137,7 +137,7 @@ export interface CreateApplePayOption {
   currency: string;
   requiredShippingContactFields?: ('postalAddress' | 'phoneNumber' | 'emailAddress' | 'name')[];
   allowedCountries?: string[];
-  allowedCountriesError?: string;
+  allowedCountriesErrorDescription?: string;
 }
 
 export interface CreateGooglePayOption {

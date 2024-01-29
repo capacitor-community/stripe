@@ -9,7 +9,7 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
     private var payCallId: String?
     private var paymentRequest: PKPaymentRequest?
     private var allowedCountries: [String] = []
-    private var allowedCountriesError: String = ""
+    private var allowedCountriesErrorDescription: String = ""
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
         if !StripeAPI.deviceSupportsApplePay() {
@@ -50,7 +50,7 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
         let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
         let requiredShippingContactFields = call.getArray("requiredShippingContactFields", String.self) ?? [""]
         self.allowedCountries = call.getArray("allowedCountries", String.self) ?? []
-        self.allowedCountriesError = call.getString("allowedCountriesError") ?? "Country not allowed"
+        self.allowedCountriesErrorDescription = call.getString("allowedCountriesErrorDescription") ?? "Country not allowed"
 
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
@@ -145,7 +145,7 @@ extension ApplePayExecutor {
             let addressIsoCountry = (contact.postalAddress?.isoCountryCode as? String ?? "").lowercased();
             if !self.allowedCountries.contains(addressIsoCountry) {
                 handler(PKPaymentRequestShippingContactUpdate.init(
-                    errors: [PKPaymentRequest.paymentShippingAddressInvalidError(withKey: CNPostalAddressISOCountryCodeKey, localizedDescription: self.allowedCountriesError)],
+                    errors: [PKPaymentRequest.paymentShippingAddressInvalidError(withKey: CNPostalAddressISOCountryCodeKey, localizedDescription: self.allowedCountriesErrorDescription)],
                     paymentSummaryItems: self.paymentRequest?.paymentSummaryItems ?? [],
                     shippingMethods: self.paymentRequest?.shippingMethods ?? []))
                 return
