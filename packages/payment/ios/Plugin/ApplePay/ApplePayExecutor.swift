@@ -8,6 +8,8 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
     var appleClientSecret: String = ""
     private var payCallId: String?
     private var paymentRequest: PKPaymentRequest?
+    private var allowedCountries: [String] = []
+    private var allowedCountriesErrorDescription: String = ""
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
         if !StripeAPI.deviceSupportsApplePay() {
@@ -47,6 +49,9 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
 
         let merchantIdentifier = call.getString("merchantIdentifier") ?? ""
         let requiredShippingContactFields = call.getArray("requiredShippingContactFields", String.self) ?? [""]
+        self.allowedCountries = call.getArray("allowedCountries", String.self) ?? []
+        self.allowedCountriesErrorDescription = call.getString("allowedCountriesErrorDescription") ?? "Country not allowed"
+
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: merchantIdentifier, country: call.getString("countryCode", "US"), currency: call.getString("currency", "USD"))
         paymentRequest.paymentSummaryItems = paymentSummaryItems
         if requiredShippingContactFields.count > 0 {
@@ -134,6 +139,18 @@ extension ApplePayExecutor {
         handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: []))
         let jsonArray = self.transformPKContactToJSON(contact: contact)
         self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray])
+
+        // Check allowed countries
+        if (!self.allowedCountries.isEmpty) {
+            let addressIsoCountry = (contact.postalAddress?.isoCountryCode as? String ?? "").lowercased();
+            if !self.allowedCountries.contains(addressIsoCountry) {
+                handler(PKPaymentRequestShippingContactUpdate.init(
+                    errors: [PKPaymentRequest.paymentShippingAddressInvalidError(withKey: CNPostalAddressISOCountryCodeKey, localizedDescription: self.allowedCountriesErrorDescription)],
+                    paymentSummaryItems: self.paymentRequest?.paymentSummaryItems ?? [],
+                    shippingMethods: self.paymentRequest?.shippingMethods ?? []))
+                return
+            }
+        }
     }
 
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
