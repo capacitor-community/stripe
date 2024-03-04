@@ -27,27 +27,28 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     func discoverReaders(_ call: CAPPluginCall) throws {
         let connectType = call.getString("type")
+        let config: DiscoveryConfiguration
+        self.locationId = call.getString("locationId")
 
         if TerminalConnectTypes.TapToPay.rawValue == connectType {
             self.type = .localMobile
+            config = try LocalMobileDiscoveryConfigurationBuilder().setSimulated(self.isTest!).build()
         } else if TerminalConnectTypes.Internet.rawValue == connectType {
             self.type = .internet
+            config = try InternetDiscoveryConfigurationBuilder()
+                                      .setLocationId(self.locationId)
+                                      .setSimulated(self.isTest!)
+                                      .build()
         }  else if TerminalConnectTypes.Bluetooth.rawValue == connectType {
             self.type = DiscoveryMethod.bluetoothScan
+            config = try BluetoothScanDiscoveryConfigurationBuilder().setSimulated(self.isTest!).build()
         } else {
             call.unimplemented(connectType! + " is not support now")
             return
         }
-
         
-        let config = DiscoveryConfiguration(
-            discoveryMethod: self.type!,
-            simulated: self.isTest!
-        )
-
+        
         self.discoverCall = call
-        self.locationId = call.getString("locationId")
-
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
             if let error = error {
                 print("discoverReaders failed: \(error)")
@@ -130,9 +131,10 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectLocalMobileReader(_ call: CAPPluginCall) {
-        let connectionConfig = LocalMobileConnectionConfiguration(locationId: self.locationId!)
+        let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!).build()
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
+        
 
         Terminal.shared.connectLocalMobileReader(self.readers![index], delegate: self, connectionConfig: connectionConfig) { reader, error in
             if let reader = reader {
@@ -145,7 +147,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectInternetReader(_ call: CAPPluginCall) {
-        let config = InternetConnectionConfiguration(failIfInUse: true)
+        let config = try! InternetConnectionConfigurationBuilder()
+            .setFailIfInUse(true)
+            .build()
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
 
@@ -160,7 +164,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
     
     private func connectBluetoothReader(_ call: CAPPluginCall) {
-        let config = BluetoothConnectionConfiguration(locationId: self.locationId!)
+        let config = try! BluetoothConnectionConfigurationBuilder(locationId: "{{LOCATION_ID}}").build()
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
 

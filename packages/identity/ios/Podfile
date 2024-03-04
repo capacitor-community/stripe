@@ -5,7 +5,7 @@ def capacitor_pods
   use_frameworks!
   pod 'Capacitor', :path => '../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../node_modules/@capacitor/ios'
-  pod 'StripeIdentity', '~> 23.18.2'
+  pod 'StripeIdentity', '~> 23.23.0'
 end
 
 target 'Plugin' do
