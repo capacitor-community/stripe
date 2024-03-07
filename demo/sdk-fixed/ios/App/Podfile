@@ -13,7 +13,6 @@ def capacitor_pods
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCommunityStripe', :path => '../../../../packages/payment'
   pod 'CapacitorCommunityStripeIdentity', :path => '../../../../packages/identity'
-  pod 'CapacitorCommunityStripeTerminal', :path => '../../../../packages/terminal'
 end
 
 target 'App' do

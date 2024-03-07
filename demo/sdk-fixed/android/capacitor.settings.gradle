@@ -7,6 +7,3 @@ project(':capacitor-community-stripe').projectDir = new File('../../../packages/
 
 include ':capacitor-community-stripe-identity'
 project(':capacitor-community-stripe-identity').projectDir = new File('../../../packages/identity/android')
-
-include ':capacitor-community-stripe-terminal'
-project(':capacitor-community-stripe-terminal').projectDir = new File('../../../packages/terminal/android')
