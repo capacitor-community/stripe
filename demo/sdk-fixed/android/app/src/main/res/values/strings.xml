@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">capacitor-stripe</string>
+    <string name="title_activity_main">capacitor-stripe</string>
+    <string name="package_name">io.ionic.starter</string>
+    <string name="custom_url_scheme">io.ionic.starter</string>
+
+    <string name="publishable_key">pk_test_51MmARtKzMYim9cy3tOI5vOdHbai4G26V1AiDJmiE4aiAXc8BaSzh9Z0b0f8Novn0Jyyi8JqNdzLzcI2rUGT4g8ct00gfUVdLuM</string>
+    <bool name="enable_google_pay">true</bool>
+    <string name="country_code">US</string>
+    <string name="merchant_display_name">Widget Store</string>
+    <bool name="google_pay_is_testing">true</bool>
+  <!--    <string name="stripe_account"></string>-->
+</resources>
