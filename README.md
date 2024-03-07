@@ -37,7 +37,7 @@ To use the latest Stripe Android, you need to version these up. To use the lates
 ```diff
   ext {
     minSdkVersion = 26
--   compileSdkVersion = 34
+-   compileSdkVersion = 33
 +   compileSdkVersion = 34
     targetSdkVersion = 33
     androidxActivityVersion = '1.7.0'
