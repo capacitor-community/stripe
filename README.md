@@ -19,6 +19,50 @@
 | @capacitor-community/stripe-terminal | Support for in-person payments using Stripe  | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) |
 
 
+## Optional: How to use Stripe Android currently package
+
+Capacitor Android 5's default settings is here:
+
+```
+minSdkVersion = 22
+compileSdkVersion = 33
+targetSdkVersion = 33
+```
+
+To use the latest Stripe Android, you need to version these up. To use the latest features, follow these steps.
+
+1. Open `android/variables.gradle` , and change `compileSdkVersion` to 24 or higher.
+2. Add `stripeAndroidVersion` or `identityVersion` and set required version. Release information is here: https://github.com/stripe/stripe-android/releases
+
+```diff
+  ext {
+    minSdkVersion = 26
+-   compileSdkVersion = 34
++   compileSdkVersion = 34
+    targetSdkVersion = 33
+    androidxActivityVersion = '1.7.0'
+    androidxAppCompatVersion = '1.6.1'
+    androidxCoordinatorLayoutVersion = '1.2.0'
+    androidxCoreVersion = '1.10.0'
+    androidxFragmentVersion = '1.5.6'
+    coreSplashScreenVersion = '1.0.0'
+    androidxWebkitVersion = '1.6.1'
+    junitVersion = '4.13.2'
+    androidxJunitVersion = '1.1.5'
+    androidxEspressoCoreVersion = '3.5.1'
+    cordovaAndroidVersion = '10.1.1'
+
+    // If you use @capacitor-community/stripe:
++   stripeAndroidVersion = '20.39.+'
+
+    // If you use @capacitor-community/stripe-identity:
++   identityVersion = '20.39.+'
+  }
+```
+
+Note: `@capacitor-community/stripe-terminal` does not work with the default sdkVersion, so these updates are mandatory. See [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) for more information.
+
+
 ## Maintainers
 
 | Maintainer          | GitHub                              | Social                                |
