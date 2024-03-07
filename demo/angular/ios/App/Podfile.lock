@@ -1,43 +1,43 @@
 PODS:
   - Capacitor (5.0.0):
     - CapacitorCordova
-  - CapacitorCommunityStripe (5.4.2):
+  - CapacitorCommunityStripe (5.4.3):
     - Capacitor
-    - StripeApplePay (~> 23.23.0)
-    - StripePaymentSheet (~> 23.23.0)
-  - CapacitorCommunityStripeIdentity (5.4.2):
+    - StripeApplePay (~> 23.24.0)
+    - StripePaymentSheet (~> 23.24.0)
+  - CapacitorCommunityStripeIdentity (5.4.3):
     - Capacitor
-    - StripeIdentity (~> 23.23.0)
-  - CapacitorCommunityStripeTerminal (5.4.2):
+    - StripeIdentity (~> 23.24.0)
+  - CapacitorCommunityStripeTerminal (5.4.3):
     - Capacitor
     - StripeTerminal (~> 3.3.1)
   - CapacitorCordova (5.0.0)
-  - StripeApplePay (23.23.0):
-    - StripeCore (= 23.23.0)
-  - StripeCameraCore (23.23.0):
-    - StripeCore (= 23.23.0)
-  - StripeCore (23.23.0)
-  - StripeIdentity (23.23.0):
-    - StripeCameraCore (= 23.23.0)
-    - StripeCore (= 23.23.0)
-    - StripeUICore (= 23.23.0)
-  - StripePayments (23.23.0):
-    - StripeCore (= 23.23.0)
-    - StripePayments/Stripe3DS2 (= 23.23.0)
-  - StripePayments/Stripe3DS2 (23.23.0):
-    - StripeCore (= 23.23.0)
-  - StripePaymentSheet (23.23.0):
-    - StripeApplePay (= 23.23.0)
-    - StripeCore (= 23.23.0)
-    - StripePayments (= 23.23.0)
-    - StripePaymentsUI (= 23.23.0)
-  - StripePaymentsUI (23.23.0):
-    - StripeCore (= 23.23.0)
-    - StripePayments (= 23.23.0)
-    - StripeUICore (= 23.23.0)
+  - StripeApplePay (23.24.1):
+    - StripeCore (= 23.24.1)
+  - StripeCameraCore (23.24.1):
+    - StripeCore (= 23.24.1)
+  - StripeCore (23.24.1)
+  - StripeIdentity (23.24.1):
+    - StripeCameraCore (= 23.24.1)
+    - StripeCore (= 23.24.1)
+    - StripeUICore (= 23.24.1)
+  - StripePayments (23.24.1):
+    - StripeCore (= 23.24.1)
+    - StripePayments/Stripe3DS2 (= 23.24.1)
+  - StripePayments/Stripe3DS2 (23.24.1):
+    - StripeCore (= 23.24.1)
+  - StripePaymentSheet (23.24.1):
+    - StripeApplePay (= 23.24.1)
+    - StripeCore (= 23.24.1)
+    - StripePayments (= 23.24.1)
+    - StripePaymentsUI (= 23.24.1)
+  - StripePaymentsUI (23.24.1):
+    - StripeCore (= 23.24.1)
+    - StripePayments (= 23.24.1)
+    - StripeUICore (= 23.24.1)
   - StripeTerminal (3.3.1)
-  - StripeUICore (23.23.0):
-    - StripeCore (= 23.23.0)
+  - StripeUICore (23.24.1):
+    - StripeCore (= 23.24.1)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -72,19 +72,19 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: b332cb737d447561e854039fb72195206685dce2
-  CapacitorCommunityStripe: da7a0bc7f0417ba9482ee9707d096fa70ff777a2
-  CapacitorCommunityStripeIdentity: 7ee0e0f0745c018e712dde3de434a4b3e1eb8ec8
-  CapacitorCommunityStripeTerminal: 126dc0bf8472785ee2fbfc120a5b568dc88f332b
+  CapacitorCommunityStripe: 312f33d4b8473afdd99d0c906a1a79d7c8fe6732
+  CapacitorCommunityStripeIdentity: 57c4205c24254dde635efbc5a947205341512ae6
+  CapacitorCommunityStripeTerminal: cfbf3ace5fff51538ff0f062b14f52cac3ec7a3c
   CapacitorCordova: 4ea17670ee562680988a7ce9db68dee5160fe564
-  StripeApplePay: dc5c1ff53862cd4facac23329d8755e8193e0e01
-  StripeCameraCore: a176389efcd873a9f0f49bc54731d023e28ee2d6
-  StripeCore: 597cebf21008291360e68d8480be0b668ae63e73
-  StripeIdentity: 29478e862c535d9e87426dc1d3f1802643218dea
-  StripePayments: 4271ec12eb1530336b8b6c1ae96483c9c4def931
-  StripePaymentSheet: f213e149b1ec43b8ab84bbb5b29a7df0152601ad
-  StripePaymentsUI: 5fd5a2f69e604e8b7352d4c0a51f25a81012cfba
+  StripeApplePay: ffc296e6eba1d9ce86e4b5c4733540bce6f1b3eb
+  StripeCameraCore: 3459f80598a8cd2060ba3e28e647ea50a94912cd
+  StripeCore: 7c9042ecbca0ef4e8073de00d3c84255d6b87e92
+  StripeIdentity: 3bf270f7d9c708e95c90d29b020ff3a1b1185014
+  StripePayments: 4fdc6b22595887753851aee425dc9aafad39e8ef
+  StripePaymentSheet: 9f433a11fa6578939c555b6a56c87b7a958845d6
+  StripePaymentsUI: 42a4c50bd30a19c102685eeb7269a52c71a79bb3
   StripeTerminal: 369ef0cf0b90d838f42be1a0b371475986f4b79f
-  StripeUICore: cbe12b4d0602666986e9699322b4b09e07eeb4da
+  StripeUICore: 510afeb8f0cb8ba5f99563a23c5ad6cc7f58a007
 
 PODFILE CHECKSUM: 2430ef1d0136ea2c0f7e2696daff19ed8cd27595
 
