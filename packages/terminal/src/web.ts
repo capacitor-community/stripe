@@ -39,6 +39,10 @@ export class StripeTerminalWeb
     this.notifyListeners(TerminalEventsEnum.CancelDiscoveredReaders, null);
   }
 
+  async setConnectionToken(): Promise<void> {
+    console.log('setConnectionToken');
+  }
+
   async connectReader(options: { reader: ReaderInterface }): Promise<void> {
     console.log('connectReader', options);
     this.notifyListeners(TerminalEventsEnum.ConnectedReader, null);

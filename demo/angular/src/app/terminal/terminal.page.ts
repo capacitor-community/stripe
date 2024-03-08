@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {IonicModule, Platform} from '@ionic/angular';
@@ -153,9 +153,18 @@ export class TerminalPage {
     const eventKeys = Object.keys(TerminalEventsEnum);
     eventKeys.forEach(key => {
       const handler = StripeTerminal.addListener(TerminalEventsEnum[key], () => {
+        console.log(key);
         this.helper.updateItem(this.eventItems, TerminalEventsEnum[key], true);
       });
       this.listenerHandlers.push(handler);
+      if (key === 'RequestedConnectionToken') {
+        this.listenerHandlers.push(StripeTerminal.addListener(TerminalEventsEnum.RequestedConnectionToken, async () => {
+          const { secret } = await firstValueFrom(this.http.post<{
+            secret: string;
+          }>(environment.api + 'connection/token', {}));
+          StripeTerminal.setConnectionToken({ token: secret });
+        }));
+      }
     });
 
     if (type === 'happyPath') {
@@ -164,7 +173,7 @@ export class TerminalPage {
       this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
     }
 
-    await StripeTerminal.initialize({ tokenProviderEndpoint: environment.api + 'connection/token', isTest: readerType === TerminalConnectTypes.TapToPay })
+    await StripeTerminal.initialize({ isTest: readerType === TerminalConnectTypes.TapToPay })
       .then(() => this.helper.updateItem(this.eventItems,'initialize', true))
       .catch(() => this.helper.updateItem(this.eventItems,'initialize', false));
 
@@ -224,6 +233,14 @@ export class TerminalPage {
         this.helper.updateItem(this.eventItems, TerminalEventsEnum[key], true);
       });
       this.listenerHandlers.push(handler);
+      if (key === 'RequestedConnectionToken') {
+        this.listenerHandlers.push(StripeTerminal.addListener(TerminalEventsEnum.RequestedConnectionToken, async () => {
+          const { secret } = await firstValueFrom(this.http.post<{
+            secret: string;
+          }>(environment.api + 'connection/token', {}));
+          StripeTerminal.setConnectionToken({ token: secret });
+        }));
+      }
     });
 
     this.eventItems =  JSON.parse(JSON.stringify(checkDiscoverMethodItems));

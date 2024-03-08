@@ -6,4 +6,5 @@ public enum TerminalEvents: String {
     case Completed = "terminalCompleted"
     case Canceled = "terminalCanceled"
     case Failed = "terminalFailed"
+    case RequestedConnectionToken = "terminalRequestedConnectionToken"
 }

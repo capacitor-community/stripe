@@ -21,6 +21,10 @@ public class StripeTerminalPlugin: CAPPlugin {
         self.implementation.initialize(call)
     }
 
+    @objc func setConnectionToken(_ call: CAPPluginCall) {
+        self.implementation.setConnectionToken(call)
+    }
+
     @objc func discoverReaders(_ call: CAPPluginCall) {
         do {
             try self.implementation.discoverReaders(call)

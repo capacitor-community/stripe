@@ -9,4 +9,5 @@ enum class TerminalEnumEvent(val webEventName: String) {
     Completed("terminalCompleted"),
     Canceled("terminalCanceled"),
     Failed("terminalFailed"),
+    RequestedConnectionToken("terminalRequestedConnectionToken"),
 }

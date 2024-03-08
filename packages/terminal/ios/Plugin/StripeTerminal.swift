@@ -5,6 +5,7 @@ import StripeTerminal
 public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate {
 
     weak var plugin: StripeTerminalPlugin?
+    private let apiClient = APIClient()
     var discoverCancelable: Cancelable?
     var discoverCall: CAPPluginCall?
     var locationId: String?
@@ -18,11 +19,16 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     @objc public func initialize(_ call: CAPPluginCall) {
         self.isTest = call.getBool("isTest", true)
         if self.isInitialize == false {
-            Terminal.setTokenProvider(APIClient(tokenProviderEndpoint: call.getString("tokenProviderEndpoint", "")))
+            apiClient.initialize(plugin: self.plugin, tokenProviderEndpoint: call.getString("tokenProviderEndpoint", ""))
+            Terminal.setTokenProvider(apiClient)
         }
         self.isInitialize = true
         self.plugin?.notifyListeners(TerminalEvents.Loaded.rawValue, data: [:])
         call.resolve()
+    }
+
+    func setConnectionToken(_ call: CAPPluginCall) {
+        self.apiClient.setConnectionToken(call)
     }
 
     func discoverReaders(_ call: CAPPluginCall) throws {
@@ -36,18 +42,17 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         } else if TerminalConnectTypes.Internet.rawValue == connectType {
             self.type = .internet
             config = try InternetDiscoveryConfigurationBuilder()
-                                      .setLocationId(self.locationId)
-                                      .setSimulated(self.isTest!)
-                                      .build()
-        }  else if TerminalConnectTypes.Bluetooth.rawValue == connectType {
+                .setLocationId(self.locationId)
+                .setSimulated(self.isTest!)
+                .build()
+        } else if TerminalConnectTypes.Bluetooth.rawValue == connectType {
             self.type = DiscoveryMethod.bluetoothScan
             config = try BluetoothScanDiscoveryConfigurationBuilder().setSimulated(self.isTest!).build()
         } else {
             call.unimplemented(connectType! + " is not support now")
             return
         }
-        
-        
+
         self.discoverCall = call
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
             if let error = error {
@@ -134,7 +139,6 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!).build()
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
-        
 
         Terminal.shared.connectLocalMobileReader(self.readers![index], delegate: self, connectionConfig: connectionConfig) { reader, error in
             if let reader = reader {
@@ -162,7 +166,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             }
         }
     }
-    
+
     private func connectBluetoothReader(_ call: CAPPluginCall) {
         let config = try! BluetoothConnectionConfigurationBuilder(locationId: "{{LOCATION_ID}}").build()
         let reader: JSObject = call.getObject("reader")!
@@ -211,10 +215,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
         call.resolve()
     }
-    
 
     // localMobile
-    
+
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         // TODO
     }
@@ -234,74 +237,100 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         // TODO
     }
-    
-    
+
     // bluetooth
-    
+
     public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
         // TODO
     }
-    
+
     public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         // TODO
     }
-    
+
     public func reader(_: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
         // TODO
     }
-    
+
     public func reader(_: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
         // TODO
     }
-    
+
     public func reader(_: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
         // TODO
     }
-    
+
     public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         // TODO
     }
 }
 
 class APIClient: ConnectionTokenProvider {
+    weak var plugin: StripeTerminalPlugin?
     var tokenProviderEndpoint: String = ""
+    private var pendingCompletion: ConnectionTokenCompletionBlock?
 
-    init(tokenProviderEndpoint: String) {
+    func initialize(plugin: StripeTerminalPlugin?, tokenProviderEndpoint: String) {
+        self.plugin = plugin
         self.tokenProviderEndpoint = tokenProviderEndpoint
+    }
+
+    func setConnectionToken(_ call: CAPPluginCall) {
+        let token = call.getString("token", "")
+        if let completion = pendingCompletion {
+            if token == "" {
+                let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
+                                    code: 3000,
+                                    userInfo: [NSLocalizedDescriptionKey: "Missing `token` is empty"])
+                completion(nil, error)
+                call.reject("Missing `token` is empty")
+            } else {
+                completion(token, nil)
+                call.resolve()
+            }
+            pendingCompletion = nil
+        } else {
+            call.reject("Stripe Terminal do not pending fetchConnectionToken")
+        }
     }
 
     // Fetches a ConnectionToken from your backend
     func fetchConnectionToken(_ completion: @escaping ConnectionTokenCompletionBlock) {
-        let config = URLSessionConfiguration.default
-        let session = URLSession(configuration: config)
-        guard let url = URL(string: tokenProviderEndpoint) else {
-            fatalError("Invalid backend URL")
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        let task = session.dataTask(with: request) { (data, _, error) in
-            if let data = data {
-                do {
-                    // Warning: casting using `as? [String: String]` looks simpler, but isn't safe:
-                    let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                    if let secret = json?["secret"] as? String {
-                        completion(secret, nil)
-                    } else {
-                        let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
-                                            code: 2000,
-                                            userInfo: [NSLocalizedDescriptionKey: "Missing `secret` in ConnectionToken JSON response"])
+        if tokenProviderEndpoint == "" {
+            pendingCompletion = completion
+            self.plugin?.notifyListeners(TerminalEvents.RequestedConnectionToken.rawValue, data: [:])
+        } else {
+            let config = URLSessionConfiguration.default
+            let session = URLSession(configuration: config)
+            guard let url = URL(string: tokenProviderEndpoint) else {
+                fatalError("Invalid backend URL")
+            }
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            let task = session.dataTask(with: request) { (data, _, error) in
+                if let data = data {
+                    do {
+                        // Warning: casting using `as? [String: String]` looks simpler, but isn't safe:
+                        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        if let secret = json?["secret"] as? String {
+                            completion(secret, nil)
+                        } else {
+                            let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
+                                                code: 2000,
+                                                userInfo: [NSLocalizedDescriptionKey: "Missing `secret` in ConnectionToken JSON response"])
+                            completion(nil, error)
+                        }
+                    } catch {
                         completion(nil, error)
                     }
-                } catch {
+                } else {
+                    let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
+                                        code: 1000,
+                                        userInfo: [NSLocalizedDescriptionKey: "No data in response from ConnectionToken endpoint"])
                     completion(nil, error)
                 }
-            } else {
-                let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
-                                    code: 1000,
-                                    userInfo: [NSLocalizedDescriptionKey: "No data in response from ConnectionToken endpoint"])
-                completion(nil, error)
             }
+            task.resume()
         }
-        task.resume()
     }
 }

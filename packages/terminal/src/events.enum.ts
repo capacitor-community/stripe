@@ -7,6 +7,7 @@ export enum TerminalEventsEnum {
   Completed = 'terminalCompleted',
   Canceled = 'terminalCanceled',
   Failed = 'terminalFailed',
+  RequestedConnectionToken = 'terminalRequestedConnectionToken',
 }
 
 export type TerminalResultInterface =
