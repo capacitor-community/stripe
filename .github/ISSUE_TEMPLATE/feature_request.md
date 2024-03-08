@@ -28,4 +28,5 @@ Using Function:
 - [ ] Payment Sheet / Payment Flow
 - [ ] Apple Pay
 - [ ] Google Pay
-- [ ] Identity Verification Sheet
+- [ ] Identity (@capacitor-community/stripe-identity)
+- [ ] Terminal（@capacitor-community/stripe-terminal）
