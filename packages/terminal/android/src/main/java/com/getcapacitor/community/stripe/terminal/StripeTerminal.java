@@ -7,12 +7,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
@@ -42,15 +40,14 @@ import com.stripe.stripeterminal.external.models.Reader;
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate;
 import com.stripe.stripeterminal.external.models.TerminalException;
 import com.stripe.stripeterminal.log.LogLevel;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class StripeTerminal extends Executor {
 
+    private TokenProvider tokenProvider;
     private Cancelable discoveryCancelable;
     private Cancelable collectCancelable;
     private List<Reader> readers;
@@ -61,10 +58,10 @@ public class StripeTerminal extends Executor {
     private TerminalConnectTypes terminalConnectType;
 
     public StripeTerminal(
-            Supplier<Context> contextSupplier,
-            Supplier<Activity> activitySupplier,
-            BiConsumer<String, JSObject> notifyListenersFunction,
-            String pluginLogTag
+        Supplier<Context> contextSupplier,
+        Supplier<Activity> activitySupplier,
+        BiConsumer<String, JSObject> notifyListenersFunction,
+        String pluginLogTag
     ) {
         super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "StripeTerminalExecutor");
         this.contextSupplier = contextSupplier;
@@ -77,21 +74,21 @@ public class StripeTerminal extends Executor {
         BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
         if (!bluetooth.isEnabled()) {
             if (
-                    ActivityCompat.checkSelfPermission(this.contextSupplier.get(), Manifest.permission.BLUETOOTH_CONNECT) ==
-                            PackageManager.PERMISSION_GRANTED
+                ActivityCompat.checkSelfPermission(this.contextSupplier.get(), Manifest.permission.BLUETOOTH_CONNECT) ==
+                PackageManager.PERMISSION_GRANTED
             ) {
                 bluetooth.enable();
             }
         }
 
         this.activitySupplier.get()
-                .runOnUiThread(
-                        () -> {
-                            TerminalApplicationDelegate.onCreate((Application) this.contextSupplier.get().getApplicationContext());
-                            notifyListeners(TerminalEnumEvent.Loaded.getWebEventName(), emptyObject);
-                            call.resolve();
-                        }
-                );
+            .runOnUiThread(
+                () -> {
+                    TerminalApplicationDelegate.onCreate((Application) this.contextSupplier.get().getApplicationContext());
+                    notifyListeners(TerminalEnumEvent.Loaded.getWebEventName(), emptyObject);
+                    call.resolve();
+                }
+            );
         TerminalListener listener = new TerminalListener() {
             @Override
             public void onUnexpectedReaderDisconnect(@NonNull Reader reader) {
@@ -100,24 +97,32 @@ public class StripeTerminal extends Executor {
 
             @Override
             public void onConnectionStatusChange(@NonNull ConnectionStatus status) {
-                 // TODO: Listenerを追加
+                // TODO: Listenerを追加
             }
 
             @Override
             public void onPaymentStatusChange(@NonNull PaymentStatus status) {
-                  // TODO: Listenerを追加
+                // TODO: Listenerを追加
             }
         };
         LogLevel logLevel = LogLevel.VERBOSE;
-        TokenProvider tokenProvider = new TokenProvider(this.contextSupplier, call.getString("tokenProviderEndpoint"));
+        this.tokenProvider =
+            new TokenProvider(this.contextSupplier, call.getString("tokenProviderEndpoint", ""), this.notifyListenersFunction);
         if (!Terminal.isInitialized()) {
-            Terminal.initTerminal(this.contextSupplier.get().getApplicationContext(), logLevel, tokenProvider, listener);
+            Terminal.initTerminal(this.contextSupplier.get().getApplicationContext(), logLevel, this.tokenProvider, listener);
         }
         Terminal.getInstance();
     }
 
-    public void onDiscoverReaders(final PluginCall call)  {
-        if (ActivityCompat.checkSelfPermission(this.contextSupplier.get(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    public void setConnectionToken(PluginCall call) {
+        this.tokenProvider.setConnectionToken(call);
+    }
+
+    public void onDiscoverReaders(final PluginCall call) {
+        if (
+            ActivityCompat.checkSelfPermission(this.contextSupplier.get(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
             Log.d(this.logTag, "android.permission.ACCESS_FINE_LOCATION permission is not granted.");
             call.reject("android.permission.ACCESS_FINE_LOCATION permission is not granted.");
             return;
@@ -134,7 +139,10 @@ public class StripeTerminal extends Executor {
         } else if (Objects.equals(call.getString("type"), TerminalConnectTypes.Usb.getWebEventName())) {
             config = new DiscoveryConfiguration.UsbDiscoveryConfiguration(0, this.isTest);
             this.terminalConnectType = TerminalConnectTypes.Usb;
-        } else if (Objects.equals(call.getString("type"), TerminalConnectTypes.Bluetooth.getWebEventName()) || Objects.equals(call.getString("type"), TerminalConnectTypes.Simulated.getWebEventName())) {
+        } else if (
+            Objects.equals(call.getString("type"), TerminalConnectTypes.Bluetooth.getWebEventName()) ||
+            Objects.equals(call.getString("type"), TerminalConnectTypes.Simulated.getWebEventName())
+        ) {
             config = new DiscoveryConfiguration.BluetoothDiscoveryConfiguration(0, this.isTest);
             this.terminalConnectType = TerminalConnectTypes.Bluetooth;
         } else {
@@ -156,21 +164,23 @@ public class StripeTerminal extends Executor {
             call.resolve(new JSObject().put("readers", readersJSObject));
         };
         discoveryCancelable =
-                Terminal.getInstance()
-                        .discoverReaders(
-                                config,
-                                discoveryListener,
-                                new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        Log.d(logTag, "Finished discovering readers");
-                                    }
-                                    @Override
-                                    public void onFailure(@NonNull TerminalException ex) {
-                                        Log.d(logTag, ex.getLocalizedMessage());
-                                    }
-                                }
-                        );
+            Terminal
+                .getInstance()
+                .discoverReaders(
+                    config,
+                    discoveryListener,
+                    new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(logTag, "Finished discovering readers");
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull TerminalException ex) {
+                            Log.d(logTag, ex.getLocalizedMessage());
+                        }
+                    }
+                );
     }
 
     public void connectReader(final PluginCall call) {
@@ -228,54 +238,30 @@ public class StripeTerminal extends Executor {
             return;
         }
 
-        LocalMobileConnectionConfiguration config = new LocalMobileConnectionConfiguration(
-            this.locationId
-        );
-        Terminal
-            .getInstance()
-            .connectLocalMobileReader(
-                this.readers.get(reader.getInteger("index")),
-                config,
-                this.readerCallback(call)
-            );
+        LocalMobileConnectionConfiguration config = new LocalMobileConnectionConfiguration(this.locationId);
+        Terminal.getInstance().connectLocalMobileReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
     }
 
     private void connectInternetReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
         InternetConnectionConfiguration config = new InternetConnectionConfiguration();
-        Terminal
-            .getInstance()
-            .connectInternetReader(
-                this.readers.get(reader.getInteger("index")),
-                config,
-                this.readerCallback(call)
-            );
+        Terminal.getInstance().connectInternetReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
     }
 
     private void connectUsbReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
         UsbConnectionConfiguration config = new UsbConnectionConfiguration(this.locationId);
         Terminal
-                .getInstance()
-                .connectUsbReader(
-                        this.readers.get(reader.getInteger("index")),
-                        config,
-                        this.readerListener(),
-                        this.readerCallback(call)
-                );
+            .getInstance()
+            .connectUsbReader(this.readers.get(reader.getInteger("index")), config, this.readerListener(), this.readerCallback(call));
     }
 
     private void connectBluetoothReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
         BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(this.locationId);
         Terminal
-                .getInstance()
-                .connectBluetoothReader(
-                        this.readers.get(reader.getInteger("index")),
-                        config,
-                        this.readerListener(),
-                        this.readerCallback(call)
-                );
+            .getInstance()
+            .connectBluetoothReader(this.readers.get(reader.getInteger("index")), config, this.readerListener(), this.readerCallback(call));
     }
 
     public void cancelDiscoverReaders(final PluginCall call) {
@@ -334,9 +320,7 @@ public class StripeTerminal extends Executor {
     private final PaymentIntentCallback createPaymentIntentCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(@NonNull PaymentIntent paymentIntent) {
-            CollectConfiguration collectConfig = new CollectConfiguration.Builder()
-                    .updatePaymentIntent(true)
-                    .build();
+            CollectConfiguration collectConfig = new CollectConfiguration.Builder().updatePaymentIntent(true).build();
             collectCancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, collectPaymentMethodCallback, collectConfig);
         }
 
@@ -355,12 +339,11 @@ public class StripeTerminal extends Executor {
             notifyListeners(TerminalEnumEvent.Completed.getWebEventName(), emptyObject);
 
             PaymentMethod pm = paymentIntent.getPaymentMethod();
-            CardPresentDetails card = pm.getCardPresentDetails() != null
-                    ? pm.getCardPresentDetails()
-                    : pm.getInteracPresentDetails();
+            CardPresentDetails card = pm.getCardPresentDetails() != null ? pm.getCardPresentDetails() : pm.getInteracPresentDetails();
 
             if (card != null) {
-                collectCall.resolve(new JSObject()
+                collectCall.resolve(
+                    new JSObject()
                         .put("brand", card.getBrand())
                         .put("cardholderName", card.getCardholderName())
                         .put("country", card.getCountry())
@@ -373,7 +356,6 @@ public class StripeTerminal extends Executor {
                         .put("last4", card.getLast4())
                         .put("networks", card.getNetworks())
                         .put("readMethod", card.getReadMethod())
-
                 );
             } else {
                 collectCall.resolve();
@@ -422,9 +404,7 @@ public class StripeTerminal extends Executor {
             }
 
             @Override
-            public void onReportLowBatteryWarning() {
-
-            }
+            public void onReportLowBatteryWarning() {}
 
             @Override
             public void onReportAvailableUpdate(@NotNull ReaderSoftwareUpdate update) {

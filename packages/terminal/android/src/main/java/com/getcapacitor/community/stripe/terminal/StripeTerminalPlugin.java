@@ -2,9 +2,7 @@ package com.getcapacitor.community.stripe.terminal;
 
 import android.Manifest;
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -34,6 +32,11 @@ public class StripeTerminalPlugin extends Plugin {
     @PluginMethod
     public void initialize(PluginCall call) throws TerminalException {
         this._initialize(call);
+    }
+
+    @PluginMethod
+    public void setConnectionToken(PluginCall call) {
+        this.implementation.setConnectionToken(call);
     }
 
     @PermissionCallback

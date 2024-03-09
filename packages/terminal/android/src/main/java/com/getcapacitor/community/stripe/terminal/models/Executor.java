@@ -2,9 +2,7 @@ package com.getcapacitor.community.stripe.terminal.models;
 
 import android.app.Activity;
 import android.content.Context;
-
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.JSObject;
 import com.google.android.gms.common.util.BiConsumer;
 

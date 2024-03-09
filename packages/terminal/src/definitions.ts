@@ -18,7 +18,7 @@ export type ReaderInterface = {
 export * from './events.enum';
 export interface StripeTerminalPlugin {
   initialize(options: {
-    tokenProviderEndpoint: string;
+    tokenProviderEndpoint?: string;
     isTest: boolean;
   }): Promise<void>;
   discoverReaders(options: {
@@ -27,6 +27,7 @@ export interface StripeTerminalPlugin {
   }): Promise<{
     readers: ReaderInterface[];
   }>;
+  setConnectionToken(options: { token: string }): Promise<void>;
   connectReader(options: { reader: ReaderInterface }): Promise<void>;
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
   disconnectReader(): Promise<void>;
@@ -35,6 +36,10 @@ export interface StripeTerminalPlugin {
   cancelCollect(): Promise<void>;
   addListener(
     eventName: TerminalEventsEnum.Loaded,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.RequestedConnectionToken,
     listenerFunc: () => void,
   ): PluginListenerHandle;
   addListener(

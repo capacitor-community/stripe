@@ -56,6 +56,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 
 ## Usage
 
+### use native http client for getting a token
+
 ```typescript
 (async ()=> {
   /**
@@ -73,12 +75,36 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 });
 ```
 
+### set string token
+
+```typescript
+(async ()=> {
+  // run before StripeTerminal.initialize
+  StripeTerminal.addListener(TerminalEventsEnum.RequestedConnectionToken, async () => {
+    const { token } = (await fetch("https://example.com/token")).json();
+    StripeTerminal.setConnectionToken({ token });
+  });
+});
+(async ()=> {
+  await StripeTerminal.initialize({ isTest: true })
+  const { readers } = await StripeTerminal.discoverReaders({
+    type: TerminalConnectTypes.TapToPay,
+    locationId: "**************",
+  });
+  await StripeTerminal.connectReader({
+    reader: readers[0],
+  });
+  await StripeTerminal.collect({ paymentIntent: "**************" });
+});
+````
+
 ## API
 
 <docgen-index>
 
 * [`initialize(...)`](#initialize)
 * [`discoverReaders(...)`](#discoverreaders)
+* [`setConnectionToken(...)`](#setconnectiontoken)
 * [`connectReader(...)`](#connectreader)
 * [`getConnectedReader()`](#getconnectedreader)
 * [`disconnectReader()`](#disconnectreader)
@@ -86,6 +112,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`collect(...)`](#collect)
 * [`cancelCollect()`](#cancelcollect)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
+* [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
 * [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
 * [`addListener(TerminalEventsEnum.Completed, ...)`](#addlistenerterminaleventsenumcompleted)
@@ -103,12 +130,12 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 ### initialize(...)
 
 ```typescript
-initialize(options: { tokenProviderEndpoint: string; isTest: boolean; }) => Promise<void>
+initialize(options: { tokenProviderEndpoint?: string; isTest: boolean; }) => Promise<void>
 ```
 
-| Param         | Type                                                             |
-| ------------- | ---------------------------------------------------------------- |
-| **`options`** | <code>{ tokenProviderEndpoint: string; isTest: boolean; }</code> |
+| Param         | Type                                                              |
+| ------------- | ----------------------------------------------------------------- |
+| **`options`** | <code>{ tokenProviderEndpoint?: string; isTest: boolean; }</code> |
 
 --------------------
 
@@ -124,6 +151,19 @@ discoverReaders(options: { type: TerminalConnectTypes; locationId?: string; }) =
 | **`options`** | <code>{ type: <a href="#terminalconnecttypes">TerminalConnectTypes</a>; locationId?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ readers: ReaderInterface[]; }&gt;</code>
+
+--------------------
+
+
+### setConnectionToken(...)
+
+```typescript
+setConnectionToken(options: { token: string; }) => Promise<void>
+```
+
+| Param         | Type                            |
+| ------------- | ------------------------------- |
+| **`options`** | <code>{ token: string; }</code> |
 
 --------------------
 
@@ -202,6 +242,22 @@ addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => P
 | ------------------ | ------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Loaded</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.RequestedConnectionToken, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestedConnectionToken</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                                 |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -322,15 +378,16 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 
 #### TerminalEventsEnum
 
-| Members                       | Value                                          |
-| ----------------------------- | ---------------------------------------------- |
-| **`Loaded`**                  | <code>'terminalLoaded'</code>                  |
-| **`DiscoveredReaders`**       | <code>'terminalDiscoveredReaders'</code>       |
-| **`CancelDiscoveredReaders`** | <code>'terminalCancelDiscoveredReaders'</code> |
-| **`ConnectedReader`**         | <code>'terminalConnectedReader'</code>         |
-| **`DisconnectedReader`**      | <code>'terminalDisconnectedReader'</code>      |
-| **`Completed`**               | <code>'terminalCompleted'</code>               |
-| **`Canceled`**                | <code>'terminalCanceled'</code>                |
-| **`Failed`**                  | <code>'terminalFailed'</code>                  |
+| Members                        | Value                                           |
+| ------------------------------ | ----------------------------------------------- |
+| **`Loaded`**                   | <code>'terminalLoaded'</code>                   |
+| **`DiscoveredReaders`**        | <code>'terminalDiscoveredReaders'</code>        |
+| **`CancelDiscoveredReaders`**  | <code>'terminalCancelDiscoveredReaders'</code>  |
+| **`ConnectedReader`**          | <code>'terminalConnectedReader'</code>          |
+| **`DisconnectedReader`**       | <code>'terminalDisconnectedReader'</code>       |
+| **`Completed`**                | <code>'terminalCompleted'</code>                |
+| **`Canceled`**                 | <code>'terminalCanceled'</code>                 |
+| **`Failed`**                   | <code>'terminalFailed'</code>                   |
+| **`RequestedConnectionToken`** | <code>'terminalRequestedConnectionToken'</code> |
 
 </docgen-api>
