@@ -53,9 +53,12 @@ public class StripeTerminal extends Executor {
     private List<Reader> readers;
     private String locationId;
     private PluginCall collectCall;
+    private PluginCall confirmPaymentIntentCall;
     private final JSObject emptyObject = new JSObject();
     private Boolean isTest;
     private TerminalConnectTypes terminalConnectType;
+
+    private PaymentIntent paymentIntent;
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -336,7 +339,7 @@ public class StripeTerminal extends Executor {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
             collectCancelable = null;
-            notifyListeners(TerminalEnumEvent.Completed.getWebEventName(), emptyObject);
+            notifyListeners(TerminalEnumEvent.CollectedPaymentIntent.getWebEventName(), emptyObject);
 
             PaymentMethod pm = paymentIntent.getPaymentMethod();
             CardPresentDetails card = pm.getCardPresentDetails() != null ? pm.getCardPresentDetails() : pm.getInteracPresentDetails();
@@ -367,6 +370,31 @@ public class StripeTerminal extends Executor {
             collectCancelable = null;
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
             collectCall.reject(ex.getLocalizedMessage(), ex);
+        }
+    };
+
+    public void confirmPaymentIntent(final PluginCall call) {
+        if (this.paymentIntent == null) {
+            call.reject("PaymentIntent not found for confirmPaymentIntent. Use collect method first and try again.");
+            return;
+        }
+
+        this.confirmPaymentIntentCall = call;
+        Terminal.getInstance().confirmPaymentIntent(this.paymentIntent, confirmPaymentMethodCallback);
+    }
+
+    private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {
+
+        @Override
+        public void onSuccess(PaymentIntent paymentIntent) {
+            notifyListeners(TerminalEnumEvent.ConfirmedPaymentIntent.getWebEventName(), emptyObject);
+            confirmPaymentIntentCall.resolve();
+        }
+
+        @Override
+        public void onFailure(TerminalException exception) {
+            notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
+            confirmPaymentIntentCall.reject(exception.getLocalizedMessage());
         }
     };
 

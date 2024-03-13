@@ -61,11 +61,16 @@ export class StripeTerminalWeb
 
   async collect(options: { paymentIntent: string }): Promise<void> {
     console.log('collect', options);
-    this.notifyListeners(TerminalEventsEnum.Completed, null);
+    this.notifyListeners(TerminalEventsEnum.CollectedPaymentIntent, null);
   }
 
   async cancelCollect(): Promise<void> {
     console.log('cancelCollect');
     this.notifyListeners(TerminalEventsEnum.Canceled, null);
+  }
+
+  async confirmPaymentIntent(): Promise<void> {
+    console.log('confirmPaymentIntent');
+    this.notifyListeners(TerminalEventsEnum.ConfirmedPaymentIntent, null);
   }
 }
