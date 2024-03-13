@@ -51,7 +51,11 @@ export interface StripeTerminalPlugin {
     listenerFunc: () => void,
   ): PluginListenerHandle;
   addListener(
-    eventName: TerminalEventsEnum.Completed,
+    eventName: TerminalEventsEnum.ConfirmedPaymentIntent,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.CollectedPaymentIntent,
     listenerFunc: () => void,
   ): PluginListenerHandle;
   addListener(
