@@ -71,7 +71,10 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
   await StripeTerminal.connectReader({
     reader: readers[0],
   });
+  // Collect payment intent
   await StripeTerminal.collect({ paymentIntent: "**************" });
+  // Process and confirm payment intent
+  await StripeTerminal.confirmPaymentIntent();
 });
 ```
 
@@ -94,7 +97,10 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
   await StripeTerminal.connectReader({
     reader: readers[0],
   });
+  // Collect payment intent
   await StripeTerminal.collect({ paymentIntent: "**************" });
+  // Process and confirm payment intent
+  await StripeTerminal.confirmPaymentIntent();
 });
 ````
 
@@ -115,7 +121,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
 * [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
-* [`addListener(TerminalEventsEnum.Completed, ...)`](#addlistenerterminaleventsenumcompleted)
+* [`addListener(TerminalEventsEnum.ConfirmedPaymentIntent, ...)`](#addlistenerterminaleventsenumconfirmedpaymentintent)
+* [`addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)`](#addlistenerterminaleventsenumcollectedpaymentintent)
 * [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
 * [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
 * [Interfaces](#interfaces)
@@ -296,16 +303,32 @@ addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => v
 --------------------
 
 
-### addListener(TerminalEventsEnum.Completed, ...)
+### addListener(TerminalEventsEnum.ConfirmedPaymentIntent, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.Completed, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.ConfirmedPaymentIntent, listenerFunc: () => void) => PluginListenerHandle
 ```
 
-| Param              | Type                                                                        |
-| ------------------ | --------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Completed</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                  |
+| Param              | Type                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConfirmedPaymentIntent</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                               |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.CollectedPaymentIntent, listenerFunc: () => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.CollectedPaymentIntent</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                               |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
@@ -385,7 +408,8 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | **`CancelDiscoveredReaders`**  | <code>'terminalCancelDiscoveredReaders'</code>  |
 | **`ConnectedReader`**          | <code>'terminalConnectedReader'</code>          |
 | **`DisconnectedReader`**       | <code>'terminalDisconnectedReader'</code>       |
-| **`Completed`**                | <code>'terminalCompleted'</code>                |
+| **`ConfirmedPaymentIntent`**   | <code>'terminalConfirmedPaymentIntent'</code>   |
+| **`CollectedPaymentIntent`**   | <code>'terminalCollectedPaymentIntent'</code>   |
 | **`Canceled`**                 | <code>'terminalCanceled'</code>                 |
 | **`Failed`**                   | <code>'terminalFailed'</code>                   |
 | **`RequestedConnectionToken`** | <code>'terminalRequestedConnectionToken'</code> |

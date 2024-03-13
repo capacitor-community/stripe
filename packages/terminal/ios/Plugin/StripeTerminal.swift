@@ -218,7 +218,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
         call.resolve()
     }
-    
+
     public func confirmPaymentIntent(_ call: CAPPluginCall) {
         if let paymentIntent = self.paymentIntent {
             Terminal.shared.confirmPaymentIntent(paymentIntent) { confirmResult, confirmError in

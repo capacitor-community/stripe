@@ -384,7 +384,6 @@ public class StripeTerminal extends Executor {
     }
 
     private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {
-
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
             notifyListeners(TerminalEnumEvent.ConfirmedPaymentIntent.getWebEventName(), emptyObject);
