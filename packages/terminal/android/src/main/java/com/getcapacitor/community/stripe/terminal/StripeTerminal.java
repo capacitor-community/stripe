@@ -57,8 +57,7 @@ public class StripeTerminal extends Executor {
     private final JSObject emptyObject = new JSObject();
     private Boolean isTest;
     private TerminalConnectTypes terminalConnectType;
-
-    private PaymentIntent paymentIntent;
+    private PaymentIntent paymentIntentInstance;
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -339,6 +338,7 @@ public class StripeTerminal extends Executor {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
             collectCancelable = null;
+            paymentIntentInstance = paymentIntent;
             notifyListeners(TerminalEnumEvent.CollectedPaymentIntent.getWebEventName(), emptyObject);
 
             PaymentMethod pm = paymentIntent.getPaymentMethod();
@@ -374,19 +374,20 @@ public class StripeTerminal extends Executor {
     };
 
     public void confirmPaymentIntent(final PluginCall call) {
-        if (this.paymentIntent == null) {
+        if (this.paymentIntentInstance == null) {
             call.reject("PaymentIntent not found for confirmPaymentIntent. Use collect method first and try again.");
             return;
         }
 
         this.confirmPaymentIntentCall = call;
-        Terminal.getInstance().confirmPaymentIntent(this.paymentIntent, confirmPaymentMethodCallback);
+        Terminal.getInstance().confirmPaymentIntent(this.paymentIntentInstance, confirmPaymentMethodCallback);
     }
 
     private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
             notifyListeners(TerminalEnumEvent.ConfirmedPaymentIntent.getWebEventName(), emptyObject);
+            paymentIntentInstance = null;
             confirmPaymentIntentCall.resolve();
         }
 
