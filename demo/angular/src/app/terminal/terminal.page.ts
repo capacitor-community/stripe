@@ -45,7 +45,11 @@ const happyPathItems: ITestItems [] = [
   },
   {
     type: 'event',
-    name: TerminalEventsEnum.Completed,
+    name: TerminalEventsEnum.ConfirmedPaymentIntent,
+  },
+  {
+    type: 'event',
+    name: TerminalEventsEnum.CollectedPaymentIntent,
   },
 ];
 
@@ -221,6 +225,8 @@ export class TerminalPage {
           throw e;
         });
       await this.helper.updateItem(this.eventItems,'cancelCollect', true);
+    } else {
+      await StripeTerminal.confirmPaymentIntent();
     }
 
     this.listenerHandlers.forEach(handler => handler.remove());
