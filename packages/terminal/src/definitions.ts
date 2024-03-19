@@ -34,6 +34,7 @@ export interface StripeTerminalPlugin {
   cancelDiscoverReaders(): Promise<void>;
   collect(options: { paymentIntent: string }): Promise<void>;
   cancelCollect(): Promise<void>;
+  confirmPaymentIntent(): Promise<void>;
   addListener(
     eventName: TerminalEventsEnum.Loaded,
     listenerFunc: () => void,
@@ -51,7 +52,11 @@ export interface StripeTerminalPlugin {
     listenerFunc: () => void,
   ): PluginListenerHandle;
   addListener(
-    eventName: TerminalEventsEnum.Completed,
+    eventName: TerminalEventsEnum.ConfirmedPaymentIntent,
+    listenerFunc: () => void,
+  ): PluginListenerHandle;
+  addListener(
+    eventName: TerminalEventsEnum.CollectedPaymentIntent,
     listenerFunc: () => void,
   ): PluginListenerHandle;
   addListener(

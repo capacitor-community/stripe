@@ -101,4 +101,9 @@ public class StripeTerminalPlugin extends Plugin {
     public void cancelCollect(final PluginCall call) {
         this.implementation.cancelCollect(call);
     }
+
+    @PluginMethod
+    public void confirmPaymentIntent(PluginCall call) {
+        this.implementation.confirmPaymentIntent(call);
+    }
 }

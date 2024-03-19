@@ -13,6 +13,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     var collectCancelable: Cancelable?
     var type: DiscoveryMethod?
     var isInitialize: Bool = false
+    var paymentIntent: PaymentIntent?
 
     var readers: [Reader]?
 
@@ -192,7 +193,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                         self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: [:])
                         call.reject(error.localizedDescription)
                     } else if let paymentIntent = collectResult {
-                        self.plugin?.notifyListeners(TerminalEvents.Completed.rawValue, data: [:])
+                        self.plugin?.notifyListeners(TerminalEvents.CollectedPaymentIntent.rawValue, data: [:])
+                        self.paymentIntent = paymentIntent
                         call.resolve()
                     }
                 }
@@ -208,12 +210,31 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 } else {
                     self.plugin?.notifyListeners(TerminalEvents.Canceled.rawValue, data: [:])
                     self.collectCancelable = nil
+                    self.paymentIntent = nil
                     call.resolve()
                 }
             }
             return
         }
         call.resolve()
+    }
+
+    public func confirmPaymentIntent(_ call: CAPPluginCall) {
+        if let paymentIntent = self.paymentIntent {
+            Terminal.shared.confirmPaymentIntent(paymentIntent) { confirmResult, confirmError in
+                if let error = confirmError {
+                    print("confirmPaymentIntent failed: \(error)")
+                    self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: [:])
+                    call.reject(error.localizedDescription)
+                } else if let confirmedIntent = confirmResult {
+                    print("PaymentIntent confirmed: \(confirmedIntent)")
+                    self.plugin?.notifyListeners(TerminalEvents.ConfirmedPaymentIntent.rawValue, data: [:])
+                    call.resolve()
+                }
+            }
+        } else {
+            call.reject("PaymentIntent not found for confirmPaymentIntent. Use collect method first and try again.")
+        }
     }
 
     // localMobile
