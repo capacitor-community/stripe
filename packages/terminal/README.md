@@ -117,6 +117,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`cancelDiscoverReaders()`](#canceldiscoverreaders)
 * [`collect(...)`](#collect)
 * [`cancelCollect()`](#cancelcollect)
+* [`confirmPaymentIntent()`](#confirmpaymentintent)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
@@ -234,6 +235,15 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 
 ```typescript
 cancelCollect() => Promise<void>
+```
+
+--------------------
+
+
+### confirmPaymentIntent()
+
+```typescript
+confirmPaymentIntent() => Promise<void>
 ```
 
 --------------------
