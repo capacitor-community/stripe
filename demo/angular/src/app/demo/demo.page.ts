@@ -1,17 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
-    AddressCollectionMode,
-    ApplePayEventsEnum, CollectionMode, CreatePaymentSheetOption,
-    GooglePayEventsEnum,
-    PaymentFlowEventsEnum,
-    PaymentSheetEventsEnum,
-    Stripe
+  ApplePayEventsEnum,
+  CreatePaymentSheetOption,
+  GooglePayEventsEnum,
+  PaymentFlowEventsEnum,
+  PaymentSheetEventsEnum,
+  Stripe
 } from '@capacitor-community/stripe';
 
-import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonLabel, IonItem } from "@ionic/angular/standalone";
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {firstValueFrom} from 'rxjs';
+import {
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonTitle,
+  IonToolbar
+} from "@ionic/angular/standalone";
 
 @Component({
     selector: 'app-demo',

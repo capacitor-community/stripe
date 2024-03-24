@@ -2,9 +2,7 @@ package com.getcapacitor.community.stripe.paymentsheet;
 
 import android.app.Activity;
 import android.content.Context;
-
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
@@ -67,30 +65,38 @@ public class PaymentSheetExecutor extends Executor {
 
         PaymentSheet.BillingDetailsCollectionConfiguration billingDetailsCollectionConfiguration = null;
         JSObject bdCollectionConfiguration = call.getObject("billingDetailsCollectionConfiguration", null);
-        if (bdCollectionConfiguration != null){
+        if (bdCollectionConfiguration != null) {
             String emailCollectionMode = bdCollectionConfiguration.getString("email");
             String nameCollectionMode = bdCollectionConfiguration.getString("name");
             String phoneCollectionMode = bdCollectionConfiguration.getString("phone");
             String addressCollectionMode = bdCollectionConfiguration.getString("address");
-            billingDetailsCollectionConfiguration = new PaymentSheet.BillingDetailsCollectionConfiguration(
-                    (nameCollectionMode != null && nameCollectionMode.equals("always")) ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
-                    (phoneCollectionMode != null && phoneCollectionMode.equals("always")) ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
-                    (emailCollectionMode != null && emailCollectionMode.equals("always")) ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
-                    (addressCollectionMode != null && addressCollectionMode.equals("full")) ? PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Full : PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Automatic,
+            billingDetailsCollectionConfiguration =
+                new PaymentSheet.BillingDetailsCollectionConfiguration(
+                    (nameCollectionMode != null && nameCollectionMode.equals("always"))
+                        ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
+                        : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
+                    (phoneCollectionMode != null && phoneCollectionMode.equals("always"))
+                        ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
+                        : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
+                    (emailCollectionMode != null && emailCollectionMode.equals("always"))
+                        ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
+                        : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
+                    (addressCollectionMode != null && addressCollectionMode.equals("full"))
+                        ? PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Full
+                        : PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Automatic,
                     false
-            );
+                );
         }
 
         if (!enableGooglePay) {
             if (bdCollectionConfiguration != null) {
-                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                paymentConfiguration =
+                    new PaymentSheet.Configuration.Builder(merchantDisplayName)
                         .customer(customer)
                         .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
                         .build();
             } else {
-                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
-                        .customer(customer)
-                        .build();
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName).customer(customer).build();
             }
         } else {
             Boolean GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false);
@@ -102,18 +108,19 @@ public class PaymentSheetExecutor extends Executor {
             }
 
             if (bdCollectionConfiguration != null) {
-                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                paymentConfiguration =
+                    new PaymentSheet.Configuration.Builder(merchantDisplayName)
                         .customer(customer)
                         .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
                         .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
                         .build();
             } else {
-                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                paymentConfiguration =
+                    new PaymentSheet.Configuration.Builder(merchantDisplayName)
                         .customer(customer)
                         .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
                         .build();
             }
-
         }
 
         notifyListenersFunction.accept(PaymentSheetEvents.Loaded.getWebEventName(), emptyObject);

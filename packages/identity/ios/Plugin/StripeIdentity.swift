@@ -7,7 +7,7 @@ import StripeIdentity
     var identityVerificationSheet: IdentityVerificationSheet?
 
     func initialize(_ call: CAPPluginCall) {
-        call.resolve();
+        call.resolve()
     }
 
     func create(_ call: CAPPluginCall) {

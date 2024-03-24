@@ -2,16 +2,13 @@ package com.getcapacitor.community.stripe.googlepay;
 
 import android.app.Activity;
 import android.content.Context;
-
 import androidx.core.util.Supplier;
-
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
-
 import org.jetbrains.annotations.NotNull;
 
 public class GooglePayExecutor extends Executor {

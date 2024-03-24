@@ -1,17 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { FormsModule } from '@angular/forms';
-import { Platform } from '@ionic/angular/standalone';
-import { HttpClient } from '@angular/common/http';
-import { HelperService } from '../shared/helper.service';
-import { StripeTerminal, TerminalConnectTypes, TerminalEventsEnum } from '@capacitor-community/stripe-terminal';
-import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
-import { ITestItems } from '../shared/interfaces';
-import { PluginListenerHandle } from '@capacitor/core';
-import { addIcons } from "ionicons";
-import { playOutline, notificationsCircleOutline, checkmarkCircle } from "ionicons/icons";
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonLabel, IonItemDivider, IonItem, IonIcon } from "@ionic/angular/standalone";
+import {FormsModule} from '@angular/forms';
+import {
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonItemDivider,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonTitle,
+  IonToolbar,
+  Platform
+} from '@ionic/angular/standalone';
+import {HttpClient} from '@angular/common/http';
+import {HelperService} from '../shared/helper.service';
+import {StripeTerminal, TerminalConnectTypes, TerminalEventsEnum} from '@capacitor-community/stripe-terminal';
+import {environment} from '../../environments/environment';
+import {firstValueFrom} from 'rxjs';
+import {ITestItems} from '../shared/interfaces';
+import {PluginListenerHandle} from '@capacitor/core';
+import {addIcons} from "ionicons";
+import {checkmarkCircle, notificationsCircleOutline, playOutline} from "ionicons/icons";
 
 const happyPathItems: ITestItems[] = [
     {

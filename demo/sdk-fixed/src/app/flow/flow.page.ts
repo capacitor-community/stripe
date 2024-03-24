@@ -1,15 +1,24 @@
-import { Component } from '@angular/core';
-import { ITestItems } from '../shared/interfaces';
-import { PaymentFlowEventsEnum, Stripe } from '@capacitor-community/stripe';
-import { PluginListenerHandle } from '@capacitor/core';
-import { HttpClient } from '@angular/common/http';
-import { HelperService } from '../shared/helper.service';
-import { environment } from '../../environments/environment';
-import { first } from 'rxjs/operators';
-import { firstValueFrom } from 'rxjs';
-import { addIcons } from "ionicons";
-import { playOutline, notificationsCircleOutline, checkmarkCircle } from "ionicons/icons";
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonLabel, IonItem, IonIcon } from "@ionic/angular/standalone";
+import {Component} from '@angular/core';
+import {ITestItems} from '../shared/interfaces';
+import {PaymentFlowEventsEnum, Stripe} from '@capacitor-community/stripe';
+import {PluginListenerHandle} from '@capacitor/core';
+import {HttpClient} from '@angular/common/http';
+import {HelperService} from '../shared/helper.service';
+import {environment} from '../../environments/environment';
+import {firstValueFrom} from 'rxjs';
+import {addIcons} from "ionicons";
+import {checkmarkCircle, notificationsCircleOutline, playOutline} from "ionicons/icons";
+import {
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonTitle,
+  IonToolbar
+} from "@ionic/angular/standalone";
 
 const happyPathItems: ITestItems[] = [
     {

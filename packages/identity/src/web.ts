@@ -48,17 +48,17 @@ export class StripeIdentityWeb
     if (error) {
       const { code, message } = error;
       if (code === 'session_cancelled') {
-        this.notifyListeners(
-          IdentityVerificationSheetEventsEnum.Canceled,
-          { message },
-        );
+        this.notifyListeners(IdentityVerificationSheetEventsEnum.Canceled, {
+          message,
+        });
         return {
           identityVerificationResult:
             IdentityVerificationSheetEventsEnum.Canceled,
         };
       }
-      this.notifyListeners(IdentityVerificationSheetEventsEnum.Failed,
-        { message });
+      this.notifyListeners(IdentityVerificationSheetEventsEnum.Failed, {
+        message,
+      });
       return {
         identityVerificationResult: IdentityVerificationSheetEventsEnum.Failed,
       };

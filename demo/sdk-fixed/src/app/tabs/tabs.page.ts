@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { addIcons } from "ionicons";
-import { chevronForwardCircleOutline, tabletLandscapeOutline, copyOutline } from "ionicons/icons";
-import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from "@ionic/angular/standalone";
+import {Component} from '@angular/core';
+import {addIcons} from "ionicons";
+import {chevronForwardCircleOutline, copyOutline, tabletLandscapeOutline} from "ionicons/icons";
+import {IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs} from "@ionic/angular/standalone";
 
 @Component({
     selector: 'app-tabs',

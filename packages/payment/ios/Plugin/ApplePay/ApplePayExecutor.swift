@@ -141,8 +141,8 @@ extension ApplePayExecutor {
         self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray])
 
         // Check allowed countries
-        if (!self.allowedCountries.isEmpty) {
-            let addressIsoCountry = (contact.postalAddress?.isoCountryCode as? String ?? "").lowercased();
+        if !self.allowedCountries.isEmpty {
+            let addressIsoCountry = (contact.postalAddress?.isoCountryCode as? String ?? "").lowercased()
             if !self.allowedCountries.contains(addressIsoCountry) {
                 handler(PKPaymentRequestShippingContactUpdate.init(
                     errors: [PKPaymentRequest.paymentShippingAddressInvalidError(withKey: CNPostalAddressISOCountryCodeKey, localizedDescription: self.allowedCountriesErrorDescription)],

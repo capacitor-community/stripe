@@ -16,7 +16,7 @@ public class StripeIdentityPlugin: CAPPlugin {
         self.implementation.plugin = self
         STPAPIClient.shared.appInfo = STPAppInfo(name: "@capacitor-community/stripe-identity", partnerId: nil, version: nil, url: nil)
     }
-    
+
     @objc func initialize(_ call: CAPPluginCall) {
         self.implementation.initialize(call)
     }
