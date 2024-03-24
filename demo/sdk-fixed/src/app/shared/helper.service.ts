@@ -1,18 +1,22 @@
-import {Injectable, NgZone} from '@angular/core';
-import {ITestItems} from './interfaces';
+import { Injectable, NgZone } from '@angular/core';
+import { ITestItems } from './interfaces';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
-
-  constructor(private zone: NgZone) { }
+  constructor(private zone: NgZone) {}
 
   /**
    * items is not Deep Copy, this is substitution
    */
-  public async updateItem(items: ITestItems[], name: string, result: boolean, value: any = undefined) {
-    await new Promise<void>(resolve => {
+  public async updateItem(
+    items: ITestItems[],
+    name: string,
+    result: boolean,
+    value: any = undefined,
+  ) {
+    await new Promise<void>((resolve) => {
       this.zone.run(() => {
         let isChanged = false;
         items = items.map((item) => {
@@ -37,6 +41,6 @@ export class HelperService {
   }
 
   private receiveErrorValue(value: any): boolean {
-    return value.hasOwnProperty('code') &&  value.hasOwnProperty('message');
+    return value.hasOwnProperty('code') && value.hasOwnProperty('message');
   }
 }

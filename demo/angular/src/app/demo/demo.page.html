@@ -1,52 +1,166 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>
-      DEMO
-    </ion-title>
+    <ion-title> DEMO </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-list>
     <ion-list-header><ion-label>PaymentSheet</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createPaymentSheet()" [disabled]="processSheet !== 'willReady'"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentPaymentSheet()" [disabled]="processSheet !== 'Ready'"><ion-label>present</ion-label></ion-item>
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createPaymentSheet()"
+      [disabled]="processSheet !== 'willReady'"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentPaymentSheet()"
+      [disabled]="processSheet !== 'Ready'"
+      ><ion-label>present</ion-label></ion-item
+    >
   </ion-list>
   <ion-list>
-    <ion-list-header><ion-label>PaymentSheet without customer</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createPaymentSheet(false)" [disabled]="processSheet !== 'willReady'"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentPaymentSheet()" [disabled]="processSheet !== 'Ready'"><ion-label>present</ion-label></ion-item>
+    <ion-list-header
+      ><ion-label>PaymentSheet without customer</ion-label></ion-list-header
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createPaymentSheet(false)"
+      [disabled]="processSheet !== 'willReady'"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentPaymentSheet()"
+      [disabled]="processSheet !== 'Ready'"
+      ><ion-label>present</ion-label></ion-item
+    >
   </ion-list>
   <ion-list>
-    <ion-list-header><ion-label>PaymentSheet with billing details</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createPaymentSheet(false, true)" [disabled]="processSheet !== 'willReady'"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentPaymentSheet()" [disabled]="processSheet !== 'Ready'"><ion-label>present</ion-label></ion-item>
+    <ion-list-header
+      ><ion-label>PaymentSheet with billing details</ion-label></ion-list-header
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createPaymentSheet(false, true)"
+      [disabled]="processSheet !== 'willReady'"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentPaymentSheet()"
+      [disabled]="processSheet !== 'Ready'"
+      ><ion-label>present</ion-label></ion-item
+    >
   </ion-list>
   <ion-list>
-    <ion-list-header><ion-label>PaymentSheet with setupIntent</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createPaymentSheetWithSetupIntent()" [disabled]="processSheet !== 'willReady'"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentPaymentSheet()" [disabled]="processSheet !== 'Ready'"><ion-label>present</ion-label></ion-item>
+    <ion-list-header
+      ><ion-label>PaymentSheet with setupIntent</ion-label></ion-list-header
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createPaymentSheetWithSetupIntent()"
+      [disabled]="processSheet !== 'willReady'"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentPaymentSheet()"
+      [disabled]="processSheet !== 'Ready'"
+      ><ion-label>present</ion-label></ion-item
+    >
   </ion-list>
   <ion-list>
     <ion-list-header><ion-label>PaymentFlow</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createPaymentFlow()" [disabled]="processFlow !== 'willReady'"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentPaymentFlow()" [disabled]="processFlow !== 'Ready'"><ion-label>present</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="confirmPaymentFlow()" [disabled]="processFlow !== 'canConfirm'"><ion-label>confirm</ion-label></ion-item>
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createPaymentFlow()"
+      [disabled]="processFlow !== 'willReady'"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentPaymentFlow()"
+      [disabled]="processFlow !== 'Ready'"
+      ><ion-label>present</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="confirmPaymentFlow()"
+      [disabled]="processFlow !== 'canConfirm'"
+      ><ion-label>confirm</ion-label></ion-item
+    >
   </ion-list>
   <ion-list>
-    <ion-list-header><ion-label>PaymentFlow without customer</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createPaymentFlow()" [disabled]="processFlow !== 'willReady'"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentPaymentFlow()" [disabled]="processFlow !== 'Ready'"><ion-label>present</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="confirmPaymentFlow()" [disabled]="processFlow !== 'canConfirm'"><ion-label>confirm</ion-label></ion-item>
+    <ion-list-header
+      ><ion-label>PaymentFlow without customer</ion-label></ion-list-header
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createPaymentFlow()"
+      [disabled]="processFlow !== 'willReady'"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentPaymentFlow()"
+      [disabled]="processFlow !== 'Ready'"
+      ><ion-label>present</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="confirmPaymentFlow()"
+      [disabled]="processFlow !== 'canConfirm'"
+      ><ion-label>confirm</ion-label></ion-item
+    >
   </ion-list>
   <ion-list>
     <ion-list-header><ion-label>ApplePay</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createApplePay()" [disabled]="processApplePay !== 'willReady' || !isApplePayAvailable"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentApplePay()" [disabled]="processApplePay !== 'Ready' || !isApplePayAvailable"><ion-label>present</ion-label></ion-item>
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createApplePay()"
+      [disabled]="processApplePay !== 'willReady' || !isApplePayAvailable"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentApplePay()"
+      [disabled]="processApplePay !== 'Ready' || !isApplePayAvailable"
+      ><ion-label>present</ion-label></ion-item
+    >
   </ion-list>
   <ion-list>
     <ion-list-header><ion-label>GooglePay</ion-label></ion-list-header>
-    <ion-item button="true" detail="true" (click)="createGooglePay()" [disabled]="processGooglePay !== 'willReady' || !isGooglePayAvailable"><ion-label>create</ion-label></ion-item>
-    <ion-item button="true" detail="true" (click)="presentGooglePay()" [disabled]="processGooglePay !== 'Ready' || !isGooglePayAvailable"><ion-label>present</ion-label></ion-item>
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="createGooglePay()"
+      [disabled]="processGooglePay !== 'willReady' || !isGooglePayAvailable"
+      ><ion-label>create</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      (click)="presentGooglePay()"
+      [disabled]="processGooglePay !== 'Ready' || !isGooglePayAvailable"
+      ><ion-label>present</ion-label></ion-item
+    >
   </ion-list>
 </ion-content>

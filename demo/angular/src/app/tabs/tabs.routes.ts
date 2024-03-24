@@ -1,10 +1,10 @@
-import {Routes} from '@angular/router';
-import {TabsPage} from './tabs.page';
-import {DemoPage} from '../demo/demo.page';
-import {SheetPage} from '../sheet/sheet.page';
-import {FlowPage} from '../flow/flow.page';
-import {IdentityPage} from '../identity/identity.page';
-import {TerminalPage} from '../terminal/terminal.page';
+import { Routes } from '@angular/router';
+import { TabsPage } from './tabs.page';
+import { DemoPage } from '../demo/demo.page';
+import { SheetPage } from '../sheet/sheet.page';
+import { FlowPage } from '../flow/flow.page';
+import { IdentityPage } from '../identity/identity.page';
+import { TerminalPage } from '../terminal/terminal.page';
 
 export const routes: Routes = [
   {
@@ -34,13 +34,13 @@ export const routes: Routes = [
       {
         path: '',
         redirectTo: '/tabs/tab1',
-        pathMatch: 'full'
-      }
-    ]
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: '',
     redirectTo: '/tabs/demo',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];
