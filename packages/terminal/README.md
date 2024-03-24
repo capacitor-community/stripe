@@ -126,6 +126,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)`](#addlistenerterminaleventsenumcollectedpaymentintent)
 * [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
 * [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
+* [`collect(...)`](#collect)
+* [`cancelCollect(...)`](#cancelcollect)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -373,6 +375,38 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | **`listenerFunc`** | <code>() =&gt; void</code>                                               |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### collect(...)
+
+```typescript
+collect(options: { paymentIntent: string; }) => Promise<void>
+```
+
+This method has been deprecated and replaced by the `collectPaymentMethod`.
+Similarly, note that TerminalEvents.Completed is now obsolete.
+And, method `confirmPaymentIntent` added to be executed after `collectPaymentMethod` is executed.
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ paymentIntent: string; }</code> |
+
+--------------------
+
+
+### cancelCollect(...)
+
+```typescript
+cancelCollect(options: { paymentIntent: string; }) => Promise<void>
+```
+
+This method has been deprecated and replaced by the `cancelCollectPaymentMethod`.
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ paymentIntent: string; }</code> |
 
 --------------------
 

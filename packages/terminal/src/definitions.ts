@@ -67,4 +67,20 @@ export interface StripeTerminalPlugin {
     eventName: TerminalEventsEnum.Failed,
     listenerFunc: () => void,
   ): PluginListenerHandle;
+
+  /**
+   * This method has been deprecated and replaced by the `collectPaymentMethod`.
+   * Similarly, note that TerminalEvents.Completed is now obsolete.
+   * And, method `confirmPaymentIntent` added to be executed after `collectPaymentMethod` is executed.
+   *
+   * @deprecated
+   */
+  collect(options: { paymentIntent: string }): Promise<void>;
+
+  /**
+   * This method has been deprecated and replaced by the `cancelCollectPaymentMethod`.
+   *
+   * @deprecated
+   */
+  cancelCollect(options: { paymentIntent: string }): Promise<void>;
 }
