@@ -6,7 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
 import {environment} from '../../environments/environment';
 import {first} from 'rxjs/operators';
-import {NgFor, NgIf} from '@angular/common';
+
 import {IonicModule} from '@ionic/angular';
 import {firstValueFrom} from 'rxjs';
 
@@ -64,10 +64,8 @@ const cancelPathItems: ITestItems [] = [
     styleUrls: ['./identity.page.scss'],
     standalone: true,
     imports: [
-        IonicModule,
-        NgIf,
-        NgFor,
-    ],
+    IonicModule
+],
 })
 export class IdentityPage {
   public eventItems: ITestItems [] = [];

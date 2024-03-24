@@ -6,7 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
 import {environment} from '../../environments/environment';
 import {first} from 'rxjs/operators';
-import {NgFor, NgIf} from '@angular/common';
+
 import {IonicModule} from '@ionic/angular';
 import {firstValueFrom} from 'rxjs';
 
@@ -74,7 +74,7 @@ const cancelPathItems: ITestItems [] = [
     templateUrl: 'flow.page.html',
     styleUrls: ['flow.page.scss'],
     standalone: true,
-    imports: [IonicModule, NgIf, NgFor]
+    imports: [IonicModule]
 })
 export class FlowPage {
   public eventItems: ITestItems [] = [];

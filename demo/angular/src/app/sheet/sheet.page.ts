@@ -6,7 +6,7 @@ import {first} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
 import {HelperService} from '../shared/helper.service';
 import {PluginListenerHandle} from '@capacitor/core';
-import {NgFor, NgIf} from '@angular/common';
+
 import {IonicModule} from '@ionic/angular';
 import {firstValueFrom} from 'rxjs';
 
@@ -63,7 +63,7 @@ const cancelPathItems: ITestItems [] = [
     templateUrl: 'sheet.page.html',
     styleUrls: ['sheet.page.scss'],
     standalone: true,
-    imports: [IonicModule, NgIf, NgFor]
+    imports: [IonicModule]
 })
 export class SheetPage {
   public eventItems: ITestItems [] = [];
