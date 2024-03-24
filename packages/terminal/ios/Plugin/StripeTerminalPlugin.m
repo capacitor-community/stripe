@@ -11,7 +11,7 @@ CAP_PLUGIN(StripeTerminalPlugin, "StripeTerminal",
            CAP_PLUGIN_METHOD(connectReader, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getConnectedReader, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(disconnectReader, CAPPluginReturnPromise);
-           CAP_PLUGIN_METHOD(collect, CAPPluginReturnPromise);
-           CAP_PLUGIN_METHOD(cancelCollect, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(collectPaymentMethod, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(cancelCollectPaymentMethod, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(confirmPaymentIntent, CAPPluginReturnPromise);
 )

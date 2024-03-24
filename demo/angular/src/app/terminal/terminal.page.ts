@@ -63,7 +63,7 @@ const happyPathItems: ITestItems[] = [
   },
   {
     type: 'method',
-    name: 'collect',
+    name: 'collectPaymentMethod',
   },
   {
     type: 'event',
@@ -110,11 +110,11 @@ const cancelPathItems: ITestItems[] = [
   },
   {
     type: 'method',
-    name: 'collect',
+    name: 'collectPaymentMethod',
   },
   {
     type: 'method',
-    name: 'cancelCollect',
+    name: 'cancelCollectPaymentMethod',
   },
   {
     type: 'event',
@@ -281,20 +281,20 @@ export class TerminalPage {
       true,
     );
 
-    await StripeTerminal.collect({ paymentIntent })
-      .then(() => this.helper.updateItem(this.eventItems, 'collect', true))
+    await StripeTerminal.collectPaymentMethod({ paymentIntent })
+      .then(() => this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true))
       .catch(async (e) => {
-        await this.helper.updateItem(this.eventItems, 'collect', false);
+        await this.helper.updateItem(this.eventItems, 'collectPaymentMethod', false);
         throw e;
       });
 
     if (type === 'cancelPath') {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      await StripeTerminal.cancelCollect().catch(async (e) => {
-        await this.helper.updateItem(this.eventItems, 'cancelCollect', false);
+      await StripeTerminal.cancelCollectPaymentMethod().catch(async (e) => {
+        await this.helper.updateItem(this.eventItems, 'cancelCollectPaymentMethod', false);
         throw e;
       });
-      await this.helper.updateItem(this.eventItems, 'cancelCollect', true);
+      await this.helper.updateItem(this.eventItems, 'cancelCollectPaymentMethod', true);
     } else {
       await StripeTerminal.confirmPaymentIntent();
       await this.helper.updateItem(

@@ -287,7 +287,7 @@ public class StripeTerminal extends Executor {
         }
     }
 
-    public void collect(final PluginCall call) {
+    public void collectPaymentMethod(final PluginCall call) {
         if (call.getString("paymentIntent") == null) {
             call.reject("The value of paymentIntent is not set correctly.");
             return;
@@ -296,7 +296,7 @@ public class StripeTerminal extends Executor {
         Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"), createPaymentIntentCallback);
     }
 
-    public void cancelCollect(final PluginCall call) {
+    public void cancelCollectPaymentMethod(final PluginCall call) {
         if (this.collectCancelable == null || this.collectCancelable.isCompleted()) {
             call.resolve();
             return;

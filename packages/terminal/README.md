@@ -72,7 +72,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
     reader: readers[0],
   });
   // Collect payment intent
-  await StripeTerminal.collect({ paymentIntent: "**************" });
+  await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
   // Process and confirm payment intent
   await StripeTerminal.confirmPaymentIntent();
 });
@@ -98,7 +98,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
     reader: readers[0],
   });
   // Collect payment intent
-  await StripeTerminal.collect({ paymentIntent: "**************" });
+  await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
   // Process and confirm payment intent
   await StripeTerminal.confirmPaymentIntent();
 });
@@ -115,8 +115,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`getConnectedReader()`](#getconnectedreader)
 * [`disconnectReader()`](#disconnectreader)
 * [`cancelDiscoverReaders()`](#canceldiscoverreaders)
-* [`collect(...)`](#collect)
-* [`cancelCollect()`](#cancelcollect)
+* [`collectPaymentMethod(...)`](#collectpaymentmethod)
+* [`cancelCollectPaymentMethod()`](#cancelcollectpaymentmethod)
 * [`confirmPaymentIntent()`](#confirmpaymentintent)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
@@ -218,10 +218,10 @@ cancelDiscoverReaders() => Promise<void>
 --------------------
 
 
-### collect(...)
+### collectPaymentMethod(...)
 
 ```typescript
-collect(options: { paymentIntent: string; }) => Promise<void>
+collectPaymentMethod(options: { paymentIntent: string; }) => Promise<void>
 ```
 
 | Param         | Type                                    |
@@ -231,10 +231,10 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 --------------------
 
 
-### cancelCollect()
+### cancelCollectPaymentMethod()
 
 ```typescript
-cancelCollect() => Promise<void>
+cancelCollectPaymentMethod() => Promise<void>
 ```
 
 --------------------

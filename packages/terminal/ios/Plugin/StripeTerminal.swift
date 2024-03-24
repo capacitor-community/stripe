@@ -183,7 +183,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
-    public func collect(_ call: CAPPluginCall) {
+    public func collectPaymentMethod(_ call: CAPPluginCall) {
         Terminal.shared.retrievePaymentIntent(clientSecret: call.getString("paymentIntent")!) { retrieveResult, retrieveError in
             if let error = retrieveError {
                 print("retrievePaymentIntent failed: \(error)")
@@ -202,7 +202,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
-    public func cancelCollect(_ call: CAPPluginCall) {
+    public func cancelCollectPaymentMethod(_ call: CAPPluginCall) {
         if let cancelable = self.collectCancelable {
             cancelable.cancel { error in
                 if let error = error {

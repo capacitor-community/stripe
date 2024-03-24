@@ -93,13 +93,13 @@ public class StripeTerminalPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void collect(PluginCall call) {
-        this.implementation.collect(call);
+    public void collectPaymentMethod(PluginCall call) {
+        this.implementation.collectPaymentMethod(call);
     }
 
     @PluginMethod
-    public void cancelCollect(final PluginCall call) {
-        this.implementation.cancelCollect(call);
+    public void cancelCollectPaymentMethod(final PluginCall call) {
+        this.implementation.cancelCollectPaymentMethod(call);
     }
 
     @PluginMethod
