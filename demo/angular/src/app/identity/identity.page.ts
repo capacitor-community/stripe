@@ -1,61 +1,62 @@
-import {Component} from '@angular/core';
-import {ITestItems} from '../shared/interfaces';
-import {IdentityVerificationSheetEventsEnum, StripeIdentity} from '@capacitor-community/stripe-identity';
-import {PluginListenerHandle} from '@capacitor/core';
-import {HttpClient} from '@angular/common/http';
-import {HelperService} from '../shared/helper.service';
-import {environment} from '../../environments/environment';
-import {first} from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { ITestItems } from '../shared/interfaces';
+import { IdentityVerificationSheetEventsEnum, StripeIdentity } from '@capacitor-community/stripe-identity';
+import { PluginListenerHandle } from '@capacitor/core';
+import { HttpClient } from '@angular/common/http';
+import { HelperService } from '../shared/helper.service';
+import { environment } from '../../environments/environment';
+import { first } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
+import { addIcons } from "ionicons";
+import { playOutline, notificationsCircleOutline, checkmarkCircle } from "ionicons/icons";
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonLabel, IonItem, IonIcon } from "@ionic/angular/standalone";
 
-import {IonicModule} from '@ionic/angular';
-import {firstValueFrom} from 'rxjs';
-
-const happyPathItems: ITestItems [] = [
-  {
-    type: 'method',
-    name: 'HttpClient',
-  },
-  {
-    type: 'method',
-    name: 'createIdentityVerificationSheet',
-  },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Loaded,
-  },
-  {
-    type: 'method',
-    name: 'presentIdentityVerificationSheet',
-    expect: [IdentityVerificationSheetEventsEnum.Completed],
-  },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Completed,
-  },
+const happyPathItems: ITestItems[] = [
+    {
+        type: 'method',
+        name: 'HttpClient',
+    },
+    {
+        type: 'method',
+        name: 'createIdentityVerificationSheet',
+    },
+    {
+        type: 'event',
+        name: IdentityVerificationSheetEventsEnum.Loaded,
+    },
+    {
+        type: 'method',
+        name: 'presentIdentityVerificationSheet',
+        expect: [IdentityVerificationSheetEventsEnum.Completed],
+    },
+    {
+        type: 'event',
+        name: IdentityVerificationSheetEventsEnum.Completed,
+    },
 ];
 
-const cancelPathItems: ITestItems [] = [
-  {
-    type: 'method',
-    name: 'HttpClient',
-  },
-  {
-    type: 'method',
-    name: 'createIdentityVerificationSheet',
-  },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Loaded,
-  },
-  {
-    type: 'method',
-    name: 'presentIdentityVerificationSheet',
-    expect: [IdentityVerificationSheetEventsEnum.Canceled],
-  },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Canceled,
-  },
+const cancelPathItems: ITestItems[] = [
+    {
+        type: 'method',
+        name: 'HttpClient',
+    },
+    {
+        type: 'method',
+        name: 'createIdentityVerificationSheet',
+    },
+    {
+        type: 'event',
+        name: IdentityVerificationSheetEventsEnum.Loaded,
+    },
+    {
+        type: 'method',
+        name: 'presentIdentityVerificationSheet',
+        expect: [IdentityVerificationSheetEventsEnum.Canceled],
+    },
+    {
+        type: 'event',
+        name: IdentityVerificationSheetEventsEnum.Canceled,
+    },
 ];
 
 @Component({
@@ -64,58 +65,68 @@ const cancelPathItems: ITestItems [] = [
     styleUrls: ['./identity.page.scss'],
     standalone: true,
     imports: [
-    IonicModule
-],
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonListHeader,
+        IonLabel,
+        IonItem,
+        IonIcon
+    ],
 })
 export class IdentityPage {
-  public eventItems: ITestItems [] = [];
-  private readonly listenerHandlers: PluginListenerHandle[] = [];
+    public eventItems: ITestItems[] = [];
+    private readonly listenerHandlers: PluginListenerHandle[] = [];
 
-  constructor(
-    private http: HttpClient,
-    private helper: HelperService,
-  ) {}
-
-  async create(type: 'happyPath' | 'cancelPath') {
-    const eventKeys = Object.keys(IdentityVerificationSheetEventsEnum);
-    eventKeys.forEach(key => {
-      const handler = StripeIdentity.addListener(IdentityVerificationSheetEventsEnum[key], (value) => {
-        this.helper.updateItem(this.eventItems, IdentityVerificationSheetEventsEnum[key], true, value);
-      });
-      this.listenerHandlers.push(handler);
-    });
-
-    if (type === 'happyPath') {
-      this.eventItems =  JSON.parse(JSON.stringify(happyPathItems));
-    } else {
-      this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
+    constructor(
+        private http: HttpClient,
+        private helper: HelperService,
+    ) {
+        addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
     }
 
-    const { verficationSessionId, ephemeralKeySecret, clientSecret } = await firstValueFrom(this.http.post<{
-      verficationSessionId: string;
-      ephemeralKeySecret: string;
-      clientSecret: string;
-    }>(environment.api + 'identify', {}))
-      .catch(async (e) => {
-        await this.helper.updateItem(this.eventItems,'HttpClient', false);
-        throw e;
-      });
+    async create(type: 'happyPath' | 'cancelPath') {
+        const eventKeys = Object.keys(IdentityVerificationSheetEventsEnum);
+        eventKeys.forEach(key => {
+            const handler = StripeIdentity.addListener(IdentityVerificationSheetEventsEnum[key], (value) => {
+                this.helper.updateItem(this.eventItems, IdentityVerificationSheetEventsEnum[key], true, value);
+            });
+            this.listenerHandlers.push(handler);
+        });
 
-    await this.helper.updateItem(this.eventItems,'HttpClient', true);
+        if (type === 'happyPath') {
+            this.eventItems = JSON.parse(JSON.stringify(happyPathItems));
+        } else {
+            this.eventItems = JSON.parse(JSON.stringify(cancelPathItems));
+        }
 
-    await StripeIdentity.create({
-      ephemeralKeySecret,
-      clientSecret,
-      verificationId: verficationSessionId,
-    })
-      .then(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', true))
-      .catch(() => this.helper.updateItem(this.eventItems,'createIdentityVerificationSheet', false));
+        const { verficationSessionId, ephemeralKeySecret, clientSecret } = await firstValueFrom(this.http.post<{
+            verficationSessionId: string;
+            ephemeralKeySecret: string;
+            clientSecret: string;
+        }>(environment.api + 'identify', {}))
+            .catch(async (e) => {
+                await this.helper.updateItem(this.eventItems, 'HttpClient', false);
+                throw e;
+            });
 
-    await StripeIdentity.present()
-      .then((data) => {
-        return this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult);
-      });
+        await this.helper.updateItem(this.eventItems, 'HttpClient', true);
 
-    this.listenerHandlers.forEach(handler => handler.remove());
-  }
+        await StripeIdentity.create({
+            ephemeralKeySecret,
+            clientSecret,
+            verificationId: verficationSessionId,
+        })
+            .then(() => this.helper.updateItem(this.eventItems, 'createIdentityVerificationSheet', true))
+            .catch(() => this.helper.updateItem(this.eventItems, 'createIdentityVerificationSheet', false));
+
+        await StripeIdentity.present()
+            .then((data) => {
+                return this.helper.updateItem(this.eventItems, 'presentIdentityVerificationSheet', undefined, data.identityVerificationResult);
+            });
+
+        this.listenerHandlers.forEach(handler => handler.remove());
+    }
 }

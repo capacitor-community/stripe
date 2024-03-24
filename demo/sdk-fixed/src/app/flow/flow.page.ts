@@ -1,72 +1,73 @@
-import {Component} from '@angular/core';
-import {ITestItems} from '../shared/interfaces';
-import {PaymentFlowEventsEnum, Stripe} from '@capacitor-community/stripe';
-import {PluginListenerHandle} from '@capacitor/core';
-import {HttpClient} from '@angular/common/http';
-import {HelperService} from '../shared/helper.service';
-import {environment} from '../../environments/environment';
-import {first} from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { ITestItems } from '../shared/interfaces';
+import { PaymentFlowEventsEnum, Stripe } from '@capacitor-community/stripe';
+import { PluginListenerHandle } from '@capacitor/core';
+import { HttpClient } from '@angular/common/http';
+import { HelperService } from '../shared/helper.service';
+import { environment } from '../../environments/environment';
+import { first } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
+import { addIcons } from "ionicons";
+import { playOutline, notificationsCircleOutline, checkmarkCircle } from "ionicons/icons";
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonLabel, IonItem, IonIcon } from "@ionic/angular/standalone";
 
-import {IonicModule} from '@ionic/angular';
-import {firstValueFrom} from 'rxjs';
-
-const happyPathItems: ITestItems [] = [
-  {
-    type: 'method',
-    name: 'HttpClient',
-  },
-  {
-    type: 'method',
-    name: 'createPaymentFlow',
-  },
-  {
-    type: 'event',
-    name: PaymentFlowEventsEnum.Loaded,
-  },
-  {
-    type: 'method',
-    name: 'presentPaymentFlow',
-  },
-  {
-    type: 'event',
-    name: PaymentFlowEventsEnum.Opened,
-  },
-  {
-    type: 'event',
-    name: PaymentFlowEventsEnum.Created,
-  },
-  {
-    type: 'event',
-    name: PaymentFlowEventsEnum.Completed,
-  },
-  {
-    type: 'method',
-    name: 'confirmPaymentFlow',
-    expect: [PaymentFlowEventsEnum.Completed],
-  },
+const happyPathItems: ITestItems[] = [
+    {
+        type: 'method',
+        name: 'HttpClient',
+    },
+    {
+        type: 'method',
+        name: 'createPaymentFlow',
+    },
+    {
+        type: 'event',
+        name: PaymentFlowEventsEnum.Loaded,
+    },
+    {
+        type: 'method',
+        name: 'presentPaymentFlow',
+    },
+    {
+        type: 'event',
+        name: PaymentFlowEventsEnum.Opened,
+    },
+    {
+        type: 'event',
+        name: PaymentFlowEventsEnum.Created,
+    },
+    {
+        type: 'event',
+        name: PaymentFlowEventsEnum.Completed,
+    },
+    {
+        type: 'method',
+        name: 'confirmPaymentFlow',
+        expect: [PaymentFlowEventsEnum.Completed],
+    },
 ];
 
-const cancelPathItems: ITestItems [] = [
-  {
-    type: 'method',
-    name: 'HttpClient',
-  },
-  {
-    type: 'method',
-    name: 'createPaymentFlow',
-  },
-  {
-    type: 'event',
-    name: PaymentFlowEventsEnum.Loaded,
-  },
-  {
-    type: 'event',
-    name: PaymentFlowEventsEnum.Canceled,
-  },
-  {
-    type: 'method',
-    name: 'presentPaymentFlow',
-  },
+const cancelPathItems: ITestItems[] = [
+    {
+        type: 'method',
+        name: 'HttpClient',
+    },
+    {
+        type: 'method',
+        name: 'createPaymentFlow',
+    },
+    {
+        type: 'event',
+        name: PaymentFlowEventsEnum.Loaded,
+    },
+    {
+        type: 'event',
+        name: PaymentFlowEventsEnum.Canceled,
+    },
+    {
+        type: 'method',
+        name: 'presentPaymentFlow',
+    },
 ];
 
 @Component({
@@ -74,67 +75,69 @@ const cancelPathItems: ITestItems [] = [
     templateUrl: 'flow.page.html',
     styleUrls: ['flow.page.scss'],
     standalone: true,
-    imports: [IonicModule]
+    imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader, IonLabel, IonItem, IonIcon]
 })
 export class FlowPage {
-  public eventItems: ITestItems [] = [];
-  private readonly listenerHandlers: PluginListenerHandle[] = [];
+    public eventItems: ITestItems[] = [];
+    private readonly listenerHandlers: PluginListenerHandle[] = [];
 
-  constructor(
-    private http: HttpClient,
-    private helper: HelperService,
-  ) {}
-
-  async create(type: 'happyPath' | 'cancelPath') {
-    const eventKeys = Object.keys(PaymentFlowEventsEnum);
-    eventKeys.forEach(key => {
-      const handler = Stripe.addListener(PaymentFlowEventsEnum[key], (value) => {
-        this.helper.updateItem(this.eventItems, PaymentFlowEventsEnum[key], true, value);
-      });
-      this.listenerHandlers.push(handler);
-    });
-
-    if (type === 'happyPath') {
-      this.eventItems =  JSON.parse(JSON.stringify(happyPathItems));
-    } else {
-      this.eventItems =  JSON.parse(JSON.stringify(cancelPathItems));
+    constructor(
+        private http: HttpClient,
+        private helper: HelperService,
+    ) {
+        addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
     }
 
-    const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
-      paymentIntent: string;
-      ephemeralKey: string;
-      customer: string;
-    }>(environment.api + 'intent', {}))
-      .catch(async (e) => {
-        await this.helper.updateItem(this.eventItems,'HttpClient', false);
-        throw e;
-      });
+    async create(type: 'happyPath' | 'cancelPath') {
+        const eventKeys = Object.keys(PaymentFlowEventsEnum);
+        eventKeys.forEach(key => {
+            const handler = Stripe.addListener(PaymentFlowEventsEnum[key], (value) => {
+                this.helper.updateItem(this.eventItems, PaymentFlowEventsEnum[key], true, value);
+            });
+            this.listenerHandlers.push(handler);
+        });
 
-    await this.helper.updateItem(this.eventItems,'HttpClient', true);
+        if (type === 'happyPath') {
+            this.eventItems = JSON.parse(JSON.stringify(happyPathItems));
+        } else {
+            this.eventItems = JSON.parse(JSON.stringify(cancelPathItems));
+        }
 
-    await Stripe.createPaymentFlow({
-      paymentIntentClientSecret: paymentIntent,
-      customerEphemeralKeySecret: ephemeralKey,
-      customerId: customer,
-      merchantDisplayName: 'rdlabo',
-    })
-      .then(() => this.helper.updateItem(this.eventItems,'createPaymentFlow', true))
-      .catch(() => this.helper.updateItem(this.eventItems,'createPaymentFlow', false));
+        const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(this.http.post<{
+            paymentIntent: string;
+            ephemeralKey: string;
+            customer: string;
+        }>(environment.api + 'intent', {}))
+            .catch(async (e) => {
+                await this.helper.updateItem(this.eventItems, 'HttpClient', false);
+                throw e;
+            });
 
-    if (type === 'happyPath') {
-      await Stripe.presentPaymentFlow()
-        .then((data) => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', data.hasOwnProperty('cardNumber')))
-        .catch(() => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false));
+        await this.helper.updateItem(this.eventItems, 'HttpClient', true);
 
-      await Stripe.confirmPaymentFlow()
-        .then((data) => this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', undefined, data.paymentResult))
-        .catch(() => this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', false));
-    } else {
-      await Stripe.presentPaymentFlow()
-        .then((data) => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false))
-        .catch(() => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', true));
+        await Stripe.createPaymentFlow({
+            paymentIntentClientSecret: paymentIntent,
+            customerEphemeralKeySecret: ephemeralKey,
+            customerId: customer,
+            merchantDisplayName: 'rdlabo',
+        })
+            .then(() => this.helper.updateItem(this.eventItems, 'createPaymentFlow', true))
+            .catch(() => this.helper.updateItem(this.eventItems, 'createPaymentFlow', false));
+
+        if (type === 'happyPath') {
+            await Stripe.presentPaymentFlow()
+                .then((data) => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', data.hasOwnProperty('cardNumber')))
+                .catch(() => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false));
+
+            await Stripe.confirmPaymentFlow()
+                .then((data) => this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', undefined, data.paymentResult))
+                .catch(() => this.helper.updateItem(this.eventItems, 'confirmPaymentFlow', false));
+        } else {
+            await Stripe.presentPaymentFlow()
+                .then((data) => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false))
+                .catch(() => this.helper.updateItem(this.eventItems, 'presentPaymentFlow', true));
+        }
+
+        this.listenerHandlers.forEach(handler => handler.remove());
     }
-
-    this.listenerHandlers.forEach(handler => handler.remove());
-  }
 }

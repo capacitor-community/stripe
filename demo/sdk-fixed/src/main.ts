@@ -1,27 +1,28 @@
-import {enableProdMode, importProvidersFrom} from '@angular/core';
+import { enableProdMode, importProvidersFrom } from '@angular/core';
 
 
-import {environment} from './environments/environment';
+import { environment } from './environments/environment';
 
-import {defineCustomElements} from 'stripe-pwa-elements/loader';
-import {AppComponent} from './app/app.component';
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
-import {routes} from './app/app.routes';
-import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
-import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
-import {provideRouter, RouteReuseStrategy} from '@angular/router';
+import { defineCustomElements } from 'stripe-pwa-elements/loader';
+import { AppComponent } from './app/app.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { routes } from './app/app.routes';
+import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
+import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
+import { provideRouter, RouteReuseStrategy } from '@angular/router';
 
 if (environment.production) {
-  enableProdMode();
+    enableProdMode();
 }
 
 bootstrapApplication(AppComponent, {
     providers: [
-      provideRouter(routes),
-        importProvidersFrom(BrowserModule, IonicModule.forRoot()),
+        provideRouter(routes),
+        importProvidersFrom(BrowserModule),
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi()),
+        provideIonicAngular({})
     ]
 })
-  .then(() => defineCustomElements(window))
-  .catch(err => console.log(err));
+    .then(() => defineCustomElements(window))
+    .catch(err => console.log(err));
