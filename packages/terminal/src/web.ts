@@ -59,7 +59,9 @@ export class StripeTerminalWeb
     this.notifyListeners(TerminalEventsEnum.DisconnectedReader, null);
   }
 
-  async collectPaymentMethod(options: { paymentIntent: string }): Promise<void> {
+  async collectPaymentMethod(options: {
+    paymentIntent: string;
+  }): Promise<void> {
     console.log('collectPaymentMethod', options);
     this.notifyListeners(TerminalEventsEnum.CollectedPaymentIntent, null);
   }
