@@ -50,7 +50,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
   ext {
 -    minSdkVersion = 22
 -    compileSdkVersion = 33
-+    minSdkVersion = 26
++    minSdkVersion = 30
 +    compileSdkVersion = 34
 ```
 
