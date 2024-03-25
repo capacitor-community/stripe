@@ -76,11 +76,6 @@ export class StripeTerminalWeb
     this.notifyListeners(TerminalEventsEnum.ConfirmedPaymentIntent, null);
   }
 
-  async collect(options: { paymentIntent: string }): Promise<void> {
-    console.log('collect', options);
-  }
-
-  async cancelCollect(): Promise<void> {
-    console.log('cancelCollectPaymentMethod');
-  }
+  collect = 'deprecated';
+  cancelCollect = 'deprecated';
 }
