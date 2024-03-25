@@ -76,6 +76,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
   await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
   // Process and confirm payment intent
   await StripeTerminal.confirmPaymentIntent();
+  // disconnect reader
+  await StripeTerminal.disconnectReader();
 });
 ```
 
@@ -102,6 +104,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
   await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
   // Process and confirm payment intent
   await StripeTerminal.confirmPaymentIntent();
+  // disconnect reader
+  await StripeTerminal.disconnectReader();
 });
 ````
 

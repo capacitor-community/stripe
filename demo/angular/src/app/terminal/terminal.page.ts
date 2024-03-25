@@ -342,6 +342,7 @@ export class TerminalPage {
       );
     }
 
+    await StripeTerminal.disconnectReader();
     this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
