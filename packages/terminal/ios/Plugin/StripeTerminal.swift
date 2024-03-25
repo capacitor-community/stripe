@@ -105,6 +105,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             self.connectLocalMobileReader(call)
         } else if self.type == .internet {
             self.connectInternetReader(call)
+        } else {
+            // if self.type === DiscoveryMethod.bluetoothScan
+            self.connectBluetoothReader(call)
         }
     }
 
@@ -169,7 +172,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectBluetoothReader(_ call: CAPPluginCall) {
-        let config = try! BluetoothConnectionConfigurationBuilder(locationId: "{{LOCATION_ID}}").build()
+        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!).build()
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
 
@@ -183,7 +186,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
-    public func collect(_ call: CAPPluginCall) {
+    public func collectPaymentMethod(_ call: CAPPluginCall) {
         Terminal.shared.retrievePaymentIntent(clientSecret: call.getString("paymentIntent")!) { retrieveResult, retrieveError in
             if let error = retrieveError {
                 print("retrievePaymentIntent failed: \(error)")
@@ -202,7 +205,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
-    public func cancelCollect(_ call: CAPPluginCall) {
+    public func cancelCollectPaymentMethod(_ call: CAPPluginCall) {
         if let cancelable = self.collectCancelable {
             cancelable.cancel { error in
                 if let error = error {

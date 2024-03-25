@@ -24,6 +24,7 @@ import com.stripe.stripeterminal.external.callable.DiscoveryListener;
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback;
 import com.stripe.stripeterminal.external.callable.ReaderCallback;
 import com.stripe.stripeterminal.external.callable.ReaderListener;
+import com.stripe.stripeterminal.external.callable.ReaderReconnectionListener;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
 import com.stripe.stripeterminal.external.models.CardPresentDetails;
 import com.stripe.stripeterminal.external.models.CollectConfiguration;
@@ -240,9 +241,33 @@ public class StripeTerminal extends Executor {
             return;
         }
 
-        LocalMobileConnectionConfiguration config = new LocalMobileConnectionConfiguration(this.locationId);
+        LocalMobileConnectionConfiguration config = new LocalMobileConnectionConfiguration(
+            this.locationId,
+            true,
+            this.localMobileReaderReconnectionListener
+        );
         Terminal.getInstance().connectLocalMobileReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
     }
+
+    ReaderReconnectionListener localMobileReaderReconnectionListener = new ReaderReconnectionListener() {
+        @Override
+        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelReconnect) {
+            // 1. Notified at the start of a reconnection attempt
+            // Use cancelable to stop reconnection at any time
+        }
+
+        @Override
+        public void onReaderReconnectSucceeded(@NonNull Reader reader) {
+            // 2. Notified when reader reconnection succeeds
+            // App is now connected
+        }
+
+        @Override
+        public void onReaderReconnectFailed(@NonNull Reader reader) {
+            // 3. Notified when reader reconnection fails
+            // App is now disconnected
+        }
+    };
 
     private void connectInternetReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
@@ -287,7 +312,7 @@ public class StripeTerminal extends Executor {
         }
     }
 
-    public void collect(final PluginCall call) {
+    public void collectPaymentMethod(final PluginCall call) {
         if (call.getString("paymentIntent") == null) {
             call.reject("The value of paymentIntent is not set correctly.");
             return;
@@ -296,7 +321,7 @@ public class StripeTerminal extends Executor {
         Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"), createPaymentIntentCallback);
     }
 
-    public void cancelCollect(final PluginCall call) {
+    public void cancelCollectPaymentMethod(final PluginCall call) {
         if (this.collectCancelable == null || this.collectCancelable.isCompleted()) {
             call.resolve();
             return;
@@ -333,7 +358,6 @@ public class StripeTerminal extends Executor {
         }
     };
 
-    // Step 3 - we've collected the payment method, so it's time to process the payment
     private final PaymentIntentCallback collectPaymentMethodCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {

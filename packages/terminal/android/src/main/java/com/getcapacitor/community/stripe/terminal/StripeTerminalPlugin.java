@@ -2,6 +2,8 @@ package com.getcapacitor.community.stripe.terminal;
 
 import android.Manifest;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.RequiresApi;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
@@ -12,12 +14,18 @@ import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 import com.stripe.stripeterminal.external.models.TerminalException;
 
+import java.util.Objects;
+
 @RequiresApi(api = Build.VERSION_CODES.S)
 @CapacitorPlugin(
     name = "StripeTerminal",
     permissions = {
         @Permission(alias = "location", strings = { Manifest.permission.ACCESS_FINE_LOCATION }),
-        @Permission(alias = "bluetooth", strings = { Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT })
+        @Permission(alias = "bluetooth_old", strings = { Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN }),
+        @Permission(
+            alias = "bluetooth",
+            strings = { Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_ADVERTISE }
+        )
     }
 )
 public class StripeTerminalPlugin extends Plugin {
@@ -44,25 +52,33 @@ public class StripeTerminalPlugin extends Plugin {
         if (getPermissionState("location") == PermissionState.GRANTED) {
             this._initialize(call);
         } else {
-            call.reject("Permission is required to get location");
+            requestPermissionForAlias("location", call, "locationPermsCallback");
+        }
+    }
+
+    @PermissionCallback
+    private void bluetoothOldPermsCallback(PluginCall call) throws TerminalException {
+        if (getPermissionState("bluetooth_old") == PermissionState.GRANTED) {
+            this.connectReader(call);
+        } else {
+            requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
         }
     }
 
     @PermissionCallback
     private void bluetoothPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
-            this._initialize(call);
+            this.connectReader(call);
         } else {
-            call.reject("Permission is required to get bluetooth");
+            requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         }
     }
 
     private void _initialize(PluginCall call) throws TerminalException {
         if (getPermissionState("location") != PermissionState.GRANTED) {
             requestPermissionForAlias("location", call, "locationPermsCallback");
-        } else if (getPermissionState("bluetooth") != PermissionState.GRANTED) {
-            requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         } else {
+            Log.d("Capacitor:permission location", getPermissionState("location").toString());
             this.implementation.initialize(call);
         }
     }
@@ -79,7 +95,19 @@ public class StripeTerminalPlugin extends Plugin {
 
     @PluginMethod
     public void connectReader(PluginCall call) {
-        this.implementation.connectReader(call);
+        if (Objects.equals(call.getString("type"), TerminalConnectTypes.Bluetooth.getWebEventName())) {
+            Log.d("Capacitor:permission bluetooth_old", getPermissionState("bluetooth_old").toString());
+            Log.d("Capacitor:permission bluetooth", getPermissionState("bluetooth").toString());
+            if (Build.VERSION.SDK_INT <= 30 && getPermissionState("bluetooth_old") != PermissionState.GRANTED) {
+                requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
+            } else if (Build.VERSION.SDK_INT > 30 && getPermissionState("bluetooth") != PermissionState.GRANTED) {
+                requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
+            } else {
+                this.implementation.connectReader(call);
+            }
+        } else {
+            this.implementation.connectReader(call);
+        }
     }
 
     @PluginMethod
@@ -93,13 +121,13 @@ public class StripeTerminalPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void collect(PluginCall call) {
-        this.implementation.collect(call);
+    public void collectPaymentMethod(PluginCall call) {
+        this.implementation.collectPaymentMethod(call);
     }
 
     @PluginMethod
-    public void cancelCollect(final PluginCall call) {
-        this.implementation.cancelCollect(call);
+    public void cancelCollectPaymentMethod(final PluginCall call) {
+        this.implementation.cancelCollectPaymentMethod(call);
     }
 
     @PluginMethod

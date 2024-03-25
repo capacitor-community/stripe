@@ -59,13 +59,15 @@ export class StripeTerminalWeb
     this.notifyListeners(TerminalEventsEnum.DisconnectedReader, null);
   }
 
-  async collect(options: { paymentIntent: string }): Promise<void> {
-    console.log('collect', options);
+  async collectPaymentMethod(options: {
+    paymentIntent: string;
+  }): Promise<void> {
+    console.log('collectPaymentMethod', options);
     this.notifyListeners(TerminalEventsEnum.CollectedPaymentIntent, null);
   }
 
-  async cancelCollect(): Promise<void> {
-    console.log('cancelCollect');
+  async cancelCollectPaymentMethod(): Promise<void> {
+    console.log('cancelCollectPaymentMethod');
     this.notifyListeners(TerminalEventsEnum.Canceled, null);
   }
 
@@ -73,4 +75,7 @@ export class StripeTerminalWeb
     console.log('confirmPaymentIntent');
     this.notifyListeners(TerminalEventsEnum.ConfirmedPaymentIntent, null);
   }
+
+  collect = 'deprecated';
+  cancelCollect = 'deprecated';
 }

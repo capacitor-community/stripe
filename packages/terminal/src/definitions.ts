@@ -32,8 +32,8 @@ export interface StripeTerminalPlugin {
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
   disconnectReader(): Promise<void>;
   cancelDiscoverReaders(): Promise<void>;
-  collect(options: { paymentIntent: string }): Promise<void>;
-  cancelCollect(): Promise<void>;
+  collectPaymentMethod(options: { paymentIntent: string }): Promise<void>;
+  cancelCollectPaymentMethod(): Promise<void>;
   confirmPaymentIntent(): Promise<void>;
   addListener(
     eventName: TerminalEventsEnum.Loaded,
@@ -67,4 +67,22 @@ export interface StripeTerminalPlugin {
     eventName: TerminalEventsEnum.Failed,
     listenerFunc: () => void,
   ): PluginListenerHandle;
+
+  /**
+   * @deprecated
+   * This method has been deprecated and replaced by the `collectPaymentMethod`.
+   * Similarly, note that TerminalEvents.Completed is now obsolete.
+   * And, method `confirmPaymentIntent` added to be executed after `collectPaymentMethod` is executed.
+   *
+   * This is left as type string to avoid accidental use.
+   */
+  collect: string;
+
+  /**
+   * @deprecated
+   * This method has been deprecated and replaced by the `cancelCollectPaymentMethod`.
+   *
+   * This is left as type string to avoid accidental use.
+   */
+  cancelCollect: string;
 }

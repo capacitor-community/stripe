@@ -5,8 +5,8 @@ We have confirmed that it works well in the demo project. Please refer to https:
 
 - [x] Tap To Pay
 - [x] Internet
-- [ ] Bluetooth
-- [ ] USB
+- [x] Bluetooth
+- [x] USB
 
 ## Install
 
@@ -27,8 +27,9 @@ Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 + <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 + <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
 + <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 + <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
++ <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
++ <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
 
 If used in conjunction with the `@capacitor-community/stripe` plugin, the following settings may be necessary
@@ -50,7 +51,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
   ext {
 -    minSdkVersion = 22
 -    compileSdkVersion = 33
-+    minSdkVersion = 26
++    minSdkVersion = 30
 +    compileSdkVersion = 34
 ```
 
@@ -72,9 +73,11 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
     reader: readers[0],
   });
   // Collect payment intent
-  await StripeTerminal.collect({ paymentIntent: "**************" });
+  await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
   // Process and confirm payment intent
   await StripeTerminal.confirmPaymentIntent();
+  // disconnect reader
+  await StripeTerminal.disconnectReader();
 });
 ```
 
@@ -98,9 +101,11 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
     reader: readers[0],
   });
   // Collect payment intent
-  await StripeTerminal.collect({ paymentIntent: "**************" });
+  await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
   // Process and confirm payment intent
   await StripeTerminal.confirmPaymentIntent();
+  // disconnect reader
+  await StripeTerminal.disconnectReader();
 });
 ````
 
@@ -115,8 +120,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`getConnectedReader()`](#getconnectedreader)
 * [`disconnectReader()`](#disconnectreader)
 * [`cancelDiscoverReaders()`](#canceldiscoverreaders)
-* [`collect(...)`](#collect)
-* [`cancelCollect()`](#cancelcollect)
+* [`collectPaymentMethod(...)`](#collectpaymentmethod)
+* [`cancelCollectPaymentMethod()`](#cancelcollectpaymentmethod)
 * [`confirmPaymentIntent()`](#confirmpaymentintent)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
@@ -218,10 +223,10 @@ cancelDiscoverReaders() => Promise<void>
 --------------------
 
 
-### collect(...)
+### collectPaymentMethod(...)
 
 ```typescript
-collect(options: { paymentIntent: string; }) => Promise<void>
+collectPaymentMethod(options: { paymentIntent: string; }) => Promise<void>
 ```
 
 | Param         | Type                                    |
@@ -231,10 +236,10 @@ collect(options: { paymentIntent: string; }) => Promise<void>
 --------------------
 
 
-### cancelCollect()
+### cancelCollectPaymentMethod()
 
 ```typescript
-cancelCollect() => Promise<void>
+cancelCollectPaymentMethod() => Promise<void>
 ```
 
 --------------------

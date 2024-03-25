@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
+  AlertController,
   IonContent,
   IonHeader,
   IonIcon,
@@ -17,6 +18,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { HelperService } from '../shared/helper.service';
 import {
+  ReaderInterface,
   StripeTerminal,
   TerminalConnectTypes,
   TerminalEventsEnum,
@@ -63,7 +65,7 @@ const happyPathItems: ITestItems[] = [
   },
   {
     type: 'method',
-    name: 'collect',
+    name: 'collectPaymentMethod',
   },
   {
     type: 'event',
@@ -110,11 +112,11 @@ const cancelPathItems: ITestItems[] = [
   },
   {
     type: 'method',
-    name: 'collect',
+    name: 'collectPaymentMethod',
   },
   {
     type: 'method',
-    name: 'cancelCollect',
+    name: 'cancelCollectPaymentMethod',
   },
   {
     type: 'event',
@@ -184,8 +186,11 @@ export class TerminalPage {
   public eventItems: ITestItems[] = [];
   public terminalConnectTypes = TerminalConnectTypes;
   private readonly listenerHandlers: PluginListenerHandle[] = [];
+
+  public readonly platform = inject(Platform);
+  private readonly alertCtrl = inject(AlertController);
+
   constructor(
-    public platform: Platform,
     private http: HttpClient,
     private helper: HelperService,
   ) {
@@ -243,7 +248,13 @@ export class TerminalPage {
 
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
-      locationId: 'tml_FOUOdQVIxvVdvN',
+      locationId:
+        this.platform.is('android') &&
+        [TerminalConnectTypes.Bluetooth, TerminalConnectTypes.Usb].includes(
+          readerType,
+        )
+          ? 'tml_Ff37mAmk1XdBYT'
+          : 'tml_FOUOdQVIxvVdvN',
     }).catch((e) => {
       this.helper.updateItem(this.eventItems, 'discoverReaders', false);
       throw e;
@@ -255,9 +266,22 @@ export class TerminalPage {
       result.readers.length > 0,
     );
 
+    console.log(result);
+
+    const selectedReader =
+      result.readers.length === 1
+        ? result.readers[0]
+        : await this.alertFilterReaders(result.readers);
+    console.log(selectedReader);
+    if (!selectedReader) {
+      alert('No reader selected');
+      return;
+    }
+
     await StripeTerminal.connectReader({
-      reader: result.readers[0],
+      reader: selectedReader,
     }).catch((e) => {
+      alert(e);
       this.helper.updateItem(this.eventItems, 'connectReader', false);
       throw e;
     });
@@ -281,20 +305,34 @@ export class TerminalPage {
       true,
     );
 
-    await StripeTerminal.collect({ paymentIntent })
-      .then(() => this.helper.updateItem(this.eventItems, 'collect', true))
+    await StripeTerminal.collectPaymentMethod({ paymentIntent })
+      .then(() =>
+        this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+      )
       .catch(async (e) => {
-        await this.helper.updateItem(this.eventItems, 'collect', false);
+        await this.helper.updateItem(
+          this.eventItems,
+          'collectPaymentMethod',
+          false,
+        );
         throw e;
       });
 
     if (type === 'cancelPath') {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      await StripeTerminal.cancelCollect().catch(async (e) => {
-        await this.helper.updateItem(this.eventItems, 'cancelCollect', false);
+      await StripeTerminal.cancelCollectPaymentMethod().catch(async (e) => {
+        await this.helper.updateItem(
+          this.eventItems,
+          'cancelCollectPaymentMethod',
+          false,
+        );
         throw e;
       });
-      await this.helper.updateItem(this.eventItems, 'cancelCollect', true);
+      await this.helper.updateItem(
+        this.eventItems,
+        'cancelCollectPaymentMethod',
+        true,
+      );
     } else {
       await StripeTerminal.confirmPaymentIntent();
       await this.helper.updateItem(
@@ -304,6 +342,7 @@ export class TerminalPage {
       );
     }
 
+    await StripeTerminal.disconnectReader();
     this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
@@ -363,9 +402,19 @@ export class TerminalPage {
       result.readers.length > 0,
     );
 
+    const selectedReader =
+      result.readers.length === 1
+        ? result.readers[0]
+        : await this.alertFilterReaders(result.readers);
+    if (!selectedReader) {
+      alert('No reader selected');
+      return;
+    }
+
     await StripeTerminal.connectReader({
-      reader: result.readers[0],
+      reader: selectedReader,
     }).catch((e) => {
+      alert(e);
       this.helper.updateItem(this.eventItems, 'connectReader', false);
       throw e;
     });
@@ -388,5 +437,37 @@ export class TerminalPage {
     await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
 
     this.listenerHandlers.forEach((handler) => handler.remove());
+  }
+
+  private alertFilterReaders(
+    readers: ReaderInterface[],
+  ): Promise<ReaderInterface | undefined> {
+    return new Promise(async (resolve) => {
+      const alert = await this.alertCtrl.create({
+        header: `Select a reader`,
+        message: `Select a reader to connect to.`,
+        inputs: readers.map((reader, index) => ({
+          name: 'serialNumber',
+          type: 'radio',
+          label: reader.serialNumber,
+          value: reader.serialNumber,
+          checked: index === 0,
+        })),
+        buttons: [
+          {
+            text: `Cancel`,
+            role: 'cancel',
+            handler: () => resolve(undefined),
+          },
+          {
+            text: `Submit`,
+            handler: (d) => {
+              resolve(readers.find((reader) => reader.serialNumber === d));
+            },
+          },
+        ],
+      });
+      await alert.present();
+    });
   }
 }
