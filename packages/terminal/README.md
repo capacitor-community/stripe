@@ -5,7 +5,7 @@ We have confirmed that it works well in the demo project. Please refer to https:
 
 - [x] Tap To Pay
 - [x] Internet
-- [ ] Bluetooth
+- [x] Bluetooth
 - [ ] USB
 
 ## Install
