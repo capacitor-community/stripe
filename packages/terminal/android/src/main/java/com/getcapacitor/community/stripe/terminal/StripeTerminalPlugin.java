@@ -2,6 +2,8 @@ package com.getcapacitor.community.stripe.terminal;
 
 import android.Manifest;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.RequiresApi;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
@@ -48,7 +50,7 @@ public class StripeTerminalPlugin extends Plugin {
         if (getPermissionState("location") == PermissionState.GRANTED) {
             this._initialize(call);
         } else {
-            call.reject("Permission is required to get location");
+            requestPermissionForAlias("location", call, "locationPermsCallback");
         }
     }
 
@@ -57,7 +59,7 @@ public class StripeTerminalPlugin extends Plugin {
         if (getPermissionState("bluetooth_old") == PermissionState.GRANTED) {
             this._initialize(call);
         } else {
-            call.reject("Permission is required to get bluetooth_old");
+            requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
         }
     }
 
@@ -66,7 +68,7 @@ public class StripeTerminalPlugin extends Plugin {
         if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
             this._initialize(call);
         } else {
-            call.reject("Permission is required to get bluetooth");
+            requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         }
     }
 
@@ -78,6 +80,9 @@ public class StripeTerminalPlugin extends Plugin {
         } else if (Build.VERSION.SDK_INT > 30 && getPermissionState("bluetooth") != PermissionState.GRANTED) {
             requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         } else {
+            Log.d("Capacitor:permission location", getPermissionState("location").toString());
+            Log.d("Capacitor:permission bluetooth_old", getPermissionState("bluetooth_old").toString());
+            Log.d("Capacitor:permission bluetooth", getPermissionState("bluetooth").toString());
             this.implementation.initialize(call);
         }
     }
