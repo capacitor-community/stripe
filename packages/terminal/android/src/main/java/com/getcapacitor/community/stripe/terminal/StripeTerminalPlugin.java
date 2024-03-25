@@ -14,6 +14,8 @@ import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 import com.stripe.stripeterminal.external.models.TerminalException;
 
+import java.util.Objects;
+
 @RequiresApi(api = Build.VERSION_CODES.S)
 @CapacitorPlugin(
     name = "StripeTerminal",
@@ -57,7 +59,7 @@ public class StripeTerminalPlugin extends Plugin {
     @PermissionCallback
     private void bluetoothOldPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("bluetooth_old") == PermissionState.GRANTED) {
-            this._initialize(call);
+            this.connectReader(call);
         } else {
             requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
         }
@@ -66,7 +68,7 @@ public class StripeTerminalPlugin extends Plugin {
     @PermissionCallback
     private void bluetoothPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
-            this._initialize(call);
+            this.connectReader(call);
         } else {
             requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         }
@@ -75,14 +77,8 @@ public class StripeTerminalPlugin extends Plugin {
     private void _initialize(PluginCall call) throws TerminalException {
         if (getPermissionState("location") != PermissionState.GRANTED) {
             requestPermissionForAlias("location", call, "locationPermsCallback");
-        } else if (Build.VERSION.SDK_INT <= 30 && getPermissionState("bluetooth_old") != PermissionState.GRANTED) {
-            requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
-        } else if (Build.VERSION.SDK_INT > 30 && getPermissionState("bluetooth") != PermissionState.GRANTED) {
-            requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         } else {
             Log.d("Capacitor:permission location", getPermissionState("location").toString());
-            Log.d("Capacitor:permission bluetooth_old", getPermissionState("bluetooth_old").toString());
-            Log.d("Capacitor:permission bluetooth", getPermissionState("bluetooth").toString());
             this.implementation.initialize(call);
         }
     }
@@ -99,7 +95,19 @@ public class StripeTerminalPlugin extends Plugin {
 
     @PluginMethod
     public void connectReader(PluginCall call) {
-        this.implementation.connectReader(call);
+        if (Objects.equals(call.getString("type"), TerminalConnectTypes.Bluetooth.getWebEventName())) {
+            Log.d("Capacitor:permission bluetooth_old", getPermissionState("bluetooth_old").toString());
+            Log.d("Capacitor:permission bluetooth", getPermissionState("bluetooth").toString());
+            if (Build.VERSION.SDK_INT <= 30 && getPermissionState("bluetooth_old") != PermissionState.GRANTED) {
+                requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
+            } else if (Build.VERSION.SDK_INT > 30 && getPermissionState("bluetooth") != PermissionState.GRANTED) {
+                requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
+            } else {
+                this.implementation.connectReader(call);
+            }
+        } else {
+            this.implementation.connectReader(call);
+        }
     }
 
     @PluginMethod
