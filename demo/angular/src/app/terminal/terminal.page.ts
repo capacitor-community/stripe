@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
+  AlertController,
   IonContent,
   IonHeader,
   IonIcon,
@@ -17,6 +18,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { HelperService } from '../shared/helper.service';
 import {
+  ReaderInterface,
   StripeTerminal,
   TerminalConnectTypes,
   TerminalEventsEnum,
@@ -184,12 +186,14 @@ export class TerminalPage {
   public eventItems: ITestItems[] = [];
   public terminalConnectTypes = TerminalConnectTypes;
   private readonly listenerHandlers: PluginListenerHandle[] = [];
+  private readonly alertCtrl = inject(AlertController)
+
   constructor(
     public platform: Platform,
     private http: HttpClient,
     private helper: HelperService,
   ) {
-    addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
+    addIcons({playOutline, notificationsCircleOutline, checkmarkCircle});
   }
 
   async create(
@@ -215,12 +219,12 @@ export class TerminalPage {
           StripeTerminal.addListener(
             TerminalEventsEnum.RequestedConnectionToken,
             async () => {
-              const { secret } = await firstValueFrom(
+              const {secret} = await firstValueFrom(
                 this.http.post<{
                   secret: string;
                 }>(environment.api + 'connection/token', {}),
               );
-              StripeTerminal.setConnectionToken({ token: secret });
+              StripeTerminal.setConnectionToken({token: secret});
             },
           ),
         );
@@ -243,7 +247,7 @@ export class TerminalPage {
 
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
-      locationId: 'tml_FOUOdQVIxvVdvN',
+      locationId: readerType === TerminalConnectTypes.Usb ? 'tml_Ff37mAmk1XdBYT' : 'tml_FOUOdQVIxvVdvN',
     }).catch((e) => {
       this.helper.updateItem(this.eventItems, 'discoverReaders', false);
       throw e;
@@ -255,15 +259,25 @@ export class TerminalPage {
       result.readers.length > 0,
     );
 
+    console.log(result);
+
+    const selectedReader = result.readers.length === 1 ? result.readers[0] : await this.alertFilterReaders(result.readers);
+    console.log(selectedReader);
+    if (!selectedReader) {
+      alert('No reader selected')
+      return;
+    }
+
     await StripeTerminal.connectReader({
-      reader: result.readers[0],
+      reader: selectedReader,
     }).catch((e) => {
+      alert(e);
       this.helper.updateItem(this.eventItems, 'connectReader', false);
       throw e;
     });
     await this.helper.updateItem(this.eventItems, 'connectReader', true);
 
-    const { paymentIntent } = await firstValueFrom(
+    const {paymentIntent} = await firstValueFrom(
       this.http.post<{
         paymentIntent: string;
       }>(environment.api + 'connection/intent', {}),
@@ -281,7 +295,7 @@ export class TerminalPage {
       true,
     );
 
-    await StripeTerminal.collectPaymentMethod({ paymentIntent })
+    await StripeTerminal.collectPaymentMethod({paymentIntent})
       .then(() => this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true))
       .catch(async (e) => {
         await this.helper.updateItem(this.eventItems, 'collectPaymentMethod', false);
@@ -326,12 +340,12 @@ export class TerminalPage {
           StripeTerminal.addListener(
             TerminalEventsEnum.RequestedConnectionToken,
             async () => {
-              const { secret } = await firstValueFrom(
+              const {secret} = await firstValueFrom(
                 this.http.post<{
                   secret: string;
                 }>(environment.api + 'connection/token', {}),
               );
-              StripeTerminal.setConnectionToken({ token: secret });
+              StripeTerminal.setConnectionToken({token: secret});
             },
           ),
         );
@@ -363,15 +377,22 @@ export class TerminalPage {
       result.readers.length > 0,
     );
 
+    const selectedReader = result.readers.length === 1 ? result.readers[0] : await this.alertFilterReaders(result.readers);
+    if (!selectedReader) {
+      alert('No reader selected')
+      return;
+    }
+
     await StripeTerminal.connectReader({
-      reader: result.readers[0],
+      reader: selectedReader,
     }).catch((e) => {
+      alert(e);
       this.helper.updateItem(this.eventItems, 'connectReader', false);
       throw e;
     });
     await this.helper.updateItem(this.eventItems, 'connectReader', true);
 
-    const { reader } = await StripeTerminal.getConnectedReader().catch((e) => {
+    const {reader} = await StripeTerminal.getConnectedReader().catch((e) => {
       this.helper.updateItem(this.eventItems, 'getConnectedReader', false);
       throw e;
     });
@@ -388,5 +409,36 @@ export class TerminalPage {
     await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
 
     this.listenerHandlers.forEach((handler) => handler.remove());
+  }
+
+  private alertFilterReaders(readers: ReaderInterface[]): Promise<ReaderInterface | undefined> {
+    return new Promise(async (resolve) => {
+      const alert = await this.alertCtrl.create({
+        header: `Select a reader`,
+        message: `Select a reader to connect to.`,
+        // @ts-ignore
+        inputs: readers.map((reader, index) => ({
+          name: 'serialNumber',
+          type: 'radio',
+          label: reader.serialNumber,
+          value: reader.serialNumber,
+          checked: index === 0,
+        })),
+        buttons: [
+          {
+            text: `Cancel`,
+            role: 'cancel',
+            handler: () => resolve(undefined),
+          },
+          {
+            text: `Submit`,
+            handler: (d) => {
+              resolve(readers.find((reader) => reader.serialNumber === d))
+            },
+          },
+        ],
+      });
+      await alert.present();
+    });
   }
 }

@@ -17,7 +17,11 @@ import com.stripe.stripeterminal.external.models.TerminalException;
     name = "StripeTerminal",
     permissions = {
         @Permission(alias = "location", strings = { Manifest.permission.ACCESS_FINE_LOCATION }),
-        @Permission(alias = "bluetooth", strings = { Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT })
+        @Permission(alias = "bluetooth_old", strings = { Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN }),
+        @Permission(
+            alias = "bluetooth",
+            strings = { Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_ADVERTISE }
+        )
     }
 )
 public class StripeTerminalPlugin extends Plugin {
@@ -49,6 +53,15 @@ public class StripeTerminalPlugin extends Plugin {
     }
 
     @PermissionCallback
+    private void bluetoothOldPermsCallback(PluginCall call) throws TerminalException {
+        if (getPermissionState("bluetooth_old") == PermissionState.GRANTED) {
+            this._initialize(call);
+        } else {
+            call.reject("Permission is required to get bluetooth_old");
+        }
+    }
+
+    @PermissionCallback
     private void bluetoothPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
             this._initialize(call);
@@ -60,7 +73,9 @@ public class StripeTerminalPlugin extends Plugin {
     private void _initialize(PluginCall call) throws TerminalException {
         if (getPermissionState("location") != PermissionState.GRANTED) {
             requestPermissionForAlias("location", call, "locationPermsCallback");
-        } else if (getPermissionState("bluetooth") != PermissionState.GRANTED) {
+        } else if (Build.VERSION.SDK_INT <= 30 && getPermissionState("bluetooth_old") != PermissionState.GRANTED) {
+            requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
+        } else if (Build.VERSION.SDK_INT > 30 && getPermissionState("bluetooth") != PermissionState.GRANTED) {
             requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         } else {
             this.implementation.initialize(call);

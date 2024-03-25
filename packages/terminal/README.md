@@ -6,7 +6,7 @@ We have confirmed that it works well in the demo project. Please refer to https:
 - [x] Tap To Pay
 - [x] Internet
 - [x] Bluetooth
-- [ ] USB
+- [x] USB
 
 ## Install
 
@@ -27,8 +27,9 @@ Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 + <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 + <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
 + <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 + <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
++ <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
++ <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
 
 If used in conjunction with the `@capacitor-community/stripe` plugin, the following settings may be necessary

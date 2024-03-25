@@ -105,6 +105,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             self.connectLocalMobileReader(call)
         } else if self.type == .internet {
             self.connectInternetReader(call)
+        } else {
+            // if self.type === DiscoveryMethod.bluetoothScan
+            self.connectBluetoothReader(call)
         }
     }
 
@@ -169,7 +172,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectBluetoothReader(_ call: CAPPluginCall) {
-        let config = try! BluetoothConnectionConfigurationBuilder(locationId: "{{LOCATION_ID}}").build()
+        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!).build()
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
 

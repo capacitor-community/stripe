@@ -1,16 +1,16 @@
 PODS:
   - Capacitor (5.0.0):
     - CapacitorCordova
-  - CapacitorCommunityStripe (5.4.4):
+  - CapacitorCommunityStripe (5.4.6):
     - Capacitor
     - StripeApplePay (~> 23.24.0)
     - StripePaymentSheet (~> 23.24.0)
-  - CapacitorCommunityStripeIdentity (5.4.4):
+  - CapacitorCommunityStripeIdentity (5.4.6):
     - Capacitor
     - StripeIdentity (~> 23.24.0)
-  - CapacitorCommunityStripeTerminal (5.4.4):
+  - CapacitorCommunityStripeTerminal (5.5.0-beta.1):
     - Capacitor
-    - StripeTerminal (~> 3.3.1)
+    - StripeTerminal (~> 3.4.0)
   - CapacitorCordova (5.0.0)
   - StripeApplePay (23.24.1):
     - StripeCore (= 23.24.1)
@@ -35,7 +35,7 @@ PODS:
     - StripeCore (= 23.24.1)
     - StripePayments (= 23.24.1)
     - StripeUICore (= 23.24.1)
-  - StripeTerminal (3.3.1)
+  - StripeTerminal (3.4.0)
   - StripeUICore (23.24.1):
     - StripeCore (= 23.24.1)
 
@@ -72,9 +72,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: b332cb737d447561e854039fb72195206685dce2
-  CapacitorCommunityStripe: 5729a153eb5cb6ac28dab496afff3416471983b0
-  CapacitorCommunityStripeIdentity: 4dd105cfb8ef4b091d687fb05d88f60371bba4ce
-  CapacitorCommunityStripeTerminal: e7e725b9bbefed0500503105f930fd90394b6bd8
+  CapacitorCommunityStripe: 3fee1254742ce744f6576bda1fc899cfa053e797
+  CapacitorCommunityStripeIdentity: 3996571069f39e5c9820f15598e3ccf9c507f9a7
+  CapacitorCommunityStripeTerminal: add001625e3eee13be86a241fd59d56b4f0fa083
   CapacitorCordova: 4ea17670ee562680988a7ce9db68dee5160fe564
   StripeApplePay: ffc296e6eba1d9ce86e4b5c4733540bce6f1b3eb
   StripeCameraCore: 3459f80598a8cd2060ba3e28e647ea50a94912cd
@@ -83,7 +83,7 @@ SPEC CHECKSUMS:
   StripePayments: 4fdc6b22595887753851aee425dc9aafad39e8ef
   StripePaymentSheet: 9f433a11fa6578939c555b6a56c87b7a958845d6
   StripePaymentsUI: 42a4c50bd30a19c102685eeb7269a52c71a79bb3
-  StripeTerminal: 369ef0cf0b90d838f42be1a0b371475986f4b79f
+  StripeTerminal: bdca32b058179ff3595c7d886a1cc45d4e810c5c
   StripeUICore: 510afeb8f0cb8ba5f99563a23c5ad6cc7f58a007
 
 PODFILE CHECKSUM: 2430ef1d0136ea2c0f7e2696daff19ed8cd27595
