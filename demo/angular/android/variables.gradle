@@ -1,5 +1,5 @@
 ext {
-    minSdkVersion = 22
+    minSdkVersion = 26
     compileSdkVersion = 34
     targetSdkVersion = 34
     androidxActivityVersion = '1.8.0'
@@ -15,8 +15,8 @@ ext {
     cordovaAndroidVersion = '10.1.1'
 
     // If you use @capacitor-community/stripe:
-    stripeAndroidVersion = '20.39.+'
+    // stripeAndroidVersion = '20.39.+'
 
     // If you use @capacitor-community/stripe-identity:
-    identityVersion = '20.39.+'
+    // identityVersion = '20.39.+'
 }
