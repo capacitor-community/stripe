@@ -16,37 +16,37 @@ export interface PaymentFlowDefinitions {
   addListener(
     eventName: PaymentFlowEventsEnum.Loaded,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: PaymentFlowEventsEnum.FailedToLoad,
     listenerFunc: (error: string) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: PaymentFlowEventsEnum.Opened,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: PaymentFlowEventsEnum.Completed,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: PaymentFlowEventsEnum.Canceled,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: PaymentFlowEventsEnum.Failed,
     listenerFunc: (error: string) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: PaymentFlowEventsEnum.Created,
     listenerFunc: (info: {
       cardNumber: string;
     }) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 }
