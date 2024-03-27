@@ -79,7 +79,7 @@ public class StripePlugin extends Plugin {
                                 : GooglePayLauncher.BillingAddressConfig.Format.Min,
                             metaData.phoneNumberRequired
                         ),
-                            false
+                            metaData.existingPaymentMethodRequired
                     ),
                     (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
                     (@NotNull GooglePayLauncher.Result result) ->
