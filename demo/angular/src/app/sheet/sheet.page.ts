@@ -102,7 +102,7 @@ export class SheetPage {
 
   async create(type: 'happyPath' | 'cancelPath') {
     const eventKeys = Object.keys(PaymentSheetEventsEnum);
-    eventKeys.forEach((key) => {
+    for (const key of eventKeys) {
       const handler = Stripe.addListener(
         PaymentSheetEventsEnum[key],
         (value) => {
@@ -114,8 +114,8 @@ export class SheetPage {
           );
         },
       );
-      this.listenerHandlers.push(handler);
-    });
+      this.listenerHandlers.push(await handler);
+    }
 
     if (type === 'happyPath') {
       this.eventItems = JSON.parse(JSON.stringify(happyPathItems));

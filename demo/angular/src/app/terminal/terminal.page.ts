@@ -202,7 +202,7 @@ export class TerminalPage {
     readerType: TerminalConnectTypes,
   ) {
     const eventKeys = Object.keys(TerminalEventsEnum);
-    eventKeys.forEach((key) => {
+    for (const key of eventKeys) {
       const handler = StripeTerminal.addListener(
         TerminalEventsEnum[key],
         () => {
@@ -214,10 +214,10 @@ export class TerminalPage {
           );
         },
       );
-      this.listenerHandlers.push(handler);
+      this.listenerHandlers.push(await handler);
       if (key === 'RequestedConnectionToken') {
         this.listenerHandlers.push(
-          StripeTerminal.addListener(
+          await StripeTerminal.addListener(
             TerminalEventsEnum.RequestedConnectionToken,
             async () => {
               const { secret } = await firstValueFrom(
@@ -230,7 +230,7 @@ export class TerminalPage {
           ),
         );
       }
-    });
+    }
 
     if (type === 'happyPath') {
       this.eventItems = JSON.parse(JSON.stringify(happyPathItems));
@@ -348,7 +348,7 @@ export class TerminalPage {
 
   async checkDiscoverMethod() {
     const eventKeys = Object.keys(TerminalEventsEnum);
-    eventKeys.forEach((key) => {
+    for (const key of eventKeys) {
       const handler = StripeTerminal.addListener(
         TerminalEventsEnum[key],
         () => {
@@ -359,10 +359,10 @@ export class TerminalPage {
           );
         },
       );
-      this.listenerHandlers.push(handler);
+      this.listenerHandlers.push(await handler);
       if (key === 'RequestedConnectionToken') {
         this.listenerHandlers.push(
-          StripeTerminal.addListener(
+          await StripeTerminal.addListener(
             TerminalEventsEnum.RequestedConnectionToken,
             async () => {
               const { secret } = await firstValueFrom(
@@ -375,7 +375,7 @@ export class TerminalPage {
           ),
         );
       }
-    });
+    }
 
     this.eventItems = JSON.parse(JSON.stringify(checkDiscoverMethodItems));
 

@@ -113,7 +113,7 @@ export class FlowPage {
 
   async create(type: 'happyPath' | 'cancelPath') {
     const eventKeys = Object.keys(PaymentFlowEventsEnum);
-    eventKeys.forEach((key) => {
+    for (const key of eventKeys) {
       const handler = Stripe.addListener(
         PaymentFlowEventsEnum[key],
         (value) => {
@@ -125,8 +125,8 @@ export class FlowPage {
           );
         },
       );
-      this.listenerHandlers.push(handler);
-    });
+      this.listenerHandlers.push(await handler);
+    }
 
     if (type === 'happyPath') {
       this.eventItems = JSON.parse(JSON.stringify(happyPathItems));

@@ -16,35 +16,35 @@ export interface ApplePayDefinitions {
   addListener(
     eventName: ApplePayEventsEnum.Loaded,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: ApplePayEventsEnum.FailedToLoad,
     listenerFunc: (error: string) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: ApplePayEventsEnum.Completed,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: ApplePayEventsEnum.Canceled,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: ApplePayEventsEnum.Failed,
     listenerFunc: (error: string) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: ApplePayEventsEnum.DidSelectShippingContact,
     listenerFunc: (data: DidSelectShippingContact) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: ApplePayEventsEnum.DidCreatePaymentMethod,
     listenerFunc: (data: DidSelectShippingContact) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 }

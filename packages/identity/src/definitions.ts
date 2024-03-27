@@ -23,25 +23,25 @@ export interface StripeIdentityPlugin {
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.Loaded,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.FailedToLoad,
     listenerFunc: (info: StripeIdentityError) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.Completed,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.Canceled,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: IdentityVerificationSheetEventsEnum.Failed,
     listenerFunc: (info: StripeIdentityError) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 }

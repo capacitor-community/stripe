@@ -38,35 +38,35 @@ export interface StripeTerminalPlugin {
   addListener(
     eventName: TerminalEventsEnum.Loaded,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.RequestedConnectionToken,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.DiscoveredReaders,
     listenerFunc: () => { reader: ReaderInterface },
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.ConnectedReader,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.ConfirmedPaymentIntent,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.CollectedPaymentIntent,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.Canceled,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.Failed,
     listenerFunc: () => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 
   /**
    * @deprecated
