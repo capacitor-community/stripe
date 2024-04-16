@@ -27,15 +27,15 @@ jobs:
           ${{ runner.os }}-v1-dependencies-
 
     - name: Build Payment package
-      run: npm ci && npm run build
+      run: npm install && npm run build
       working-directory: ./packages/payment
 
     - name: Build Identity package
-      run: npm ci && npm run build
+      run: npm install && npm run build
       working-directory: ./packages/identity
 
     - name: Build Terminal package
-      run: npm ci && npm run build
+      run: npm install && npm run build
       working-directory: ./packages/terminal
 
     #- name: Test web implementation
@@ -51,7 +51,7 @@ jobs:
 
     - name: Build test React app
       working-directory: ./demo/react
-      run: npm ci && npm run build
+      run: npm install && npm run build
 
     - name: Update & Sync Capacitor Project
       working-directory: ./demo/angular
