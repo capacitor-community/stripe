@@ -51,7 +51,7 @@ jobs:
 
     - name: Build test React app
       working-directory: ./demo/react
-      run: npm install && npm run build
+      run: npm install -f && npm run build
 
     - name: Update & Sync Capacitor Project
       working-directory: ./demo/angular
