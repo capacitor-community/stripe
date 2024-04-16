@@ -257,7 +257,7 @@ confirmPaymentIntent() => Promise<void>
 ### addListener(TerminalEventsEnum.Loaded, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                     |
@@ -265,7 +265,7 @@ addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => P
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Loaded</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                               |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -273,7 +273,7 @@ addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => P
 ### addListener(TerminalEventsEnum.RequestedConnectionToken, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                                       |
@@ -281,7 +281,7 @@ addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestedConnectionToken</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                                 |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -289,7 +289,7 @@ addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc
 ### addListener(TerminalEventsEnum.DiscoveredReaders, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () => { reader: ReaderInterface; }) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () => { reader: ReaderInterface; }) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                                |
@@ -297,7 +297,7 @@ addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () =>
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.DiscoveredReaders</a></code> |
 | **`listenerFunc`** | <code>() =&gt; { reader: <a href="#readerinterface">ReaderInterface</a>; }</code>   |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -305,7 +305,7 @@ addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () =>
 ### addListener(TerminalEventsEnum.ConnectedReader, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                              |
@@ -313,7 +313,7 @@ addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => v
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConnectedReader</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                        |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -321,7 +321,7 @@ addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => v
 ### addListener(TerminalEventsEnum.ConfirmedPaymentIntent, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.ConfirmedPaymentIntent, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.ConfirmedPaymentIntent, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                                     |
@@ -329,7 +329,7 @@ addListener(eventName: TerminalEventsEnum.ConfirmedPaymentIntent, listenerFunc: 
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConfirmedPaymentIntent</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                               |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -337,7 +337,7 @@ addListener(eventName: TerminalEventsEnum.ConfirmedPaymentIntent, listenerFunc: 
 ### addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.CollectedPaymentIntent, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.CollectedPaymentIntent, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                                     |
@@ -345,7 +345,7 @@ addListener(eventName: TerminalEventsEnum.CollectedPaymentIntent, listenerFunc: 
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.CollectedPaymentIntent</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                               |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -353,7 +353,7 @@ addListener(eventName: TerminalEventsEnum.CollectedPaymentIntent, listenerFunc: 
 ### addListener(TerminalEventsEnum.Canceled, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                       |
@@ -361,7 +361,7 @@ addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void) =>
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Canceled</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -369,7 +369,7 @@ addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void) =>
 ### addListener(TerminalEventsEnum.Failed, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => PluginListenerHandle
+addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                     |
@@ -377,7 +377,7 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Failed</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                               |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
