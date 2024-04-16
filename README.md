@@ -21,24 +21,26 @@
 
 ## Optional: How to use Stripe Android currently package
 
-Capacitor Android 5's default settings is here:
+Capacitor Android 6's default settings is here:
 
 ```
 minSdkVersion = 22
-compileSdkVersion = 33
-targetSdkVersion = 33
+compileSdkVersion = 34
+targetSdkVersion = 34
 ```
 
 To use the latest Stripe Android, you need to version these up. To use the latest features, follow these steps.
 
-1. Open `android/variables.gradle` , and change `compileSdkVersion` to 24 or higher.
-2. Add `stripeAndroidVersion` or `identityVersion` and set required version. Release information is here: https://github.com/stripe/stripe-android/releases
+1. Open `android/variables.gradle` and change sdkVersion version, if need.
+2. Add `stripeAndroidVersion`, `identityVersion` or `stripeterminalCoreVersion` and set required version. Release information is here: 
+- https://github.com/stripe/stripe-android/releases
+- https://github.com/stripe/stripe-terminal-android/releases
 
 ```diff
   ext {
-    minSdkVersion = 26
--   compileSdkVersion = 33
-+   compileSdkVersion = 34
+-   minSdkVersion = 22
++   minSdkVersion = 26
+    compileSdkVersion = 34
     targetSdkVersion = 33
     androidxActivityVersion = '1.7.0'
     androidxAppCompatVersion = '1.6.1'
@@ -57,6 +59,9 @@ To use the latest Stripe Android, you need to version these up. To use the lates
 
     // If you use @capacitor-community/stripe-identity:
 +   identityVersion = '20.39.+'
+
+    // If you use @capacitor-community/stripe-terminal:
++   stripeterminalCoreVersion = '3.5.0'
   }
 ```
 
@@ -68,7 +73,6 @@ Note: `@capacitor-community/stripe-terminal` does not work with the default sdkV
 | Maintainer          | GitHub                              | Social                                |
 | ------------------- | ----------------------------------- | ------------------------------------- |
 | Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) |
-| Ibby Hadeed | [ihadeed](https://github.com/ihadeed) | |
 | Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) |
 
 ## Contributors ✨
