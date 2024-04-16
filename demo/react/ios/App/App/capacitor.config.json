@@ -2,5 +2,13 @@
 	"appId": "io.ionic.starter",
 	"appName": "react",
 	"webDir": "build",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"packageClassList": [
+		"StripePlugin",
+		"StripePlugin",
+		"AppPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"StatusBarPlugin"
+	]
 }
