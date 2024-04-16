@@ -5,7 +5,7 @@ ext {
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.5.1'
 
     playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
-    identityVersion = project.hasProperty('identityVersion') ? rootProject.ext.identityVersion : '20.40.+'
+    identityVersion = project.hasProperty('identityVersion') ? rootProject.ext.identityVersion : '20.41.+'
 }
 
 buildscript {
