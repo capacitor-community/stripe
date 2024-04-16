@@ -19,7 +19,19 @@
 | @capacitor-community/stripe-terminal | Support for in-person payments using Stripe  | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) |
 
 
-## Optional: How to use Stripe Android currently package
+## Hint
+
+### Versions
+
+Users of Capacitor v5 should use version v5 of the Plugin.
+
+```bash
+% npm install @capacitor-community/stripe@5
+% npm install @capacitor-community/stripe-identity@5
+% npm install @capacitor-community/stripe-terminal@5
+```
+
+### How to use Stripe Android currently package
 
 Capacitor Android 6's default settings is here:
 
