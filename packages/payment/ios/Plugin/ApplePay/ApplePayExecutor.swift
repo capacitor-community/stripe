@@ -103,7 +103,7 @@ extension ApplePayExecutor {
         if #available(iOS 15.0, *) {
             nameFormatted = (contact?.name?.nameSuffix as? String ?? "")
         }
-        var dataString = "[{" +
+        var dataString = "{" +
         "\"givenName\":\"\(contact?.name?.givenName as? String ?? "")\"," +
         "\"familyName\":\"\(contact?.name?.familyName as? String ?? "")\"," +
         "\"middleName\":\"\(contact?.name?.middleName as? String ?? "")\"," +
@@ -120,12 +120,12 @@ extension ApplePayExecutor {
         "\"isoCountryCode\":\"\(contact?.postalAddress?.isoCountryCode as? String ?? "")\"," +
         "\"subAdministrativeArea\":\"\(contact?.postalAddress?.subAdministrativeArea as? String ?? "")\"," +
         "\"subLocality\":\"\(contact?.postalAddress?.subLocality as? String ?? "")\"" +
-        "}]"
+        "}"
         dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
         let dataStringUTF8 = dataString.data(using: .utf8)!
         do {
-            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options: .allowFragments) as? [Dictionary<String, Any>] {
-                return jsonArray
+            if let jsonObject = try JSONSerialization.jsonObject(with: dataStringUTF8, options: .allowFragments) as? Dictionary<String, Any> {
+                return jsonObject
             }
         } catch let error as NSError {
             print(error)
@@ -137,8 +137,8 @@ extension ApplePayExecutor {
     // For security reasons, Apple does not return the full address until a successful payment has been made.
     func applePayContext(_ context: STPApplePayContext, didSelectShippingContact contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void) {
         handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: []))
-        let jsonArray = self.transformPKContactToJSON(contact: contact)
-        self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray])
+        let jsonObject = self.transformPKContactToJSON(contact: contact)
+        self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonObject])
 
         // Check allowed countries
         if !self.allowedCountries.isEmpty {
@@ -157,8 +157,8 @@ extension ApplePayExecutor {
         let clientSecret = self.appleClientSecret
         let error = "" // Call the completion block with the client secret or an error
         completion(clientSecret, error as? Error)
-        let jsonArray = self.transformPKContactToJSON(contact: paymentInformation.shippingContact)
-        self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact": jsonArray])
+        let jsonObject = self.transformPKContactToJSON(contact: paymentInformation.shippingContact)
+        self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact": jsonObject])
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPApplePayContext.PaymentStatus, error: Error?) {
