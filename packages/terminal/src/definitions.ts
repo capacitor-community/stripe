@@ -55,6 +55,13 @@ export enum SimulatedCardType {
   OnlinePinSCARetry = 'ONLINE_PIN_SCA_RETRY',
 }
 
+export enum BatteryStatus {
+  Unknown = 'UNKNOWN',
+  Critical = 'CRITICAL',
+  Low = 'LOW',
+  Nominal = 'NOMINAL',
+}
+
 export type ReaderInterface = {
   index: number;
   serialNumber: string;
@@ -140,6 +147,14 @@ export interface StripeTerminalPlugin {
       errorMessage: string|null,
     }) => void,
   ): Promise<PluginListenerHandle>;
+  addListener(
+    eventName: TerminalEventsEnum.BatteryLevel,
+    listenerFunc: ({ level, charging, status }: {
+      level: number,
+      charging: boolean,
+      status: BatteryStatus
+    }) => void,
+  ): Promise<PluginListenerHandle>,
 
   /**
    * @deprecated

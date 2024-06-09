@@ -135,6 +135,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.StartInstallingUpdate, ...)`](#addlistenerterminaleventsenumstartinstallingupdate)
 * [`addListener(TerminalEventsEnum.ReaderSoftwareUpdateProgress, ...)`](#addlistenerterminaleventsenumreadersoftwareupdateprogress)
 * [`addListener(TerminalEventsEnum.FinishInstallingUpdate, ...)`](#addlistenerterminaleventsenumfinishinstallingupdate)
+* [`addListener(TerminalEventsEnum.BatteryLevel, ...)`](#addlistenerterminaleventsenumbatterylevel)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -447,6 +448,22 @@ addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: 
 --------------------
 
 
+### addListener(TerminalEventsEnum.BatteryLevel, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, charging, status }: { level: number; charging: boolean; status: BatteryStatus; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.BatteryLevel</a></code>                                                                   |
+| **`listenerFunc`** | <code>({ level, charging, status }: { level: number; charging: boolean; status: <a href="#batterystatus">BatteryStatus</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -545,6 +562,7 @@ addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: 
 | **`StartInstallingUpdate`**        | <code>'terminalStartInstallingUpdate'</code>        |
 | **`ReaderSoftwareUpdateProgress`** | <code>'terminalReaderSoftwareUpdateProgress'</code> |
 | **`FinishInstallingUpdate`**       | <code>'terminalFinishInstallingUpdate'</code>       |
+| **`BatteryLevel`**                 | <code>'terminalBatteryLevel'</code>                 |
 
 
 #### UpdateTimeEstimate
@@ -555,5 +573,15 @@ addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: 
 | **`OneToTwoMinutes`**      | <code>'ONE_TO_TWO_MINUTES'</code>      |
 | **`TwoToFiveMinutes`**     | <code>'TWO_TO_FIVE_MINUTES'</code>     |
 | **`FiveToFifteenMinutes`** | <code>'FIVE_TO_FIFTEEN_MINUTES'</code> |
+
+
+#### BatteryStatus
+
+| Members        | Value                   |
+| -------------- | ----------------------- |
+| **`Unknown`**  | <code>'UNKNOWN'</code>  |
+| **`Critical`** | <code>'CRITICAL'</code> |
+| **`Low`**      | <code>'LOW'</code>      |
+| **`Nominal`**  | <code>'NOMINAL'</code>  |
 
 </docgen-api>

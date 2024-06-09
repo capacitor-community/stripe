@@ -26,6 +26,7 @@ import com.stripe.stripeterminal.external.callable.ReaderCallback;
 import com.stripe.stripeterminal.external.callable.ReaderListener;
 import com.stripe.stripeterminal.external.callable.ReaderReconnectionListener;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
+import com.stripe.stripeterminal.external.models.BatteryStatus;
 import com.stripe.stripeterminal.external.models.CardPresentDetails;
 import com.stripe.stripeterminal.external.models.CollectConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration;
@@ -487,6 +488,15 @@ public class StripeTerminal extends Executor {
                         .put("errorMessage", errorMessage);
 
                 notifyListeners(TerminalEnumEvent.FinishInstallingUpdate.getWebEventName(), eventObject);
+            }
+
+            @Override
+            public void onBatteryLevelUpdate(float batteryLevel, @NonNull BatteryStatus batteryStatus, boolean isCharging) {
+                notifyListeners(TerminalEnumEvent.BatteryLevel.getWebEventName(), new JSObject()
+                    .put("level", batteryLevel)
+                    .put("charging", isCharging)
+                    .put("status", batteryStatus.toString()
+                ));
             }
 
             @Override
