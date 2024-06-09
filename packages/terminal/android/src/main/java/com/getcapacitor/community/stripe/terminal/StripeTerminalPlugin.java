@@ -59,7 +59,11 @@ public class StripeTerminalPlugin extends Plugin {
     @PermissionCallback
     private void bluetoothOldPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("bluetooth_old") == PermissionState.GRANTED) {
-            this.connectReader(call);
+            if (Objects.equals(call.getMethodName(), "discoverReaders")) {
+                this.discoverReaders(call);
+            } else {
+                this.connectReader(call);
+            }
         } else {
             requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
         }
@@ -68,7 +72,11 @@ public class StripeTerminalPlugin extends Plugin {
     @PermissionCallback
     private void bluetoothPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
-            this.connectReader(call);
+            if (Objects.equals(call.getMethodName(), "discoverReaders")) {
+                this.discoverReaders(call);
+            } else {
+                this.connectReader(call);
+            }
         } else {
             requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
         }
@@ -85,7 +93,22 @@ public class StripeTerminalPlugin extends Plugin {
 
     @PluginMethod
     public void discoverReaders(PluginCall call) {
-        this.implementation.onDiscoverReaders(call);
+        if (
+            Objects.equals(call.getString("type"), TerminalConnectTypes.Bluetooth.getWebEventName()) ||
+            Objects.equals(call.getString("type"), TerminalConnectTypes.Simulated.getWebEventName())
+        ) {
+            Log.d("Capacitor:permission bluetooth_old", getPermissionState("bluetooth_old").toString());
+            Log.d("Capacitor:permission bluetooth", getPermissionState("bluetooth").toString());
+            if (Build.VERSION.SDK_INT <= 30 && getPermissionState("bluetooth_old") != PermissionState.GRANTED) {
+                requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback");
+            } else if (Build.VERSION.SDK_INT > 30 && getPermissionState("bluetooth") != PermissionState.GRANTED) {
+                requestPermissionForAlias("bluetooth", call, "bluetoothPermsCallback");
+            } else {
+                this.implementation.onDiscoverReaders(call);
+            }
+        } else {
+            this.implementation.onDiscoverReaders(call);
+        }
     }
 
     @PluginMethod
