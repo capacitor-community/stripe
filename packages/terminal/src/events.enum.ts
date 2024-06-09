@@ -13,6 +13,10 @@ export enum TerminalEventsEnum {
   ReaderSoftwareUpdateProgress = 'terminalReaderSoftwareUpdateProgress',
   FinishInstallingUpdate = 'terminalFinishInstallingUpdate',
   BatteryLevel = 'terminalBatteryLevel',
+  ReaderEvent = 'terminalReaderEvent',
+  RequestDisplayMessage = 'terminalRequestDisplayMessage',
+  RequestReaderInput = 'terminalRequestReaderInput',
+  PaymentStatusChange = 'terminalPaymentStatusChange',
 }
 
 export type TerminalResultInterface =

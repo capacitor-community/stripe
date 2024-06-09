@@ -39,6 +39,9 @@ import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentMethod;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
 import com.stripe.stripeterminal.external.models.Reader;
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage;
+import com.stripe.stripeterminal.external.models.ReaderEvent;
+import com.stripe.stripeterminal.external.models.ReaderInputOptions;
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate;
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate;
 import com.stripe.stripeterminal.external.models.SimulatedCard;
@@ -110,7 +113,7 @@ public class StripeTerminal extends Executor {
 
             @Override
             public void onPaymentStatusChange(@NonNull PaymentStatus status) {
-                // TODO: Listenerを追加
+                notifyListeners(TerminalEnumEvent.PaymentStatusChange.getWebEventName(), new JSObject().put("status", status.toString()));
             }
         };
         LogLevel logLevel = LogLevel.VERBOSE;
@@ -506,6 +509,33 @@ public class StripeTerminal extends Executor {
             public void onReportAvailableUpdate(@NotNull ReaderSoftwareUpdate update) {
                 // An update is available for the connected reader. Show this update in your application.
                 // This update can be installed using `Terminal.getInstance().installAvailableUpdate`.
+            }
+
+            @Override
+            public void onReportReaderEvent(@NotNull ReaderEvent event) {
+                notifyListeners(TerminalEnumEvent.ReaderEvent.getWebEventName(), new JSObject().put("event", event.toString()));
+            }
+
+            @Override
+            public void onRequestReaderDisplayMessage(@NotNull ReaderDisplayMessage message) {
+                notifyListeners(TerminalEnumEvent.RequestDisplayMessage.getWebEventName(), new JSObject()
+                    .put("messageType", message.name())
+                    .put("message", message.toString())
+                );
+            }
+
+            @Override
+            public void onRequestReaderInput(@NotNull ReaderInputOptions options) {
+                List<ReaderInputOptions.ReaderInputOption> optionsList = options.getOptions();
+                JSArray jsOptions = new JSArray();
+                for (ReaderInputOptions.ReaderInputOption optionType : optionsList) {
+                    jsOptions.put(optionType.name());
+                }
+
+                notifyListeners(TerminalEnumEvent.RequestReaderInput.getWebEventName(), new JSObject()
+                    .put("options", jsOptions)
+                    .put("message", options.toString())
+                );
             }
         };
     }

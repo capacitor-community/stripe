@@ -62,6 +62,39 @@ export enum BatteryStatus {
   Nominal = 'NOMINAL',
 }
 
+export enum ReaderEvent {
+  CardInserted = 'CARD_INSERTED',
+  CardRemoved = 'CARD_REMOVED',
+}
+
+export enum ReaderDisplayMessage {
+  CheckMobileDevice = 'CHECK_MOBILE_DEVICE',
+  RetryCard = 'RETRY_CARD',
+  InsertCard = 'INSERT_CARD',
+  InsertOrSwipeCard = 'INSERT_OR_SWIPE_CARD',
+  SwipeCard = 'SWIPE_CARD',
+  RemoveCard = 'REMOVE_CARD',
+  MultipleContactlessCardsDetected = 'MULTIPLE_CONTACTLESS_CARDS_DETECTED',
+  TryAnotherReadMethod = 'TRY_ANOTHER_READ_METHOD',
+  TryAnotherCard = 'TRY_ANOTHER_CARD',
+  CardRemovedTooEarly = 'CARD_REMOVED_TOO_EARLY',
+}
+
+export enum ReaderInputOption {
+  None = 'NONE',
+  Insert = 'INSERT',
+  Swipe = 'SWIPE',
+  Tap = 'TAP',
+  ManualEntry = 'MANUAL_ENTRY',
+}
+
+export enum PaymentStatus {
+  NotReady = 'NOT_READY',
+  Ready = 'READY',
+  WaitingForInput = 'WAITING_FOR_INPUT',
+  Processing = 'PROCESSING',
+}
+
 export type ReaderInterface = {
   index: number;
   serialNumber: string;
@@ -154,6 +187,22 @@ export interface StripeTerminalPlugin {
       charging: boolean,
       status: BatteryStatus
     }) => void,
+  ): Promise<PluginListenerHandle>,
+  addListener(
+    eventName: TerminalEventsEnum.ReaderEvent,
+    listenerFunc: ({ event }: { event: ReaderEvent }) => void,
+  ): Promise<PluginListenerHandle>,
+  addListener(
+    eventName: TerminalEventsEnum.RequestDisplayMessage,
+    listenerFunc: ({ messageType, message }: { messageType: ReaderDisplayMessage, message: string }) => void,
+  ): Promise<PluginListenerHandle>,
+  addListener(
+    eventName: TerminalEventsEnum.RequestReaderInput,
+    listenerFunc: ({ options, message }: { options: ReaderInputOption[], message: string }) => void,
+  ): Promise<PluginListenerHandle>,
+  addListener(
+    eventName: TerminalEventsEnum.PaymentStatusChange,
+    listenerFunc: ({ status }: { status: PaymentStatus }) => void,
   ): Promise<PluginListenerHandle>,
 
   /**

@@ -136,6 +136,10 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.ReaderSoftwareUpdateProgress, ...)`](#addlistenerterminaleventsenumreadersoftwareupdateprogress)
 * [`addListener(TerminalEventsEnum.FinishInstallingUpdate, ...)`](#addlistenerterminaleventsenumfinishinstallingupdate)
 * [`addListener(TerminalEventsEnum.BatteryLevel, ...)`](#addlistenerterminaleventsenumbatterylevel)
+* [`addListener(TerminalEventsEnum.ReaderEvent, ...)`](#addlistenerterminaleventsenumreaderevent)
+* [`addListener(TerminalEventsEnum.RequestDisplayMessage, ...)`](#addlistenerterminaleventsenumrequestdisplaymessage)
+* [`addListener(TerminalEventsEnum.RequestReaderInput, ...)`](#addlistenerterminaleventsenumrequestreaderinput)
+* [`addListener(TerminalEventsEnum.PaymentStatusChange, ...)`](#addlistenerterminaleventsenumpaymentstatuschange)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -464,6 +468,70 @@ addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, 
 --------------------
 
 
+### addListener(TerminalEventsEnum.ReaderEvent, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReaderEvent, listenerFunc: ({ event }: { event: ReaderEvent; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderEvent</a></code>           |
+| **`listenerFunc`** | <code>({ event }: { event: <a href="#readerevent">ReaderEvent</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.RequestDisplayMessage, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.RequestDisplayMessage, listenerFunc: ({ messageType, message }: { messageType: ReaderDisplayMessage; message: string; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestDisplayMessage</a></code>                                                         |
+| **`listenerFunc`** | <code>({ messageType, message }: { messageType: <a href="#readerdisplaymessage">ReaderDisplayMessage</a>; message: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.RequestReaderInput, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.RequestReaderInput, listenerFunc: ({ options, message }: { options: ReaderInputOption[]; message: string; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestReaderInput</a></code>               |
+| **`listenerFunc`** | <code>({ options, message }: { options: ReaderInputOption[]; message: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.PaymentStatusChange, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ status }: { status: PaymentStatus; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.PaymentStatusChange</a></code>         |
+| **`listenerFunc`** | <code>({ status }: { status: <a href="#paymentstatus">PaymentStatus</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -563,6 +631,10 @@ addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, 
 | **`ReaderSoftwareUpdateProgress`** | <code>'terminalReaderSoftwareUpdateProgress'</code> |
 | **`FinishInstallingUpdate`**       | <code>'terminalFinishInstallingUpdate'</code>       |
 | **`BatteryLevel`**                 | <code>'terminalBatteryLevel'</code>                 |
+| **`ReaderEvent`**                  | <code>'terminalReaderEvent'</code>                  |
+| **`RequestDisplayMessage`**        | <code>'terminalRequestDisplayMessage'</code>        |
+| **`RequestReaderInput`**           | <code>'terminalRequestReaderInput'</code>           |
+| **`PaymentStatusChange`**          | <code>'terminalPaymentStatusChange'</code>          |
 
 
 #### UpdateTimeEstimate
@@ -583,5 +655,50 @@ addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, 
 | **`Critical`** | <code>'CRITICAL'</code> |
 | **`Low`**      | <code>'LOW'</code>      |
 | **`Nominal`**  | <code>'NOMINAL'</code>  |
+
+
+#### ReaderEvent
+
+| Members            | Value                        |
+| ------------------ | ---------------------------- |
+| **`CardInserted`** | <code>'CARD_INSERTED'</code> |
+| **`CardRemoved`**  | <code>'CARD_REMOVED'</code>  |
+
+
+#### ReaderDisplayMessage
+
+| Members                                | Value                                              |
+| -------------------------------------- | -------------------------------------------------- |
+| **`CheckMobileDevice`**                | <code>'CHECK_MOBILE_DEVICE'</code>                 |
+| **`RetryCard`**                        | <code>'RETRY_CARD'</code>                          |
+| **`InsertCard`**                       | <code>'INSERT_CARD'</code>                         |
+| **`InsertOrSwipeCard`**                | <code>'INSERT_OR_SWIPE_CARD'</code>                |
+| **`SwipeCard`**                        | <code>'SWIPE_CARD'</code>                          |
+| **`RemoveCard`**                       | <code>'REMOVE_CARD'</code>                         |
+| **`MultipleContactlessCardsDetected`** | <code>'MULTIPLE_CONTACTLESS_CARDS_DETECTED'</code> |
+| **`TryAnotherReadMethod`**             | <code>'TRY_ANOTHER_READ_METHOD'</code>             |
+| **`TryAnotherCard`**                   | <code>'TRY_ANOTHER_CARD'</code>                    |
+| **`CardRemovedTooEarly`**              | <code>'CARD_REMOVED_TOO_EARLY'</code>              |
+
+
+#### ReaderInputOption
+
+| Members           | Value                       |
+| ----------------- | --------------------------- |
+| **`None`**        | <code>'NONE'</code>         |
+| **`Insert`**      | <code>'INSERT'</code>       |
+| **`Swipe`**       | <code>'SWIPE'</code>        |
+| **`Tap`**         | <code>'TAP'</code>          |
+| **`ManualEntry`** | <code>'MANUAL_ENTRY'</code> |
+
+
+#### PaymentStatus
+
+| Members               | Value                            |
+| --------------------- | -------------------------------- |
+| **`NotReady`**        | <code>'NOT_READY'</code>         |
+| **`Ready`**           | <code>'READY'</code>             |
+| **`WaitingForInput`** | <code>'WAITING_FOR_INPUT'</code> |
+| **`Processing`**      | <code>'PROCESSING'</code>        |
 
 </docgen-api>

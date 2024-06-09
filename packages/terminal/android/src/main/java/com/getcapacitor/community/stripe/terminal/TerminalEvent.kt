@@ -15,4 +15,8 @@ enum class TerminalEnumEvent(val webEventName: String) {
     ReaderSoftwareUpdateProgress("terminalReaderSoftwareUpdateProgress"),
     FinishInstallingUpdate("terminalFinishInstallingUpdate"),
     BatteryLevel("terminalBatteryLevel"),
+    ReaderEvent("terminalReaderEvent"),
+    RequestDisplayMessage("terminalRequestDisplayMessage"),
+    RequestReaderInput("terminalRequestReaderInput"),
+    PaymentStatusChange("terminalPaymentStatusChange"),
 }
