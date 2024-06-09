@@ -39,6 +39,10 @@ import com.stripe.stripeterminal.external.models.PaymentMethod;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
 import com.stripe.stripeterminal.external.models.Reader;
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate;
+import com.stripe.stripeterminal.external.models.SimulateReaderUpdate;
+import com.stripe.stripeterminal.external.models.SimulatedCard;
+import com.stripe.stripeterminal.external.models.SimulatedCardType;
+import com.stripe.stripeterminal.external.models.SimulatorConfiguration;
 import com.stripe.stripeterminal.external.models.TerminalException;
 import com.stripe.stripeterminal.log.LogLevel;
 import java.util.ArrayList;
@@ -119,6 +123,20 @@ public class StripeTerminal extends Executor {
 
     public void setConnectionToken(PluginCall call) {
         this.tokenProvider.setConnectionToken(call);
+    }
+
+    public void setSimulatorConfiguration(PluginCall call) {
+        try {
+            Terminal.getInstance().setSimulatorConfiguration(new SimulatorConfiguration(
+                SimulateReaderUpdate.valueOf(call.getString("update", "UPDATE_AVAILABLE")),
+                new SimulatedCard(SimulatedCardType.valueOf(call.getString("simulatedCard", "VISA"))),
+                call.getLong("simulatedTipAmount", null)
+            ));
+
+            call.resolve();
+        } catch (Exception ex) {
+            call.reject(ex.getMessage());
+        }
     }
 
     public void onDiscoverReaders(final PluginCall call) {

@@ -116,6 +116,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`initialize(...)`](#initialize)
 * [`discoverReaders(...)`](#discoverreaders)
 * [`setConnectionToken(...)`](#setconnectiontoken)
+* [`setSimulatorConfiguration(...)`](#setsimulatorconfiguration)
 * [`connectReader(...)`](#connectreader)
 * [`getConnectedReader()`](#getconnectedreader)
 * [`disconnectReader()`](#disconnectreader)
@@ -131,6 +132,9 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)`](#addlistenerterminaleventsenumcollectedpaymentintent)
 * [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
 * [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
+* [`addListener(TerminalEventsEnum.StartInstallingUpdate, ...)`](#addlistenerterminaleventsenumstartinstallingupdate)
+* [`addListener(TerminalEventsEnum.ReaderSoftwareUpdateProgress, ...)`](#addlistenerterminaleventsenumreadersoftwareupdateprogress)
+* [`addListener(TerminalEventsEnum.FinishInstallingUpdate, ...)`](#addlistenerterminaleventsenumfinishinstallingupdate)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -177,6 +181,19 @@ setConnectionToken(options: { token: string; }) => Promise<void>
 | Param         | Type                            |
 | ------------- | ------------------------------- |
 | **`options`** | <code>{ token: string; }</code> |
+
+--------------------
+
+
+### setSimulatorConfiguration(...)
+
+```typescript
+setSimulatorConfiguration(options: { update?: SimulateReaderUpdate; simulatedCard?: SimulatedCardType; simulatedTipAmount?: number; }) => Promise<void>
+```
+
+| Param         | Type                                                                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ update?: <a href="#simulatereaderupdate">SimulateReaderUpdate</a>; simulatedCard?: <a href="#simulatedcardtype">SimulatedCardType</a>; simulatedTipAmount?: number; }</code> |
 
 --------------------
 
@@ -289,13 +306,13 @@ addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc
 ### addListener(TerminalEventsEnum.DiscoveredReaders, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: () => { reader: ReaderInterface; }) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: ({ readers }: { readers: ReaderInterface[]; }) => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                                                |
 | ------------------ | ----------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.DiscoveredReaders</a></code> |
-| **`listenerFunc`** | <code>() =&gt; { reader: <a href="#readerinterface">ReaderInterface</a>; }</code>   |
+| **`listenerFunc`** | <code>({ readers }: { readers: ReaderInterface[]; }) =&gt; void</code>              |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -382,6 +399,54 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 --------------------
 
 
+### addListener(TerminalEventsEnum.StartInstallingUpdate, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.StartInstallingUpdate, listenerFunc: ({ update }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.StartInstallingUpdate</a></code>                                       |
+| **`listenerFunc`** | <code>({ update }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.ReaderSoftwareUpdateProgress, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReaderSoftwareUpdateProgress, listenerFunc: ({ progress }: { progress: number; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderSoftwareUpdateProgress</a></code> |
+| **`listenerFunc`** | <code>({ progress }: { progress: number; }) =&gt; void</code>                                  |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.FinishInstallingUpdate, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: ({ update, errorCode, errorMessage }: { update: ReaderSoftwareUpdateInterface | null; errorCode: string | null; errorMessage: string | null; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                                                                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.FinishInstallingUpdate</a></code>                                                                                                                                |
+| **`listenerFunc`** | <code>({ update, errorCode, errorMessage }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a> \| null; errorCode: string \| null; errorMessage: string \| null; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -397,7 +462,12 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 
 #### ReaderInterface
 
-<code>{ index: number; serialNumber: string; }</code>
+<code>{ index: number; serialNumber: string; }</code>
+
+
+#### ReaderSoftwareUpdateInterface
+
+<code>{ version: string; settingsVersion: string; requiredAt: number; timeEstimate: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; }</code>
 
 
 ### Enums
@@ -414,19 +484,76 @@ addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => P
 | **`TapToPay`**  | <code>'tap-to-pay'</code> |
 
 
+#### SimulateReaderUpdate
+
+| Members               | Value                           |
+| --------------------- | ------------------------------- |
+| **`UpdateAvailable`** | <code>'UPDATE_AVAILABLE'</code> |
+| **`None`**            | <code>'NONE'</code>             |
+| **`Required`**        | <code>'REQUIRED'</code>         |
+| **`Random`**          | <code>'RANDOM'</code>           |
+
+
+#### SimulatedCardType
+
+| Members                               | Value                                             |
+| ------------------------------------- | ------------------------------------------------- |
+| **`Visa`**                            | <code>'VISA'</code>                               |
+| **`VisaDebit`**                       | <code>'VISA_DEBIT'</code>                         |
+| **`Mastercard`**                      | <code>'MASTERCARD'</code>                         |
+| **`MastercardDebit`**                 | <code>'MASTERCARD_DEBIT'</code>                   |
+| **`MastercardPrepaid`**               | <code>'MASTERCARD_PREPAID'</code>                 |
+| **`Amex`**                            | <code>'AMEX'</code>                               |
+| **`Amex2`**                           | <code>'AMEX_2'</code>                             |
+| **`Discover`**                        | <code>'DISCOVER'</code>                           |
+| **`Discover2`**                       | <code>'DISCOVER_2'</code>                         |
+| **`DinersClub`**                      | <code>'DINERS'</code>                             |
+| **`DinersClulb14Digits`**             | <code>'DINERS_14_DIGITS'</code>                   |
+| **`JCB`**                             | <code>'JCB'</code>                                |
+| **`UnionPay`**                        | <code>'UNION_PAY'</code>                          |
+| **`Interac`**                         | <code>'INTERAC'</code>                            |
+| **`EftposAustraliaDebit`**            | <code>'EFTPOS_AU_DEBIT'</code>                    |
+| **`VisaUsCommonDebit`**               | <code>'VISA_US_COMMON_DEBIT'</code>               |
+| **`ChargeDeclined`**                  | <code>'CHARGE_DECLINED'</code>                    |
+| **`ChargeDeclinedInsufficientFunds`** | <code>'CHARGE_DECLINED_INSUFFICIENT_FUNDS'</code> |
+| **`ChargeDeclinedLostCard`**          | <code>'CHARGE_DECLINED_LOST_CARD'</code>          |
+| **`ChargeDeclinedStolenCard`**        | <code>'CHARGE_DECLINED_STOLEN_CARD'</code>        |
+| **`ChargeDeclinedExpiredCard`**       | <code>'CHARGE_DECLINED_EXPIRED_CARD'</code>       |
+| **`ChargeDeclinedProcessingError`**   | <code>'CHARGE_DECLINED_PROCESSING_ERROR'</code>   |
+| **`EftposAustraliaVisaDebit`**        | <code>'EFTPOS_AU_VISA_DEBIT'</code>               |
+| **`EftposAustraliaMastercardDebit`**  | <code>'EFTPOS_AU_DEBIT_MASTERCARD'</code>         |
+| **`OfflinePinCVM`**                   | <code>'OFFLINE_PIN_CVM'</code>                    |
+| **`OfflinePinSCARetry`**              | <code>'OFFLINE_PIN_SCA_RETRY'</code>              |
+| **`OnlinePinCVM`**                    | <code>'ONLINE_PIN_CVM'</code>                     |
+| **`OnlinePinSCARetry`**               | <code>'ONLINE_PIN_SCA_RETRY'</code>               |
+
+
 #### TerminalEventsEnum
 
-| Members                        | Value                                           |
-| ------------------------------ | ----------------------------------------------- |
-| **`Loaded`**                   | <code>'terminalLoaded'</code>                   |
-| **`DiscoveredReaders`**        | <code>'terminalDiscoveredReaders'</code>        |
-| **`CancelDiscoveredReaders`**  | <code>'terminalCancelDiscoveredReaders'</code>  |
-| **`ConnectedReader`**          | <code>'terminalConnectedReader'</code>          |
-| **`DisconnectedReader`**       | <code>'terminalDisconnectedReader'</code>       |
-| **`ConfirmedPaymentIntent`**   | <code>'terminalConfirmedPaymentIntent'</code>   |
-| **`CollectedPaymentIntent`**   | <code>'terminalCollectedPaymentIntent'</code>   |
-| **`Canceled`**                 | <code>'terminalCanceled'</code>                 |
-| **`Failed`**                   | <code>'terminalFailed'</code>                   |
-| **`RequestedConnectionToken`** | <code>'terminalRequestedConnectionToken'</code> |
+| Members                            | Value                                               |
+| ---------------------------------- | --------------------------------------------------- |
+| **`Loaded`**                       | <code>'terminalLoaded'</code>                       |
+| **`DiscoveredReaders`**            | <code>'terminalDiscoveredReaders'</code>            |
+| **`CancelDiscoveredReaders`**      | <code>'terminalCancelDiscoveredReaders'</code>      |
+| **`ConnectedReader`**              | <code>'terminalConnectedReader'</code>              |
+| **`DisconnectedReader`**           | <code>'terminalDisconnectedReader'</code>           |
+| **`ConfirmedPaymentIntent`**       | <code>'terminalConfirmedPaymentIntent'</code>       |
+| **`CollectedPaymentIntent`**       | <code>'terminalCollectedPaymentIntent'</code>       |
+| **`Canceled`**                     | <code>'terminalCanceled'</code>                     |
+| **`Failed`**                       | <code>'terminalFailed'</code>                       |
+| **`RequestedConnectionToken`**     | <code>'terminalRequestedConnectionToken'</code>     |
+| **`StartInstallingUpdate`**        | <code>'terminalStartInstallingUpdate'</code>        |
+| **`ReaderSoftwareUpdateProgress`** | <code>'terminalReaderSoftwareUpdateProgress'</code> |
+| **`FinishInstallingUpdate`**       | <code>'terminalFinishInstallingUpdate'</code>       |
+
+
+#### UpdateTimeEstimate
+
+| Members                    | Value                                  |
+| -------------------------- | -------------------------------------- |
+| **`LessThanOneMinute`**    | <code>'LESS_THAN_ONE_MINUTE'</code>    |
+| **`OneToTwoMinutes`**      | <code>'ONE_TO_TWO_MINUTES'</code>      |
+| **`TwoToFiveMinutes`**     | <code>'TWO_TO_FIVE_MINUTES'</code>     |
+| **`FiveToFifteenMinutes`** | <code>'FIVE_TO_FIFTEEN_MINUTES'</code> |
 
 </docgen-api>
