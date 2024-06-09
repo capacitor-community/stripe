@@ -443,16 +443,32 @@ public class StripeTerminal extends Executor {
             @Override
             public void onStartInstallingUpdate(@NotNull ReaderSoftwareUpdate update, @NotNull Cancelable cancelable) {
                 // Show UI communicating that a required update has started installing
+                notifyListeners(TerminalEnumEvent.StartInstallingUpdate.getWebEventName(), new JSObject().put("update", convertReaderSoftwareUpdate(update)));
             }
 
             @Override
             public void onReportReaderSoftwareUpdateProgress(float progress) {
                 // Update the progress of the install
+                notifyListeners(TerminalEnumEvent.ReaderSoftwareUpdateProgress.getWebEventName(), new JSObject().put("progress", progress));
             }
 
             @Override
             public void onFinishInstallingUpdate(@Nullable ReaderSoftwareUpdate update, @Nullable TerminalException e) {
                 // Report success or failure of the update
+                JSObject eventObject = new JSObject();
+                eventObject.put("update", update == null ? null : convertReaderSoftwareUpdate(update));
+
+                String errorCode = null;
+                String errorMessage = null;
+                if (e != null) {
+                    errorCode = e.getErrorCode().toString();
+                    errorMessage = e.getErrorMessage();
+                }
+
+                eventObject.put("errorCode", errorCode)
+                        .put("errorMessage", errorMessage);
+
+                notifyListeners(TerminalEnumEvent.FinishInstallingUpdate.getWebEventName(), eventObject);
             }
 
             @Override
@@ -464,5 +480,13 @@ public class StripeTerminal extends Executor {
                 // This update can be installed using `Terminal.getInstance().installAvailableUpdate`.
             }
         };
+    }
+
+    private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
+        return new JSObject()
+                .put("version", update.getVersion())
+                .put("settingsVersion", update.getSettingsVersion())
+                .put("requiredAt", update.getRequiredAt().getTime())
+                .put("timeEstimate", update.getTimeEstimate().toString());
     }
 }

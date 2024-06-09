@@ -10,9 +10,23 @@ export enum TerminalConnectTypes {
   TapToPay = 'tap-to-pay',
 }
 
+export enum UpdateTimeEstimate {
+  LessThanOneMinute = 'LESS_THAN_ONE_MINUTE',
+  OneToTwoMinutes = 'ONE_TO_TWO_MINUTES',
+  TwoToFiveMinutes = 'TWO_TO_FIVE_MINUTES',
+  FiveToFifteenMinutes = 'FIVE_TO_FIFTEEN_MINUTES',
+}
+
 export type ReaderInterface = {
   index: number;
   serialNumber: string;
+};
+
+export type ReaderSoftwareUpdateInterface = {
+  version: string;
+  settingsVersion: string;
+  requiredAt: number;
+  timeEstimate: UpdateTimeEstimate;
 };
 
 export * from './events.enum';
@@ -66,6 +80,22 @@ export interface StripeTerminalPlugin {
   addListener(
     eventName: TerminalEventsEnum.Failed,
     listenerFunc: () => void,
+  ): Promise<PluginListenerHandle>;
+  addListener(
+    eventName: TerminalEventsEnum.StartInstallingUpdate,
+    listenerFunc: () => { update: ReaderSoftwareUpdateInterface }
+  ): Promise<PluginListenerHandle>;
+  addListener(
+    eventName: TerminalEventsEnum.ReaderSoftwareUpdateProgress,
+    listenerFunc: () => { progress: number }
+  ): Promise<PluginListenerHandle>;
+  addListener(
+    eventName: TerminalEventsEnum.FinishInstallingUpdate,
+    listenerFunc: () => {
+      update: ReaderSoftwareUpdateInterface|null,
+      errorCode: string|null,
+      errorMessage: string|null,
+    }
   ): Promise<PluginListenerHandle>;
 
   /**
