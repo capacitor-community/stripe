@@ -12,6 +12,7 @@ import type {
   ReaderInputOption,
   PaymentStatus,
   DisconnectReason,
+  ConnectionStatus,
 } from './stripe.enum';
 
 export type ReaderInterface = {
@@ -83,15 +84,49 @@ export interface StripeTerminalPlugin {
    * For all reader types, this is emitted in response to [`disconnectReader()`](#disconnectreader)
    * without a `reason` property.
    * 
-   * For Bluetooth, Handoff, and USB readers, this is emitted with a `reason` property when the reader disconnects.
+   * For Bluetooth and USB readers, this is emitted with a `reason` property when the reader disconnects.
    * 
-   * **Note:** For Bluetooth, Handoff, and USB readers, when you call [`disconnectReader()`](#disconnectreader), this event
+   * **Note:** For Bluetooth and USB readers, when you call [`disconnectReader()`](#disconnectreader), this event
    * will be emitted twice: one without a `reason` in acknowledgement of your call, and again with a `reason` when the reader
    * finishes disconnecting.
    */
   addListener(
     eventName: TerminalEventsEnum.DisconnectedReader,
     listenerFunc: ({ reason }: { reason?: DisconnectReason }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  /**
+   * Emitted when the Terminal's connection status changed.
+   * 
+   * Note: You should *not* use this method to detect when a reader unexpectedly disconnects from your app,
+   * as it cannot be used to accurately distinguish between expected and unexpected disconnect events.
+   * 
+   * To detect unexpected disconnects (e.g. to automatically notify your user), you should instead use
+   * the UnexpectedReaderDisconnect event.
+   * 
+   * [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-terminal-listener/on-connection-status-change.html)
+   */
+  addListener(
+    eventName: TerminalEventsEnum.ConnectionStatusChange,
+    listenerFunc: ({ status }: { status: ConnectionStatus }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  /**
+   * The Terminal disconnected unexpectedly from the reader.
+   * 
+   * In your implementation of this method, you may want to notify your user that the reader disconnected.
+   * You may also call [`discoverReaders()`](#discoverreaders) to begin scanning for readers, and attempt
+   * to automatically reconnect to the disconnected reader. Be sure to either set a timeout or make it
+   * possible to cancel calls to `discoverReaders()`
+   * 
+   * When connected to a Bluetooth or USB reader, you can get more information about the disconnect by
+   * implementing the DisconnectedReader event.
+   * 
+   * [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-terminal-listener/on-unexpected-reader-disconnect.html)
+   */
+  addListener(
+    eventName: TerminalEventsEnum.UnexpectedReaderDisconnect,
+    listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
   ): Promise<PluginListenerHandle>;
 
   addListener(

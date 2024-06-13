@@ -104,12 +104,12 @@ public class StripeTerminal extends Executor {
         TerminalListener listener = new TerminalListener() {
             @Override
             public void onUnexpectedReaderDisconnect(@NonNull Reader reader) {
-                // TODO: Listenerを追加
+                notifyListeners(TerminalEnumEvent.UnexpectedReaderDisconnect.getWebEventName(), new JSObject().put("reader", convertReaderInterface(reader)));
             }
 
             @Override
             public void onConnectionStatusChange(@NonNull ConnectionStatus status) {
-                // TODO: Listenerを追加
+                notifyListeners(TerminalEnumEvent.ConnectionStatusChange.getWebEventName(), new JSObject().put("status", status.toString()));
             }
 
             @Override
@@ -184,7 +184,7 @@ public class StripeTerminal extends Executor {
 
             int i = 0;
             for (Reader reader : this.readers) {
-                readersJSObject.put(new JSObject().put("index", String.valueOf(i)).put("serialNumber", reader.getSerialNumber()));
+                readersJSObject.put(convertReaderInterface(reader).put("index", String.valueOf(i)));
             }
             this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), new JSObject().put("readers", readersJSObject));
             call.resolve(new JSObject().put("readers", readersJSObject));
@@ -228,7 +228,7 @@ public class StripeTerminal extends Executor {
         if (reader == null) {
             call.resolve(new JSObject().put("reader", JSObject.NULL));
         } else {
-            call.resolve(new JSObject().put("reader", new JSObject().put("serialNumber", reader.getSerialNumber())));
+            call.resolve(new JSObject().put("reader", convertReaderInterface(reader)));
         }
     }
 
@@ -547,11 +547,16 @@ public class StripeTerminal extends Executor {
         };
     }
 
+    private JSObject convertReaderInterface(Reader reader) {
+        return new JSObject()
+            .put("serialNumber", reader.getSerialNumber());
+    }
+
     private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
         return new JSObject()
-                .put("version", update.getVersion())
-                .put("settingsVersion", update.getSettingsVersion())
-                .put("requiredAt", update.getRequiredAt().getTime())
-                .put("timeEstimate", update.getTimeEstimate().toString());
+            .put("version", update.getVersion())
+            .put("settingsVersion", update.getSettingsVersion())
+            .put("requiredAt", update.getRequiredAt().getTime())
+            .put("timeEstimate", update.getTimeEstimate().toString());
     }
 }

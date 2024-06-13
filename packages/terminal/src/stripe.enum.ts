@@ -4,23 +4,23 @@ export enum TerminalConnectTypes {
 	Bluetooth = 'bluetooth',
 	Usb = 'usb',
 	TapToPay = 'tap-to-pay',
-  }
-  
-  export enum UpdateTimeEstimate {
+}
+
+export enum UpdateTimeEstimate {
 	LessThanOneMinute = 'LESS_THAN_ONE_MINUTE',
 	OneToTwoMinutes = 'ONE_TO_TWO_MINUTES',
 	TwoToFiveMinutes = 'TWO_TO_FIVE_MINUTES',
 	FiveToFifteenMinutes = 'FIVE_TO_FIFTEEN_MINUTES',
-  }
-  
-  export enum SimulateReaderUpdate {
+}
+
+export enum SimulateReaderUpdate {
 	UpdateAvailable = 'UPDATE_AVAILABLE',
 	None = 'NONE',
 	Required = 'REQUIRED',
 	Random = 'RANDOM',
-  }
-  
-  export enum SimulatedCardType {
+}
+
+export enum SimulatedCardType {
 	Visa = 'VISA',
 	VisaDebit = 'VISA_DEBIT',
 	Mastercard = 'MASTERCARD',
@@ -49,21 +49,21 @@ export enum TerminalConnectTypes {
 	OfflinePinSCARetry = 'OFFLINE_PIN_SCA_RETRY',
 	OnlinePinCVM = 'ONLINE_PIN_CVM',
 	OnlinePinSCARetry = 'ONLINE_PIN_SCA_RETRY',
-  }
-  
-  export enum BatteryStatus {
+}
+
+export enum BatteryStatus {
 	Unknown = 'UNKNOWN',
 	Critical = 'CRITICAL',
 	Low = 'LOW',
 	Nominal = 'NOMINAL',
-  }
-  
-  export enum ReaderEvent {
+}
+
+export enum ReaderEvent {
 	CardInserted = 'CARD_INSERTED',
 	CardRemoved = 'CARD_REMOVED',
-  }
-  
-  export enum ReaderDisplayMessage {
+}
+
+export enum ReaderDisplayMessage {
 	CheckMobileDevice = 'CHECK_MOBILE_DEVICE',
 	RetryCard = 'RETRY_CARD',
 	InsertCard = 'INSERT_CARD',
@@ -74,24 +74,24 @@ export enum TerminalConnectTypes {
 	TryAnotherReadMethod = 'TRY_ANOTHER_READ_METHOD',
 	TryAnotherCard = 'TRY_ANOTHER_CARD',
 	CardRemovedTooEarly = 'CARD_REMOVED_TOO_EARLY',
-  }
-  
-  export enum ReaderInputOption {
+}
+
+export enum ReaderInputOption {
 	None = 'NONE',
 	Insert = 'INSERT',
 	Swipe = 'SWIPE',
 	Tap = 'TAP',
 	ManualEntry = 'MANUAL_ENTRY',
-  }
-  
-  export enum PaymentStatus {
+}
+
+export enum PaymentStatus {
 	NotReady = 'NOT_READY',
 	Ready = 'READY',
 	WaitingForInput = 'WAITING_FOR_INPUT',
 	Processing = 'PROCESSING',
-  }
-  
-  export enum DisconnectReason {
+}
+
+export enum DisconnectReason {
 	Unknown = 'UNKNOWN',
 	DisconnectRequested = 'DISCONNECT_REQUESTED',
 	RebootRequested = 'REBOOT_REQUESTED',
@@ -99,4 +99,10 @@ export enum TerminalConnectTypes {
 	CriticallyLowBattery = 'CRITICALLY_LOW_BATTERY',
 	PoweredOff = 'POWERED_OFF',
 	BluetoothDisabled = 'BLUETOOTH_DISABLED',
-  }
+}
+
+export enum ConnectionStatus {
+  NotConnected = 'NOT_CONNECTED',
+  Connecting = 'CONNECTING',
+  Connected = 'CONNECTED',
+}

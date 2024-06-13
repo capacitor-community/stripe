@@ -4,6 +4,8 @@ export enum TerminalEventsEnum {
   CancelDiscoveredReaders = 'terminalCancelDiscoveredReaders',
   ConnectedReader = 'terminalConnectedReader',
   DisconnectedReader = 'terminalDisconnectedReader',
+  ConnectionStatusChange = 'terminalConnectionStatusChange',
+  UnexpectedReaderDisconnect = 'terminalUnexpectedReaderDisconnect',
   ConfirmedPaymentIntent = 'terminalConfirmedPaymentIntent',
   CollectedPaymentIntent = 'terminalCollectedPaymentIntent',
   Canceled = 'terminalCanceled',
