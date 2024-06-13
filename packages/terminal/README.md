@@ -129,6 +129,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
 * [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
 * [`addListener(TerminalEventsEnum.DisconnectedReader, ...)`](#addlistenerterminaleventsenumdisconnectedreader)
+* [`addListener(TerminalEventsEnum.ConnectionStatusChange, ...)`](#addlistenerterminaleventsenumconnectionstatuschange)
+* [`addListener(TerminalEventsEnum.UnexpectedReaderDisconnect, ...)`](#addlistenerterminaleventsenumunexpectedreaderdisconnect)
 * [`addListener(TerminalEventsEnum.ConfirmedPaymentIntent, ...)`](#addlistenerterminaleventsenumconfirmedpaymentintent)
 * [`addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)`](#addlistenerterminaleventsenumcollectedpaymentintent)
 * [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
@@ -355,9 +357,9 @@ or some connection error.
 For all reader types, this is emitted in response to [`disconnectReader()`](#disconnectreader)
 without a `reason` property.
 
-For Bluetooth, Handoff, and USB readers, this is emitted with a `reason` property when the reader disconnects.
+For Bluetooth and USB readers, this is emitted with a `reason` property when the reader disconnects.
 
-**Note:** For Bluetooth, Handoff, and USB readers, when you call [`disconnectReader()`](#disconnectreader), this event
+**Note:** For Bluetooth and USB readers, when you call [`disconnectReader()`](#disconnectreader), this event
 will be emitted twice: one without a `reason` in acknowledgement of your call, and again with a `reason` when the reader
 finishes disconnecting.
 
@@ -365,6 +367,60 @@ finishes disconnecting.
 | ------------------ | ---------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.DisconnectedReader</a></code>                 |
 | **`listenerFunc`** | <code>({ reason }: { reason?: <a href="#disconnectreason">DisconnectReason</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.ConnectionStatusChange, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ConnectionStatusChange, listenerFunc: ({ status }: { status: ConnectionStatus; }) => void) => Promise<PluginListenerHandle>
+```
+
+Emitted when the Terminal's connection status changed.
+
+Note: You should *not* use this method to detect when a reader unexpectedly disconnects from your app,
+as it cannot be used to accurately distinguish between expected and unexpected disconnect events.
+
+To detect unexpected disconnects (e.g. to automatically notify your user), you should instead use
+the UnexpectedReaderDisconnect event.
+
+[*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-terminal-listener/on-connection-status-change.html)
+
+| Param              | Type                                                                                                |
+| ------------------ | --------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConnectionStatusChange</a></code>            |
+| **`listenerFunc`** | <code>({ status }: { status: <a href="#connectionstatus">ConnectionStatus</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.UnexpectedReaderDisconnect, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.UnexpectedReaderDisconnect, listenerFunc: ({ reader }: { reader: ReaderInterface; }) => void) => Promise<PluginListenerHandle>
+```
+
+The Terminal disconnected unexpectedly from the reader.
+
+In your implementation of this method, you may want to notify your user that the reader disconnected.
+You may also call [`discoverReaders()`](#discoverreaders) to begin scanning for readers, and attempt
+to automatically reconnect to the disconnected reader. Be sure to either set a timeout or make it
+possible to cancel calls to `discoverReaders()`
+
+When connected to a Bluetooth or USB reader, you can get more information about the disconnect by
+implementing the DisconnectedReader event.
+
+[*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-terminal-listener/on-unexpected-reader-disconnect.html)
+
+| Param              | Type                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.UnexpectedReaderDisconnect</a></code>      |
+| **`listenerFunc`** | <code>({ reader }: { reader: <a href="#readerinterface">ReaderInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -715,6 +771,8 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 | **`CancelDiscoveredReaders`**      | <code>'terminalCancelDiscoveredReaders'</code>      |
 | **`ConnectedReader`**              | <code>'terminalConnectedReader'</code>              |
 | **`DisconnectedReader`**           | <code>'terminalDisconnectedReader'</code>           |
+| **`ConnectionStatusChange`**       | <code>'terminalConnectionStatusChange'</code>       |
+| **`UnexpectedReaderDisconnect`**   | <code>'terminalUnexpectedReaderDisconnect'</code>   |
 | **`ConfirmedPaymentIntent`**       | <code>'terminalConfirmedPaymentIntent'</code>       |
 | **`CollectedPaymentIntent`**       | <code>'terminalCollectedPaymentIntent'</code>       |
 | **`Canceled`**                     | <code>'terminalCanceled'</code>                     |
@@ -741,6 +799,15 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 | **`CriticallyLowBattery`** | <code>'CRITICALLY_LOW_BATTERY'</code> |
 | **`PoweredOff`**           | <code>'POWERED_OFF'</code>            |
 | **`BluetoothDisabled`**    | <code>'BLUETOOTH_DISABLED'</code>     |
+
+
+#### ConnectionStatus
+
+| Members            | Value                        |
+| ------------------ | ---------------------------- |
+| **`NotConnected`** | <code>'NOT_CONNECTED'</code> |
+| **`Connecting`**   | <code>'CONNECTING'</code>    |
+| **`Connected`**    | <code>'CONNECTED'</code>     |
 
 
 #### UpdateTimeEstimate
