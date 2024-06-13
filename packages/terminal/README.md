@@ -128,6 +128,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
 * [`addListener(TerminalEventsEnum.ConnectedReader, ...)`](#addlistenerterminaleventsenumconnectedreader)
+* [`addListener(TerminalEventsEnum.DisconnectedReader, ...)`](#addlistenerterminaleventsenumdisconnectedreader)
 * [`addListener(TerminalEventsEnum.ConfirmedPaymentIntent, ...)`](#addlistenerterminaleventsenumconfirmedpaymentintent)
 * [`addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)`](#addlistenerterminaleventsenumcollectedpaymentintent)
 * [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
@@ -334,6 +335,34 @@ addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => v
 | ------------------ | --------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConnectedReader</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                        |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.DisconnectedReader, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.DisconnectedReader, listenerFunc: ({ reason }: { reason?: DisconnectReason | undefined; }) => void) => Promise<PluginListenerHandle>
+```
+
+Emitted when the reader is disconnected, either in response to [`disconnectReader()`](#disconnectreader)
+or some connection error.
+
+For all reader types, this is emitted in response to [`disconnectReader()`](#disconnectreader)
+without a `reason` property.
+
+For Bluetooth and USB readers, this is emitted with a `reason` property when the reader disconnects.
+
+**Note:** For Bluetooth and USB readers, when you call [`disconnectReader()`](#disconnectreader), this event will
+be emitted twice: one without a `reason` in acknowledgement of your call, and again with a `reason` when the reader
+finishes disconnecting.
+
+| Param              | Type                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.DisconnectedReader</a></code>                 |
+| **`listenerFunc`** | <code>({ reason }: { reason?: <a href="#disconnectreason">DisconnectReason</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -547,12 +576,12 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 
 #### ReaderInterface
 
-<code>{ index: number; serialNumber: string; }</code>
+<code>{ index: number; serialNumber: string; }</code>
 
 
 #### ReaderSoftwareUpdateInterface
 
-<code>{ version: string; settingsVersion: string; requiredAt: number; timeEstimate: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; }</code>
+<code>{ version: string; settingsVersion: string; requiredAt: number; timeEstimate: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; }</code>
 
 
 ### Enums
@@ -635,6 +664,19 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 | **`RequestDisplayMessage`**        | <code>'terminalRequestDisplayMessage'</code>        |
 | **`RequestReaderInput`**           | <code>'terminalRequestReaderInput'</code>           |
 | **`PaymentStatusChange`**          | <code>'terminalPaymentStatusChange'</code>          |
+
+
+#### DisconnectReason
+
+| Members                    | Value                                 |
+| -------------------------- | ------------------------------------- |
+| **`Unknown`**              | <code>'UNKNOWN'</code>                |
+| **`DisconnectRequested`**  | <code>'DISCONNECT_REQUESTED'</code>   |
+| **`RebootRequested`**      | <code>'REBOOT_REQUESTED'</code>       |
+| **`SecurityReboot`**       | <code>'SECURITY_REBOOT'</code>        |
+| **`CriticallyLowBattery`** | <code>'CRITICALLY_LOW_BATTERY'</code> |
+| **`PoweredOff`**           | <code>'POWERED_OFF'</code>            |
+| **`BluetoothDisabled`**    | <code>'BLUETOOTH_DISABLED'</code>     |
 
 
 #### UpdateTimeEstimate

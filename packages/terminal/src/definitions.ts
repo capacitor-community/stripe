@@ -1,99 +1,18 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
 import type { TerminalEventsEnum } from './events.enum';
-
-export enum TerminalConnectTypes {
-  Simulated = 'simulated',
-  Internet = 'internet',
-  Bluetooth = 'bluetooth',
-  Usb = 'usb',
-  TapToPay = 'tap-to-pay',
-}
-
-export enum UpdateTimeEstimate {
-  LessThanOneMinute = 'LESS_THAN_ONE_MINUTE',
-  OneToTwoMinutes = 'ONE_TO_TWO_MINUTES',
-  TwoToFiveMinutes = 'TWO_TO_FIVE_MINUTES',
-  FiveToFifteenMinutes = 'FIVE_TO_FIFTEEN_MINUTES',
-}
-
-export enum SimulateReaderUpdate {
-  UpdateAvailable = 'UPDATE_AVAILABLE',
-  None = 'NONE',
-  Required = 'REQUIRED',
-  Random = 'RANDOM',
-}
-
-export enum SimulatedCardType {
-  Visa = 'VISA',
-  VisaDebit = 'VISA_DEBIT',
-  Mastercard = 'MASTERCARD',
-  MastercardDebit = 'MASTERCARD_DEBIT',
-  MastercardPrepaid = 'MASTERCARD_PREPAID',
-  Amex = 'AMEX',
-  Amex2 = 'AMEX_2',
-  Discover = 'DISCOVER',
-  Discover2 = 'DISCOVER_2',
-  DinersClub = 'DINERS',
-  DinersClulb14Digits = 'DINERS_14_DIGITS',
-  JCB = 'JCB',
-  UnionPay = 'UNION_PAY',
-  Interac = 'INTERAC',
-  EftposAustraliaDebit = 'EFTPOS_AU_DEBIT',
-  VisaUsCommonDebit = 'VISA_US_COMMON_DEBIT',
-  ChargeDeclined = 'CHARGE_DECLINED',
-  ChargeDeclinedInsufficientFunds = 'CHARGE_DECLINED_INSUFFICIENT_FUNDS',
-  ChargeDeclinedLostCard = 'CHARGE_DECLINED_LOST_CARD',
-  ChargeDeclinedStolenCard = 'CHARGE_DECLINED_STOLEN_CARD',
-  ChargeDeclinedExpiredCard = 'CHARGE_DECLINED_EXPIRED_CARD',
-  ChargeDeclinedProcessingError = 'CHARGE_DECLINED_PROCESSING_ERROR',
-  EftposAustraliaVisaDebit = 'EFTPOS_AU_VISA_DEBIT',
-  EftposAustraliaMastercardDebit = 'EFTPOS_AU_DEBIT_MASTERCARD',
-  OfflinePinCVM = 'OFFLINE_PIN_CVM',
-  OfflinePinSCARetry = 'OFFLINE_PIN_SCA_RETRY',
-  OnlinePinCVM = 'ONLINE_PIN_CVM',
-  OnlinePinSCARetry = 'ONLINE_PIN_SCA_RETRY',
-}
-
-export enum BatteryStatus {
-  Unknown = 'UNKNOWN',
-  Critical = 'CRITICAL',
-  Low = 'LOW',
-  Nominal = 'NOMINAL',
-}
-
-export enum ReaderEvent {
-  CardInserted = 'CARD_INSERTED',
-  CardRemoved = 'CARD_REMOVED',
-}
-
-export enum ReaderDisplayMessage {
-  CheckMobileDevice = 'CHECK_MOBILE_DEVICE',
-  RetryCard = 'RETRY_CARD',
-  InsertCard = 'INSERT_CARD',
-  InsertOrSwipeCard = 'INSERT_OR_SWIPE_CARD',
-  SwipeCard = 'SWIPE_CARD',
-  RemoveCard = 'REMOVE_CARD',
-  MultipleContactlessCardsDetected = 'MULTIPLE_CONTACTLESS_CARDS_DETECTED',
-  TryAnotherReadMethod = 'TRY_ANOTHER_READ_METHOD',
-  TryAnotherCard = 'TRY_ANOTHER_CARD',
-  CardRemovedTooEarly = 'CARD_REMOVED_TOO_EARLY',
-}
-
-export enum ReaderInputOption {
-  None = 'NONE',
-  Insert = 'INSERT',
-  Swipe = 'SWIPE',
-  Tap = 'TAP',
-  ManualEntry = 'MANUAL_ENTRY',
-}
-
-export enum PaymentStatus {
-  NotReady = 'NOT_READY',
-  Ready = 'READY',
-  WaitingForInput = 'WAITING_FOR_INPUT',
-  Processing = 'PROCESSING',
-}
+import type {
+  TerminalConnectTypes,
+  UpdateTimeEstimate,
+  SimulateReaderUpdate,
+  SimulatedCardType,
+  BatteryStatus,
+  ReaderEvent,
+  ReaderDisplayMessage,
+  ReaderInputOption,
+  PaymentStatus,
+  DisconnectReason,
+} from './stripe.enum';
 
 export type ReaderInterface = {
   index: number;
@@ -108,6 +27,7 @@ export type ReaderSoftwareUpdateInterface = {
 };
 
 export * from './events.enum';
+export * from './stripe.enum';
 export interface StripeTerminalPlugin {
   initialize(options: {
     tokenProviderEndpoint?: string;
@@ -147,6 +67,23 @@ export interface StripeTerminalPlugin {
   addListener(
     eventName: TerminalEventsEnum.ConnectedReader,
     listenerFunc: () => void,
+  ): Promise<PluginListenerHandle>;
+  /**
+   * Emitted when the reader is disconnected, either in response to [`disconnectReader()`](#disconnectreader)
+   * or some connection error.
+   * 
+   * For all reader types, this is emitted in response to [`disconnectReader()`](#disconnectreader)
+   * without a `reason` property.
+   * 
+   * For Bluetooth and USB readers, this is emitted with a `reason` property when the reader disconnects.
+   * 
+   * **Note:** For Bluetooth and USB readers, when you call [`disconnectReader()`](#disconnectreader), this event will
+   * be emitted twice: one without a `reason` in acknowledgement of your call, and again with a `reason` when the reader
+   * finishes disconnecting.
+   */
+  addListener(
+    eventName: TerminalEventsEnum.DisconnectedReader,
+    listenerFunc: ({ reason }: { reason?: DisconnectReason }) => void,
   ): Promise<PluginListenerHandle>;
   addListener(
     eventName: TerminalEventsEnum.ConfirmedPaymentIntent,

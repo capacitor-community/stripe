@@ -34,6 +34,7 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.Interne
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionStatus;
+import com.stripe.stripeterminal.external.models.DisconnectReason;
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentMethod;
@@ -535,6 +536,12 @@ public class StripeTerminal extends Executor {
                 notifyListeners(TerminalEnumEvent.RequestReaderInput.getWebEventName(), new JSObject()
                     .put("options", jsOptions)
                     .put("message", options.toString())
+                );
+            }
+
+            public void onDisconnect(@NotNull DisconnectReason reason) {
+                notifyListeners(TerminalEnumEvent.DisconnectedReader.getWebEventName(), new JSObject()
+                    .put("reason", reason.toString())
                 );
             }
         };
