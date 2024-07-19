@@ -4,6 +4,8 @@ import type {
   StripeTerminalPlugin,
   TerminalConnectTypes,
   ReaderInterface,
+  SimulateReaderUpdate,
+  SimulatedCardType,
 } from './definitions';
 import { TerminalEventsEnum } from './events.enum';
 
@@ -41,6 +43,14 @@ export class StripeTerminalWeb
 
   async setConnectionToken(): Promise<void> {
     console.log('setConnectionToken');
+  }
+  
+  async setSimulatorConfiguration(options: {
+    update?: SimulateReaderUpdate | undefined;
+    simulatedCard?: SimulatedCardType | undefined;
+    simulatedTipAmount?: number | undefined;
+  }): Promise<void> {
+    console.log('setSimulatorConfiguration', options);
   }
 
   async connectReader(options: { reader: ReaderInterface }): Promise<void> {
