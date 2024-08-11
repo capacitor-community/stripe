@@ -349,7 +349,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             readersJSObject.append(String(ReaderInputOptions.tapCard.rawValue))
         }
 
-        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": [:], "message": inputOptions.rawValue])
+        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": readersJSObject, "message": inputOptions.rawValue])
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
