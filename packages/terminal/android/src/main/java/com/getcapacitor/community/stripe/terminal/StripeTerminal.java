@@ -476,21 +476,17 @@ public class StripeTerminal extends Executor {
             }
 
             @Override
-            public void onFinishInstallingUpdate(@Nullable ReaderSoftwareUpdate update, @Nullable TerminalException e) {
-                // Report success or failure of the update
+            public void onFinishInstallingUpdate(@Nullable ReaderSoftwareUpdate update, @Nullable TerminalException error) {
                 JSObject eventObject = new JSObject();
-                eventObject.put("update", update == null ? null : convertReaderSoftwareUpdate(update));
 
-                String errorCode = null;
-                String errorMessage = null;
-                if (e != null) {
-                    errorCode = e.getErrorCode().toString();
-                    errorMessage = e.getErrorMessage();
+                if (error != null) {
+                    // note: Since errorCode cannot be obtained in iOS, use errorMessage for unification.
+                    eventObject.put("error", error.getLocalizedMessage());
+                    notifyListeners(TerminalEnumEvent.FinishInstallingUpdate.getWebEventName(), eventObject);
+                    return;
                 }
 
-                eventObject.put("errorCode", errorCode)
-                        .put("errorMessage", errorMessage);
-
+                eventObject.put("update", update == null ? null : convertReaderSoftwareUpdate(update));
                 notifyListeners(TerminalEnumEvent.FinishInstallingUpdate.getWebEventName(), eventObject);
             }
 

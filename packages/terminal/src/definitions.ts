@@ -202,10 +202,10 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.FinishInstallingUpdate,
-    listenerFunc: ({ update, errorCode, errorMessage }: {
-      update: ReaderSoftwareUpdateInterface|null,
-      errorCode: string|null,
-      errorMessage: string|null,
+    listenerFunc: (args: {
+      update: ReaderSoftwareUpdateInterface,
+    } | {
+      error: string,
     }) => void,
   ): Promise<PluginListenerHandle>;
 
