@@ -2,7 +2,7 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate {
+public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate {
 
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
@@ -241,7 +241,75 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
     
     public func setSimulatorConfiguration(_ call: CAPPluginCall) {
-        // TODO
+        // { update?: SimulateReaderUpdate; simulatedCard?: SimulatedCardType; simulatedTipAmount?: number; }
+        Terminal.shared.simulatorConfiguration.availableReaderUpdate = self.mapToSimulateReaderUpdate(call.getString("update", "UPDATE_AVAILABLE"))
+        Terminal.shared.simulatorConfiguration.simulatedCard = SimulatedCard(type: SimulatedCardType(rawValue: self.mapToCardType(type: call.getString("simulatedCard", "VISA")))!);
+        if let tipAmount = call.getInt("simulatedTipAmount") {
+            Terminal.shared.simulatorConfiguration.simulatedTipAmount = (tipAmount) as NSNumber;
+        }
+        call.resolve([:])
+    }
+    
+    private func mapToSimulateReaderUpdate(_ update: String) -> SimulateReaderUpdate {
+        switch update {
+        case "UpdateAvailable": return SimulateReaderUpdate.available
+        case "None": return SimulateReaderUpdate.none
+        case "Random": return SimulateReaderUpdate.random
+        case "Required": return SimulateReaderUpdate.required
+//        case "lowBattery": return SimulateReaderUpdate.lowBattery
+//        case "lowBatterySucceedConnect": return SimulateReaderUpdate.lowBatterySucceedConnect
+        default: return SimulateReaderUpdate.none
+        }
+    }
+    
+    private func mapToCardType(type: String) -> UInt {
+        switch type {
+        case "VISA": return 0
+        case "VISA_DEBIT": return 1
+        case "MASTERCARD": return 3
+        case "MASTERCARD_DEBIT": return 2
+        case "MASTERCARD_PREPAID": return 5
+        case "AMEX": return 6
+        case "AMEX_2": return 7
+        case "DISCOVER": return 8
+        case "DISCOVER_2": return 9
+        case "DINERS": return 10
+        case "DINERS_14_DIGITS": return 11
+        case "JCB": return 12
+        case "UNION_PAY": return 13
+        case "INTERAC": return 14
+        case "EFTPOS_AU_DEBIT": return 15
+        case "VISA_US_COMMON_DEBIT": return 2
+        case "CHARGE_DECLINED": return 18
+        case "CHARGE_DECLINED_INSUFFICIENT_FUNDS": return 19
+        case "CHARGE_DECLINED_LOST_CARD": return 20
+        case "CHARGE_DECLINED_STOLEN_CARD": return 21
+        case "CHARGE_DECLINED_EXPIRED_CARD": return 22
+        case "CHARGE_DECLINED_PROCESSING_ERROR": return 23
+        case "EFTPOS_AU_VISA_DEBIT": return 16
+        case "EFTPOS_AU_DEBIT_MASTERCARD": return 17
+        case "OFFLINE_PIN_CVM": return 27
+        case "OFFLINE_PIN_SCA_RETRY": return 28
+        case "ONLINE_PIN_CVM": return 25
+        case "ONLINE_PIN_SCA_RETRY": return 26
+        default:
+            return 0
+        }
+    }
+    
+    /*
+     * Terminal
+     */
+    public func terminal(_ terminal: Terminal, didChangePaymentStatus status: PaymentStatus) {
+        self.plugin?.notifyListeners(TerminalEvents.PaymentStatusChange.rawValue, data: ["status": status.rawValue])
+    }
+    
+    public func terminal(_ terminal: Terminal, didChangeConnectionStatus status: ConnectionStatus) {
+        self.plugin?.notifyListeners(TerminalEvents.ConnectionStatusChange.rawValue, data: ["status": status.rawValue])
+    }
+    
+    public func terminal(_ terminal: Terminal, didReportUnexpectedReaderDisconnect reader: Reader) {
+        self.plugin?.notifyListeners(TerminalEvents.UnexpectedReaderDisconnect.rawValue, data: ["reader":self.convertReaderInterface(reader: reader)])
     }
 
     /*
@@ -340,6 +408,20 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
             "messageType": displayMessage.rawValue,
             "message": displayMessage.rawValue,
+        ])
+    }
+    
+    public func reader(_ reader: Reader, didReportBatteryLevel batteryLevel: Float, status: BatteryStatus, isCharging: Bool) {
+        self.plugin?.notifyListeners(TerminalEvents.BatteryLevel.rawValue, data: [
+            "level": batteryLevel,
+            "charging": isCharging,
+            "status": status.rawValue
+        ])
+    }
+    
+    public func reader(_ reader: Reader, didReportReaderEvent event: ReaderEvent, info: [AnyHashable : Any]?) {
+        self.plugin?.notifyListeners(TerminalEvents.ReaderEvent.rawValue, data: [
+            "event": event.rawValue,
         ])
     }
     
