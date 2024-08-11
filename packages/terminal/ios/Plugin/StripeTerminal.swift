@@ -239,17 +239,17 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             call.reject("PaymentIntent not found for confirmPaymentIntent. Use collect method first and try again.")
         }
     }
-    
+
     public func setSimulatorConfiguration(_ call: CAPPluginCall) {
         // { update?: SimulateReaderUpdate; simulatedCard?: SimulatedCardType; simulatedTipAmount?: number; }
         Terminal.shared.simulatorConfiguration.availableReaderUpdate = self.mapToSimulateReaderUpdate(call.getString("update", "UPDATE_AVAILABLE"))
-        Terminal.shared.simulatorConfiguration.simulatedCard = SimulatedCard(type: SimulatedCardType(rawValue: self.mapToCardType(type: call.getString("simulatedCard", "VISA")))!);
+        Terminal.shared.simulatorConfiguration.simulatedCard = SimulatedCard(type: SimulatedCardType(rawValue: self.mapToCardType(type: call.getString("simulatedCard", "VISA")))!)
         if let tipAmount = call.getInt("simulatedTipAmount") {
-            Terminal.shared.simulatorConfiguration.simulatedTipAmount = (tipAmount) as NSNumber;
+            Terminal.shared.simulatorConfiguration.simulatedTipAmount = (tipAmount) as NSNumber
         }
         call.resolve([:])
     }
-    
+
     private func mapToSimulateReaderUpdate(_ update: String) -> SimulateReaderUpdate {
         switch update {
         case "UpdateAvailable": return SimulateReaderUpdate.available
@@ -261,7 +261,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         default: return SimulateReaderUpdate.none
         }
     }
-    
+
     private func mapToCardType(type: String) -> UInt {
         switch type {
         case "VISA": return 0
@@ -296,20 +296,20 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             return 0
         }
     }
-    
+
     /*
      * Terminal
      */
     public func terminal(_ terminal: Terminal, didChangePaymentStatus status: PaymentStatus) {
         self.plugin?.notifyListeners(TerminalEvents.PaymentStatusChange.rawValue, data: ["status": status.rawValue])
     }
-    
+
     public func terminal(_ terminal: Terminal, didChangeConnectionStatus status: ConnectionStatus) {
         self.plugin?.notifyListeners(TerminalEvents.ConnectionStatusChange.rawValue, data: ["status": status.rawValue])
     }
-    
+
     public func terminal(_ terminal: Terminal, didReportUnexpectedReaderDisconnect reader: Reader) {
-        self.plugin?.notifyListeners(TerminalEvents.UnexpectedReaderDisconnect.rawValue, data: ["reader":self.convertReaderInterface(reader: reader)])
+        self.plugin?.notifyListeners(TerminalEvents.UnexpectedReaderDisconnect.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
     }
 
     /*
@@ -325,14 +325,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func localMobileReader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
-        if ((error) != nil) {
+        if (error) != nil {
             self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
-                "error": error!.localizedDescription,
+                "error": error!.localizedDescription
             ])
-            return;
+            return
         }
         self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
-            "update":self.convertReaderSoftwareUpdate(update: update!)
+            "update": self.convertReaderSoftwareUpdate(update: update!)
         ])
     }
 
@@ -348,18 +348,17 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         if inputOptions.contains(.tapCard) {
             readersJSObject.append(String(ReaderInputOptions.tapCard.rawValue))
         }
-        
+
         self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": [:], "message": inputOptions.rawValue])
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
             "messageType": displayMessage.rawValue,
-            "message": displayMessage.rawValue,
+            "message": displayMessage.rawValue
         ])
     }
 
-    
     /*
      * bluetooth
      */
@@ -377,14 +376,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func reader(_: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
-        if ((error) != nil) {
+        if (error) != nil {
             self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
-                "error": error!.localizedDescription,
+                "error": error!.localizedDescription
             ])
-            return;
+            return
         }
         self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
-            "update":self.convertReaderSoftwareUpdate(update: update!)
+            "update": self.convertReaderSoftwareUpdate(update: update!)
         ])
     }
 
@@ -400,17 +399,17 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         if inputOptions.contains(.tapCard) {
             readersJSObject.append(String(ReaderInputOptions.tapCard.rawValue))
         }
-        
+
         self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": readersJSObject, "message": inputOptions.rawValue])
     }
 
     public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
             "messageType": displayMessage.rawValue,
-            "message": displayMessage.rawValue,
+            "message": displayMessage.rawValue
         ])
     }
-    
+
     public func reader(_ reader: Reader, didReportBatteryLevel batteryLevel: Float, status: BatteryStatus, isCharging: Bool) {
         self.plugin?.notifyListeners(TerminalEvents.BatteryLevel.rawValue, data: [
             "level": batteryLevel,
@@ -418,15 +417,15 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             "status": status.rawValue
         ])
     }
-    
-    public func reader(_ reader: Reader, didReportReaderEvent event: ReaderEvent, info: [AnyHashable : Any]?) {
+
+    public func reader(_ reader: Reader, didReportReaderEvent event: ReaderEvent, info: [AnyHashable: Any]?) {
         self.plugin?.notifyListeners(TerminalEvents.ReaderEvent.rawValue, data: [
-            "event": event.rawValue,
+            "event": event.rawValue
         ])
     }
-    
+
     private func convertReaderInterface(reader: Reader) -> [String: String] {
-        return ["serialNumber": reader.serialNumber];
+        return ["serialNumber": reader.serialNumber]
     }
 
     private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> [String: String] {
@@ -434,8 +433,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             "version": update.deviceSoftwareVersion,
             "settingsVersion": update.deviceSoftwareVersion,
             "requiredAt": update.requiredAt.description,
-            "timeEstimate": String(update.estimatedUpdateTime.rawValue),
-        ];
+            "timeEstimate": String(update.estimatedUpdateTime.rawValue)
+        ]
     }
 }
 
