@@ -32,6 +32,10 @@ public class StripeTerminalPlugin: CAPPlugin {
             call.reject("discoverReaders throw error.")
         }
     }
+    
+    @objc func setSimulatorConfiguration(_ call: CAPPluginCall) {
+        self.implementation.setSimulatorConfiguration(call)
+    }
 
     @objc func cancelDiscoverReaders(_ call: CAPPluginCall) {
         self.implementation.cancelDiscoverReaders(call)

@@ -239,53 +239,121 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             call.reject("PaymentIntent not found for confirmPaymentIntent. Use collect method first and try again.")
         }
     }
+    
+    public func setSimulatorConfiguration(_ call: CAPPluginCall) {
+        // TODO
+    }
 
-    // localMobile
+    /*
+     * localMobile
+     */
 
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
     public func localMobileReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.ReaderSoftwareUpdateProgress.rawValue, data: ["progress": progress])
     }
 
     public func localMobileReader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
-        // TODO
+        if ((error) != nil) {
+            self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+                "error": error!.localizedDescription,
+            ])
+            return;
+        }
+        self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+            "update":self.convertReaderSoftwareUpdate(update: update!)
+        ])
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
-        // TODO
+        var readersJSObject: JSArray = []
+
+        if inputOptions.contains(.swipeCard) {
+            readersJSObject.append(String(ReaderInputOptions.swipeCard.rawValue))
+        }
+        if inputOptions.contains(.insertCard) {
+            readersJSObject.append(String(ReaderInputOptions.insertCard.rawValue))
+        }
+        if inputOptions.contains(.tapCard) {
+            readersJSObject.append(String(ReaderInputOptions.tapCard.rawValue))
+        }
+        
+        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": [:], "message": inputOptions.rawValue])
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
+            "messageType": displayMessage.rawValue,
+            "message": displayMessage.rawValue,
+        ])
     }
 
-    // bluetooth
+    
+    /*
+     * bluetooth
+     */
 
     public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
         // TODO
     }
 
     public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
     public func reader(_: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.ReaderSoftwareUpdateProgress.rawValue, data: ["progress": progress])
     }
 
     public func reader(_: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
-        // TODO
+        if ((error) != nil) {
+            self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+                "error": error!.localizedDescription,
+            ])
+            return;
+        }
+        self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+            "update":self.convertReaderSoftwareUpdate(update: update!)
+        ])
     }
 
     public func reader(_: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
-        // TODO
+        var readersJSObject: JSArray = []
+
+        if inputOptions.contains(.swipeCard) {
+            readersJSObject.append(String(ReaderInputOptions.swipeCard.rawValue))
+        }
+        if inputOptions.contains(.insertCard) {
+            readersJSObject.append(String(ReaderInputOptions.insertCard.rawValue))
+        }
+        if inputOptions.contains(.tapCard) {
+            readersJSObject.append(String(ReaderInputOptions.tapCard.rawValue))
+        }
+        
+        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": readersJSObject, "message": inputOptions.rawValue])
     }
 
     public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
+            "messageType": displayMessage.rawValue,
+            "message": displayMessage.rawValue,
+        ])
+    }
+    
+    private func convertReaderInterface(reader: Reader) -> [String: String] {
+        return ["serialNumber": reader.serialNumber];
+    }
+
+    private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> [String: String] {
+        return [
+            "version": update.deviceSoftwareVersion,
+            "settingsVersion": update.deviceSoftwareVersion,
+            "requiredAt": update.requiredAt.description,
+            "timeEstimate": String(update.estimatedUpdateTime.rawValue),
+        ];
     }
 }
 

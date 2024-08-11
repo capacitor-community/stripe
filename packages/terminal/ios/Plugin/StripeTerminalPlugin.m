@@ -14,4 +14,5 @@ CAP_PLUGIN(StripeTerminalPlugin, "StripeTerminal",
            CAP_PLUGIN_METHOD(collectPaymentMethod, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(cancelCollectPaymentMethod, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(confirmPaymentIntent, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setSimulatorConfiguration, CAPPluginReturnPromise);
 )
