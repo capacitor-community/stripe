@@ -256,8 +256,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         case "None": return SimulateReaderUpdate.none
         case "Random": return SimulateReaderUpdate.random
         case "Required": return SimulateReaderUpdate.required
-//        case "lowBattery": return SimulateReaderUpdate.lowBattery
-//        case "lowBatterySucceedConnect": return SimulateReaderUpdate.lowBatterySucceedConnect
+        case "LowBattery": return SimulateReaderUpdate.lowBattery
+        case "LowBatterySucceedConnect": return SimulateReaderUpdate.lowBatterySucceedConnect
         default: return SimulateReaderUpdate.none
         }
     }

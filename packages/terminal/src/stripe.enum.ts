@@ -18,6 +18,8 @@ export enum SimulateReaderUpdate {
 	None = 'NONE',
 	Required = 'REQUIRED',
 	Random = 'RANDOM',
+	LowBattery = 'LOW_BATTERY',
+	LowBatterySucceedConnect = 'LOW_BATTERY_SUCCEED_CONNECT',
 }
 
 export enum SimulatedCardType {
