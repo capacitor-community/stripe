@@ -114,6 +114,6 @@ Made with [contributors-img](https://contrib.rocks).
 
 #### @capacitor-community/stripe-identity
 
-|              |                     Android                     |                     iOS                     |                     Web                     |
-|:------------:|:-----------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|
-|   Identity   |   ![](demo/screenshots/identity-android.png)    |    ![](demo/screenshots/identity-ios.png)     |  Not supported   |
+|              |                     Android                     |                     iOS                     |    Web    |
+|:------------:|:-----------------------------------------------:|:-------------------------------------------:|:---------:|
+|   Identity   |   ![](demo/screenshots/identity-android.png)    |    ![](demo/screenshots/identity-ios.png)     | Supported |
