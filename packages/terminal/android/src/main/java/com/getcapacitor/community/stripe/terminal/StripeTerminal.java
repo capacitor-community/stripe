@@ -361,7 +361,7 @@ public class StripeTerminal extends Executor {
 
                     @Override
                     public void onFailure(@NonNull TerminalException e) {
-                        call.reject(e.getErrorMessage());
+                        call.reject(e.getLocalizedMessage());
                     }
                 }
             );
