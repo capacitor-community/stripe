@@ -14,8 +14,8 @@ public enum TerminalEvents: String {
     case ReaderSoftwareUpdateProgress = "terminalReaderSoftwareUpdateProgress"
     case FinishInstallingUpdate = "terminalFinishInstallingUpdate"
     case BatteryLevel = "terminalBatteryLevel"
-    case  ReaderEvent = "terminalReaderEvent"
-    case  RequestDisplayMessage = "terminalRequestDisplayMessage"
-    case  RequestReaderInput = "terminalRequestReaderInput"
-    case  PaymentStatusChange = "terminalPaymentStatusChange"
+    case ReaderEvent = "terminalReaderEvent"
+    case RequestDisplayMessage = "terminalRequestDisplayMessage"
+    case RequestReaderInput = "terminalRequestReaderInput"
+    case PaymentStatusChange = "terminalPaymentStatusChange"
 }
