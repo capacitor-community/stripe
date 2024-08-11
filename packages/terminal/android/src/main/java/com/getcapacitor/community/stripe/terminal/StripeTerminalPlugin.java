@@ -47,6 +47,11 @@ public class StripeTerminalPlugin extends Plugin {
         this.implementation.setConnectionToken(call);
     }
 
+    @PluginMethod
+    public void setSimulatorConfiguration(PluginCall call) {
+        this.implementation.setSimulatorConfiguration(call);
+    }
+
     @PermissionCallback
     private void locationPermsCallback(PluginCall call) throws TerminalException {
         if (getPermissionState("location") == PermissionState.GRANTED) {

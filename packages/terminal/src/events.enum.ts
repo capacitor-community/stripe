@@ -4,11 +4,21 @@ export enum TerminalEventsEnum {
   CancelDiscoveredReaders = 'terminalCancelDiscoveredReaders',
   ConnectedReader = 'terminalConnectedReader',
   DisconnectedReader = 'terminalDisconnectedReader',
+  ConnectionStatusChange = 'terminalConnectionStatusChange',
+  UnexpectedReaderDisconnect = 'terminalUnexpectedReaderDisconnect',
   ConfirmedPaymentIntent = 'terminalConfirmedPaymentIntent',
   CollectedPaymentIntent = 'terminalCollectedPaymentIntent',
   Canceled = 'terminalCanceled',
   Failed = 'terminalFailed',
   RequestedConnectionToken = 'terminalRequestedConnectionToken',
+  StartInstallingUpdate = 'terminalStartInstallingUpdate',
+  ReaderSoftwareUpdateProgress = 'terminalReaderSoftwareUpdateProgress',
+  FinishInstallingUpdate = 'terminalFinishInstallingUpdate',
+  BatteryLevel = 'terminalBatteryLevel',
+  ReaderEvent = 'terminalReaderEvent',
+  RequestDisplayMessage = 'terminalRequestDisplayMessage',
+  RequestReaderInput = 'terminalRequestReaderInput',
+  PaymentStatusChange = 'terminalPaymentStatusChange',
 }
 
 export type TerminalResultInterface =

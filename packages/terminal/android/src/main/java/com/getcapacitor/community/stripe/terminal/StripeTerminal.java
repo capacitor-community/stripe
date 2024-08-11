@@ -26,6 +26,7 @@ import com.stripe.stripeterminal.external.callable.ReaderCallback;
 import com.stripe.stripeterminal.external.callable.ReaderListener;
 import com.stripe.stripeterminal.external.callable.ReaderReconnectionListener;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
+import com.stripe.stripeterminal.external.models.BatteryStatus;
 import com.stripe.stripeterminal.external.models.CardPresentDetails;
 import com.stripe.stripeterminal.external.models.CollectConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration;
@@ -33,12 +34,20 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.Interne
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionStatus;
+import com.stripe.stripeterminal.external.models.DisconnectReason;
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentMethod;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
 import com.stripe.stripeterminal.external.models.Reader;
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage;
+import com.stripe.stripeterminal.external.models.ReaderEvent;
+import com.stripe.stripeterminal.external.models.ReaderInputOptions;
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate;
+import com.stripe.stripeterminal.external.models.SimulateReaderUpdate;
+import com.stripe.stripeterminal.external.models.SimulatedCard;
+import com.stripe.stripeterminal.external.models.SimulatedCardType;
+import com.stripe.stripeterminal.external.models.SimulatorConfiguration;
 import com.stripe.stripeterminal.external.models.TerminalException;
 import com.stripe.stripeterminal.log.LogLevel;
 import java.util.ArrayList;
@@ -95,17 +104,17 @@ public class StripeTerminal extends Executor {
         TerminalListener listener = new TerminalListener() {
             @Override
             public void onUnexpectedReaderDisconnect(@NonNull Reader reader) {
-                // TODO: Listenerを追加
+                notifyListeners(TerminalEnumEvent.UnexpectedReaderDisconnect.getWebEventName(), new JSObject().put("reader", convertReaderInterface(reader)));
             }
 
             @Override
             public void onConnectionStatusChange(@NonNull ConnectionStatus status) {
-                // TODO: Listenerを追加
+                notifyListeners(TerminalEnumEvent.ConnectionStatusChange.getWebEventName(), new JSObject().put("status", status.toString()));
             }
 
             @Override
             public void onPaymentStatusChange(@NonNull PaymentStatus status) {
-                // TODO: Listenerを追加
+                notifyListeners(TerminalEnumEvent.PaymentStatusChange.getWebEventName(), new JSObject().put("status", status.toString()));
             }
         };
         LogLevel logLevel = LogLevel.VERBOSE;
@@ -119,6 +128,20 @@ public class StripeTerminal extends Executor {
 
     public void setConnectionToken(PluginCall call) {
         this.tokenProvider.setConnectionToken(call);
+    }
+
+    public void setSimulatorConfiguration(PluginCall call) {
+        try {
+            Terminal.getInstance().setSimulatorConfiguration(new SimulatorConfiguration(
+                SimulateReaderUpdate.valueOf(call.getString("update", "UPDATE_AVAILABLE")),
+                new SimulatedCard(SimulatedCardType.valueOf(call.getString("simulatedCard", "VISA"))),
+                call.getLong("simulatedTipAmount", null)
+            ));
+
+            call.resolve();
+        } catch (Exception ex) {
+            call.reject(ex.getMessage());
+        }
     }
 
     public void onDiscoverReaders(final PluginCall call) {
@@ -161,7 +184,7 @@ public class StripeTerminal extends Executor {
 
             int i = 0;
             for (Reader reader : this.readers) {
-                readersJSObject.put(new JSObject().put("index", String.valueOf(i)).put("serialNumber", reader.getSerialNumber()));
+                readersJSObject.put(convertReaderInterface(reader).put("index", String.valueOf(i)));
             }
             this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), new JSObject().put("readers", readersJSObject));
             call.resolve(new JSObject().put("readers", readersJSObject));
@@ -205,7 +228,7 @@ public class StripeTerminal extends Executor {
         if (reader == null) {
             call.resolve(new JSObject().put("reader", JSObject.NULL));
         } else {
-            call.resolve(new JSObject().put("reader", new JSObject().put("serialNumber", reader.getSerialNumber())));
+            call.resolve(new JSObject().put("reader", convertReaderInterface(reader)));
         }
     }
 
@@ -443,16 +466,41 @@ public class StripeTerminal extends Executor {
             @Override
             public void onStartInstallingUpdate(@NotNull ReaderSoftwareUpdate update, @NotNull Cancelable cancelable) {
                 // Show UI communicating that a required update has started installing
+                notifyListeners(TerminalEnumEvent.StartInstallingUpdate.getWebEventName(), new JSObject().put("update", convertReaderSoftwareUpdate(update)));
             }
 
             @Override
             public void onReportReaderSoftwareUpdateProgress(float progress) {
                 // Update the progress of the install
+                notifyListeners(TerminalEnumEvent.ReaderSoftwareUpdateProgress.getWebEventName(), new JSObject().put("progress", progress));
             }
 
             @Override
             public void onFinishInstallingUpdate(@Nullable ReaderSoftwareUpdate update, @Nullable TerminalException e) {
                 // Report success or failure of the update
+                JSObject eventObject = new JSObject();
+                eventObject.put("update", update == null ? null : convertReaderSoftwareUpdate(update));
+
+                String errorCode = null;
+                String errorMessage = null;
+                if (e != null) {
+                    errorCode = e.getErrorCode().toString();
+                    errorMessage = e.getErrorMessage();
+                }
+
+                eventObject.put("errorCode", errorCode)
+                        .put("errorMessage", errorMessage);
+
+                notifyListeners(TerminalEnumEvent.FinishInstallingUpdate.getWebEventName(), eventObject);
+            }
+
+            @Override
+            public void onBatteryLevelUpdate(float batteryLevel, @NonNull BatteryStatus batteryStatus, boolean isCharging) {
+                notifyListeners(TerminalEnumEvent.BatteryLevel.getWebEventName(), new JSObject()
+                    .put("level", batteryLevel)
+                    .put("charging", isCharging)
+                    .put("status", batteryStatus.toString()
+                ));
             }
 
             @Override
@@ -463,6 +511,52 @@ public class StripeTerminal extends Executor {
                 // An update is available for the connected reader. Show this update in your application.
                 // This update can be installed using `Terminal.getInstance().installAvailableUpdate`.
             }
+
+            @Override
+            public void onReportReaderEvent(@NotNull ReaderEvent event) {
+                notifyListeners(TerminalEnumEvent.ReaderEvent.getWebEventName(), new JSObject().put("event", event.toString()));
+            }
+
+            @Override
+            public void onRequestReaderDisplayMessage(@NotNull ReaderDisplayMessage message) {
+                notifyListeners(TerminalEnumEvent.RequestDisplayMessage.getWebEventName(), new JSObject()
+                    .put("messageType", message.name())
+                    .put("message", message.toString())
+                );
+            }
+
+            @Override
+            public void onRequestReaderInput(@NotNull ReaderInputOptions options) {
+                List<ReaderInputOptions.ReaderInputOption> optionsList = options.getOptions();
+                JSArray jsOptions = new JSArray();
+                for (ReaderInputOptions.ReaderInputOption optionType : optionsList) {
+                    jsOptions.put(optionType.name());
+                }
+
+                notifyListeners(TerminalEnumEvent.RequestReaderInput.getWebEventName(), new JSObject()
+                    .put("options", jsOptions)
+                    .put("message", options.toString())
+                );
+            }
+
+            public void onDisconnect(@NotNull DisconnectReason reason) {
+                notifyListeners(TerminalEnumEvent.DisconnectedReader.getWebEventName(), new JSObject()
+                    .put("reason", reason.toString())
+                );
+            }
         };
+    }
+
+    private JSObject convertReaderInterface(Reader reader) {
+        return new JSObject()
+            .put("serialNumber", reader.getSerialNumber());
+    }
+
+    private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
+        return new JSObject()
+            .put("version", update.getVersion())
+            .put("settingsVersion", update.getSettingsVersion())
+            .put("requiredAt", update.getRequiredAt().getTime())
+            .put("timeEstimate", update.getTimeEstimate().toString());
     }
 }
