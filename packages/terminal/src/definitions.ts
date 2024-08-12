@@ -35,40 +35,25 @@ export type ReaderInterface = {
   deviceType: string; // TODO enum
   deviceSoftwareVersion: string;
 
-  // iOS only
+
+  /**
+   * iOS Only properties. These properties are not available on Android.
+   */
   isCharging: number;
 
-  // Android only
+  /**
+   * Android Only properties. These properties are not available on iOS.
+   */
   baseUrl: string;
-
-  // Android only
   bootloaderVersion: string;
-
-  // Android only
   configVersion: string;
-
-  // Android only
   emvKeyProfileId: string;
-
-  // Android only
   firmwareVersion: string;
-
-  // Android only
   hardwareVersion: string;
-
-  // Android only
   macKeyProfileId: string;
-
-  // Android only
   pinKeyProfileId: string;
-
-  // Android only
   trackKeyProfileId: string;
-
-  // Android only
   settingsVersion: string;
-
-  // Android only
   pinKeysetId: string;
 
   /**
