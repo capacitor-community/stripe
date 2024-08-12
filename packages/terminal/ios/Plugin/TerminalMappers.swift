@@ -4,12 +4,12 @@ import Capacitor
 class TerminalMappers {
     class func mapToSimulateReaderUpdate(_ update: String) -> SimulateReaderUpdate {
         switch update {
-        case "UpdateAvailable": return SimulateReaderUpdate.available
-        case "None": return SimulateReaderUpdate.none
-        case "Random": return SimulateReaderUpdate.random
-        case "Required": return SimulateReaderUpdate.required
-        case "LowBattery": return SimulateReaderUpdate.lowBattery
-        case "LowBatterySucceedConnect": return SimulateReaderUpdate.lowBatterySucceedConnect
+        case "UPDATE_AVAILABLE": return SimulateReaderUpdate.available
+        case "NONE": return SimulateReaderUpdate.none
+        case "RANDOM": return SimulateReaderUpdate.random
+        case "REQUIRED": return SimulateReaderUpdate.required
+        case "LOW_BATTERY": return SimulateReaderUpdate.lowBattery
+        case "LOW_BATTERY_SUCCEED_CONNECT": return SimulateReaderUpdate.lowBatterySucceedConnect
         default: return SimulateReaderUpdate.none
         }
     }
