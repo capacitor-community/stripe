@@ -61,7 +61,7 @@ export interface StripeTerminalPlugin {
    */
   connectReader(options: {
     reader: ReaderInterface;
-    autoReconnectOnUnexpectedDisconnect: boolean;
+    autoReconnectOnUnexpectedDisconnect?: boolean;
   }): Promise<void>;
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
   disconnectReader(): Promise<void>;
