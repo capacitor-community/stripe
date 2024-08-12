@@ -36,7 +36,7 @@ export type CartLineItem = {
 export type Cart = {
   currency: string;
   tax: number;
-  total: number
+  total: number;
   lineItems: CartLineItem[];
 };
 

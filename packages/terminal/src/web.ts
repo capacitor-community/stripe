@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import {
+import type {
   StripeTerminalPlugin,
   TerminalConnectTypes,
   ReaderInterface,
