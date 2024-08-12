@@ -149,7 +149,6 @@ export class TerminalPage {
     );
 
     if (readerType === TerminalConnectTypes.Internet) {
-      console.log('====setReaderDisplayは呼び出したよ')
       await StripeTerminal.setReaderDisplay({
         currency: 'usd',
         tax: 0,
@@ -251,7 +250,7 @@ export class TerminalPage {
     await StripeTerminal.installAvailableUpdate()
       .then(() => this.helper.updateItem(this.eventItems, 'installAvailableUpdate', true));
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     await StripeTerminal.cancelInstallUpdate()
       .then(() => this.helper.updateItem(this.eventItems, 'cancelInstallUpdate', true));
