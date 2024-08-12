@@ -75,54 +75,17 @@ export class TerminalPage {
     type: 'happyPath' | 'cancelPath',
     readerType: TerminalConnectTypes,
   ) {
-    const eventKeys = Object.keys(TerminalEventsEnum);
-    for (const key of eventKeys) {
-      const handler = StripeTerminal.addListener(
-        TerminalEventsEnum[key],
-        (info) => {
-          this.helper.updateItem(
-            this.eventItems,
-            TerminalEventsEnum[key],
-            true,
-            info,
-          );
-        },
-      );
-      this.listenerHandlers.push(await handler);
-      if (key === 'RequestedConnectionToken') {
-        this.listenerHandlers.push(
-          await StripeTerminal.addListener(
-            TerminalEventsEnum.RequestedConnectionToken,
-            async () => {
-              const { secret } = await firstValueFrom(
-                this.http.post<{
-                  secret: string;
-                }>(environment.api + 'connection/token', {}),
-              );
-              StripeTerminal.setConnectionToken({ token: secret });
-            },
-          ),
-        );
-      }
-    }
-
+    let eventItems: ITestItems[];
     if (type === 'happyPath') {
       if (readerType === TerminalConnectTypes.Bluetooth) {
-        this.eventItems = structuredClone(happyPathBluetoothItems)
+        eventItems = structuredClone(happyPathBluetoothItems)
       } else {
-        this.eventItems = structuredClone(happyPathItems)
+        eventItems = structuredClone(happyPathItems)
       }
     } else {
-      this.eventItems = structuredClone(cancelPathItems)
+      eventItems = structuredClone(cancelPathItems)
     }
-
-    await StripeTerminal.initialize({
-      isTest: readerType === TerminalConnectTypes.TapToPay,
-    })
-      .then(() => this.helper.updateItem(this.eventItems, 'initialize', true))
-      .catch(() =>
-        this.helper.updateItem(this.eventItems, 'initialize', false),
-      );
+    await this.prepareTerminalEvents(eventItems);
 
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
@@ -142,8 +105,6 @@ export class TerminalPage {
       'discoverReaders',
       result.readers.length > 0,
     );
-
-    console.log(result);
 
     const selectedReader =
       result.readers.length === 1
@@ -223,47 +184,61 @@ export class TerminalPage {
     this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
-  async checkDiscoverMethod() {
-    const eventKeys = Object.keys(TerminalEventsEnum);
-    for (const key of eventKeys) {
-      const handler = StripeTerminal.addListener(
-        TerminalEventsEnum[key],
-        () => {
-          this.helper.updateItem(
-            this.eventItems,
-            TerminalEventsEnum[key],
-            true,
-          );
-        },
-      );
-      this.listenerHandlers.push(await handler);
-      if (key === 'RequestedConnectionToken') {
-        this.listenerHandlers.push(
-          await StripeTerminal.addListener(
-            TerminalEventsEnum.RequestedConnectionToken,
-            async () => {
-              const { secret } = await firstValueFrom(
-                this.http.post<{
-                  secret: string;
-                }>(environment.api + 'connection/token', {}),
-              );
-              StripeTerminal.setConnectionToken({ token: secret });
-            },
-          ),
-        );
-      }
+  async checkUpdateDevice() {
+    await this.prepareTerminalEvents(structuredClone(checkDiscoverMethodItems));
+    const result = await StripeTerminal.discoverReaders({
+      type: TerminalConnectTypes.TapToPay,
+      locationId: 'tml_FOUOdQVIxvVdvN',
+    }).catch((e) => {
+      this.helper.updateItem(this.eventItems, 'discoverReaders', false);
+      throw e;
+    });
+
+    await this.helper.updateItem(
+      this.eventItems,
+      'discoverReaders',
+      result.readers.length > 0,
+    );
+
+    const selectedReader =
+      result.readers.length === 1
+        ? result.readers[0]
+        : await this.alertFilterReaders(result.readers);
+    if (!selectedReader) {
+      alert('No reader selected');
+      return;
     }
 
-    this.eventItems = structuredClone(checkDiscoverMethodItems)
+    await StripeTerminal.connectReader({
+      reader: selectedReader,
+    }).catch((e) => {
+      alert(e);
+      this.helper.updateItem(this.eventItems, 'connectReader', false);
+      throw e;
+    });
+    await this.helper.updateItem(this.eventItems, 'connectReader', true);
 
-    await StripeTerminal.initialize({
-      tokenProviderEndpoint: environment.api + 'connection/token',
-      isTest: true,
-    })
-      .then(() => this.helper.updateItem(this.eventItems, 'initialize', true))
-      .catch(() =>
-        this.helper.updateItem(this.eventItems, 'initialize', false),
-      );
+    const { reader } = await StripeTerminal.getConnectedReader().catch((e) => {
+      this.helper.updateItem(this.eventItems, 'getConnectedReader', false);
+      throw e;
+    });
+    await this.helper.updateItem(
+      this.eventItems,
+      'getConnectedReader',
+      reader !== null,
+    );
+
+    await StripeTerminal.disconnectReader().catch((e) => {
+      this.helper.updateItem(this.eventItems, 'disconnectReader', false);
+      throw e;
+    });
+    await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
+
+    this.listenerHandlers.forEach((handler) => handler.remove());
+  }
+
+  async checkDiscoverMethod() {
+    await this.prepareTerminalEvents(structuredClone(checkDiscoverMethodItems));
 
     const result = await StripeTerminal.discoverReaders({
       type: TerminalConnectTypes.TapToPay,
@@ -346,5 +321,47 @@ export class TerminalPage {
       });
       await alert.present();
     });
+  }
+
+  private async prepareTerminalEvents(eventItems: ITestItems[]) {
+    const eventKeys = Object.keys(TerminalEventsEnum);
+    for (const key of eventKeys) {
+      const handler = StripeTerminal.addListener(
+        TerminalEventsEnum[key],
+        (info) => {
+          this.helper.updateItem(
+            this.eventItems,
+            TerminalEventsEnum[key],
+            true,
+            info
+          );
+        },
+      );
+      this.listenerHandlers.push(await handler);
+      if (key === 'RequestedConnectionToken') {
+        this.listenerHandlers.push(
+          await StripeTerminal.addListener(
+            TerminalEventsEnum.RequestedConnectionToken,
+            async () => {
+              const { secret } = await firstValueFrom(
+                this.http.post<{
+                  secret: string;
+                }>(environment.api + 'connection/token', {}),
+              );
+              StripeTerminal.setConnectionToken({ token: secret });
+            },
+          ),
+        );
+      }
+    }
+    this.eventItems = eventItems;
+    await StripeTerminal.initialize({
+      tokenProviderEndpoint: environment.api + 'connection/token',
+      isTest: true,
+    })
+      .then(() => this.helper.updateItem(this.eventItems, 'initialize', true))
+      .catch(() =>
+        this.helper.updateItem(this.eventItems, 'initialize', false),
+      );
   }
 }
