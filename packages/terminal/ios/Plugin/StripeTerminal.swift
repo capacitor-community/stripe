@@ -2,7 +2,7 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate {
+public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate, ReconnectionDelegate {
 
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
@@ -143,9 +143,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectLocalMobileReader(_ call: CAPPluginCall) {
-        let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!).build()
         let reader: JSObject = call.getObject("reader")!
+        let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
         let index: Int = reader["index"] as! Int
+
+        let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!)
+            .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
+            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
+            .build()
 
         Terminal.shared.connectLocalMobileReader(self.readers![index], delegate: self, connectionConfig: connectionConfig) { reader, error in
             if let reader = reader {
@@ -158,11 +163,12 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectInternetReader(_ call: CAPPluginCall) {
+        let reader: JSObject = call.getObject("reader")!
+        let index: Int = reader["index"] as! Int
+
         let config = try! InternetConnectionConfigurationBuilder()
             .setFailIfInUse(true)
             .build()
-        let reader: JSObject = call.getObject("reader")!
-        let index: Int = reader["index"] as! Int
 
         Terminal.shared.connectInternetReader(self.readers![index], connectionConfig: config) { reader, error in
             if let reader = reader {
@@ -175,9 +181,13 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectBluetoothReader(_ call: CAPPluginCall) {
-        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!).build()
         let reader: JSObject = call.getObject("reader")!
         let index: Int = reader["index"] as! Int
+        let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
+        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!)
+            .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
+            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
+            .build()
 
         Terminal.shared.connectBluetoothReader(self.readers![index], delegate: self, connectionConfig: config) { reader, error in
             if let reader = reader {
@@ -444,6 +454,20 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         ])
     }
 
+    /*
+     * Reconnection
+     */
+    public func readerDidSucceedReconnect(_ reader: Reader) {
+        self.plugin?.notifyListeners(TerminalEvents.ReaderReconnectSucceeded.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
+    }
+
+    public func readerDidFailReconnect(_ reader: Reader) {
+        self.plugin?.notifyListeners(TerminalEvents.ReaderReconnectFailed.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
+    }
+
+    /*
+     * Private
+     */
     private func convertReaderInterface(reader: Reader) -> [String: String] {
         return ["serialNumber": reader.serialNumber]
     }

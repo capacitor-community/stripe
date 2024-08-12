@@ -279,31 +279,31 @@ public class StripeTerminal extends Executor {
             return;
         }
 
+        Boolean autoReconnectOnUnexpectedDisconnect = call.getBoolean("autoReconnectOnUnexpectedDisconnect", false);
+
         LocalMobileConnectionConfiguration config = new LocalMobileConnectionConfiguration(
             this.locationId,
-            true,
-            this.localMobileReaderReconnectionListener
+            autoReconnectOnUnexpectedDisconnect,
+            this.readerReconnectionListener
         );
         Terminal.getInstance().connectLocalMobileReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
     }
 
-    ReaderReconnectionListener localMobileReaderReconnectionListener = new ReaderReconnectionListener() {
-        @Override
-        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelReconnect) {
-            // 1. Notified at the start of a reconnection attempt
-            // Use cancelable to stop reconnection at any time
-        }
-
+    ReaderReconnectionListener readerReconnectionListener = new ReaderReconnectionListener() {
         @Override
         public void onReaderReconnectSucceeded(@NonNull Reader reader) {
-            // 2. Notified when reader reconnection succeeds
-            // App is now connected
+            notifyListeners(
+                TerminalEnumEvent.ReaderReconnectSucceeded.getWebEventName(),
+                new JSObject().put("reader", convertReaderInterface(reader))
+            );
         }
 
         @Override
         public void onReaderReconnectFailed(@NonNull Reader reader) {
-            // 3. Notified when reader reconnection fails
-            // App is now disconnected
+            notifyListeners(
+                TerminalEnumEvent.ReaderReconnectFailed.getWebEventName(),
+                new JSObject().put("reader", convertReaderInterface(reader))
+            );
         }
     };
 
@@ -323,7 +323,13 @@ public class StripeTerminal extends Executor {
 
     private void connectBluetoothReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
-        BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(this.locationId);
+        Boolean autoReconnectOnUnexpectedDisconnect = call.getBoolean("autoReconnectOnUnexpectedDisconnect", false);
+
+        BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(
+            this.locationId,
+            autoReconnectOnUnexpectedDisconnect,
+            this.readerReconnectionListener
+        );
         Terminal
             .getInstance()
             .connectBluetoothReader(this.readers.get(reader.getInteger("index")), config, this.readerListener(), this.readerCallback(call));

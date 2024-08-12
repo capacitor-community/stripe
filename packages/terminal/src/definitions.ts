@@ -55,7 +55,14 @@ export interface StripeTerminalPlugin {
     simulatedCard?: SimulatedCardType;
     simulatedTipAmount?: number;
   }): Promise<void>;
-  connectReader(options: { reader: ReaderInterface }): Promise<void>;
+
+  /**
+   * @param options.autoReconnectOnUnexpectedDisconnect If true, the SDK will automatically attempt to reconnect to the reader. default is false.
+   */
+  connectReader(options: {
+    reader: ReaderInterface;
+    autoReconnectOnUnexpectedDisconnect: boolean;
+  }): Promise<void>;
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
   disconnectReader(): Promise<void>;
   cancelDiscoverReaders(): Promise<void>;
@@ -314,6 +321,16 @@ export interface StripeTerminalPlugin {
   addListener(
     eventName: TerminalEventsEnum.PaymentStatusChange,
     listenerFunc: ({ status }: { status: PaymentStatus }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: TerminalEventsEnum.ReaderReconnectSucceeded,
+    listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: TerminalEventsEnum.ReaderReconnectFailed,
+    listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**

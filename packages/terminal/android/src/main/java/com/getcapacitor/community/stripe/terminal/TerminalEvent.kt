@@ -22,4 +22,6 @@ enum class TerminalEnumEvent(val webEventName: String) {
     RequestDisplayMessage("terminalRequestDisplayMessage"),
     RequestReaderInput("terminalRequestReaderInput"),
     PaymentStatusChange("terminalPaymentStatusChange"),
+    ReaderReconnectSucceeded("terminalReaderReconnectSucceeded"),
+    ReaderReconnectFailed("terminalReaderReconnectFailed"),
 }
