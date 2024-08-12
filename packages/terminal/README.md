@@ -501,15 +501,15 @@ fails. The Promise returned by the relevant call will also be rejected.
 ### addListener(TerminalEventsEnum.ReportAvailableUpdate, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.ReportAvailableUpdate, listenerFunc: () => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.ReportAvailableUpdate, listenerFunc: ({ update, }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
 ```
 
 Emitted when a software update is available for the connected reader.
 
-| Param              | Type                                                                                    |
-| ------------------ | --------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReportAvailableUpdate</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                              |
+| Param              | Type                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReportAvailableUpdate</a></code>                                        |
+| **`listenerFunc`** | <code>({ update, }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 

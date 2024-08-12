@@ -358,8 +358,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func reader(_ reader: Reader, didDisconnect reason: DisconnectReason) {
-        self.plugin?.notifyListeners(TerminalEvents.DiscoveredReaders.rawValue, data: [
-            "event": TerminalMappers.mapFromReaderDisconnectReason(reason)
+        self.plugin?.notifyListeners(TerminalEvents.DisconnectedReader.rawValue, data: [
+            "reason": TerminalMappers.mapFromReaderDisconnectReason(reason)
         ])
     }
 

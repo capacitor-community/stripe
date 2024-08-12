@@ -33,135 +33,9 @@ import {
   notificationsCircleOutline,
   playOutline,
 } from 'ionicons/icons';
-
-const happyPathItems: ITestItems[] = [
-  {
-    type: 'method',
-    name: 'initialize',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.Loaded,
-  },
-  {
-    type: 'method',
-    name: 'discoverReaders',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.DiscoveredReaders,
-  },
-  {
-    type: 'method',
-    name: 'connectReader',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.ConnectedReader,
-  },
-  {
-    type: 'method',
-    name: 'HttpClientPaymentIntent',
-  },
-  {
-    type: 'method',
-    name: 'collectPaymentMethod',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.CollectedPaymentIntent,
-  },
-  {
-    type: 'method',
-    name: 'confirmPaymentIntent',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.ConfirmedPaymentIntent,
-  },
-];
-
-const cancelPathItems: ITestItems[] = [
-  {
-    type: 'method',
-    name: 'initialize',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.Loaded,
-  },
-  {
-    type: 'method',
-    name: 'discoverReaders',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.DiscoveredReaders,
-  },
-  {
-    type: 'method',
-    name: 'connectReader',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.ConnectedReader,
-  },
-  {
-    type: 'method',
-    name: 'HttpClientPaymentIntent',
-  },
-  {
-    type: 'method',
-    name: 'collectPaymentMethod',
-  },
-  {
-    type: 'method',
-    name: 'cancelCollectPaymentMethod',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.Canceled,
-  },
-];
-
-const checkDiscoverMethodItems: ITestItems[] = [
-  {
-    type: 'method',
-    name: 'initialize',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.Loaded,
-  },
-  {
-    type: 'method',
-    name: 'discoverReaders',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.DiscoveredReaders,
-  },
-  {
-    type: 'method',
-    name: 'connectReader',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.ConnectedReader,
-  },
-  {
-    type: 'method',
-    name: 'getConnectedReader',
-  },
-  {
-    type: 'method',
-    name: 'disconnectReader',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.DisconnectedReader,
-  },
-];
+import {happyPathBluetoothItems, happyPathItems} from './happyPathItems';
+import {cancelPathItems} from './cancelPathItems';
+import {checkDiscoverMethodItems} from './checkDiscoverMethodItems';
 
 @Component({
   selector: 'app-terminal',
@@ -205,12 +79,12 @@ export class TerminalPage {
     for (const key of eventKeys) {
       const handler = StripeTerminal.addListener(
         TerminalEventsEnum[key],
-        () => {
-          console.log(key);
+        (info) => {
           this.helper.updateItem(
             this.eventItems,
             TerminalEventsEnum[key],
             true,
+            info,
           );
         },
       );
@@ -233,9 +107,13 @@ export class TerminalPage {
     }
 
     if (type === 'happyPath') {
-      this.eventItems = JSON.parse(JSON.stringify(happyPathItems));
+      if (readerType === TerminalConnectTypes.Bluetooth) {
+        this.eventItems = structuredClone(happyPathBluetoothItems)
+      } else {
+        this.eventItems = structuredClone(happyPathItems)
+      }
     } else {
-      this.eventItems = JSON.parse(JSON.stringify(cancelPathItems));
+      this.eventItems = structuredClone(cancelPathItems)
     }
 
     await StripeTerminal.initialize({
@@ -249,8 +127,7 @@ export class TerminalPage {
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
       locationId:
-        this.platform.is('android') &&
-        [TerminalConnectTypes.Bluetooth, TerminalConnectTypes.Usb].includes(
+        this.platform.is('android') && [TerminalConnectTypes.Bluetooth, TerminalConnectTypes.Usb].includes(
           readerType,
         )
           ? 'tml_Ff37mAmk1XdBYT'
@@ -377,7 +254,7 @@ export class TerminalPage {
       }
     }
 
-    this.eventItems = JSON.parse(JSON.stringify(checkDiscoverMethodItems));
+    this.eventItems = structuredClone(checkDiscoverMethodItems)
 
     await StripeTerminal.initialize({
       tokenProviderEndpoint: environment.api + 'connection/token',
