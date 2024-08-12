@@ -42,7 +42,8 @@ public class MetaData {
             phoneNumberRequired = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.phone_number_required");
             billingAddressRequired = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.billing_address_required");
             billingAddressFormat = appInfo.metaData.getString("com.getcapacitor.community.stripe.billing_address_format");
-            existingPaymentMethodRequired = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_existing_payment_method_required");
+            existingPaymentMethodRequired =
+                appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_existing_payment_method_required");
 
             // @deprecated. will remove at v6.0.0
             enableIdentifier = appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.enableIdentifier");
