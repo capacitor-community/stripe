@@ -855,10 +855,6 @@ public class StripeTerminal extends Executor {
     }
 
     private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
-        return new JSObject()
-            .put("version", update.getVersion())
-            .put("settingsVersion", update.getSettingsVersion())
-            .put("requiredAt", update.getRequiredAt().getTime())
-            .put("timeEstimate", update.getTimeEstimate().toString());
+        return mapFromReaderSoftwareUpdate(update);
     }
 }

@@ -373,7 +373,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         self.installUpdateCancelable = cancelable
-        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update)
+        ])
     }
 
     public func localMobileReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
@@ -410,12 +412,16 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
      */
 
     public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
-        self.plugin?.notifyListeners(TerminalEvents.ReportAvailableUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
+        self.plugin?.notifyListeners(TerminalEvents.ReportAvailableUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update)
+        ])
     }
 
     public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         self.installUpdateCancelable = cancelable
-        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update)
+        ])
     }
 
     public func reader(_: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
@@ -501,13 +507,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         ]
     }
 
-    private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> [String: String] {
-        return [
-            "version": update.deviceSoftwareVersion,
-            "settingsVersion": update.deviceSoftwareVersion,
-            "requiredAt": update.requiredAt.description,
-            "timeEstimate": TerminalMappers.mapFromUpdateTimeEstimate(update.estimatedUpdateTime)
-        ]
+    private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> JSObject {
+        return TerminalMappers.mapFromReaderSoftwareUpdate(update)
     }
 
 }
