@@ -149,6 +149,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.RequestDisplayMessage, ...)`](#addlistenerterminaleventsenumrequestdisplaymessage)
 * [`addListener(TerminalEventsEnum.RequestReaderInput, ...)`](#addlistenerterminaleventsenumrequestreaderinput)
 * [`addListener(TerminalEventsEnum.PaymentStatusChange, ...)`](#addlistenerterminaleventsenumpaymentstatuschange)
+* [`addListener(TerminalEventsEnum.ReaderReconnectSucceeded, ...)`](#addlistenerterminaleventsenumreaderreconnectsucceeded)
+* [`addListener(TerminalEventsEnum.ReaderReconnectFailed, ...)`](#addlistenerterminaleventsenumreaderreconnectfailed)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -217,12 +219,12 @@ setSimulatorConfiguration(options: { update?: SimulateReaderUpdate; simulatedCar
 ### connectReader(...)
 
 ```typescript
-connectReader(options: { reader: ReaderInterface; }) => Promise<void>
+connectReader(options: { reader: ReaderInterface; autoReconnectOnUnexpectedDisconnect?: boolean; }) => Promise<void>
 ```
 
-| Param         | Type                                                                     |
-| ------------- | ------------------------------------------------------------------------ |
-| **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; }</code> |
+| Param         | Type                                                                                                                    |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; autoReconnectOnUnexpectedDisconnect?: boolean; }</code> |
 
 --------------------
 
@@ -308,12 +310,12 @@ cancelInstallUpdate() => Promise<void>
 ### setReaderDisplay(...)
 
 ```typescript
-setReaderDisplay(lineItems: CartLineItem[]) => Promise<void>
+setReaderDisplay(options: Cart) => Promise<void>
 ```
 
-| Param           | Type                        |
-| --------------- | --------------------------- |
-| **`lineItems`** | <code>CartLineItem[]</code> |
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code><a href="#cart">Cart</a></code> |
 
 --------------------
 
@@ -754,6 +756,38 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 --------------------
 
 
+### addListener(TerminalEventsEnum.ReaderReconnectSucceeded, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReaderReconnectSucceeded, listenerFunc: ({ reader }: { reader: ReaderInterface; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectSucceeded</a></code>        |
+| **`listenerFunc`** | <code>({ reader }: { reader: <a href="#readerinterface">ReaderInterface</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.ReaderReconnectFailed, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: ({ reader }: { reader: ReaderInterface; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectFailed</a></code>           |
+| **`listenerFunc`** | <code>({ reader }: { reader: <a href="#readerinterface">ReaderInterface</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -770,6 +804,11 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 #### ReaderInterface
 
 <code>{ index: number; serialNumber: string; }</code>
+
+
+#### Cart
+
+<code>{ currency: string; tax: number; total: number lineItems: CartLineItem[]; }</code>
 
 
 #### CartLineItem
@@ -867,6 +906,8 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 | **`RequestDisplayMessage`**        | <code>'terminalRequestDisplayMessage'</code>        |
 | **`RequestReaderInput`**           | <code>'terminalRequestReaderInput'</code>           |
 | **`PaymentStatusChange`**          | <code>'terminalPaymentStatusChange'</code>          |
+| **`ReaderReconnectSucceeded`**     | <code>'terminalReaderReconnectSucceeded'</code>     |
+| **`ReaderReconnectFailed`**        | <code>'terminalReaderReconnectFailed'</code>        |
 
 
 #### DisconnectReason

@@ -1,12 +1,12 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type {
+import {
   StripeTerminalPlugin,
   TerminalConnectTypes,
   ReaderInterface,
   SimulateReaderUpdate,
   SimulatedCardType,
-  CartLineItem,
+  Cart,
 } from './definitions';
 import { TerminalEventsEnum } from './events.enum';
 
@@ -93,8 +93,8 @@ export class StripeTerminalWeb
   async cancelInstallUpdate(): Promise<void> {
     console.log('cancelInstallUpdate');
   }
-  async setReaderDisplay(lineItems: CartLineItem[]): Promise<void> {
-    console.log('setReaderDisplay', lineItems);
+  async setReaderDisplay(options: Cart): Promise<void> {
+    console.log('setReaderDisplay', options);
   }
   async clearReaderDisplay(): Promise<void> {
     console.log('clearReaderDisplay');

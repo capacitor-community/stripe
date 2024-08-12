@@ -33,6 +33,13 @@ export type CartLineItem = {
   amount: number;
 };
 
+export type Cart = {
+  currency: string;
+  tax: number;
+  total: number
+  lineItems: CartLineItem[];
+};
+
 export * from './events.enum';
 export * from './stripe.enum';
 export interface StripeTerminalPlugin {
@@ -71,7 +78,7 @@ export interface StripeTerminalPlugin {
   confirmPaymentIntent(): Promise<void>;
   installAvailableUpdate(): Promise<void>;
   cancelInstallUpdate(): Promise<void>;
-  setReaderDisplay(lineItems: CartLineItem[]): Promise<void>;
+  setReaderDisplay(options: Cart): Promise<void>;
   clearReaderDisplay(): Promise<void>;
   rebootReader(): Promise<void>;
 
