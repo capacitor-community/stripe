@@ -1,7 +1,7 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
 import type { TerminalEventsEnum } from './events.enum';
-import {
+import type {
   TerminalConnectTypes,
   UpdateTimeEstimate,
   SimulateReaderUpdate,
@@ -12,7 +12,10 @@ import {
   ReaderInputOption,
   PaymentStatus,
   DisconnectReason,
-  ConnectionStatus, NetworkStatus, LocationStatus,
+  ConnectionStatus,
+  NetworkStatus,
+  LocationStatus,
+  DeviceType,
 } from './stripe.enum';
 
 export type ReaderInterface = {
@@ -32,9 +35,8 @@ export type ReaderInterface = {
   status: NetworkStatus;
   location: LocationInterface;
   locationStatus: LocationStatus;
-  deviceType: string; // TODO enum
+  deviceType: DeviceType;
   deviceSoftwareVersion: string;
-
 
   /**
    * iOS Only properties. These properties are not available on Android.

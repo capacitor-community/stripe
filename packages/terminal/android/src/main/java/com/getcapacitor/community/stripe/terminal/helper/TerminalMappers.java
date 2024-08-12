@@ -18,19 +18,19 @@ public class TerminalMappers {
 
         if (location.getAddress() != null) {
             address
-                    .put("country", location.getAddress().getCountry())
-                    .put("city", location.getAddress().getCity())
-                    .put("postalCode", location.getAddress().getPostalCode())
-                    .put("line1", location.getAddress().getLine1())
-                    .put("line2", location.getAddress().getLine2())
-                    .put("state", location.getAddress().getState());
+                .put("country", location.getAddress().getCountry())
+                .put("city", location.getAddress().getCity())
+                .put("postalCode", location.getAddress().getPostalCode())
+                .put("line1", location.getAddress().getLine1())
+                .put("line2", location.getAddress().getLine2())
+                .put("state", location.getAddress().getState());
         }
 
         return new JSObject()
-                .put("id", location.getId())
-                .put("displayName", location.getDisplayName())
-                .put("address", address)
-                .put("livemode", location.getLivemode());
+            .put("id", location.getId())
+            .put("displayName", location.getDisplayName())
+            .put("address", address)
+            .put("livemode", location.getLivemode());
     }
 
     public JSObject mapFromReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
@@ -39,9 +39,9 @@ public class TerminalMappers {
         }
 
         return new JSObject()
-                .put("deviceSoftwareVersion", update.getVersion())
-                .put("estimatedUpdateTime", update.getTimeEstimate().toString())
-                .put("requiredAt", update.getRequiredAt().getTime());
+            .put("deviceSoftwareVersion", update.getVersion())
+            .put("estimatedUpdateTime", update.getTimeEstimate().toString())
+            .put("requiredAt", update.getRequiredAt().getTime());
     }
 
     public String mapFromLocationStatus(LocationStatus status) {
@@ -70,42 +70,27 @@ public class TerminalMappers {
     }
 
     public String mapFromDeviceType(DeviceType type) {
-        switch (type) {
-            case CHIPPER_1X:
-                return "chipper1X";
-            case CHIPPER_2X:
-                return "chipper2X";
-            case COTS_DEVICE:
-                return "cotsDevice";
-            case ETNA:
-                return "etna";
-            case STRIPE_M2:
-                return "stripeM2";
-            case STRIPE_S700:
-                return "stripeS700";
-            case STRIPE_S700_DEVKIT:
-                return "stripeS700Devkit";
+        return switch (type) {
+            case CHIPPER_1X -> "chipper1X";
+            case CHIPPER_2X -> "chipper2X";
+            case COTS_DEVICE -> "cotsDevice";
+            case ETNA -> "etna";
+            case STRIPE_M2 -> "stripeM2";
+            case STRIPE_S700 -> "stripeS700";
+            case STRIPE_S700_DEVKIT -> "stripeS700Devkit";
             // React Native has this model. deprecated?
             //            case STRIPE_S710:
             //                return "stripeS710";
             //            case STRIPE_S710_DEVKIT:
             //                return "stripeS710Devkit";
-            case UNKNOWN:
-                return "unknown";
-            case VERIFONE_P400:
-                return "verifoneP400";
-            case WISECUBE:
-                return "wiseCube";
-            case WISEPAD_3:
-                return "wisePad3";
-            case WISEPAD_3S:
-                return "wisePad3s";
-            case WISEPOS_E:
-                return "wisePosE";
-            case WISEPOS_E_DEVKIT:
-                return "wisePosEDevkit";
-            default:
-                throw new IllegalArgumentException("Unknown DeviceType: " + type);
-        }
+            case UNKNOWN -> "unknown";
+            case VERIFONE_P400 -> "verifoneP400";
+            case WISECUBE -> "wiseCube";
+            case WISEPAD_3 -> "wisePad3";
+            case WISEPAD_3S -> "wisePad3s";
+            case WISEPOS_E -> "wisePosE";
+            case WISEPOS_E_DEVKIT -> "wisePosEDevkit";
+            default -> throw new IllegalArgumentException("Unknown DeviceType: " + type);
+        };
     }
 }

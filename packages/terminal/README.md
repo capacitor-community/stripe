@@ -803,7 +803,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 #### ReaderInterface
 
-<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: string; // TODO enum deviceSoftwareVersion: string; // iOS only isCharging: number; // Android only baseUrl: string; // Android only bootloaderVersion: string; // Android only configVersion: string; // Android only emvKeyProfileId: string; // Android only firmwareVersion: string; // Android only hardwareVersion: string; // Android only macKeyProfileId: string; // Android only pinKeyProfileId: string; // Android only trackKeyProfileId: string; // Android only settingsVersion: string; // Android only pinKeysetId: string; /** * @deprecated This property has been deprecated and should use the `serialNumber` property. */ index?: number; }</code>
+<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: <a href="#devicetype">DeviceType</a>; deviceSoftwareVersion: string; /** * iOS Only properties. These properties are not available on Android. */ isCharging: number; /** * Android Only properties. These properties are not available on iOS. */ baseUrl: string; bootloaderVersion: string; configVersion: string; emvKeyProfileId: string; firmwareVersion: string; hardwareVersion: string; macKeyProfileId: string; pinKeyProfileId: string; trackKeyProfileId: string; settingsVersion: string; pinKeysetId: string; /** * @deprecated This property has been deprecated and should use the `serialNumber` property. */ index?: number; }</code>
 
 
 #### ReaderSoftwareUpdateInterface
@@ -865,6 +865,27 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 | **`NotSet`**  | <code>'NOT_SET'</code> |
 | **`Set`**     | <code>'SET'</code>     |
 | **`Unknown`** | <code>'UNKNOWN'</code> |
+
+
+#### DeviceType
+
+| Members                | Value                           |
+| ---------------------- | ------------------------------- |
+| **`cotsDevice`**       | <code>"cotsDevice"</code>       |
+| **`wisePad3s`**        | <code>"wisePad3s"</code>        |
+| **`appleBuiltIn`**     | <code>"appleBuiltIn"</code>     |
+| **`chipper1X`**        | <code>"chipper1X"</code>        |
+| **`chipper2X`**        | <code>"chipper2X"</code>        |
+| **`etna`**             | <code>"etna"</code>             |
+| **`stripeM2`**         | <code>"stripeM2"</code>         |
+| **`stripeS700`**       | <code>"stripeS700"</code>       |
+| **`stripeS700DevKit`** | <code>"stripeS700Devkit"</code> |
+| **`verifoneP400`**     | <code>"verifoneP400"</code>     |
+| **`wiseCube`**         | <code>"wiseCube"</code>         |
+| **`wisePad3`**         | <code>"wisePad3"</code>         |
+| **`wisePosE`**         | <code>"wisePosE"</code>         |
+| **`wisePosEDevKit`**   | <code>"wisePosEDevkit"</code>   |
+| **`unknown`**          | <code>"unknown"</code>          |
 
 
 #### TerminalConnectTypes
