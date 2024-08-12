@@ -294,8 +294,10 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
+        let result = TerminalMappers.mapFromReaderDisplayMessage(displayMessage)
+
         self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
-            "messageType": displayMessage.rawValue,
+            "messageType": result,
             "message": displayMessage.rawValue
         ])
     }
@@ -329,19 +331,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func reader(_: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
-        var readersJSObject: JSArray = []
-
-        if inputOptions.contains(.swipeCard) {
-            readersJSObject.append(String(ReaderInputOptions.swipeCard.rawValue))
-        }
-        if inputOptions.contains(.insertCard) {
-            readersJSObject.append(String(ReaderInputOptions.insertCard.rawValue))
-        }
-        if inputOptions.contains(.tapCard) {
-            readersJSObject.append(String(ReaderInputOptions.tapCard.rawValue))
-        }
-
-        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": readersJSObject, "message": inputOptions.rawValue])
+        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": TerminalMappers.mapFromReaderInputOptions(inputOptions), "message": inputOptions.rawValue])
     }
 
     public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
