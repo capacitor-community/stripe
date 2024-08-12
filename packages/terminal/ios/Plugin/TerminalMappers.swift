@@ -51,10 +51,10 @@ class TerminalMappers {
 
     class func mapFromLocationStatus(_ status: LocationStatus) -> String {
         switch status {
-        case LocationStatus.notSet: return "notSet"
-        case LocationStatus.set: return "set"
-        case LocationStatus.unknown: return "unknown"
-        default: return "unknown"
+        case LocationStatus.notSet: return "NOT_SET"
+        case LocationStatus.set: return "SET"
+        case LocationStatus.unknown: return "UNKNOWN"
+        default: return "UNKNOWN"
         }
     }
 
@@ -73,9 +73,9 @@ class TerminalMappers {
 
     class func mapFromReaderNetworkStatus(_ status: ReaderNetworkStatus) -> String {
         switch status {
-        case ReaderNetworkStatus.offline: return "offline"
-        case ReaderNetworkStatus.online: return "online"
-        default: return "unknown"
+        case ReaderNetworkStatus.offline: return "OFFLINE"
+        case ReaderNetworkStatus.online: return "ONLINE"
+        default: return "UNKNOWN"
         }
     }
 

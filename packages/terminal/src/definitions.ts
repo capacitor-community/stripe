@@ -1,7 +1,7 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
 import type { TerminalEventsEnum } from './events.enum';
-import type {
+import {
   TerminalConnectTypes,
   UpdateTimeEstimate,
   SimulateReaderUpdate,
@@ -12,12 +12,82 @@ import type {
   ReaderInputOption,
   PaymentStatus,
   DisconnectReason,
-  ConnectionStatus,
+  ConnectionStatus, NetworkStatus, LocationStatus,
 } from './stripe.enum';
 
 export type ReaderInterface = {
-  index: number;
+  /**
+   * The unique serial number is primary identifier inner plugin.
+   */
   serialNumber: string;
+
+  label: string;
+  batteryLevel: number;
+  batteryStatus: BatteryStatus;
+  simulated: boolean;
+  id: number;
+  availableUpdate: ReaderSoftwareUpdateInterface;
+  locationId: string;
+  ipAddress: string;
+  status: NetworkStatus;
+  location: LocationInterface;
+  locationStatus: LocationStatus;
+  deviceType: string; // TODO enum
+  deviceSoftwareVersion: string;
+
+  // iOS only
+  isCharging: number;
+
+  // Android only
+  baseUrl: string;
+
+  // Android only
+  bootloaderVersion: string;
+
+  // Android only
+  configVersion: string;
+
+  // Android only
+  emvKeyProfileId: string;
+
+  // Android only
+  firmwareVersion: string;
+
+  // Android only
+  hardwareVersion: string;
+
+  // Android only
+  macKeyProfileId: string;
+
+  // Android only
+  pinKeyProfileId: string;
+
+  // Android only
+  trackKeyProfileId: string;
+
+  // Android only
+  settingsVersion: string;
+
+  // Android only
+  pinKeysetId: string;
+
+  /**
+   * @deprecated This property has been deprecated and should use the `serialNumber` property.
+   */
+  index?: number;
+};
+export type LocationInterface = {
+  id: string;
+  displayName: string;
+  address: {
+    city: string;
+    country: string;
+    postalCode: string;
+    line1: string;
+    line2: string;
+    state: string;
+  };
+  ipAddress: string;
 };
 
 export type ReaderSoftwareUpdateInterface = {

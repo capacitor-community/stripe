@@ -803,12 +803,22 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 #### ReaderInterface
 
-<code>{ index: number; serialNumber: string; }</code>
+<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: string; // TODO enum deviceSoftwareVersion: string; // iOS only isCharging: number; // Android only baseUrl: string; // Android only bootloaderVersion: string; // Android only configVersion: string; // Android only emvKeyProfileId: string; // Android only firmwareVersion: string; // Android only hardwareVersion: string; // Android only macKeyProfileId: string; // Android only pinKeyProfileId: string; // Android only trackKeyProfileId: string; // Android only settingsVersion: string; // Android only pinKeysetId: string; /** * @deprecated This property has been deprecated and should use the `serialNumber` property. */ index?: number; }</code>
+
+
+#### ReaderSoftwareUpdateInterface
+
+<code>{ deviceSoftwareVersion: string; estimatedUpdateTime: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; requiredAt: number; }</code>
+
+
+#### LocationInterface
+
+<code>{ id: string; displayName: string; address: { city: string; country: string; postalCode: string; line1: string; line2: string; state: string; }; ipAddress: string; }</code>
 
 
 #### Cart
 
-<code>{ currency: string; tax: number; total: number lineItems: CartLineItem[]; }</code>
+<code>{ currency: string; tax: number; total: number; lineItems: CartLineItem[]; }</code>
 
 
 #### CartLineItem
@@ -816,12 +826,45 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 <code>{ displayName: string; quantity: number; amount: number; }</code>
 
 
-#### ReaderSoftwareUpdateInterface
-
-<code>{ version: string; settingsVersion: string; requiredAt: number; timeEstimate: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; }</code>
-
-
 ### Enums
+
+
+#### BatteryStatus
+
+| Members        | Value                   |
+| -------------- | ----------------------- |
+| **`Unknown`**  | <code>'UNKNOWN'</code>  |
+| **`Critical`** | <code>'CRITICAL'</code> |
+| **`Low`**      | <code>'LOW'</code>      |
+| **`Nominal`**  | <code>'NOMINAL'</code>  |
+
+
+#### UpdateTimeEstimate
+
+| Members                    | Value                                  |
+| -------------------------- | -------------------------------------- |
+| **`LessThanOneMinute`**    | <code>'LESS_THAN_ONE_MINUTE'</code>    |
+| **`OneToTwoMinutes`**      | <code>'ONE_TO_TWO_MINUTES'</code>      |
+| **`TwoToFiveMinutes`**     | <code>'TWO_TO_FIVE_MINUTES'</code>     |
+| **`FiveToFifteenMinutes`** | <code>'FIVE_TO_FIFTEEN_MINUTES'</code> |
+
+
+#### NetworkStatus
+
+| Members       | Value                  |
+| ------------- | ---------------------- |
+| **`Unknown`** | <code>'UNKNOWN'</code> |
+| **`Online`**  | <code>'ONLINE'</code>  |
+| **`Offline`** | <code>'OFFLINE'</code> |
+
+
+#### LocationStatus
+
+| Members       | Value                  |
+| ------------- | ---------------------- |
+| **`NotSet`**  | <code>'NOT_SET'</code> |
+| **`Set`**     | <code>'SET'</code>     |
+| **`Unknown`** | <code>'UNKNOWN'</code> |
 
 
 #### TerminalConnectTypes
@@ -931,26 +974,6 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 | **`NotConnected`** | <code>'NOT_CONNECTED'</code> |
 | **`Connecting`**   | <code>'CONNECTING'</code>    |
 | **`Connected`**    | <code>'CONNECTED'</code>     |
-
-
-#### UpdateTimeEstimate
-
-| Members                    | Value                                  |
-| -------------------------- | -------------------------------------- |
-| **`LessThanOneMinute`**    | <code>'LESS_THAN_ONE_MINUTE'</code>    |
-| **`OneToTwoMinutes`**      | <code>'ONE_TO_TWO_MINUTES'</code>      |
-| **`TwoToFiveMinutes`**     | <code>'TWO_TO_FIVE_MINUTES'</code>     |
-| **`FiveToFifteenMinutes`** | <code>'FIVE_TO_FIFTEEN_MINUTES'</code> |
-
-
-#### BatteryStatus
-
-| Members        | Value                   |
-| -------------- | ----------------------- |
-| **`Unknown`**  | <code>'UNKNOWN'</code>  |
-| **`Critical`** | <code>'CRITICAL'</code> |
-| **`Low`**      | <code>'LOW'</code>      |
-| **`Nominal`**  | <code>'NOMINAL'</code>  |
 
 
 #### ReaderEvent

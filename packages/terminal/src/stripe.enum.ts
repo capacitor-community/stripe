@@ -60,6 +60,18 @@ export enum BatteryStatus {
   Nominal = 'NOMINAL',
 }
 
+export enum LocationStatus {
+  NotSet = 'NOT_SET',
+  Set = 'SET',
+  Unknown = 'UNKNOWN',
+}
+
+export enum NetworkStatus {
+  Unknown = 'UNKNOWN',
+  Online = 'ONLINE',
+  Offline = 'OFFLINE',
+}
+
 export enum ReaderEvent {
   Unknown = 'UNKNOWN',
   CardInserted = 'CARD_INSERTED',

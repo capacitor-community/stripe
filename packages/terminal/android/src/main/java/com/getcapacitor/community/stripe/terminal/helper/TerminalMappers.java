@@ -46,14 +46,14 @@ public class TerminalMappers {
 
     public String mapFromLocationStatus(LocationStatus status) {
         if (status == null) {
-            return "unknown";
+            return "UNKNOWN";
         }
 
         return switch (status) {
-            case NOT_SET -> "notSet";
-            case SET -> "set";
-            case UNKNOWN -> "unknown";
-            default -> "unknown";
+            case NOT_SET -> "NOT_SET";
+            case SET -> "SET";
+            case UNKNOWN -> "UNKNOWN";
+            default -> "UNKNOWN";
         };
     }
 
@@ -63,9 +63,9 @@ public class TerminalMappers {
         }
 
         return switch (status) {
-            case OFFLINE -> "offline";
-            case ONLINE -> "online";
-            default -> "unknown";
+            case OFFLINE -> "OFFLINE";
+            case ONLINE -> "ONLINE";
+            default -> "UNKNOWN";
         };
     }
 
