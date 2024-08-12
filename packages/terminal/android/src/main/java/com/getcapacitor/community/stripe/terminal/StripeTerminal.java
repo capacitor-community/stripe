@@ -14,6 +14,7 @@ import androidx.core.util.Supplier;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
+import com.getcapacitor.community.stripe.terminal.helper.TerminalMappers;
 import com.getcapacitor.community.stripe.terminal.models.Executor;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.stripeterminal.Terminal;
@@ -76,6 +77,8 @@ public class StripeTerminal extends Executor {
     private Boolean isTest;
     private TerminalConnectTypes terminalConnectType;
     private PaymentIntent paymentIntentInstance;
+
+    private final TerminalMappers terminalMappers = new TerminalMappers();
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -746,115 +749,15 @@ public class StripeTerminal extends Executor {
             .put("trackKeyProfileId", reader.getTrackKeyProfileId())
             .put("settingsVersion", reader.getSettingsVersion())
             .put("pinKeysetId", reader.getPinKeysetId())
-            .put("deviceType", mapFromDeviceType(reader.getDeviceType()))
-            .put("status", mapFromNetworkStatus(reader.getNetworkStatus()))
-            .put("locationStatus", mapFromLocationStatus(reader.getLocationStatus()))
+            .put("deviceType", terminalMappers.mapFromDeviceType(reader.getDeviceType()))
+            .put("status", terminalMappers.mapFromNetworkStatus(reader.getNetworkStatus()))
+            .put("locationStatus", terminalMappers.mapFromLocationStatus(reader.getLocationStatus()))
             .put("batteryLevel", reader.getBatteryLevel() != null ? reader.getBatteryLevel().doubleValue() : null)
-            .put("availableUpdate", mapFromReaderSoftwareUpdate(reader.getAvailableUpdate()))
-            .put("location", mapFromLocation(reader.getLocation()));
-    }
-
-    public static JSObject mapFromLocation(Location location) {
-        if (location == null) {
-            return new JSObject();
-        }
-
-        JSObject address = new JSObject();
-
-        if (location.getAddress() != null) {
-            address
-                .put("country", location.getAddress().getCountry())
-                .put("city", location.getAddress().getCity())
-                .put("postalCode", location.getAddress().getPostalCode())
-                .put("line1", location.getAddress().getLine1())
-                .put("line2", location.getAddress().getLine2())
-                .put("state", location.getAddress().getState());
-        }
-
-        return new JSObject()
-            .put("id", location.getId())
-            .put("displayName", location.getDisplayName())
-            .put("address", address)
-            .put("livemode", location.getLivemode());
-    }
-
-    public static JSObject mapFromReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
-        if (update == null) {
-            return new JSObject();
-        }
-
-        return new JSObject()
-            .put("deviceSoftwareVersion", update.getVersion())
-            .put("estimatedUpdateTime", update.getTimeEstimate().toString())
-            .put("requiredAt", update.getRequiredAt().getTime());
-    }
-
-    public static String mapFromLocationStatus(LocationStatus status) {
-        if (status == null) {
-            return "unknown";
-        }
-
-        return switch (status) {
-            case NOT_SET -> "notSet";
-            case SET -> "set";
-            case UNKNOWN -> "unknown";
-            default -> "unknown";
-        };
-    }
-
-    public static String mapFromNetworkStatus(Reader.NetworkStatus status) {
-        if (status == null) {
-            return "unknown";
-        }
-
-        return switch (status) {
-            case OFFLINE -> "offline";
-            case ONLINE -> "online";
-            default -> "unknown";
-        };
-    }
-
-    private String mapFromDeviceType(DeviceType type) {
-        switch (type) {
-            case CHIPPER_1X:
-                return "chipper1X";
-            case CHIPPER_2X:
-                return "chipper2X";
-            case COTS_DEVICE:
-                return "cotsDevice";
-            case ETNA:
-                return "etna";
-            case STRIPE_M2:
-                return "stripeM2";
-            case STRIPE_S700:
-                return "stripeS700";
-            case STRIPE_S700_DEVKIT:
-                return "stripeS700Devkit";
-            // React Native has this model. deprecated?
-            //            case STRIPE_S710:
-            //                return "stripeS710";
-            //            case STRIPE_S710_DEVKIT:
-            //                return "stripeS710Devkit";
-            case UNKNOWN:
-                return "unknown";
-            case VERIFONE_P400:
-                return "verifoneP400";
-            case WISECUBE:
-                return "wiseCube";
-            case WISEPAD_3:
-                return "wisePad3";
-            case WISEPAD_3S:
-                return "wisePad3s";
-            case WISEPOS_E:
-                return "wisePosE";
-            case WISEPOS_E_DEVKIT:
-                return "wisePosEDevkit";
-            default:
-                throw new IllegalArgumentException("Unknown DeviceType: " + type);
-        }
+            .put("availableUpdate", terminalMappers.mapFromReaderSoftwareUpdate(reader.getAvailableUpdate()))
+            .put("location", terminalMappers.mapFromLocation(reader.getLocation()));
     }
 
     private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
-        return mapFromReaderSoftwareUpdate(update);
+        return terminalMappers.mapFromReaderSoftwareUpdate(update);
     }
 }
