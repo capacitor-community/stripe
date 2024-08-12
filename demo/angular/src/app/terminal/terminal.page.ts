@@ -18,7 +18,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { HelperService } from '../shared/helper.service';
 import {
-  ReaderInterface,
+  ReaderInterface, SimulateReaderUpdate,
   StripeTerminal,
   TerminalConnectTypes,
   TerminalEventsEnum,
@@ -36,6 +36,7 @@ import {
 import {happyPathBluetoothItems, happyPathItems} from './happyPathItems';
 import {cancelPathItems} from './cancelPathItems';
 import {checkDiscoverMethodItems} from './checkDiscoverMethodItems';
+import {checkUpdateDeviceItems} from './checkUpdateDeviceItems';
 
 @Component({
   selector: 'app-terminal',
@@ -59,6 +60,7 @@ import {checkDiscoverMethodItems} from './checkDiscoverMethodItems';
 export class TerminalPage {
   public eventItems: ITestItems[] = [];
   public terminalConnectTypes = TerminalConnectTypes;
+  public simulateReaderUpdate = SimulateReaderUpdate;
   private readonly listenerHandlers: PluginListenerHandle[] = [];
 
   public readonly platform = inject(Platform);
@@ -85,7 +87,7 @@ export class TerminalPage {
     } else {
       eventItems = structuredClone(cancelPathItems)
     }
-    await this.prepareTerminalEvents(eventItems);
+    await this.prepareTerminalEvents(eventItems, readerType);
 
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
@@ -184,11 +186,36 @@ export class TerminalPage {
     this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
-  async checkUpdateDevice() {
-    await this.prepareTerminalEvents(structuredClone(checkDiscoverMethodItems));
+  async checkUpdateDevice(readerType: TerminalConnectTypes = TerminalConnectTypes.Bluetooth, simulateReaderUpdate: SimulateReaderUpdate) {
+    await this.prepareTerminalEvents(structuredClone(checkUpdateDeviceItems));
+
+    switch (simulateReaderUpdate) {
+      case SimulateReaderUpdate.UpdateAvailable:
+        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.UpdateAvailable })
+          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:UPDATE_AVAILABLE', true));
+        break;
+      case SimulateReaderUpdate.LowBattery:
+        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.LowBattery })
+          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:LOW_BATTERY', true));
+        break;
+      case SimulateReaderUpdate.LowBatterySucceedConnect:
+        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.LowBatterySucceedConnect })
+          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:LOW_BATTERY_SUCCEED_CONNECT', true));
+        break;
+      case SimulateReaderUpdate.Required:
+        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.Required })
+          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:REQUIRED', true));
+        break;
+    }
+
     const result = await StripeTerminal.discoverReaders({
-      type: TerminalConnectTypes.TapToPay,
-      locationId: 'tml_FOUOdQVIxvVdvN',
+      type: readerType,
+      locationId:
+        this.platform.is('android') && [TerminalConnectTypes.Bluetooth, TerminalConnectTypes.Usb].includes(
+          readerType,
+        )
+          ? 'tml_Ff37mAmk1XdBYT'
+          : 'tml_FOUOdQVIxvVdvN',
     }).catch((e) => {
       this.helper.updateItem(this.eventItems, 'discoverReaders', false);
       throw e;
@@ -204,6 +231,7 @@ export class TerminalPage {
       result.readers.length === 1
         ? result.readers[0]
         : await this.alertFilterReaders(result.readers);
+    console.log(selectedReader);
     if (!selectedReader) {
       alert('No reader selected');
       return;
@@ -218,15 +246,38 @@ export class TerminalPage {
     });
     await this.helper.updateItem(this.eventItems, 'connectReader', true);
 
-    const { reader } = await StripeTerminal.getConnectedReader().catch((e) => {
-      this.helper.updateItem(this.eventItems, 'getConnectedReader', false);
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    const { paymentIntent } = await firstValueFrom(
+      this.http.post<{
+        paymentIntent: string;
+      }>(environment.api + 'connection/intent', {}),
+    ).catch(async (e) => {
+      await this.helper.updateItem(
+        this.eventItems,
+        'HttpClientPaymentIntent',
+        false,
+      );
       throw e;
     });
     await this.helper.updateItem(
       this.eventItems,
-      'getConnectedReader',
-      reader !== null,
+      'HttpClientPaymentIntent',
+      true,
     );
+
+    await StripeTerminal.collectPaymentMethod({ paymentIntent })
+      .then(() =>
+        this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+      )
+      .catch(async (e) => {
+        await this.helper.updateItem(
+          this.eventItems,
+          'collectPaymentMethod',
+          false,
+        );
+        throw e;
+      });
 
     await StripeTerminal.disconnectReader().catch((e) => {
       this.helper.updateItem(this.eventItems, 'disconnectReader', false);
@@ -323,7 +374,7 @@ export class TerminalPage {
     });
   }
 
-  private async prepareTerminalEvents(eventItems: ITestItems[]) {
+  private async prepareTerminalEvents(eventItems: ITestItems[], readerType = undefined) {
     const eventKeys = Object.keys(TerminalEventsEnum);
     for (const key of eventKeys) {
       const handler = StripeTerminal.addListener(
@@ -335,9 +386,12 @@ export class TerminalPage {
             true,
             info
           );
+          console.log('=========' + key + ':' + JSON.stringify(info))
         },
       );
       this.listenerHandlers.push(await handler);
+
+
       if (key === 'RequestedConnectionToken') {
         this.listenerHandlers.push(
           await StripeTerminal.addListener(
@@ -357,7 +411,7 @@ export class TerminalPage {
     this.eventItems = eventItems;
     await StripeTerminal.initialize({
       tokenProviderEndpoint: environment.api + 'connection/token',
-      isTest: true,
+      isTest: !readerType || readerType === TerminalConnectTypes.TapToPay,
     })
       .then(() => this.helper.updateItem(this.eventItems, 'initialize', true))
       .catch(() =>

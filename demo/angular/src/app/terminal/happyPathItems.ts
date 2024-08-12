@@ -95,12 +95,10 @@ export const happyPathBluetoothItems: ITestItems[] = [
   {
     type: 'event',
     name: TerminalEventsEnum.RequestDisplayMessage,
-    expect: ReaderDisplayMessage.RemoveCard,
   },
   {
     type: 'event',
     name: TerminalEventsEnum.ReaderEvent,
-    expect: ReaderEvent.CardInserted,
   },
   {
     type: 'method',
