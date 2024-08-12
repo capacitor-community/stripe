@@ -92,7 +92,7 @@ export class TerminalPage {
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
       locationId:
-        this.platform.is('android') && [TerminalConnectTypes.Bluetooth, TerminalConnectTypes.Usb].includes(
+        [TerminalConnectTypes.Usb].includes(
           readerType,
         )
           ? 'tml_Ff37mAmk1XdBYT'
@@ -211,11 +211,9 @@ export class TerminalPage {
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
       locationId:
-        this.platform.is('android') && [TerminalConnectTypes.Bluetooth, TerminalConnectTypes.Usb].includes(
-          readerType,
-        )
-          ? 'tml_Ff37mAmk1XdBYT'
-          : 'tml_FOUOdQVIxvVdvN',
+        [TerminalConnectTypes.Usb].includes(readerType)
+          ? 'tml_Ff37mAmk1XdBYT'  // Auckland, New Zealand
+          : 'tml_FOUOdQVIxvVdvN', // San Francisco, CA 94110
     }).catch((e) => {
       this.helper.updateItem(this.eventItems, 'discoverReaders', false);
       throw e;
