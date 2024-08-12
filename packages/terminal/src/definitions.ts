@@ -27,6 +27,12 @@ export type ReaderSoftwareUpdateInterface = {
   timeEstimate: UpdateTimeEstimate;
 };
 
+export type CartLineItem = {
+  displayName: string;
+  quantity: number;
+  amount: number;
+};
+
 export * from './events.enum';
 export * from './stripe.enum';
 export interface StripeTerminalPlugin {
@@ -56,6 +62,11 @@ export interface StripeTerminalPlugin {
   collectPaymentMethod(options: { paymentIntent: string }): Promise<void>;
   cancelCollectPaymentMethod(): Promise<void>;
   confirmPaymentIntent(): Promise<void>;
+  installAvailableUpdate(): Promise<void>;
+  cancelInstallUpdate(): Promise<void>;
+  setReaderDisplay(lineItems: CartLineItem[]): Promise<void>;
+  clearReaderDisplay(): Promise<void>;
+  rebootReader(): Promise<void>;
 
   addListener(
     eventName: TerminalEventsEnum.Loaded,

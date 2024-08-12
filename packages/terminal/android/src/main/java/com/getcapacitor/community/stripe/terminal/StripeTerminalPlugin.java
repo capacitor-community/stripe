@@ -160,4 +160,29 @@ public class StripeTerminalPlugin extends Plugin {
     public void confirmPaymentIntent(PluginCall call) {
         this.implementation.confirmPaymentIntent(call);
     }
+
+    @PluginMethod
+    public void installAvailableUpdate(PluginCall call) {
+        this.implementation.installAvailableUpdate(call);
+    }
+
+    @PluginMethod
+    public void cancelInstallUpdate(PluginCall call) {
+        this.implementation.cancelInstallUpdate(call);
+    }
+
+    @PluginMethod
+    public void setReaderDisplay(PluginCall call) {
+        this.implementation.setReaderDisplay(call);
+    }
+
+    @PluginMethod
+    public void clearReaderDisplay(PluginCall call) {
+        this.implementation.clearReaderDisplay(call);
+    }
+
+    @PluginMethod
+    public void rebootReader(PluginCall call) {
+        this.implementation.rebootReader(call);
+    }
 }

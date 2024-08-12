@@ -15,4 +15,9 @@ CAP_PLUGIN(StripeTerminalPlugin, "StripeTerminal",
            CAP_PLUGIN_METHOD(cancelCollectPaymentMethod, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(confirmPaymentIntent, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setSimulatorConfiguration, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(installAvailableUpdate, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(cancelInstallUpdate, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setReaderDisplay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(clearReaderDisplay, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(rebootReader, CAPPluginReturnPromise);
 )

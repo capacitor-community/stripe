@@ -6,6 +6,7 @@ import type {
   ReaderInterface,
   SimulateReaderUpdate,
   SimulatedCardType,
+  CartLineItem,
 } from './definitions';
 import { TerminalEventsEnum } from './events.enum';
 
@@ -84,6 +85,22 @@ export class StripeTerminalWeb
   async confirmPaymentIntent(): Promise<void> {
     console.log('confirmPaymentIntent');
     this.notifyListeners(TerminalEventsEnum.ConfirmedPaymentIntent, null);
+  }
+
+  async installAvailableUpdate(): Promise<void> {
+    console.log('installAvailableUpdate');
+  }
+  async cancelInstallUpdate(): Promise<void> {
+    console.log('cancelInstallUpdate');
+  }
+  async setReaderDisplay(lineItems: CartLineItem[]): Promise<void> {
+    console.log('setReaderDisplay', lineItems);
+  }
+  async clearReaderDisplay(): Promise<void> {
+    console.log('clearReaderDisplay');
+  }
+  async rebootReader(): Promise<void> {
+    console.log('rebootReader');
   }
 
   collect = 'deprecated';

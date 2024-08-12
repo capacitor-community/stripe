@@ -2,6 +2,36 @@ import StripeTerminal
 import Capacitor
 
 class TerminalMappers {
+    class func mapToCartLineItem(_ cartLineItem: NSDictionary) -> CartLineItem? {
+        guard let displayName = cartLineItem["displayName"] as? String else { return nil }
+        guard let quantity = cartLineItem["quantity"] as? NSNumber else { return nil }
+        guard let amount = cartLineItem["amount"] as? NSNumber else { return nil }
+
+        do {
+            let lineItem = try CartLineItemBuilder(displayName: displayName)
+                .setQuantity(Int(truncating: quantity))
+                .setAmount(Int(truncating: amount))
+                .build()
+            return lineItem
+        } catch {
+            print("Error wihle building CartLineItem, error:\(error)")
+            return nil
+        }
+    }
+
+    class func mapToCartLineItems(_ cartLineItems: JSArray) -> [CartLineItem] {
+        var items = [CartLineItem]()
+
+        cartLineItems.forEach {
+            if let item = $0 as? NSDictionary {
+                if let lineItem = TerminalMappers.mapToCartLineItem(item) {
+                    items.append(lineItem)
+                }
+            }
+        }
+        return items
+    }
+
     class func mapToSimulateReaderUpdate(_ update: String) -> SimulateReaderUpdate {
         switch update {
         case "UPDATE_AVAILABLE": return SimulateReaderUpdate.available

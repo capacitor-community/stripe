@@ -28,6 +28,8 @@ import com.stripe.stripeterminal.external.callable.ReaderReconnectionListener;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
 import com.stripe.stripeterminal.external.models.BatteryStatus;
 import com.stripe.stripeterminal.external.models.CardPresentDetails;
+import com.stripe.stripeterminal.external.models.Cart;
+import com.stripe.stripeterminal.external.models.CartLineItem;
 import com.stripe.stripeterminal.external.models.CollectConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.InternetConnectionConfiguration;
@@ -54,12 +56,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class StripeTerminal extends Executor {
 
     private TokenProvider tokenProvider;
     private Cancelable discoveryCancelable;
     private Cancelable collectCancelable;
+    private Cancelable installUpdateCancelable;
     private List<Reader> readers;
     private String locationId;
     private PluginCall collectCall;
@@ -440,6 +445,130 @@ public class StripeTerminal extends Executor {
         Terminal.getInstance().confirmPaymentIntent(this.paymentIntentInstance, confirmPaymentMethodCallback);
     }
 
+    public void installAvailableUpdate(final PluginCall call) {
+        Terminal.getInstance().installAvailableUpdate();
+        call.resolve(emptyObject);
+    }
+
+    public void cancelInstallUpdate(final PluginCall call) {
+        if (this.installUpdateCancelable == null || this.installUpdateCancelable.isCompleted()) {
+            call.resolve();
+            return;
+        }
+
+        this.installUpdateCancelable.cancel(
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        installUpdateCancelable = null;
+                        call.resolve();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getLocalizedMessage());
+                    }
+                }
+            );
+    }
+
+    public void setReaderDisplay(final PluginCall call) {
+        String currency = call.getString("currency", null);
+        if (currency == null) {
+            call.reject("You must provide a currency value");
+            return;
+        }
+
+        int tax = call.getInt("tax", 0);
+        int total = call.getInt("total", 0);
+        if (total == 0) {
+            call.reject("You must provide a total value");
+            return;
+        }
+
+        JSArray lineItems = call.getArray("lineItems");
+        List<JSONObject> lineItemsList;
+        try {
+            lineItemsList = lineItems.toList();
+        } catch (JSONException e) {
+            call.reject(e.getLocalizedMessage());
+            return;
+        }
+
+        List<CartLineItem> cartLineItems = new ArrayList<>();
+        for (JSONObject item : lineItemsList) {
+            try {
+                JSObject itemObj = JSObject.fromJSONObject(item);
+                cartLineItems.add(
+                    new CartLineItem(
+                        Objects.requireNonNull(itemObj.getString("displayName")),
+                        Objects.requireNonNull(itemObj.getInteger("quantity")),
+                        Objects.requireNonNull(itemObj.getInteger("amount"))
+                    )
+                );
+            } catch (JSONException e) {
+                call.reject(e.getLocalizedMessage());
+                return;
+            }
+        }
+
+        Cart cart = new Cart.Builder(currency, tax, total, cartLineItems).build();
+
+        Terminal
+            .getInstance()
+            .setReaderDisplay(
+                cart,
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        call.resolve();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getErrorMessage());
+                    }
+                }
+            );
+    }
+
+    public void clearReaderDisplay(final PluginCall call) {
+        Terminal
+            .getInstance()
+            .clearReaderDisplay(
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        call.resolve();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getErrorMessage());
+                    }
+                }
+            );
+    }
+
+    public void rebootReader(final PluginCall call) {
+        Terminal
+            .getInstance()
+            .rebootReader(
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        paymentIntentInstance = null;
+                        call.resolve(emptyObject);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getLocalizedMessage());
+                    }
+                }
+            );
+    }
+
     private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
@@ -476,6 +605,7 @@ public class StripeTerminal extends Executor {
             @Override
             public void onStartInstallingUpdate(@NotNull ReaderSoftwareUpdate update, @NotNull Cancelable cancelable) {
                 // Show UI communicating that a required update has started installing
+                installUpdateCancelable = cancelable;
                 notifyListeners(
                     TerminalEnumEvent.StartInstallingUpdate.getWebEventName(),
                     new JSObject().put("update", convertReaderSoftwareUpdate(update))

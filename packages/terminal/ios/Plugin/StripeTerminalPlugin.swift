@@ -64,4 +64,25 @@ public class StripeTerminalPlugin: CAPPlugin {
     @objc func confirmPaymentIntent(_ call: CAPPluginCall) {
         self.implementation.confirmPaymentIntent(call)
     }
+
+    @objc func installAvailableUpdate(_ call: CAPPluginCall) {
+        self.implementation.installAvailableUpdate(call)
+    }
+
+    @objc func cancelInstallUpdate(_ call: CAPPluginCall) {
+        self.implementation.cancelInstallUpdate(call)
+    }
+
+    @objc func setReaderDisplay(_ call: CAPPluginCall) {
+        self.implementation.setReaderDisplay(call)
+    }
+
+    @objc func clearReaderDisplay(_ call: CAPPluginCall) {
+        self.implementation.clearReaderDisplay(call)
+    }
+
+    @objc func rebootReader(_ call: CAPPluginCall) {
+        self.implementation.rebootReader(call)
+    }
+
 }

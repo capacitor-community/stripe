@@ -6,11 +6,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
+
     var discoverCancelable: Cancelable?
+    var collectCancelable: Cancelable?
+    var installUpdateCancelable: Cancelable?
+
     var discoverCall: CAPPluginCall?
     var locationId: String?
     var isTest: Bool?
-    var collectCancelable: Cancelable?
     var type: DiscoveryMethod?
     var isInitialize: Bool = false
     var paymentIntent: PaymentIntent?
@@ -250,6 +253,82 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         call.resolve([:])
     }
 
+    public func installAvailableUpdate(_ call: CAPPluginCall) {
+        Terminal.shared.installAvailableUpdate()
+        call.resolve([:])
+    }
+
+    public func cancelInstallUpdate(_ call: CAPPluginCall) {
+        self.installUpdateCancelable?.cancel { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                call.resolve([:])
+            }
+        }
+    }
+
+    public func setReaderDisplay(_ call: CAPPluginCall) {
+        guard let currency = call.getString("currency") else {
+            call.reject("You must provide a currency value")
+            return
+        }
+        guard let tax = call.getInt("tax") as? NSNumber else {
+            call.reject("You must provide a tax value")
+            return
+        }
+        guard let total = call.getInt("total") as? NSNumber else {
+            call.reject("You must provide a total value")
+            return
+        }
+
+        let cartBuilder = CartBuilder(currency: currency)
+            .setTax(Int(truncating: tax))
+            .setTotal(Int(truncating: total))
+
+        let cartLineItems = TerminalMappers.mapToCartLineItems(call.getArray("lineItems") ?? JSArray())
+
+        cartBuilder.setLineItems(cartLineItems)
+
+        let cart: Cart
+        do {
+            cart = try cartBuilder.build()
+        } catch {
+            call.reject(error.localizedDescription)
+            return
+        }
+
+        Terminal.shared.setReaderDisplay(cart) { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                call.resolve([:])
+            }
+        }
+
+    }
+
+    public func clearReaderDisplay(_ call: CAPPluginCall) {
+        Terminal.shared.clearReaderDisplay { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                call.resolve([:])
+            }
+        }
+    }
+
+    public func rebootReader(_ call: CAPPluginCall) {
+        Terminal.shared.rebootReader { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                self.paymentIntent = nil
+                call.resolve([:])
+            }
+        }
+    }
+
     /*
      * Terminal
      */
@@ -270,6 +349,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
      */
 
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+        self.installUpdateCancelable = cancelable
         self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
@@ -311,6 +391,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+        self.installUpdateCancelable = cancelable
         self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
