@@ -250,16 +250,15 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         call.resolve([:])
     }
 
-
     /*
      * Terminal
      */
     public func terminal(_ terminal: Terminal, didChangePaymentStatus status: PaymentStatus) {
-        self.plugin?.notifyListeners(TerminalEvents.PaymentStatusChange.rawValue, data: ["status": status.rawValue])
+        self.plugin?.notifyListeners(TerminalEvents.PaymentStatusChange.rawValue, data: ["status": self.mapFromPaymentStatus(status)])
     }
 
     public func terminal(_ terminal: Terminal, didChangeConnectionStatus status: ConnectionStatus) {
-        self.plugin?.notifyListeners(TerminalEvents.ConnectionStatusChange.rawValue, data: ["status": status.rawValue])
+        self.plugin?.notifyListeners(TerminalEvents.ConnectionStatusChange.rawValue, data: ["status": self.mapFromConnectionStatus(status)])
     }
 
     public func terminal(_ terminal: Terminal, didReportUnexpectedReaderDisconnect reader: Reader) {
@@ -291,19 +290,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
-        var readersJSObject: JSArray = []
-
-        if inputOptions.contains(.swipeCard) {
-            readersJSObject.append(String(ReaderInputOptions.swipeCard.rawValue))
-        }
-        if inputOptions.contains(.insertCard) {
-            readersJSObject.append(String(ReaderInputOptions.insertCard.rawValue))
-        }
-        if inputOptions.contains(.tapCard) {
-            readersJSObject.append(String(ReaderInputOptions.tapCard.rawValue))
-        }
-
-        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": readersJSObject, "message": inputOptions.rawValue])
+        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": self.mapFromReaderInputOptions(inputOptions), "message": inputOptions.rawValue])
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
@@ -359,7 +346,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         let result = self.mapFromReaderDisplayMessage(displayMessage)
-        
+
         self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
             "messageType": result,
             "message": displayMessage.rawValue
@@ -370,13 +357,19 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         self.plugin?.notifyListeners(TerminalEvents.BatteryLevel.rawValue, data: [
             "level": batteryLevel,
             "charging": isCharging,
-            "status": status.rawValue
+            "status": self.mapFromBatteryStatus(status)
         ])
     }
 
     public func reader(_ reader: Reader, didReportReaderEvent event: ReaderEvent, info: [AnyHashable: Any]?) {
         self.plugin?.notifyListeners(TerminalEvents.ReaderEvent.rawValue, data: [
-            "event": event.rawValue
+            "event": self.mapFromReaderEvent(event)
+        ])
+    }
+
+    public func reader(_ reader: Reader, didDisconnect reason: DisconnectReason) {
+        self.plugin?.notifyListeners(TerminalEvents.DiscoveredReaders.rawValue, data: [
+            "event": self.mapFromReaderDisconnectReason(reason)
         ])
     }
 
@@ -389,10 +382,10 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             "version": update.deviceSoftwareVersion,
             "settingsVersion": update.deviceSoftwareVersion,
             "requiredAt": update.requiredAt.description,
-            "timeEstimate": String(update.estimatedUpdateTime.rawValue)
+            "timeEstimate": self.mapFromUpdateTimeEstimate(update.estimatedUpdateTime)
         ]
     }
-    
+
     private func mapToSimulateReaderUpdate(_ update: String) -> SimulateReaderUpdate {
         switch update {
         case "UpdateAvailable": return SimulateReaderUpdate.available
@@ -439,7 +432,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             return 0
         }
     }
-    
+
     private func mapFromReaderDisplayMessage(_ displayMessage: ReaderDisplayMessage) -> String {
         switch displayMessage {
         case ReaderDisplayMessage.insertCard: return "INSERT_CARD"
@@ -452,6 +445,82 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         case ReaderDisplayMessage.tryAnotherReadMethod: return "TRY_ANOTHER_READ_METHOD"
         case ReaderDisplayMessage.cardRemovedTooEarly: return "CARD_REMOVED_TOO_EARLY"
         default: return "unknown"
+        }
+    }
+
+    private func mapFromReaderInputOptions(_ inputOptions: ReaderInputOptions) -> JSArray {
+        let array = inputOptions.rawValue.bitComponents()
+        var mappedOptions: JSArray = []
+
+        array.forEach { item in
+            switch item {
+            case 0: return
+            case 1: return mappedOptions.append("SWIPE")
+            case 2: return mappedOptions.append("INSERT")
+            case 4: return mappedOptions.append("TAP")
+            default: return
+            }
+        }
+
+        return mappedOptions
+    }
+
+    private func mapFromUpdateTimeEstimate(_ time: UpdateTimeEstimate) -> String {
+        switch time {
+        case UpdateTimeEstimate.estimate1To2Minutes: return "ONE_TO_TWO_MINUTES"
+        case UpdateTimeEstimate.estimate2To5Minutes: return "TWO_TO_FIVE_MINUTES"
+        case UpdateTimeEstimate.estimate5To15Minutes: return "FIVE_TO_FIFTEEN_MINUTES"
+        case UpdateTimeEstimate.estimateLessThan1Minute: return "LESS_THAN_ONE_MINUTE"
+        default: return "unknown"
+        }
+    }
+
+    private func mapFromBatteryStatus(_ status: BatteryStatus) -> String {
+        switch status {
+        case BatteryStatus.critical: return "CRITICAL"
+        case BatteryStatus.low: return "LOW"
+        case BatteryStatus.nominal: return "NOMINAL"
+        case BatteryStatus.unknown: return "UNKNOWN"
+        default: return "UNKNOWN"
+        }
+    }
+
+    private func mapFromReaderEvent(_ readerEvent: ReaderEvent) -> String {
+        switch readerEvent {
+        case .cardInserted: return "CARD_INSERTED"
+        case .cardRemoved: return "CARD_REMOVED"
+        @unknown default: return "UNKNOWN"
+        }
+    }
+
+    private  func mapFromPaymentStatus(_ paymentStatus: PaymentStatus) -> String {
+        switch paymentStatus {
+        case PaymentStatus.notReady: return "NOT_READY"
+        case PaymentStatus.ready: return "READY"
+        case PaymentStatus.processing: return "PROCESSING"
+        case PaymentStatus.waitingForInput: return "WAITING_FOR_INPUT"
+        default: return "UNKNOWN"
+        }
+    }
+
+    private func mapFromConnectionStatus(_ connectionStatus: ConnectionStatus) -> String {
+        switch connectionStatus {
+        case ConnectionStatus.connected: return "CONNECTED"
+        case ConnectionStatus.connecting: return "CONNECTING"
+        case ConnectionStatus.notConnected: return "NOT_CONNECTED"
+        default: return "UNKNOWN"
+        }
+    }
+
+    private func mapFromReaderDisconnectReason(_ reason: DisconnectReason) -> String {
+        switch reason {
+        case DisconnectReason.disconnectRequested: return "DISCONNECT_REQUESTED"
+        case DisconnectReason.rebootRequested: return "REBOOT_REQUESTED"
+        case DisconnectReason.securityReboot: return "SECURITY_REBOOT"
+        case DisconnectReason.criticallyLowBattery: return "CRITICALLY_LOW_BATTERY"
+        case DisconnectReason.poweredOff: return "POWERED_OFF"
+        case DisconnectReason.bluetoothDisabled: return "BLUETOOTH_DISABLED"
+        default: return "UNKNOWN"
         }
     }
 }
@@ -523,5 +592,15 @@ class APIClient: ConnectionTokenProvider {
             }
             task.resume()
         }
+    }
+}
+
+extension UInt {
+    init(bitComponents: [UInt]) {
+        self = bitComponents.reduce(0, +)
+    }
+
+    func bitComponents() -> [UInt] {
+        return (0 ..< 8*MemoryLayout<UInt>.size).map({ 1 << $0 }).filter({ self & $0 != 0 })
     }
 }

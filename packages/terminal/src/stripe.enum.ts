@@ -61,6 +61,7 @@ export enum BatteryStatus {
 }
 
 export enum ReaderEvent {
+  Unknown = 'UNKNOWN',
   CardInserted = 'CARD_INSERTED',
   CardRemoved = 'CARD_REMOVED',
 }
@@ -87,6 +88,7 @@ export enum ReaderInputOption {
 }
 
 export enum PaymentStatus {
+  Unknown = 'UNKNOWN',
   NotReady = 'NOT_READY',
   Ready = 'READY',
   WaitingForInput = 'WAITING_FOR_INPUT',
@@ -104,6 +106,7 @@ export enum DisconnectReason {
 }
 
 export enum ConnectionStatus {
+  Unknown = 'UNKNOWN',
   NotConnected = 'NOT_CONNECTED',
   Connecting = 'CONNECTING',
   Connected = 'CONNECTED',
