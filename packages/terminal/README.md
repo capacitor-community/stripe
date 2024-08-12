@@ -124,6 +124,11 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`collectPaymentMethod(...)`](#collectpaymentmethod)
 * [`cancelCollectPaymentMethod()`](#cancelcollectpaymentmethod)
 * [`confirmPaymentIntent()`](#confirmpaymentintent)
+* [`installAvailableUpdate()`](#installavailableupdate)
+* [`cancelInstallUpdate()`](#cancelinstallupdate)
+* [`setReaderDisplay(...)`](#setreaderdisplay)
+* [`clearReaderDisplay()`](#clearreaderdisplay)
+* [`rebootReader()`](#rebootreader)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
@@ -277,6 +282,55 @@ cancelCollectPaymentMethod() => Promise<void>
 
 ```typescript
 confirmPaymentIntent() => Promise<void>
+```
+
+--------------------
+
+
+### installAvailableUpdate()
+
+```typescript
+installAvailableUpdate() => Promise<void>
+```
+
+--------------------
+
+
+### cancelInstallUpdate()
+
+```typescript
+cancelInstallUpdate() => Promise<void>
+```
+
+--------------------
+
+
+### setReaderDisplay(...)
+
+```typescript
+setReaderDisplay(lineItems: CartLineItem[]) => Promise<void>
+```
+
+| Param           | Type                        |
+| --------------- | --------------------------- |
+| **`lineItems`** | <code>CartLineItem[]</code> |
+
+--------------------
+
+
+### clearReaderDisplay()
+
+```typescript
+clearReaderDisplay() => Promise<void>
+```
+
+--------------------
+
+
+### rebootReader()
+
+```typescript
+rebootReader() => Promise<void>
 ```
 
 --------------------
@@ -716,6 +770,11 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 #### ReaderInterface
 
 <code>{ index: number; serialNumber: string; }</code>
+
+
+#### CartLineItem
+
+<code>{ displayName: string; quantity: number; amount: number; }</code>
 
 
 #### ReaderSoftwareUpdateInterface
