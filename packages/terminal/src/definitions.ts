@@ -21,10 +21,9 @@ export type ReaderInterface = {
 };
 
 export type ReaderSoftwareUpdateInterface = {
-  version: string;
-  settingsVersion: string;
+  deviceSoftwareVersion: string;
+  estimatedUpdateTime: UpdateTimeEstimate;
   requiredAt: number;
-  timeEstimate: UpdateTimeEstimate;
 };
 
 export type CartLineItem = {
