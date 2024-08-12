@@ -518,6 +518,10 @@ public class StripeTerminal extends Executor {
             public void onReportAvailableUpdate(@NotNull ReaderSoftwareUpdate update) {
                 // An update is available for the connected reader. Show this update in your application.
                 // This update can be installed using `Terminal.getInstance().installAvailableUpdate`.
+                notifyListeners(
+                    TerminalEnumEvent.ReportAvailableUpdate.getWebEventName(),
+                    new JSObject().put("update", convertReaderSoftwareUpdate(update))
+                );
             }
 
             @Override

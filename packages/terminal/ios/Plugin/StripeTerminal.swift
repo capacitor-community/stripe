@@ -305,7 +305,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
      */
 
     public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.ReportAvailableUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
     public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {

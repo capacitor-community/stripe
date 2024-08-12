@@ -158,6 +158,18 @@ export interface StripeTerminalPlugin {
   ): Promise<PluginListenerHandle>;
 
   /**
+   * Emitted when a software update is available for the connected reader.
+   */
+  addListener(
+    eventName: TerminalEventsEnum.ReportAvailableUpdate,
+    listenerFunc: ({
+      update,
+    }: {
+      update: ReaderSoftwareUpdateInterface;
+    }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  /**
    * **Only applicable to Bluetooth and USB readers.**
    *
    * Emitted when the connected reader begins installing a software update.

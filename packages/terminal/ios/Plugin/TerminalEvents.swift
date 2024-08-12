@@ -10,6 +10,7 @@ public enum TerminalEvents: String {
     case Canceled = "terminalCanceled"
     case Failed = "terminalFailed"
     case RequestedConnectionToken = "terminalRequestedConnectionToken"
+    case ReportAvailableUpdate = "terminalReportAvailableUpdate"
     case StartInstallingUpdate = "terminalStartInstallingUpdate"
     case ReaderSoftwareUpdateProgress = "terminalReaderSoftwareUpdateProgress"
     case FinishInstallingUpdate = "terminalFinishInstallingUpdate"

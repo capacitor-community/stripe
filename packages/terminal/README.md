@@ -135,6 +135,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.CollectedPaymentIntent, ...)`](#addlistenerterminaleventsenumcollectedpaymentintent)
 * [`addListener(TerminalEventsEnum.Canceled, ...)`](#addlistenerterminaleventsenumcanceled)
 * [`addListener(TerminalEventsEnum.Failed, ...)`](#addlistenerterminaleventsenumfailed)
+* [`addListener(TerminalEventsEnum.ReportAvailableUpdate, ...)`](#addlistenerterminaleventsenumreportavailableupdate)
 * [`addListener(TerminalEventsEnum.StartInstallingUpdate, ...)`](#addlistenerterminaleventsenumstartinstallingupdate)
 * [`addListener(TerminalEventsEnum.ReaderSoftwareUpdateProgress, ...)`](#addlistenerterminaleventsenumreadersoftwareupdateprogress)
 * [`addListener(TerminalEventsEnum.FinishInstallingUpdate, ...)`](#addlistenerterminaleventsenumfinishinstallingupdate)
@@ -497,10 +498,28 @@ fails. The Promise returned by the relevant call will also be rejected.
 --------------------
 
 
+### addListener(TerminalEventsEnum.ReportAvailableUpdate, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReportAvailableUpdate, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+Emitted when a software update is available for the connected reader.
+
+| Param              | Type                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReportAvailableUpdate</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                              |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
 ### addListener(TerminalEventsEnum.StartInstallingUpdate, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.StartInstallingUpdate, listenerFunc: ({ update }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.StartInstallingUpdate, listenerFunc: ({ update, }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -522,10 +541,10 @@ to explain why connecting is taking longer than usual.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-start-installing-update.html)
 
-| Param              | Type                                                                                                                          |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.StartInstallingUpdate</a></code>                                       |
-| **`listenerFunc`** | <code>({ update }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
+| Param              | Type                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.StartInstallingUpdate</a></code>                                        |
+| **`listenerFunc`** | <code>({ update, }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -558,17 +577,17 @@ Emitted periodically while reader software is updating to inform of the installa
 ### addListener(TerminalEventsEnum.FinishInstallingUpdate, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: ({ update, errorCode, errorMessage }: { update: ReaderSoftwareUpdateInterface | null; errorCode: string | null; errorMessage: string | null; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: (args: { update: ReaderSoftwareUpdateInterface; } | { error: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-finish-installing-update.html)
 
-| Param              | Type                                                                                                                                                                                                                    |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.FinishInstallingUpdate</a></code>                                                                                                                                |
-| **`listenerFunc`** | <code>({ update, errorCode, errorMessage }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a> \| null; errorCode: string \| null; errorMessage: string \| null; }) =&gt; void</code> |
+| Param              | Type                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.FinishInstallingUpdate</a></code>                                                      |
+| **`listenerFunc`** | <code>(args: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; } \| { error: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -578,7 +597,7 @@ addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: 
 ### addListener(TerminalEventsEnum.BatteryLevel, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, charging, status }: { level: number; charging: boolean; status: BatteryStatus; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, charging, status, }: { level: number; charging: boolean; status: BatteryStatus; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -587,10 +606,10 @@ Emitted upon connection and every 10 minutes.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-battery-level-update.html)
 
-| Param              | Type                                                                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.BatteryLevel</a></code>                                                                   |
-| **`listenerFunc`** | <code>({ level, charging, status }: { level: number; charging: boolean; status: <a href="#batterystatus">BatteryStatus</a>; }) =&gt; void</code> |
+| Param              | Type                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.BatteryLevel</a></code>                                                                    |
+| **`listenerFunc`** | <code>({ level, charging, status, }: { level: number; charging: boolean; status: <a href="#batterystatus">BatteryStatus</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -620,7 +639,7 @@ addListener(eventName: TerminalEventsEnum.ReaderEvent, listenerFunc: ({ event }:
 ### addListener(TerminalEventsEnum.RequestDisplayMessage, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.RequestDisplayMessage, listenerFunc: ({ messageType, message }: { messageType: ReaderDisplayMessage; message: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.RequestDisplayMessage, listenerFunc: ({ messageType, message, }: { messageType: ReaderDisplayMessage; message: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -629,10 +648,10 @@ Emitted when the Terminal requests that a message be displayed in your app.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-request-reader-display-message.html)
 
-| Param              | Type                                                                                                                                            |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestDisplayMessage</a></code>                                                         |
-| **`listenerFunc`** | <code>({ messageType, message }: { messageType: <a href="#readerdisplaymessage">ReaderDisplayMessage</a>; message: string; }) =&gt; void</code> |
+| Param              | Type                                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestDisplayMessage</a></code>                                                          |
+| **`listenerFunc`** | <code>({ messageType, message, }: { messageType: <a href="#readerdisplaymessage">ReaderDisplayMessage</a>; message: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -642,7 +661,7 @@ Emitted when the Terminal requests that a message be displayed in your app.
 ### addListener(TerminalEventsEnum.RequestReaderInput, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.RequestReaderInput, listenerFunc: ({ options, message }: { options: ReaderInputOption[]; message: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.RequestReaderInput, listenerFunc: ({ options, message, }: { options: ReaderInputOption[]; message: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -653,10 +672,10 @@ the RequestDisplayMessage event will be emitted.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-request-reader-input.html)
 
-| Param              | Type                                                                                               |
-| ------------------ | -------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestReaderInput</a></code>               |
-| **`listenerFunc`** | <code>({ options, message }: { options: ReaderInputOption[]; message: string; }) =&gt; void</code> |
+| Param              | Type                                                                                                |
+| ------------------ | --------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestReaderInput</a></code>                |
+| **`listenerFunc`** | <code>({ options, message, }: { options: ReaderInputOption[]; message: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -720,12 +739,14 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 
 #### SimulateReaderUpdate
 
-| Members               | Value                           |
-| --------------------- | ------------------------------- |
-| **`UpdateAvailable`** | <code>'UPDATE_AVAILABLE'</code> |
-| **`None`**            | <code>'NONE'</code>             |
-| **`Required`**        | <code>'REQUIRED'</code>         |
-| **`Random`**          | <code>'RANDOM'</code>           |
+| Members                        | Value                                      |
+| ------------------------------ | ------------------------------------------ |
+| **`UpdateAvailable`**          | <code>'UPDATE_AVAILABLE'</code>            |
+| **`None`**                     | <code>'NONE'</code>                        |
+| **`Required`**                 | <code>'REQUIRED'</code>                    |
+| **`Random`**                   | <code>'RANDOM'</code>                      |
+| **`LowBattery`**               | <code>'LOW_BATTERY'</code>                 |
+| **`LowBatterySucceedConnect`** | <code>'LOW_BATTERY_SUCCEED_CONNECT'</code> |
 
 
 #### SimulatedCardType
@@ -778,6 +799,7 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 | **`Canceled`**                     | <code>'terminalCanceled'</code>                     |
 | **`Failed`**                       | <code>'terminalFailed'</code>                       |
 | **`RequestedConnectionToken`**     | <code>'terminalRequestedConnectionToken'</code>     |
+| **`ReportAvailableUpdate`**        | <code>'terminalReportAvailableUpdate'</code>        |
 | **`StartInstallingUpdate`**        | <code>'terminalStartInstallingUpdate'</code>        |
 | **`ReaderSoftwareUpdateProgress`** | <code>'terminalReaderSoftwareUpdateProgress'</code> |
 | **`FinishInstallingUpdate`**       | <code>'terminalFinishInstallingUpdate'</code>       |
@@ -805,6 +827,7 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 
 | Members            | Value                        |
 | ------------------ | ---------------------------- |
+| **`Unknown`**      | <code>'UNKNOWN'</code>       |
 | **`NotConnected`** | <code>'NOT_CONNECTED'</code> |
 | **`Connecting`**   | <code>'CONNECTING'</code>    |
 | **`Connected`**    | <code>'CONNECTED'</code>     |
@@ -834,6 +857,7 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 
 | Members            | Value                        |
 | ------------------ | ---------------------------- |
+| **`Unknown`**      | <code>'UNKNOWN'</code>       |
 | **`CardInserted`** | <code>'CARD_INSERTED'</code> |
 | **`CardRemoved`**  | <code>'CARD_REMOVED'</code>  |
 
@@ -869,6 +893,7 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 
 | Members               | Value                            |
 | --------------------- | -------------------------------- |
+| **`Unknown`**         | <code>'UNKNOWN'</code>           |
 | **`NotReady`**        | <code>'NOT_READY'</code>         |
 | **`Ready`**           | <code>'READY'</code>             |
 | **`WaitingForInput`** | <code>'WAITING_FOR_INPUT'</code> |
