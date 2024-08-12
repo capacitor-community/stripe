@@ -36,8 +36,11 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.Interne
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionStatus;
+import com.stripe.stripeterminal.external.models.DeviceType;
 import com.stripe.stripeterminal.external.models.DisconnectReason;
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration;
+import com.stripe.stripeterminal.external.models.Location;
+import com.stripe.stripeterminal.external.models.LocationStatus;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentMethod;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
@@ -65,7 +68,7 @@ public class StripeTerminal extends Executor {
     private Cancelable discoveryCancelable;
     private Cancelable collectCancelable;
     private Cancelable installUpdateCancelable;
-    private List<Reader> readers;
+    private List<Reader> discoveredReadersList;
     private String locationId;
     private PluginCall collectCall;
     private PluginCall confirmPaymentIntentCall;
@@ -82,7 +85,7 @@ public class StripeTerminal extends Executor {
     ) {
         super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "StripeTerminalExecutor");
         this.contextSupplier = contextSupplier;
-        this.readers = new ArrayList<>();
+        this.discoveredReadersList = new ArrayList<>();
     }
 
     public void initialize(final PluginCall call) throws TerminalException {
@@ -194,11 +197,11 @@ public class StripeTerminal extends Executor {
         final DiscoveryListener discoveryListener = readers -> {
             // 検索したReaderの一覧をListenerで渡す
             Log.d(logTag, String.valueOf(readers.get(0).getSerialNumber()));
-            this.readers = readers;
+            this.discoveredReadersList = readers;
             JSArray readersJSObject = new JSArray();
 
             int i = 0;
-            for (Reader reader : this.readers) {
+            for (Reader reader : this.discoveredReadersList) {
                 readersJSObject.put(convertReaderInterface(reader).put("index", String.valueOf(i)));
             }
             this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), new JSObject().put("readers", readersJSObject));
@@ -273,8 +276,12 @@ public class StripeTerminal extends Executor {
 
     private void connectLocalMobileReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
+        String serialNumber = reader.getString("serialNumber");
 
-        if (reader.getInteger("index") == null) {
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
             call.reject("The reader value is not set correctly.");
             return;
         }
@@ -286,7 +293,7 @@ public class StripeTerminal extends Executor {
             autoReconnectOnUnexpectedDisconnect,
             this.readerReconnectionListener
         );
-        Terminal.getInstance().connectLocalMobileReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
+        Terminal.getInstance().connectLocalMobileReader(foundReader, config, this.readerCallback(call));
     }
 
     ReaderReconnectionListener readerReconnectionListener = new ReaderReconnectionListener() {
@@ -309,20 +316,47 @@ public class StripeTerminal extends Executor {
 
     private void connectInternetReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
+        String serialNumber = reader.getString("serialNumber");
+
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
+            call.reject("The reader value is not set correctly.");
+            return;
+        }
+
         InternetConnectionConfiguration config = new InternetConnectionConfiguration();
-        Terminal.getInstance().connectInternetReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
+        Terminal.getInstance().connectInternetReader(foundReader, config, this.readerCallback(call));
     }
 
     private void connectUsbReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
+        String serialNumber = reader.getString("serialNumber");
+
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
+            call.reject("The reader value is not set correctly.");
+            return;
+        }
+
         UsbConnectionConfiguration config = new UsbConnectionConfiguration(this.locationId);
-        Terminal
-            .getInstance()
-            .connectUsbReader(this.readers.get(reader.getInteger("index")), config, this.readerListener(), this.readerCallback(call));
+        Terminal.getInstance().connectUsbReader(foundReader, config, this.readerListener(), this.readerCallback(call));
     }
 
     private void connectBluetoothReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
+        String serialNumber = reader.getString("serialNumber");
+
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
+            call.reject("The reader value is not set correctly.");
+            return;
+        }
         Boolean autoReconnectOnUnexpectedDisconnect = call.getBoolean("autoReconnectOnUnexpectedDisconnect", false);
 
         BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(
@@ -330,9 +364,7 @@ public class StripeTerminal extends Executor {
             autoReconnectOnUnexpectedDisconnect,
             this.readerReconnectionListener
         );
-        Terminal
-            .getInstance()
-            .connectBluetoothReader(this.readers.get(reader.getInteger("index")), config, this.readerListener(), this.readerCallback(call));
+        Terminal.getInstance().connectBluetoothReader(foundReader, config, this.readerListener(), this.readerCallback(call));
     }
 
     public void cancelDiscoverReaders(final PluginCall call) {
@@ -694,7 +726,132 @@ public class StripeTerminal extends Executor {
     }
 
     private JSObject convertReaderInterface(Reader reader) {
-        return new JSObject().put("serialNumber", reader.getSerialNumber());
+        return new JSObject()
+            .put("label", reader.getLabel())
+            .put("serialNumber", reader.getSerialNumber())
+            .put("id", reader.getId())
+            .put("locationId", reader.getLocation() != null ? reader.getLocation().getId() : null)
+            .put("deviceSoftwareVersion", reader.getDeviceSwVersion$external_publish())
+            .put("simulated", reader.isSimulated())
+            .put("serialNumber", reader.getSerialNumber())
+            .put("ipAddress", reader.getIpAddress())
+            .put("baseUrl", reader.getBaseUrl())
+            .put("bootloaderVersion", reader.getBootloaderVersion())
+            .put("configVersion", reader.getConfigVersion())
+            .put("emvKeyProfileId", reader.getEmvKeyProfileId())
+            .put("firmwareVersion", reader.getFirmwareVersion())
+            .put("hardwareVersion", reader.getHardwareVersion())
+            .put("macKeyProfileId", reader.getMacKeyProfileId())
+            .put("pinKeyProfileId", reader.getPinKeyProfileId())
+            .put("trackKeyProfileId", reader.getTrackKeyProfileId())
+            .put("settingsVersion", reader.getSettingsVersion())
+            .put("pinKeysetId", reader.getPinKeysetId())
+            .put("deviceType", mapFromDeviceType(reader.getDeviceType()))
+            .put("status", mapFromNetworkStatus(reader.getNetworkStatus()))
+            .put("locationStatus", mapFromLocationStatus(reader.getLocationStatus()))
+            .put("batteryLevel", reader.getBatteryLevel() != null ? reader.getBatteryLevel().doubleValue() : null)
+            .put("availableUpdate", mapFromReaderSoftwareUpdate(reader.getAvailableUpdate()))
+            .put("location", mapFromLocation(reader.getLocation()));
+    }
+
+    public static JSObject mapFromLocation(Location location) {
+        if (location == null) {
+            return new JSObject();
+        }
+
+        JSObject address = new JSObject();
+
+        if (location.getAddress() != null) {
+            address
+                .put("country", location.getAddress().getCountry())
+                .put("city", location.getAddress().getCity())
+                .put("postalCode", location.getAddress().getPostalCode())
+                .put("line1", location.getAddress().getLine1())
+                .put("line2", location.getAddress().getLine2())
+                .put("state", location.getAddress().getState());
+        }
+
+        return new JSObject()
+            .put("id", location.getId())
+            .put("displayName", location.getDisplayName())
+            .put("address", address)
+            .put("livemode", location.getLivemode());
+    }
+
+    public static JSObject mapFromReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
+        if (update == null) {
+            return new JSObject();
+        }
+
+        return new JSObject()
+            .put("deviceSoftwareVersion", update.getVersion())
+            .put("estimatedUpdateTime", update.getTimeEstimate().toString())
+            .put("requiredAt", update.getRequiredAt().getTime());
+    }
+
+    public static String mapFromLocationStatus(LocationStatus status) {
+        if (status == null) {
+            return "unknown";
+        }
+
+        return switch (status) {
+            case NOT_SET -> "notSet";
+            case SET -> "set";
+            case UNKNOWN -> "unknown";
+            default -> "unknown";
+        };
+    }
+
+    public static String mapFromNetworkStatus(Reader.NetworkStatus status) {
+        if (status == null) {
+            return "unknown";
+        }
+
+        return switch (status) {
+            case OFFLINE -> "offline";
+            case ONLINE -> "online";
+            default -> "unknown";
+        };
+    }
+
+    private String mapFromDeviceType(DeviceType type) {
+        switch (type) {
+            case CHIPPER_1X:
+                return "chipper1X";
+            case CHIPPER_2X:
+                return "chipper2X";
+            case COTS_DEVICE:
+                return "cotsDevice";
+            case ETNA:
+                return "etna";
+            case STRIPE_M2:
+                return "stripeM2";
+            case STRIPE_S700:
+                return "stripeS700";
+            case STRIPE_S700_DEVKIT:
+                return "stripeS700Devkit";
+            // React Native has this model. deprecated?
+            //            case STRIPE_S710:
+            //                return "stripeS710";
+            //            case STRIPE_S710_DEVKIT:
+            //                return "stripeS710Devkit";
+            case UNKNOWN:
+                return "unknown";
+            case VERIFONE_P400:
+                return "verifoneP400";
+            case WISECUBE:
+                return "wiseCube";
+            case WISEPAD_3:
+                return "wisePad3";
+            case WISEPAD_3S:
+                return "wisePad3s";
+            case WISEPOS_E:
+                return "wisePosE";
+            case WISEPOS_E_DEVKIT:
+                return "wisePosEDevkit";
+            default:
+                throw new IllegalArgumentException("Unknown DeviceType: " + type);
+        }
     }
 
     private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {

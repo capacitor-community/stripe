@@ -2,6 +2,103 @@ import StripeTerminal
 import Capacitor
 
 class TerminalMappers {
+    class func mapFromDeviceType(_ type: DeviceType) -> String {
+        switch type {
+        case DeviceType.appleBuiltIn: return "appleBuiltIn"
+        case DeviceType.chipper1X: return "chipper1X"
+        case DeviceType.chipper2X: return "chipper2X"
+        case DeviceType.etna: return "etna"
+        case DeviceType.stripeM2: return "stripeM2"
+        case DeviceType.stripeS700: return "stripeS700"
+        case DeviceType.stripeS700DevKit: return "stripeS700Devkit"
+        case DeviceType.verifoneP400: return "verifoneP400"
+        case DeviceType.wiseCube: return "wiseCube"
+        case DeviceType.wisePad3: return "wisePad3"
+        case DeviceType.wisePosE: return "wisePosE"
+        case DeviceType.wisePosEDevKit: return "wisePosEDevkit"
+        default: return "unknown"
+        }
+    }
+
+    class func mapFromAddress(_ address: Address?) -> JSObject {
+        if let address = address {
+            let result: JSObject = [
+                "city": address.city ?? NSNull(),
+                "country": address.country ?? NSNull(),
+                "postalCode": address.postalCode ?? NSNull(),
+                "line1": address.line1 ?? NSNull(),
+                "line2": address.line2 ?? NSNull(),
+                "state": address.state ?? NSNull()
+            ]
+            return result
+        } else {
+            return JSObject()
+        }
+    }
+
+    class func mapFromLocation(_ location: Location?) -> JSObject {
+        guard let unwrappedLocation = location else {
+            return [:]
+        }
+        let result: JSObject = [
+            "displayName": unwrappedLocation.displayName ?? NSNull(),
+            "id": unwrappedLocation.stripeId,
+            "livemode": unwrappedLocation.livemode,
+            "address": mapFromAddress(unwrappedLocation.address)
+        ]
+        return result
+    }
+
+    class func mapFromLocationStatus(_ status: LocationStatus) -> String {
+        switch status {
+        case LocationStatus.notSet: return "notSet"
+        case LocationStatus.set: return "set"
+        case LocationStatus.unknown: return "unknown"
+        default: return "unknown"
+        }
+    }
+
+    class func mapFromLocationsList(_ locations: [Location]) -> JSArray {
+        var list: JSArray = []
+
+        for location in locations {
+            let result = mapFromLocation(location)
+            if result.count != 0 {
+                list.append(result)
+            }
+        }
+
+        return list
+    }
+
+    class func mapFromReaderNetworkStatus(_ status: ReaderNetworkStatus) -> String {
+        switch status {
+        case ReaderNetworkStatus.offline: return "offline"
+        case ReaderNetworkStatus.online: return "online"
+        default: return "unknown"
+        }
+    }
+
+    class func convertDateToUnixTimestamp(date: Date?) -> String {
+        if let date = date {
+            let value = date.timeIntervalSince1970 * 1000.0
+            return String(format: "%.0f", value)
+        }
+        return ""
+    }
+
+    class func mapFromReaderSoftwareUpdate(_ update: ReaderSoftwareUpdate?) -> JSObject {
+        guard let unwrappedUpdate = update else {
+            return JSObject()
+        }
+        let result: JSObject = [
+            "deviceSoftwareVersion": unwrappedUpdate.deviceSoftwareVersion,
+            "estimatedUpdateTime": mapFromUpdateTimeEstimate(unwrappedUpdate.estimatedUpdateTime),
+            "requiredAt": convertDateToUnixTimestamp(date: unwrappedUpdate.requiredAt)
+        ]
+        return result
+    }
+
     class func mapToCartLineItem(_ cartLineItem: NSDictionary) -> CartLineItem? {
         guard let displayName = cartLineItem["displayName"] as? String else { return nil }
         guard let quantity = cartLineItem["quantity"] as? NSNumber else { return nil }

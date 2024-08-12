@@ -18,7 +18,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     var isInitialize: Bool = false
     var paymentIntent: PaymentIntent?
 
-    var readers: [Reader]?
+    var discoveredReadersList: [Reader]?
 
     @objc public func initialize(_ call: CAPPluginCall) {
         self.isTest = call.getBool("isTest", true)
@@ -90,12 +90,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         var i = 0
         for reader in readers {
             readersJSObject.append([
-                "index": i,
-                "serialNumber": reader.serialNumber
-            ])
+                "index": i
+            ].merging(self.convertReaderInterface(reader: reader)) { (_, new) in new })
             i += 1
         }
-        self.readers = readers
+        self.discoveredReadersList = readers
 
         self.plugin?.notifyListeners(TerminalEvents.DiscoveredReaders.rawValue, data: ["readers": readersJSObject])
         self.discoverCall?.resolve([
@@ -116,9 +115,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     public func getConnectedReader(_ call: CAPPluginCall) {
         if let reader = Terminal.shared.connectedReader {
-            call.resolve(["reader": [
-                "serialNumber": reader.serialNumber
-            ]])
+            call.resolve(["reader": self.convertReaderInterface(reader: reader)])
         } else {
             call.resolve(["reader": nil])
         }
@@ -143,16 +140,21 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectLocalMobileReader(_ call: CAPPluginCall) {
-        let reader: JSObject = call.getObject("reader")!
         let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
-        let index: Int = reader["index"] as! Int
+        let reader: JSObject = call.getObject("reader")!
+        let serialNumber: String = reader["serialNumber"] as! String
 
         let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!)
             .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
             .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
             .build()
 
-        Terminal.shared.connectLocalMobileReader(self.readers![index], delegate: self, connectionConfig: connectionConfig) { reader, error in
+        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
+            call.reject("reader is not match from descovered readers.")
+            return
+        }
+
+        Terminal.shared.connectLocalMobileReader(foundReader, delegate: self, connectionConfig: connectionConfig) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -164,13 +166,18 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     private func connectInternetReader(_ call: CAPPluginCall) {
         let reader: JSObject = call.getObject("reader")!
-        let index: Int = reader["index"] as! Int
+        let serialNumber: String = reader["serialNumber"] as! String
+
+        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
+            call.reject("reader is not match from descovered readers.")
+            return
+        }
 
         let config = try! InternetConnectionConfigurationBuilder()
             .setFailIfInUse(true)
             .build()
 
-        Terminal.shared.connectInternetReader(self.readers![index], connectionConfig: config) { reader, error in
+        Terminal.shared.connectInternetReader(foundReader, connectionConfig: config) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -182,14 +189,20 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     private func connectBluetoothReader(_ call: CAPPluginCall) {
         let reader: JSObject = call.getObject("reader")!
-        let index: Int = reader["index"] as! Int
+        let serialNumber: String = reader["serialNumber"] as! String
+
+        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
+            call.reject("reader is not match from descovered readers.")
+            return
+        }
+
         let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
         let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!)
             .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
             .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
             .build()
 
-        Terminal.shared.connectBluetoothReader(self.readers![index], delegate: self, connectionConfig: config) { reader, error in
+        Terminal.shared.connectBluetoothReader(foundReader, delegate: self, connectionConfig: config) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -468,8 +481,24 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     /*
      * Private
      */
-    private func convertReaderInterface(reader: Reader) -> [String: String] {
-        return ["serialNumber": reader.serialNumber]
+    private func convertReaderInterface(reader: Reader) -> JSObject {
+        return [
+            "label": reader.label ?? NSNull(),
+            "batteryLevel": (reader.batteryLevel ?? 0).intValue,
+            "batteryStatus": TerminalMappers.mapFromBatteryStatus(reader.batteryStatus),
+            "simulated": reader.simulated,
+            "serialNumber": reader.serialNumber,
+            "isCharging": (reader.isCharging ?? 0).intValue,
+            "id": reader.stripeId ?? NSNull(),
+            "availableUpdate": TerminalMappers.mapFromReaderSoftwareUpdate(reader.availableUpdate),
+            "locationId": reader.locationId ?? NSNull(),
+            "ipAddress": reader.ipAddress ?? NSNull(),
+            "status": TerminalMappers.mapFromReaderNetworkStatus(reader.status),
+            "location": TerminalMappers.mapFromLocation(reader.location),
+            "locationStatus": TerminalMappers.mapFromLocationStatus(reader.locationStatus),
+            "deviceType": TerminalMappers.mapFromDeviceType(reader.deviceType),
+            "deviceSoftwareVersion": reader.deviceSoftwareVersion ?? NSNull()
+        ]
     }
 
     private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> [String: String] {
