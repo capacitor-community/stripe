@@ -18,6 +18,7 @@
 		50E1A94820377CB70090CE1A /* StripeTerminalPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E1A94720377CB70090CE1A /* StripeTerminalPlugin.swift */; };
 		A98C923F2BA2484200A09466 /* TerminalConnectTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98C923D2BA2484200A09466 /* TerminalConnectTypes.swift */; };
 		A98C92402BA2484200A09466 /* TerminalEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98C923E2BA2484200A09466 /* TerminalEvents.swift */; };
+		DB9E874E2C699598004AB52F /* TerminalMappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9E874D2C699598004AB52F /* TerminalMappers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		96ED1B6440D6672E406C8D19 /* Pods-PluginTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A98C923D2BA2484200A09466 /* TerminalConnectTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerminalConnectTypes.swift; sourceTree = "<group>"; };
 		A98C923E2BA2484200A09466 /* TerminalEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerminalEvents.swift; sourceTree = "<group>"; };
+		DB9E874D2C699598004AB52F /* TerminalMappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalMappers.swift; sourceTree = "<group>"; };
 		F65BB2953ECE002E1EF3E424 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
 		F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PluginTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -100,6 +102,7 @@
 				A98C923D2BA2484200A09466 /* TerminalConnectTypes.swift */,
 				A98C923E2BA2484200A09466 /* TerminalEvents.swift */,
 				2F98D68124C9AAE400613A4C /* StripeTerminal.swift */,
+				DB9E874D2C699598004AB52F /* TerminalMappers.swift */,
 				50ADFF8B201F53D600D50D53 /* StripeTerminalPlugin.h */,
 				50ADFFA72020EE4F00D50D53 /* StripeTerminalPlugin.m */,
 				50ADFF8C201F53D600D50D53 /* Info.plist */,
@@ -316,6 +319,7 @@
 			files = (
 				A98C923F2BA2484200A09466 /* TerminalConnectTypes.swift in Sources */,
 				50E1A94820377CB70090CE1A /* StripeTerminalPlugin.swift in Sources */,
+				DB9E874E2C699598004AB52F /* TerminalMappers.swift in Sources */,
 				2F98D68224C9AAE500613A4C /* StripeTerminal.swift in Sources */,
 				A98C92402BA2484200A09466 /* TerminalEvents.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* StripeTerminalPlugin.m in Sources */,
