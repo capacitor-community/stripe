@@ -11,6 +11,7 @@ export enum TerminalEventsEnum {
   Canceled = 'terminalCanceled',
   Failed = 'terminalFailed',
   RequestedConnectionToken = 'terminalRequestedConnectionToken',
+  ReportAvailableUpdate = 'terminalReportAvailableUpdate',
   StartInstallingUpdate = 'terminalStartInstallingUpdate',
   ReaderSoftwareUpdateProgress = 'terminalReaderSoftwareUpdateProgress',
   FinishInstallingUpdate = 'terminalFinishInstallingUpdate',

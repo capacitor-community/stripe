@@ -104,12 +104,18 @@ public class StripeTerminal extends Executor {
         TerminalListener listener = new TerminalListener() {
             @Override
             public void onUnexpectedReaderDisconnect(@NonNull Reader reader) {
-                notifyListeners(TerminalEnumEvent.UnexpectedReaderDisconnect.getWebEventName(), new JSObject().put("reader", convertReaderInterface(reader)));
+                notifyListeners(
+                    TerminalEnumEvent.UnexpectedReaderDisconnect.getWebEventName(),
+                    new JSObject().put("reader", convertReaderInterface(reader))
+                );
             }
 
             @Override
             public void onConnectionStatusChange(@NonNull ConnectionStatus status) {
-                notifyListeners(TerminalEnumEvent.ConnectionStatusChange.getWebEventName(), new JSObject().put("status", status.toString()));
+                notifyListeners(
+                    TerminalEnumEvent.ConnectionStatusChange.getWebEventName(),
+                    new JSObject().put("status", status.toString())
+                );
             }
 
             @Override
@@ -132,11 +138,15 @@ public class StripeTerminal extends Executor {
 
     public void setSimulatorConfiguration(PluginCall call) {
         try {
-            Terminal.getInstance().setSimulatorConfiguration(new SimulatorConfiguration(
-                SimulateReaderUpdate.valueOf(call.getString("update", "UPDATE_AVAILABLE")),
-                new SimulatedCard(SimulatedCardType.valueOf(call.getString("simulatedCard", "VISA"))),
-                call.getLong("simulatedTipAmount", null)
-            ));
+            Terminal
+                .getInstance()
+                .setSimulatorConfiguration(
+                    new SimulatorConfiguration(
+                        SimulateReaderUpdate.valueOf(call.getString("update", "UPDATE_AVAILABLE")),
+                        new SimulatedCard(SimulatedCardType.valueOf(call.getString("simulatedCard", "VISA"))),
+                        call.getLong("simulatedTipAmount", null)
+                    )
+                );
 
             call.resolve();
         } catch (Exception ex) {
@@ -361,7 +371,7 @@ public class StripeTerminal extends Executor {
 
                     @Override
                     public void onFailure(@NonNull TerminalException e) {
-                        call.reject(e.getErrorMessage());
+                        call.reject(e.getLocalizedMessage());
                     }
                 }
             );
@@ -466,7 +476,10 @@ public class StripeTerminal extends Executor {
             @Override
             public void onStartInstallingUpdate(@NotNull ReaderSoftwareUpdate update, @NotNull Cancelable cancelable) {
                 // Show UI communicating that a required update has started installing
-                notifyListeners(TerminalEnumEvent.StartInstallingUpdate.getWebEventName(), new JSObject().put("update", convertReaderSoftwareUpdate(update)));
+                notifyListeners(
+                    TerminalEnumEvent.StartInstallingUpdate.getWebEventName(),
+                    new JSObject().put("update", convertReaderSoftwareUpdate(update))
+                );
             }
 
             @Override
@@ -476,31 +489,26 @@ public class StripeTerminal extends Executor {
             }
 
             @Override
-            public void onFinishInstallingUpdate(@Nullable ReaderSoftwareUpdate update, @Nullable TerminalException e) {
-                // Report success or failure of the update
+            public void onFinishInstallingUpdate(@Nullable ReaderSoftwareUpdate update, @Nullable TerminalException error) {
                 JSObject eventObject = new JSObject();
-                eventObject.put("update", update == null ? null : convertReaderSoftwareUpdate(update));
 
-                String errorCode = null;
-                String errorMessage = null;
-                if (e != null) {
-                    errorCode = e.getErrorCode().toString();
-                    errorMessage = e.getErrorMessage();
+                if (error != null) {
+                    // note: Since errorCode cannot be obtained in iOS, use errorMessage for unification.
+                    eventObject.put("error", error.getLocalizedMessage());
+                    notifyListeners(TerminalEnumEvent.FinishInstallingUpdate.getWebEventName(), eventObject);
+                    return;
                 }
 
-                eventObject.put("errorCode", errorCode)
-                        .put("errorMessage", errorMessage);
-
+                eventObject.put("update", update == null ? null : convertReaderSoftwareUpdate(update));
                 notifyListeners(TerminalEnumEvent.FinishInstallingUpdate.getWebEventName(), eventObject);
             }
 
             @Override
             public void onBatteryLevelUpdate(float batteryLevel, @NonNull BatteryStatus batteryStatus, boolean isCharging) {
-                notifyListeners(TerminalEnumEvent.BatteryLevel.getWebEventName(), new JSObject()
-                    .put("level", batteryLevel)
-                    .put("charging", isCharging)
-                    .put("status", batteryStatus.toString()
-                ));
+                notifyListeners(
+                    TerminalEnumEvent.BatteryLevel.getWebEventName(),
+                    new JSObject().put("level", batteryLevel).put("charging", isCharging).put("status", batteryStatus.toString())
+                );
             }
 
             @Override
@@ -510,6 +518,10 @@ public class StripeTerminal extends Executor {
             public void onReportAvailableUpdate(@NotNull ReaderSoftwareUpdate update) {
                 // An update is available for the connected reader. Show this update in your application.
                 // This update can be installed using `Terminal.getInstance().installAvailableUpdate`.
+                notifyListeners(
+                    TerminalEnumEvent.ReportAvailableUpdate.getWebEventName(),
+                    new JSObject().put("update", convertReaderSoftwareUpdate(update))
+                );
             }
 
             @Override
@@ -519,9 +531,9 @@ public class StripeTerminal extends Executor {
 
             @Override
             public void onRequestReaderDisplayMessage(@NotNull ReaderDisplayMessage message) {
-                notifyListeners(TerminalEnumEvent.RequestDisplayMessage.getWebEventName(), new JSObject()
-                    .put("messageType", message.name())
-                    .put("message", message.toString())
+                notifyListeners(
+                    TerminalEnumEvent.RequestDisplayMessage.getWebEventName(),
+                    new JSObject().put("messageType", message.name()).put("message", message.toString())
                 );
             }
 
@@ -533,23 +545,20 @@ public class StripeTerminal extends Executor {
                     jsOptions.put(optionType.name());
                 }
 
-                notifyListeners(TerminalEnumEvent.RequestReaderInput.getWebEventName(), new JSObject()
-                    .put("options", jsOptions)
-                    .put("message", options.toString())
+                notifyListeners(
+                    TerminalEnumEvent.RequestReaderInput.getWebEventName(),
+                    new JSObject().put("options", jsOptions).put("message", options.toString())
                 );
             }
 
             public void onDisconnect(@NotNull DisconnectReason reason) {
-                notifyListeners(TerminalEnumEvent.DisconnectedReader.getWebEventName(), new JSObject()
-                    .put("reason", reason.toString())
-                );
+                notifyListeners(TerminalEnumEvent.DisconnectedReader.getWebEventName(), new JSObject().put("reason", reason.toString()));
             }
         };
     }
 
     private JSObject convertReaderInterface(Reader reader) {
-        return new JSObject()
-            .put("serialNumber", reader.getSerialNumber());
+        return new JSObject().put("serialNumber", reader.getSerialNumber());
     }
 
     private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {

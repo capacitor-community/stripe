@@ -2,7 +2,7 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate {
+public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate {
 
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
@@ -240,53 +240,142 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
-    // localMobile
+    public func setSimulatorConfiguration(_ call: CAPPluginCall) {
+        // { update?: SimulateReaderUpdate; simulatedCard?: SimulatedCardType; simulatedTipAmount?: number; }
+        Terminal.shared.simulatorConfiguration.availableReaderUpdate = TerminalMappers.mapToSimulateReaderUpdate(call.getString("update", "UPDATE_AVAILABLE"))
+        Terminal.shared.simulatorConfiguration.simulatedCard = SimulatedCard(type: SimulatedCardType(rawValue: TerminalMappers.mapToCardType(type: call.getString("simulatedCard", "VISA")))!)
+        if let tipAmount = call.getInt("simulatedTipAmount") {
+            Terminal.shared.simulatorConfiguration.simulatedTipAmount = (tipAmount) as NSNumber
+        }
+        call.resolve([:])
+    }
+
+    /*
+     * Terminal
+     */
+    public func terminal(_ terminal: Terminal, didChangePaymentStatus status: PaymentStatus) {
+        self.plugin?.notifyListeners(TerminalEvents.PaymentStatusChange.rawValue, data: ["status": TerminalMappers.mapFromPaymentStatus(status)])
+    }
+
+    public func terminal(_ terminal: Terminal, didChangeConnectionStatus status: ConnectionStatus) {
+        self.plugin?.notifyListeners(TerminalEvents.ConnectionStatusChange.rawValue, data: ["status": TerminalMappers.mapFromConnectionStatus(status)])
+    }
+
+    public func terminal(_ terminal: Terminal, didReportUnexpectedReaderDisconnect reader: Reader) {
+        self.plugin?.notifyListeners(TerminalEvents.UnexpectedReaderDisconnect.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
+    }
+
+    /*
+     * localMobile
+     */
 
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
     public func localMobileReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.ReaderSoftwareUpdateProgress.rawValue, data: ["progress": progress])
     }
 
     public func localMobileReader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
-        // TODO
+        if (error) != nil {
+            self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+                "error": error!.localizedDescription
+            ])
+            return
+        }
+        self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update!)
+        ])
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": TerminalMappers.mapFromReaderInputOptions(inputOptions), "message": inputOptions.rawValue])
     }
 
     public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
-        // TODO
+        let result = TerminalMappers.mapFromReaderDisplayMessage(displayMessage)
+
+        self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
+            "messageType": result,
+            "message": displayMessage.rawValue
+        ])
     }
 
-    // bluetooth
+    /*
+     * bluetooth
+     */
 
     public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.ReportAvailableUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
     public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
     }
 
     public func reader(_: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.ReaderSoftwareUpdateProgress.rawValue, data: ["progress": progress])
     }
 
     public func reader(_: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
-        // TODO
+        if (error) != nil {
+            self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+                "error": error!.localizedDescription
+            ])
+            return
+        }
+        self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update!)
+        ])
     }
 
     public func reader(_: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
-        // TODO
+        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": TerminalMappers.mapFromReaderInputOptions(inputOptions), "message": inputOptions.rawValue])
     }
 
     public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
-        // TODO
+        let result = TerminalMappers.mapFromReaderDisplayMessage(displayMessage)
+
+        self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
+            "messageType": result,
+            "message": displayMessage.rawValue
+        ])
     }
+
+    public func reader(_ reader: Reader, didReportBatteryLevel batteryLevel: Float, status: BatteryStatus, isCharging: Bool) {
+        self.plugin?.notifyListeners(TerminalEvents.BatteryLevel.rawValue, data: [
+            "level": batteryLevel,
+            "charging": isCharging,
+            "status": TerminalMappers.mapFromBatteryStatus(status)
+        ])
+    }
+
+    public func reader(_ reader: Reader, didReportReaderEvent event: ReaderEvent, info: [AnyHashable: Any]?) {
+        self.plugin?.notifyListeners(TerminalEvents.ReaderEvent.rawValue, data: [
+            "event": TerminalMappers.mapFromReaderEvent(event)
+        ])
+    }
+
+    public func reader(_ reader: Reader, didDisconnect reason: DisconnectReason) {
+        self.plugin?.notifyListeners(TerminalEvents.DisconnectedReader.rawValue, data: [
+            "reason": TerminalMappers.mapFromReaderDisconnectReason(reason)
+        ])
+    }
+
+    private func convertReaderInterface(reader: Reader) -> [String: String] {
+        return ["serialNumber": reader.serialNumber]
+    }
+
+    private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> [String: String] {
+        return [
+            "version": update.deviceSoftwareVersion,
+            "settingsVersion": update.deviceSoftwareVersion,
+            "requiredAt": update.requiredAt.description,
+            "timeEstimate": TerminalMappers.mapFromUpdateTimeEstimate(update.estimatedUpdateTime)
+        ]
+    }
+
 }
 
 class APIClient: ConnectionTokenProvider {
@@ -356,5 +445,15 @@ class APIClient: ConnectionTokenProvider {
             }
             task.resume()
         }
+    }
+}
+
+extension UInt {
+    init(bitComponents: [UInt]) {
+        self = bitComponents.reduce(0, +)
+    }
+
+    func bitComponents() -> [UInt] {
+        return (0 ..< 8*MemoryLayout<UInt>.size).map({ 1 << $0 }).filter({ self & $0 != 0 })
     }
 }

@@ -33,6 +33,10 @@ public class StripeTerminalPlugin: CAPPlugin {
         }
     }
 
+    @objc func setSimulatorConfiguration(_ call: CAPPluginCall) {
+        self.implementation.setSimulatorConfiguration(call)
+    }
+
     @objc func cancelDiscoverReaders(_ call: CAPPluginCall) {
         self.implementation.cancelDiscoverReaders(call)
     }

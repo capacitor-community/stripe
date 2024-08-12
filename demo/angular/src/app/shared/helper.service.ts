@@ -27,6 +27,8 @@ export class HelperService {
             } else if (Array.isArray(item.expect) && value) {
               // @ts-ignore
               item.result = item.expect.includes(value.toString());
+            } else if (value && typeof value === 'object') {
+              item.result = JSON.stringify(value).includes(item.expect.toString());
             } else {
               if (item.expect === 'error') {
                 item.result = this.receiveErrorValue(value);

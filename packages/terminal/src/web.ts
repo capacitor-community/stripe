@@ -44,7 +44,7 @@ export class StripeTerminalWeb
   async setConnectionToken(): Promise<void> {
     console.log('setConnectionToken');
   }
-  
+
   async setSimulatorConfiguration(options: {
     update?: SimulateReaderUpdate | undefined;
     simulatedCard?: SimulatedCardType | undefined;
