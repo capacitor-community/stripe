@@ -381,24 +381,24 @@ public class StripeTerminal extends Executor {
     }
 
     public void cancelDiscoverReaders(final PluginCall call) {
-        if (discoveryCancelable != null) {
-            discoveryCancelable.cancel(
-                new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        notifyListeners(TerminalEnumEvent.CancelDiscoveredReaders.getWebEventName(), emptyObject);
-                        call.resolve();
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull TerminalException ex) {
-                        call.reject(ex.getLocalizedMessage(), ex);
-                    }
-                }
-            );
-        } else {
+        if (discoveryCancelable == null || discoveryCancelable.isCompleted()) {
             call.resolve();
+            return;
         }
+        discoveryCancelable.cancel(
+            new Callback() {
+                @Override
+                public void onSuccess() {
+                    notifyListeners(TerminalEnumEvent.CancelDiscoveredReaders.getWebEventName(), emptyObject);
+                    call.resolve();
+                }
+
+                @Override
+                public void onFailure(@NonNull TerminalException ex) {
+                    call.reject(ex.getLocalizedMessage(), ex);
+                }
+            }
+        );
     }
 
     public void collectPaymentMethod(final PluginCall call) {
@@ -420,7 +420,6 @@ public class StripeTerminal extends Executor {
                 new Callback() {
                     @Override
                     public void onSuccess() {
-                        collectCancelable = null;
                         notifyListeners(TerminalEnumEvent.Canceled.getWebEventName(), emptyObject);
                         call.resolve();
                     }
@@ -450,7 +449,6 @@ public class StripeTerminal extends Executor {
     private final PaymentIntentCallback collectPaymentMethodCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
-            collectCancelable = null;
             paymentIntentInstance = paymentIntent;
             notifyListeners(TerminalEnumEvent.CollectedPaymentIntent.getWebEventName(), emptyObject);
 
@@ -480,7 +478,6 @@ public class StripeTerminal extends Executor {
 
         @Override
         public void onFailure(@NonNull TerminalException ex) {
-            collectCancelable = null;
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
             collectCall.reject(ex.getLocalizedMessage(), ex);
         }
@@ -511,7 +508,6 @@ public class StripeTerminal extends Executor {
                 new Callback() {
                     @Override
                     public void onSuccess() {
-                        installUpdateCancelable = null;
                         call.resolve();
                     }
 
@@ -621,23 +617,23 @@ public class StripeTerminal extends Executor {
     }
 
     public void cancelReaderReconnection(final PluginCall call) {
-        if (cancelReaderConnectionCancellable != null) {
-            cancelReaderConnectionCancellable.cancel(
-                new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        call.resolve();
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull TerminalException ex) {
-                        call.reject(ex.getLocalizedMessage(), ex);
-                    }
-                }
-            );
-        } else {
+        if (cancelReaderConnectionCancellable == null || cancelReaderConnectionCancellable.isCompleted()) {
             call.resolve();
+            return;
         }
+        cancelReaderConnectionCancellable.cancel(
+            new Callback() {
+                @Override
+                public void onSuccess() {
+                    call.resolve();
+                }
+
+                @Override
+                public void onFailure(@NonNull TerminalException ex) {
+                    call.reject(ex.getLocalizedMessage(), ex);
+                }
+            }
+        );
     }
 
     private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {

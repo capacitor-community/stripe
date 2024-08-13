@@ -3,10 +3,6 @@ import StripeTerminal
 import Capacitor
 import PassKit
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
 @objc(StripeTerminalPlugin)
 public class StripeTerminalPlugin: CAPPlugin {
     private let implementation = StripeTerminal()

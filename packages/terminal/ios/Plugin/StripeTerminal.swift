@@ -65,25 +65,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 call.reject(error.localizedDescription)
                 self.discoverCall = nil
             } else {
+                // This call is passed to discoverCall. So not resolve.
             }
         }
-    }
-
-    func cancelDiscoverReaders(_ call: CAPPluginCall) {
-
-        if let cancelable = self.discoverCancelable {
-            cancelable.cancel { error in
-                if let error = error {
-                    call.reject(error.localizedDescription)
-                } else {
-                    self.collectCancelable = nil
-                    call.resolve()
-                }
-            }
-            return
-        }
-
-        call.resolve()
     }
 
     public func terminal(_ terminal: Terminal, didUpdateDiscoveredReaders readers: [Reader]) {
@@ -217,6 +201,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         Terminal.shared.retrievePaymentIntent(clientSecret: call.getString("paymentIntent")!) { retrieveResult, retrieveError in
             if let error = retrieveError {
                 print("retrievePaymentIntent failed: \(error)")
+                call.reject(error.localizedDescription)
             } else if let paymentIntent = retrieveResult {
                 self.collectCancelable = Terminal.shared.collectPaymentMethod(paymentIntent) { collectResult, collectError in
                     if let error = collectError {
@@ -230,23 +215,6 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 }
             }
         }
-    }
-
-    public func cancelCollectPaymentMethod(_ call: CAPPluginCall) {
-        if let cancelable = self.collectCancelable {
-            cancelable.cancel { error in
-                if let error = error {
-                    call.reject(error.localizedDescription)
-                } else {
-                    self.plugin?.notifyListeners(TerminalEvents.Canceled.rawValue, data: [:])
-                    self.collectCancelable = nil
-                    self.paymentIntent = nil
-                    call.resolve()
-                }
-            }
-            return
-        }
-        call.resolve()
     }
 
     public func confirmPaymentIntent(_ call: CAPPluginCall) {
@@ -280,16 +248,6 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     public func installAvailableUpdate(_ call: CAPPluginCall) {
         Terminal.shared.installAvailableUpdate()
         call.resolve([:])
-    }
-
-    public func cancelInstallUpdate(_ call: CAPPluginCall) {
-        self.installUpdateCancelable?.cancel { error in
-            if let error = error as NSError? {
-                call.reject(error.localizedDescription)
-            } else {
-                call.resolve([:])
-            }
-        }
     }
 
     public func setReaderDisplay(_ call: CAPPluginCall) {
@@ -353,14 +311,83 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
-    public func cancelReaderReconnection(_ call: CAPPluginCall) {
-        self.cancelReaderConnectionCancellable?.cancel { error in
-            if let error = error as NSError? {
-                call.reject(error.localizedDescription)
-            } else {
-                call.resolve([:])
+    /**
+     *  Cancelable
+     */
+    public func cancelInstallUpdate(_ call: CAPPluginCall) {
+        if let cancelable = self.installUpdateCancelable {
+            if cancelable.completed {
+                call.resolve()
+                return
             }
+            cancelable.cancel { error in
+                if let error = error as NSError? {
+                    call.reject(error.localizedDescription)
+                } else {
+                    call.resolve([:])
+                }
+            }
+            return
         }
+        call.resolve([:])
+    }
+
+    public func cancelCollectPaymentMethod(_ call: CAPPluginCall) {
+        if let cancelable = self.collectCancelable {
+            if cancelable.completed {
+                call.resolve()
+                return
+            }
+            cancelable.cancel { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    self.plugin?.notifyListeners(TerminalEvents.Canceled.rawValue, data: [:])
+                    self.paymentIntent = nil
+                    call.resolve()
+                }
+            }
+            return
+        }
+        call.resolve()
+    }
+
+    func cancelDiscoverReaders(_ call: CAPPluginCall) {
+        if let cancelable = self.discoverCancelable {
+            if cancelable.completed {
+                call.resolve()
+                return
+            }
+            cancelable.cancel { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    call.resolve()
+                }
+            }
+            return
+        }
+
+        call.resolve()
+    }
+
+    public func cancelReaderReconnection(_ call: CAPPluginCall) {
+        if let cancelable = self.cancelReaderConnectionCancellable {
+            if cancelable.completed {
+                call.resolve()
+                return
+            }
+            cancelable.cancel { error in
+                if let error = error as NSError? {
+                    call.reject(error.localizedDescription)
+                } else {
+                    call.resolve([:])
+                }
+            }
+            return
+        }
+
+        call.resolve()
     }
 
     /*
