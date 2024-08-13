@@ -20,6 +20,9 @@ export enum TerminalEventsEnum {
   RequestDisplayMessage = 'terminalRequestDisplayMessage',
   RequestReaderInput = 'terminalRequestReaderInput',
   PaymentStatusChange = 'terminalPaymentStatusChange',
+  ReaderReconnectStarted = 'terminalReaderReconnectStarted',
+  ReaderReconnectSucceeded = 'terminalReaderReconnectSucceeded',
+  ReaderReconnectFailed = 'terminalReaderReconnectFailed',
 }
 
 export type TerminalResultInterface =

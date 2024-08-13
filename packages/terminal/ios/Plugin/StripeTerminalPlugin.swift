@@ -3,10 +3,6 @@ import StripeTerminal
 import Capacitor
 import PassKit
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
 @objc(StripeTerminalPlugin)
 public class StripeTerminalPlugin: CAPPlugin {
     private let implementation = StripeTerminal()
@@ -64,4 +60,29 @@ public class StripeTerminalPlugin: CAPPlugin {
     @objc func confirmPaymentIntent(_ call: CAPPluginCall) {
         self.implementation.confirmPaymentIntent(call)
     }
+
+    @objc func installAvailableUpdate(_ call: CAPPluginCall) {
+        self.implementation.installAvailableUpdate(call)
+    }
+
+    @objc func cancelInstallUpdate(_ call: CAPPluginCall) {
+        self.implementation.cancelInstallUpdate(call)
+    }
+
+    @objc func setReaderDisplay(_ call: CAPPluginCall) {
+        self.implementation.setReaderDisplay(call)
+    }
+
+    @objc func clearReaderDisplay(_ call: CAPPluginCall) {
+        self.implementation.clearReaderDisplay(call)
+    }
+
+    @objc func rebootReader(_ call: CAPPluginCall) {
+        self.implementation.rebootReader(call)
+    }
+
+    @objc func cancelReaderReconnection(_ call: CAPPluginCall) {
+        self.implementation.cancelReaderReconnection(call)
+    }
+
 }

@@ -2,20 +2,24 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate {
+public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate, ReconnectionDelegate {
 
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
+
     var discoverCancelable: Cancelable?
+    var collectCancelable: Cancelable?
+    var installUpdateCancelable: Cancelable?
+    var cancelReaderConnectionCancellable: Cancelable?
+
     var discoverCall: CAPPluginCall?
     var locationId: String?
     var isTest: Bool?
-    var collectCancelable: Cancelable?
     var type: DiscoveryMethod?
     var isInitialize: Bool = false
     var paymentIntent: PaymentIntent?
 
-    var readers: [Reader]?
+    var discoveredReadersList: [Reader]?
 
     @objc public func initialize(_ call: CAPPluginCall) {
         self.isTest = call.getBool("isTest", true)
@@ -61,25 +65,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 call.reject(error.localizedDescription)
                 self.discoverCall = nil
             } else {
+                // This call is passed to discoverCall. So not resolve.
             }
         }
-    }
-
-    func cancelDiscoverReaders(_ call: CAPPluginCall) {
-
-        if let cancelable = self.discoverCancelable {
-            cancelable.cancel { error in
-                if let error = error {
-                    call.reject(error.localizedDescription)
-                } else {
-                    self.collectCancelable = nil
-                    call.resolve()
-                }
-            }
-            return
-        }
-
-        call.resolve()
     }
 
     public func terminal(_ terminal: Terminal, didUpdateDiscoveredReaders readers: [Reader]) {
@@ -87,12 +75,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         var i = 0
         for reader in readers {
             readersJSObject.append([
-                "index": i,
-                "serialNumber": reader.serialNumber
-            ])
+                "index": i
+            ].merging(self.convertReaderInterface(reader: reader)) { (_, new) in new })
             i += 1
         }
-        self.readers = readers
+        self.discoveredReadersList = readers
 
         self.plugin?.notifyListeners(TerminalEvents.DiscoveredReaders.rawValue, data: ["readers": readersJSObject])
         self.discoverCall?.resolve([
@@ -113,9 +100,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     public func getConnectedReader(_ call: CAPPluginCall) {
         if let reader = Terminal.shared.connectedReader {
-            call.resolve(["reader": [
-                "serialNumber": reader.serialNumber
-            ]])
+            call.resolve(["reader": self.convertReaderInterface(reader: reader)])
         } else {
             call.resolve(["reader": nil])
         }
@@ -140,11 +125,25 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectLocalMobileReader(_ call: CAPPluginCall) {
-        let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!).build()
+        let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
+        let merchantDisplayName: String? = call.getString("merchantDisplayName")
+        let onBehalfOf: String? = call.getString("onBehalfOf")
         let reader: JSObject = call.getObject("reader")!
-        let index: Int = reader["index"] as! Int
+        let serialNumber: String = reader["serialNumber"] as! String
 
-        Terminal.shared.connectLocalMobileReader(self.readers![index], delegate: self, connectionConfig: connectionConfig) { reader, error in
+        let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!)
+            .setMerchantDisplayName(merchantDisplayName ?? nil)
+            .setOnBehalfOf(onBehalfOf ?? nil)
+            .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
+            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
+            .build()
+
+        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
+            call.reject("reader is not match from descovered readers.")
+            return
+        }
+
+        Terminal.shared.connectLocalMobileReader(foundReader, delegate: self, connectionConfig: connectionConfig) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -155,13 +154,19 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectInternetReader(_ call: CAPPluginCall) {
+        let reader: JSObject = call.getObject("reader")!
+        let serialNumber: String = reader["serialNumber"] as! String
+
+        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
+            call.reject("reader is not match from descovered readers.")
+            return
+        }
+
         let config = try! InternetConnectionConfigurationBuilder()
             .setFailIfInUse(true)
             .build()
-        let reader: JSObject = call.getObject("reader")!
-        let index: Int = reader["index"] as! Int
 
-        Terminal.shared.connectInternetReader(self.readers![index], connectionConfig: config) { reader, error in
+        Terminal.shared.connectInternetReader(foundReader, connectionConfig: config) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -172,11 +177,24 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     private func connectBluetoothReader(_ call: CAPPluginCall) {
-        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!).build()
         let reader: JSObject = call.getObject("reader")!
-        let index: Int = reader["index"] as! Int
+        let serialNumber: String = reader["serialNumber"] as! String
 
-        Terminal.shared.connectBluetoothReader(self.readers![index], delegate: self, connectionConfig: config) { reader, error in
+        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
+            call.reject("reader is not match from descovered readers.")
+            return
+        }
+
+        let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
+        let merchantDisplayName: String? = call.getString("merchantDisplayName")
+        let onBehalfOf: String? = call.getString("onBehalfOf")
+
+        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!)
+            .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
+            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
+            .build()
+
+        Terminal.shared.connectBluetoothReader(foundReader, delegate: self, connectionConfig: config) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -190,6 +208,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         Terminal.shared.retrievePaymentIntent(clientSecret: call.getString("paymentIntent")!) { retrieveResult, retrieveError in
             if let error = retrieveError {
                 print("retrievePaymentIntent failed: \(error)")
+                call.reject(error.localizedDescription)
             } else if let paymentIntent = retrieveResult {
                 self.collectCancelable = Terminal.shared.collectPaymentMethod(paymentIntent) { collectResult, collectError in
                     if let error = collectError {
@@ -203,23 +222,6 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                 }
             }
         }
-    }
-
-    public func cancelCollectPaymentMethod(_ call: CAPPluginCall) {
-        if let cancelable = self.collectCancelable {
-            cancelable.cancel { error in
-                if let error = error {
-                    call.reject(error.localizedDescription)
-                } else {
-                    self.plugin?.notifyListeners(TerminalEvents.Canceled.rawValue, data: [:])
-                    self.collectCancelable = nil
-                    self.paymentIntent = nil
-                    call.resolve()
-                }
-            }
-            return
-        }
-        call.resolve()
     }
 
     public func confirmPaymentIntent(_ call: CAPPluginCall) {
@@ -250,6 +252,151 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         call.resolve([:])
     }
 
+    public func installAvailableUpdate(_ call: CAPPluginCall) {
+        Terminal.shared.installAvailableUpdate()
+        call.resolve([:])
+    }
+
+    public func setReaderDisplay(_ call: CAPPluginCall) {
+        guard let currency = call.getString("currency") else {
+            call.reject("You must provide a currency value")
+            return
+        }
+        guard let tax = call.getInt("tax") as? NSNumber else {
+            call.reject("You must provide a tax value")
+            return
+        }
+        guard let total = call.getInt("total") as? NSNumber else {
+            call.reject("You must provide a total value")
+            return
+        }
+
+        let cartBuilder = CartBuilder(currency: currency)
+            .setTax(Int(truncating: tax))
+            .setTotal(Int(truncating: total))
+
+        let cartLineItems = TerminalMappers.mapToCartLineItems(call.getArray("lineItems") ?? JSArray())
+
+        cartBuilder.setLineItems(cartLineItems)
+
+        let cart: Cart
+        do {
+            cart = try cartBuilder.build()
+        } catch {
+            call.reject(error.localizedDescription)
+            return
+        }
+
+        Terminal.shared.setReaderDisplay(cart) { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                call.resolve([:])
+            }
+        }
+
+    }
+
+    public func clearReaderDisplay(_ call: CAPPluginCall) {
+        Terminal.shared.clearReaderDisplay { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                call.resolve([:])
+            }
+        }
+    }
+
+    public func rebootReader(_ call: CAPPluginCall) {
+        Terminal.shared.rebootReader { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                self.paymentIntent = nil
+                call.resolve([:])
+            }
+        }
+    }
+
+    /**
+     *  Cancelable
+     */
+    public func cancelInstallUpdate(_ call: CAPPluginCall) {
+        if let cancelable = self.installUpdateCancelable {
+            if cancelable.completed {
+                call.resolve()
+                return
+            }
+            cancelable.cancel { error in
+                if let error = error as NSError? {
+                    call.reject(error.localizedDescription)
+                } else {
+                    call.resolve([:])
+                }
+            }
+            return
+        }
+        call.resolve([:])
+    }
+
+    public func cancelCollectPaymentMethod(_ call: CAPPluginCall) {
+        if let cancelable = self.collectCancelable {
+            if cancelable.completed {
+                call.resolve()
+                return
+            }
+            cancelable.cancel { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    self.plugin?.notifyListeners(TerminalEvents.Canceled.rawValue, data: [:])
+                    self.paymentIntent = nil
+                    call.resolve()
+                }
+            }
+            return
+        }
+        call.resolve()
+    }
+
+    func cancelDiscoverReaders(_ call: CAPPluginCall) {
+        if let cancelable = self.discoverCancelable {
+            if cancelable.completed {
+                call.resolve()
+                return
+            }
+            cancelable.cancel { error in
+                if let error = error {
+                    call.reject(error.localizedDescription)
+                } else {
+                    call.resolve()
+                }
+            }
+            return
+        }
+
+        call.resolve()
+    }
+
+    public func cancelReaderReconnection(_ call: CAPPluginCall) {
+        if let cancelable = self.cancelReaderConnectionCancellable {
+            if cancelable.completed {
+                call.resolve()
+                return
+            }
+            cancelable.cancel { error in
+                if let error = error as NSError? {
+                    call.reject(error.localizedDescription)
+                } else {
+                    call.resolve([:])
+                }
+            }
+            return
+        }
+
+        call.resolve()
+    }
+
     /*
      * Terminal
      */
@@ -270,7 +417,10 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
      */
 
     public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
+        self.installUpdateCancelable = cancelable
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update)
+        ])
     }
 
     public func localMobileReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
@@ -307,11 +457,16 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
      */
 
     public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
-        self.plugin?.notifyListeners(TerminalEvents.ReportAvailableUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
+        self.plugin?.notifyListeners(TerminalEvents.ReportAvailableUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update)
+        ])
     }
 
     public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: self.convertReaderSoftwareUpdate(update: update))
+        self.installUpdateCancelable = cancelable
+        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: [
+            "update": self.convertReaderSoftwareUpdate(update: update)
+        ])
     }
 
     public func reader(_: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
@@ -363,17 +518,47 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         ])
     }
 
-    private func convertReaderInterface(reader: Reader) -> [String: String] {
-        return ["serialNumber": reader.serialNumber]
+    /*
+     * Reconnection
+     */
+    public func reader(_ reader: Reader, didStartReconnect cancelable: Cancelable, disconnectReason: DisconnectReason) {
+        self.cancelReaderConnectionCancellable = cancelable
+        self.plugin?.notifyListeners(TerminalEvents.ReaderReconnectStarted.rawValue, data: ["reader": self.convertReaderInterface(reader: reader), "reason": disconnectReason.rawValue])
     }
 
-    private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> [String: String] {
+    public func readerDidSucceedReconnect(_ reader: Reader) {
+        self.plugin?.notifyListeners(TerminalEvents.ReaderReconnectSucceeded.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
+    }
+
+    public func readerDidFailReconnect(_ reader: Reader) {
+        self.plugin?.notifyListeners(TerminalEvents.ReaderReconnectFailed.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
+    }
+
+    /*
+     * Private
+     */
+    private func convertReaderInterface(reader: Reader) -> JSObject {
         return [
-            "version": update.deviceSoftwareVersion,
-            "settingsVersion": update.deviceSoftwareVersion,
-            "requiredAt": update.requiredAt.description,
-            "timeEstimate": TerminalMappers.mapFromUpdateTimeEstimate(update.estimatedUpdateTime)
+            "label": reader.label ?? NSNull(),
+            "batteryLevel": (reader.batteryLevel ?? 0).intValue,
+            "batteryStatus": TerminalMappers.mapFromBatteryStatus(reader.batteryStatus),
+            "simulated": reader.simulated,
+            "serialNumber": reader.serialNumber,
+            "isCharging": (reader.isCharging ?? 0).intValue,
+            "id": reader.stripeId ?? NSNull(),
+            "availableUpdate": TerminalMappers.mapFromReaderSoftwareUpdate(reader.availableUpdate),
+            "locationId": reader.locationId ?? NSNull(),
+            "ipAddress": reader.ipAddress ?? NSNull(),
+            "status": TerminalMappers.mapFromReaderNetworkStatus(reader.status),
+            "location": TerminalMappers.mapFromLocation(reader.location),
+            "locationStatus": TerminalMappers.mapFromLocationStatus(reader.locationStatus),
+            "deviceType": TerminalMappers.mapFromDeviceType(reader.deviceType),
+            "deviceSoftwareVersion": reader.deviceSoftwareVersion ?? NSNull()
         ]
+    }
+
+    private func convertReaderSoftwareUpdate(update: ReaderSoftwareUpdate) -> JSObject {
+        return TerminalMappers.mapFromReaderSoftwareUpdate(update)
     }
 
 }

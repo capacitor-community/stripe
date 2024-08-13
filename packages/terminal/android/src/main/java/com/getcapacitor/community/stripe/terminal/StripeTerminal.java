@@ -14,6 +14,7 @@ import androidx.core.util.Supplier;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
+import com.getcapacitor.community.stripe.terminal.helper.TerminalMappers;
 import com.getcapacitor.community.stripe.terminal.models.Executor;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.stripeterminal.Terminal;
@@ -28,14 +29,19 @@ import com.stripe.stripeterminal.external.callable.ReaderReconnectionListener;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
 import com.stripe.stripeterminal.external.models.BatteryStatus;
 import com.stripe.stripeterminal.external.models.CardPresentDetails;
+import com.stripe.stripeterminal.external.models.Cart;
+import com.stripe.stripeterminal.external.models.CartLineItem;
 import com.stripe.stripeterminal.external.models.CollectConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.InternetConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionStatus;
+import com.stripe.stripeterminal.external.models.DeviceType;
 import com.stripe.stripeterminal.external.models.DisconnectReason;
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration;
+import com.stripe.stripeterminal.external.models.Location;
+import com.stripe.stripeterminal.external.models.LocationStatus;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentMethod;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
@@ -54,13 +60,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class StripeTerminal extends Executor {
 
     private TokenProvider tokenProvider;
     private Cancelable discoveryCancelable;
     private Cancelable collectCancelable;
-    private List<Reader> readers;
+    private Cancelable installUpdateCancelable;
+    private Cancelable cancelReaderConnectionCancellable;
+    private List<Reader> discoveredReadersList;
     private String locationId;
     private PluginCall collectCall;
     private PluginCall confirmPaymentIntentCall;
@@ -68,6 +78,8 @@ public class StripeTerminal extends Executor {
     private Boolean isTest;
     private TerminalConnectTypes terminalConnectType;
     private PaymentIntent paymentIntentInstance;
+
+    private final TerminalMappers terminalMappers = new TerminalMappers();
 
     public StripeTerminal(
         Supplier<Context> contextSupplier,
@@ -77,7 +89,7 @@ public class StripeTerminal extends Executor {
     ) {
         super(contextSupplier, activitySupplier, notifyListenersFunction, pluginLogTag, "StripeTerminalExecutor");
         this.contextSupplier = contextSupplier;
-        this.readers = new ArrayList<>();
+        this.discoveredReadersList = new ArrayList<>();
     }
 
     public void initialize(final PluginCall call) throws TerminalException {
@@ -189,11 +201,11 @@ public class StripeTerminal extends Executor {
         final DiscoveryListener discoveryListener = readers -> {
             // 検索したReaderの一覧をListenerで渡す
             Log.d(logTag, String.valueOf(readers.get(0).getSerialNumber()));
-            this.readers = readers;
+            this.discoveredReadersList = readers;
             JSArray readersJSObject = new JSArray();
 
             int i = 0;
-            for (Reader reader : this.readers) {
+            for (Reader reader : this.discoveredReadersList) {
                 readersJSObject.put(convertReaderInterface(reader).put("index", String.valueOf(i)));
             }
             this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), new JSObject().put("readers", readersJSObject));
@@ -268,81 +280,125 @@ public class StripeTerminal extends Executor {
 
     private void connectLocalMobileReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
+        String serialNumber = reader.getString("serialNumber");
 
-        if (reader.getInteger("index") == null) {
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
             call.reject("The reader value is not set correctly.");
             return;
         }
 
+        Boolean autoReconnectOnUnexpectedDisconnect = call.getBoolean("autoReconnectOnUnexpectedDisconnect", false);
+
         LocalMobileConnectionConfiguration config = new LocalMobileConnectionConfiguration(
             this.locationId,
-            true,
-            this.localMobileReaderReconnectionListener
+            autoReconnectOnUnexpectedDisconnect,
+            this.readerReconnectionListener
         );
-        Terminal.getInstance().connectLocalMobileReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
+        Terminal.getInstance().connectLocalMobileReader(foundReader, config, this.readerCallback(call));
     }
 
-    ReaderReconnectionListener localMobileReaderReconnectionListener = new ReaderReconnectionListener() {
+    ReaderReconnectionListener readerReconnectionListener = new ReaderReconnectionListener() {
         @Override
-        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelReconnect) {
-            // 1. Notified at the start of a reconnection attempt
-            // Use cancelable to stop reconnection at any time
+        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelable, @NonNull DisconnectReason reason) {
+            cancelReaderConnectionCancellable = cancelable;
+            notifyListeners(
+                TerminalEnumEvent.ReaderReconnectStarted.getWebEventName(),
+                new JSObject().put("reason", reason.toString()).put("reader", convertReaderInterface(reader))
+            );
         }
 
         @Override
         public void onReaderReconnectSucceeded(@NonNull Reader reader) {
-            // 2. Notified when reader reconnection succeeds
-            // App is now connected
+            notifyListeners(
+                TerminalEnumEvent.ReaderReconnectSucceeded.getWebEventName(),
+                new JSObject().put("reader", convertReaderInterface(reader))
+            );
         }
 
         @Override
         public void onReaderReconnectFailed(@NonNull Reader reader) {
-            // 3. Notified when reader reconnection fails
-            // App is now disconnected
+            notifyListeners(
+                TerminalEnumEvent.ReaderReconnectFailed.getWebEventName(),
+                new JSObject().put("reader", convertReaderInterface(reader))
+            );
         }
     };
 
     private void connectInternetReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
+        String serialNumber = reader.getString("serialNumber");
+
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
+            call.reject("The reader value is not set correctly.");
+            return;
+        }
+
         InternetConnectionConfiguration config = new InternetConnectionConfiguration();
-        Terminal.getInstance().connectInternetReader(this.readers.get(reader.getInteger("index")), config, this.readerCallback(call));
+        Terminal.getInstance().connectInternetReader(foundReader, config, this.readerCallback(call));
     }
 
     private void connectUsbReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
+        String serialNumber = reader.getString("serialNumber");
+
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
+            call.reject("The reader value is not set correctly.");
+            return;
+        }
+
         UsbConnectionConfiguration config = new UsbConnectionConfiguration(this.locationId);
-        Terminal
-            .getInstance()
-            .connectUsbReader(this.readers.get(reader.getInteger("index")), config, this.readerListener(), this.readerCallback(call));
+        Terminal.getInstance().connectUsbReader(foundReader, config, this.readerListener(), this.readerCallback(call));
     }
 
     private void connectBluetoothReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
-        BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(this.locationId);
-        Terminal
-            .getInstance()
-            .connectBluetoothReader(this.readers.get(reader.getInteger("index")), config, this.readerListener(), this.readerCallback(call));
+        String serialNumber = reader.getString("serialNumber");
+
+        Reader foundReader =
+            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+
+        if (serialNumber == null || foundReader == null) {
+            call.reject("The reader value is not set correctly.");
+            return;
+        }
+        Boolean autoReconnectOnUnexpectedDisconnect = call.getBoolean("autoReconnectOnUnexpectedDisconnect", false);
+
+        BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(
+            this.locationId,
+            autoReconnectOnUnexpectedDisconnect,
+            this.readerReconnectionListener
+        );
+        Terminal.getInstance().connectBluetoothReader(foundReader, config, this.readerListener(), this.readerCallback(call));
     }
 
     public void cancelDiscoverReaders(final PluginCall call) {
-        if (discoveryCancelable != null) {
-            discoveryCancelable.cancel(
-                new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        notifyListeners(TerminalEnumEvent.CancelDiscoveredReaders.getWebEventName(), emptyObject);
-                        call.resolve();
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull TerminalException ex) {
-                        call.reject(ex.getLocalizedMessage(), ex);
-                    }
-                }
-            );
-        } else {
+        if (discoveryCancelable == null || discoveryCancelable.isCompleted()) {
             call.resolve();
+            return;
         }
+        discoveryCancelable.cancel(
+            new Callback() {
+                @Override
+                public void onSuccess() {
+                    notifyListeners(TerminalEnumEvent.CancelDiscoveredReaders.getWebEventName(), emptyObject);
+                    call.resolve();
+                }
+
+                @Override
+                public void onFailure(@NonNull TerminalException ex) {
+                    call.reject(ex.getLocalizedMessage(), ex);
+                }
+            }
+        );
     }
 
     public void collectPaymentMethod(final PluginCall call) {
@@ -364,7 +420,6 @@ public class StripeTerminal extends Executor {
                 new Callback() {
                     @Override
                     public void onSuccess() {
-                        collectCancelable = null;
                         notifyListeners(TerminalEnumEvent.Canceled.getWebEventName(), emptyObject);
                         call.resolve();
                     }
@@ -394,7 +449,6 @@ public class StripeTerminal extends Executor {
     private final PaymentIntentCallback collectPaymentMethodCallback = new PaymentIntentCallback() {
         @Override
         public void onSuccess(PaymentIntent paymentIntent) {
-            collectCancelable = null;
             paymentIntentInstance = paymentIntent;
             notifyListeners(TerminalEnumEvent.CollectedPaymentIntent.getWebEventName(), emptyObject);
 
@@ -424,7 +478,6 @@ public class StripeTerminal extends Executor {
 
         @Override
         public void onFailure(@NonNull TerminalException ex) {
-            collectCancelable = null;
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
             collectCall.reject(ex.getLocalizedMessage(), ex);
         }
@@ -438,6 +491,149 @@ public class StripeTerminal extends Executor {
 
         this.confirmPaymentIntentCall = call;
         Terminal.getInstance().confirmPaymentIntent(this.paymentIntentInstance, confirmPaymentMethodCallback);
+    }
+
+    public void installAvailableUpdate(final PluginCall call) {
+        Terminal.getInstance().installAvailableUpdate();
+        call.resolve(emptyObject);
+    }
+
+    public void cancelInstallUpdate(final PluginCall call) {
+        if (this.installUpdateCancelable == null || this.installUpdateCancelable.isCompleted()) {
+            call.resolve();
+            return;
+        }
+
+        this.installUpdateCancelable.cancel(
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        call.resolve();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getLocalizedMessage());
+                    }
+                }
+            );
+    }
+
+    public void setReaderDisplay(final PluginCall call) {
+        String currency = call.getString("currency", null);
+        if (currency == null) {
+            call.reject("You must provide a currency value");
+            return;
+        }
+
+        int tax = call.getInt("tax", 0);
+        int total = call.getInt("total", 0);
+        if (total == 0) {
+            call.reject("You must provide a total value");
+            return;
+        }
+
+        JSArray lineItems = call.getArray("lineItems");
+        List<JSONObject> lineItemsList;
+        try {
+            lineItemsList = lineItems.toList();
+        } catch (JSONException e) {
+            call.reject(e.getLocalizedMessage());
+            return;
+        }
+
+        List<CartLineItem> cartLineItems = new ArrayList<>();
+        for (JSONObject item : lineItemsList) {
+            try {
+                JSObject itemObj = JSObject.fromJSONObject(item);
+                cartLineItems.add(
+                    new CartLineItem(
+                        Objects.requireNonNull(itemObj.getString("displayName")),
+                        Objects.requireNonNull(itemObj.getInteger("quantity")),
+                        Objects.requireNonNull(itemObj.getInteger("amount"))
+                    )
+                );
+            } catch (JSONException e) {
+                call.reject(e.getLocalizedMessage());
+                return;
+            }
+        }
+
+        Cart cart = new Cart.Builder(currency, tax, total, cartLineItems).build();
+
+        Terminal
+            .getInstance()
+            .setReaderDisplay(
+                cart,
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        call.resolve();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getErrorMessage());
+                    }
+                }
+            );
+    }
+
+    public void clearReaderDisplay(final PluginCall call) {
+        Terminal
+            .getInstance()
+            .clearReaderDisplay(
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        call.resolve();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getErrorMessage());
+                    }
+                }
+            );
+    }
+
+    public void rebootReader(final PluginCall call) {
+        Terminal
+            .getInstance()
+            .rebootReader(
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        paymentIntentInstance = null;
+                        call.resolve(emptyObject);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException e) {
+                        call.reject(e.getLocalizedMessage());
+                    }
+                }
+            );
+    }
+
+    public void cancelReaderReconnection(final PluginCall call) {
+        if (cancelReaderConnectionCancellable == null || cancelReaderConnectionCancellable.isCompleted()) {
+            call.resolve();
+            return;
+        }
+        cancelReaderConnectionCancellable.cancel(
+            new Callback() {
+                @Override
+                public void onSuccess() {
+                    call.resolve();
+                }
+
+                @Override
+                public void onFailure(@NonNull TerminalException ex) {
+                    call.reject(ex.getLocalizedMessage(), ex);
+                }
+            }
+        );
     }
 
     private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {
@@ -476,6 +672,7 @@ public class StripeTerminal extends Executor {
             @Override
             public void onStartInstallingUpdate(@NotNull ReaderSoftwareUpdate update, @NotNull Cancelable cancelable) {
                 // Show UI communicating that a required update has started installing
+                installUpdateCancelable = cancelable;
                 notifyListeners(
                     TerminalEnumEvent.StartInstallingUpdate.getWebEventName(),
                     new JSObject().put("update", convertReaderSoftwareUpdate(update))
@@ -558,14 +755,35 @@ public class StripeTerminal extends Executor {
     }
 
     private JSObject convertReaderInterface(Reader reader) {
-        return new JSObject().put("serialNumber", reader.getSerialNumber());
+        return new JSObject()
+            .put("label", reader.getLabel())
+            .put("serialNumber", reader.getSerialNumber())
+            .put("id", reader.getId())
+            .put("locationId", reader.getLocation() != null ? reader.getLocation().getId() : null)
+            .put("deviceSoftwareVersion", reader.getDeviceSwVersion$external_publish())
+            .put("simulated", reader.isSimulated())
+            .put("serialNumber", reader.getSerialNumber())
+            .put("ipAddress", reader.getIpAddress())
+            .put("baseUrl", reader.getBaseUrl())
+            .put("bootloaderVersion", reader.getBootloaderVersion())
+            .put("configVersion", reader.getConfigVersion())
+            .put("emvKeyProfileId", reader.getEmvKeyProfileId())
+            .put("firmwareVersion", reader.getFirmwareVersion())
+            .put("hardwareVersion", reader.getHardwareVersion())
+            .put("macKeyProfileId", reader.getMacKeyProfileId())
+            .put("pinKeyProfileId", reader.getPinKeyProfileId())
+            .put("trackKeyProfileId", reader.getTrackKeyProfileId())
+            .put("settingsVersion", reader.getSettingsVersion())
+            .put("pinKeysetId", reader.getPinKeysetId())
+            .put("deviceType", terminalMappers.mapFromDeviceType(reader.getDeviceType()))
+            .put("status", terminalMappers.mapFromNetworkStatus(reader.getNetworkStatus()))
+            .put("locationStatus", terminalMappers.mapFromLocationStatus(reader.getLocationStatus()))
+            .put("batteryLevel", reader.getBatteryLevel() != null ? reader.getBatteryLevel().doubleValue() : null)
+            .put("availableUpdate", terminalMappers.mapFromReaderSoftwareUpdate(reader.getAvailableUpdate()))
+            .put("location", terminalMappers.mapFromLocation(reader.getLocation()));
     }
 
     private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
-        return new JSObject()
-            .put("version", update.getVersion())
-            .put("settingsVersion", update.getSettingsVersion())
-            .put("requiredAt", update.getRequiredAt().getTime())
-            .put("timeEstimate", update.getTimeEstimate().toString());
+        return terminalMappers.mapFromReaderSoftwareUpdate(update);
     }
 }
