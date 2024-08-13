@@ -27,6 +27,28 @@ export enum DeviceType {
   unknown = 'unknown',
 }
 
+/**
+ * This group is useful for pick image.
+ * Reference: https://github.com/stripe/stripe-terminal-ios/blob/fc571ab441b14639243a11d19d8f62bbe93feea5/Example/Example/ReaderHeaderView.swift#L95-L113
+ */
+export enum DeviceGroup {
+  stripeM2 = 'stripe_m2',
+  chipper1X = 'chipper',
+  chipper2X = 'chipper',
+  wiseCube = 'chipper',
+  verifoneP400 = 'verifone',
+  wisePad3s = 'wisepad',
+  wisePad3 = 'wisepad',
+  wisePosEDevKit = 'wisepose',
+  etna = 'wisepose',
+  wisePosE = 'wisepose',
+  stripeS700DevKit = 's700',
+  stripeS700 = 's700',
+  appleBuiltIn = 'apple', // unknown change to apple
+  cotsDevice = 'unknown',
+  unknown = 'unknown',
+}
+
 export enum UpdateTimeEstimate {
   LessThanOneMinute = 'LESS_THAN_ONE_MINUTE',
   OneToTwoMinutes = 'ONE_TO_TWO_MINUTES',
