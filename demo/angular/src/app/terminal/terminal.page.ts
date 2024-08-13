@@ -453,12 +453,14 @@ export class TerminalPage {
       const alert = await this.alertCtrl.create({
         header: `Select a reader`,
         message: `Select a reader to connect to.`,
+        backdropDismiss: false,
         inputs: readers.map((reader, index) => ({
           name: 'serialNumber',
           type: 'radio',
-          label: reader.serialNumber,
+          label: reader.deviceType,
           value: reader.serialNumber,
           checked: index === 0,
+          disabled: reader.status === 'OFFLINE'
         })),
         buttons: [
           {
