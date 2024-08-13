@@ -1,12 +1,26 @@
 import type { Reader } from '@stripe/terminal-js/types/terminal';
 
-import type { LocationInterface, ReaderInterface } from './definitions';
+import type { Cart, LocationInterface, ReaderInterface } from './definitions';
 import {
   BatteryStatus,
   DeviceType,
   LocationStatus,
   NetworkStatus,
 } from './definitions';
+import type { ICart } from './stripe-types/proto';
+
+export const mapFromCartToICart = (cart: Cart): ICart => {
+  return {
+    line_items: cart.lineItems.map((item) => ({
+      description: item.displayName,
+      quantity: item.quantity,
+      amount: item.amount,
+    })),
+    tax: cart.tax,
+    total: cart.total,
+    currency: cart.currency,
+  };
+};
 
 export const mapFromConnectionStatus = (
   connectionStatus: ConnectionStatus,

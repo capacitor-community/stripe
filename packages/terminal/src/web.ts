@@ -19,6 +19,7 @@ import type {
 import { TerminalEventsEnum } from './events.enum';
 import {
   convertReaderInterface,
+  mapFromCartToICart,
   mapFromConnectionStatus,
   mapFromPaymentStatus,
 } from './terminalMappers';
@@ -222,10 +223,14 @@ export class StripeTerminalWeb
     console.log('cancelInstallUpdate');
   }
   async setReaderDisplay(options: Cart): Promise<void> {
+    await this.stripeTerminal?.setReaderDisplay({
+      type: "cart",
+      cart: mapFromCartToICart(options),
+    });
     console.log('setReaderDisplay', options);
   }
   async clearReaderDisplay(): Promise<void> {
-    console.log('clearReaderDisplay');
+    await this.stripeTerminal?.clearReaderDisplay();
   }
   async rebootReader(): Promise<void> {
     console.log('rebootReader');
