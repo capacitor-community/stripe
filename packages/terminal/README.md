@@ -6,9 +6,15 @@ We have confirmed that it works well in the demo project. Please refer to https:
 ## Install
 
 ```bash
-npm install @capacitor-community/stripe-terminal
+npm install @capacitor-community/stripe-terminal @stripe/terminal-js
 npx cap sync
 ```
+
+### Web
+
+No additional steps are necessary.
+
+__Note: Stripe Web SDK is beta version. So this plugin's implement is experimental. Please refer to https://github.com/stripe/terminal-js for more information.__
 
 ### iOS
 
@@ -916,7 +922,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 #### ReaderInterface
 
-<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: <a href="#devicetype">DeviceType</a>; deviceSoftwareVersion: string; /** * iOS Only properties. These properties are not available on Android. */ isCharging: number; /** * Android Only properties. These properties are not available on iOS. */ baseUrl: string; bootloaderVersion: string; configVersion: string; emvKeyProfileId: string; firmwareVersion: string; hardwareVersion: string; macKeyProfileId: string; pinKeyProfileId: string; trackKeyProfileId: string; settingsVersion: string; pinKeysetId: string; /** * @deprecated This property has been deprecated and should use the `serialNumber` property. */ index?: number; }</code>
+<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: <a href="#devicetype">DeviceType</a>; deviceSoftwareVersion: string | null; /** * iOS Only properties. These properties are not available on Android. */ isCharging: number; /** * Android Only properties. These properties are not available on iOS. */ baseUrl: string; bootloaderVersion: string; configVersion: string; emvKeyProfileId: string; firmwareVersion: string; hardwareVersion: string; macKeyProfileId: string; pinKeyProfileId: string; trackKeyProfileId: string; settingsVersion: string; pinKeysetId: string; /** * @deprecated This property has been deprecated and should use the `serialNumber` property. */ index?: number; }</code>
 
 
 #### ReaderSoftwareUpdateInterface
@@ -927,6 +933,11 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 #### LocationInterface
 
 <code>{ id: string; displayName: string; address: { city: string; country: string; postalCode: string; line1: string; line2: string; state: string; }; ipAddress: string; }</code>
+
+
+#### DeviceType
+
+<code>Stripe.Terminal.Reader.<a href="#devicetype">DeviceType</a></code>
 
 
 #### Cart

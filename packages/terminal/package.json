@@ -77,5 +77,8 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "@stripe/terminal-js": "^0.13.0"
   }
 }

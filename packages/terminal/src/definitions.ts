@@ -29,14 +29,14 @@ export type ReaderInterface = {
   batteryStatus: BatteryStatus;
   simulated: boolean;
   id: number;
-  availableUpdate: ReaderSoftwareUpdateInterface;
+  availableUpdate: ReaderSoftwareUpdateInterface | undefined;
   locationId: string;
   ipAddress: string;
   status: NetworkStatus;
-  location: LocationInterface;
+  location: LocationInterface | undefined;
   locationStatus: LocationStatus;
   deviceType: DeviceType;
-  deviceSoftwareVersion: string;
+  deviceSoftwareVersion: string | null;
 
   /**
    * iOS Only properties. These properties are not available on Android.

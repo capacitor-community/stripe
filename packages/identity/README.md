@@ -9,6 +9,11 @@ npm install @capacitor-community/stripe-identity
 npx cap sync
 ```
 
+### Initialize iOS
+
+set up camera authorization by adding `NSCameraUsageDescription` in `Info.plist` and add a string value that explains the usage.
+see more details on Stripe's native iOS SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=ios&type=new-integration#set-up-camera-authorization).
+
 ### Initialize Android
 
 change base application theme to `Theme.MaterialComponents.DayNight` at `res/values/styles.xml`:
@@ -20,12 +25,6 @@ change base application theme to `Theme.MaterialComponents.DayNight` at `res/val
 
 parent can be any MaterialComponents. [See here for other options](https://m2.material.io/develop/android/theming/dark/).
 see more details on Stripe's native Android SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=android&type=new-integration#set-up-material-theme).
-
-
-### Initialize iOS
-
-set up camera authorization by adding `NSCameraUsageDescription` in `Info.plist` and add a string value that explains the usage.
-see more details on Stripe's native iOS SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=ios&type=new-integration#set-up-camera-authorization).
 
 ## Usage
 
