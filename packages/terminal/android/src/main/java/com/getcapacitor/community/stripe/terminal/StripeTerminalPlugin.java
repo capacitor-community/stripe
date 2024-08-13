@@ -185,4 +185,9 @@ public class StripeTerminalPlugin extends Plugin {
     public void rebootReader(PluginCall call) {
         this.implementation.rebootReader(call);
     }
+
+    @PluginMethod
+    public void cancelReaderReconnection(PluginCall call) {
+        this.implementation.cancelReaderReconnection(call);
+    }
 }

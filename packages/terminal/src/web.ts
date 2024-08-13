@@ -103,6 +103,10 @@ export class StripeTerminalWeb
     console.log('rebootReader');
   }
 
+  async cancelReaderReconnection(): Promise<void> {
+    console.log('cancelReaderReconnection');
+  }
+
   collect = 'deprecated';
   cancelCollect = 'deprecated';
 }

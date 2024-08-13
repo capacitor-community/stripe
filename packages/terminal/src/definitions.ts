@@ -137,6 +137,7 @@ export interface StripeTerminalPlugin {
   setReaderDisplay(options: Cart): Promise<void>;
   clearReaderDisplay(): Promise<void>;
   rebootReader(): Promise<void>;
+  cancelReaderReconnection(): Promise<void>;
 
   addListener(
     eventName: TerminalEventsEnum.Loaded,
@@ -384,6 +385,17 @@ export interface StripeTerminalPlugin {
   addListener(
     eventName: TerminalEventsEnum.PaymentStatusChange,
     listenerFunc: ({ status }: { status: PaymentStatus }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: TerminalEventsEnum.ReaderReconnectStarted,
+    listenerFunc: ({
+      reader,
+      reason,
+    }: {
+      reader: ReaderInterface;
+      reason: string;
+    }) => void,
   ): Promise<PluginListenerHandle>;
 
   addListener(

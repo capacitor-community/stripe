@@ -85,4 +85,8 @@ public class StripeTerminalPlugin: CAPPlugin {
         self.implementation.rebootReader(call)
     }
 
+    @objc func cancelReaderReconnection(_ call: CAPPluginCall) {
+        self.implementation.cancelReaderReconnection(call)
+    }
+
 }

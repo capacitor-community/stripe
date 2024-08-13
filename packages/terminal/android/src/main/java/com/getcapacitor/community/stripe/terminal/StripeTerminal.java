@@ -69,6 +69,7 @@ public class StripeTerminal extends Executor {
     private Cancelable discoveryCancelable;
     private Cancelable collectCancelable;
     private Cancelable installUpdateCancelable;
+    private Cancelable cancelReaderConnectionCancellable;
     private List<Reader> discoveredReadersList;
     private String locationId;
     private PluginCall collectCall;
@@ -300,6 +301,15 @@ public class StripeTerminal extends Executor {
     }
 
     ReaderReconnectionListener readerReconnectionListener = new ReaderReconnectionListener() {
+        @Override
+        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelable, @NonNull DisconnectReason reason) {
+            cancelReaderConnectionCancellable = cancelable;
+            notifyListeners(
+                TerminalEnumEvent.ReaderReconnectStarted.getWebEventName(),
+                new JSObject().put("reason", reason.toString()).put("reader", convertReaderInterface(reader))
+            );
+        }
+
         @Override
         public void onReaderReconnectSucceeded(@NonNull Reader reader) {
             notifyListeners(
@@ -608,6 +618,26 @@ public class StripeTerminal extends Executor {
                     }
                 }
             );
+    }
+
+    public void cancelReaderReconnection(final PluginCall call) {
+        if (cancelReaderConnectionCancellable != null) {
+            cancelReaderConnectionCancellable.cancel(
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        call.resolve();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException ex) {
+                        call.reject(ex.getLocalizedMessage(), ex);
+                    }
+                }
+            );
+        } else {
+            call.resolve();
+        }
     }
 
     private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {

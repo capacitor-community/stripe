@@ -10,6 +10,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     var discoverCancelable: Cancelable?
     var collectCancelable: Cancelable?
     var installUpdateCancelable: Cancelable?
+    var cancelReaderConnectionCancellable: Cancelable?
 
     var discoverCall: CAPPluginCall?
     var locationId: String?
@@ -352,6 +353,16 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
     }
 
+    public func cancelReaderReconnection(_ call: CAPPluginCall) {
+        self.cancelReaderConnectionCancellable?.cancel { error in
+            if let error = error as NSError? {
+                call.reject(error.localizedDescription)
+            } else {
+                call.resolve([:])
+            }
+        }
+    }
+
     /*
      * Terminal
      */
@@ -476,6 +487,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     /*
      * Reconnection
      */
+    public func reader(_ reader: Reader, didStartReconnect cancelable: Cancelable, disconnectReason: DisconnectReason) {
+        self.cancelReaderConnectionCancellable = cancelable
+        self.plugin?.notifyListeners(TerminalEvents.ReaderReconnectStarted.rawValue, data: ["reader": self.convertReaderInterface(reader: reader), "reason": disconnectReason.rawValue])
+    }
+
     public func readerDidSucceedReconnect(_ reader: Reader) {
         self.plugin?.notifyListeners(TerminalEvents.ReaderReconnectSucceeded.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
     }

@@ -19,6 +19,7 @@ public enum TerminalEvents: String {
     case RequestDisplayMessage = "terminalRequestDisplayMessage"
     case RequestReaderInput = "terminalRequestReaderInput"
     case PaymentStatusChange = "terminalPaymentStatusChange"
+    case ReaderReconnectStarted = "terminalReaderReconnectStarted"
     case ReaderReconnectSucceeded = "terminalReaderReconnectSucceeded"
     case ReaderReconnectFailed = "terminalReaderReconnectFailed"
 }
