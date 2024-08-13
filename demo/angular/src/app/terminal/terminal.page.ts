@@ -165,20 +165,20 @@ export class TerminalPage {
       await StripeTerminal.clearReaderDisplay();
     }
 
-    await StripeTerminal.collectPaymentMethod({ paymentIntent })
-      .then(() =>
-        this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
-      )
-      .catch(async (e) => {
-        await this.helper.updateItem(
-          this.eventItems,
-          'collectPaymentMethod',
-          false,
-        );
-        throw e;
-      });
+
 
     if (type === 'cancelPath') {
+      // During Collect, cancel the payment
+      StripeTerminal.collectPaymentMethod({ paymentIntent })
+        .catch(async (e) => {
+          await this.helper.updateItem(
+            this.eventItems,
+            'collectPaymentMethod',
+            false,
+          );
+          throw e;
+        });
+      await this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await StripeTerminal.cancelCollectPaymentMethod().catch(async (e) => {
         await this.helper.updateItem(
@@ -194,6 +194,18 @@ export class TerminalPage {
         true,
       );
     } else {
+      await StripeTerminal.collectPaymentMethod({ paymentIntent })
+        .then(() =>
+          this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+        )
+        .catch(async (e) => {
+          await this.helper.updateItem(
+            this.eventItems,
+            'collectPaymentMethod',
+            false,
+          );
+          throw e;
+        });
       await StripeTerminal.confirmPaymentIntent();
       await this.helper.updateItem(
         this.eventItems,
