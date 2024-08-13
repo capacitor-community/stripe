@@ -1,6 +1,6 @@
 # @capacitor-community/stripe-terminal
 
-Stripe SDK bindings for Capacitor Applications. __This plugin is still in rc(pre-release) version.__
+Stripe SDK bindings for Capacitor Applications. __This plugin is still in the RC (release candidate) phase.__
 We have confirmed that it works well in the demo project. Please refer to https://github.com/capacitor-community/stripe/tree/main/demo/angular for the implementation.
 
 ## Install
