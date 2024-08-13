@@ -125,6 +125,17 @@ export interface StripeTerminalPlugin {
   connectReader(options: {
     reader: ReaderInterface;
     autoReconnectOnUnexpectedDisconnect?: boolean;
+
+    /**
+     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
+     */
+    merchantDisplayName?: string;
+
+    /**
+     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
+     * The Stripe account ID for which these funds are intended.
+     */
+    onBehalfOf?: string;
   }): Promise<void>;
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
   disconnectReader(): Promise<void>;

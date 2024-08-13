@@ -126,10 +126,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
 
     private func connectLocalMobileReader(_ call: CAPPluginCall) {
         let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
+        let merchantDisplayName: String? = call.getString("merchantDisplayName");
+        let onBehalfOf: String? = call.getString("onBehalfOf");
         let reader: JSObject = call.getObject("reader")!
         let serialNumber: String = reader["serialNumber"] as! String
 
         let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!)
+            .setMerchantDisplayName(merchantDisplayName ?? nil)
+            .setOnBehalfOf(onBehalfOf ?? nil)
             .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
             .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
             .build()
@@ -182,6 +186,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         }
 
         let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
+        let merchantDisplayName: String? = call.getString("merchantDisplayName");
+        let onBehalfOf: String? = call.getString("onBehalfOf");
+        
         let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!)
             .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
             .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
