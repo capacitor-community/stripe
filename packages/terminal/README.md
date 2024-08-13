@@ -6,7 +6,7 @@ We have confirmed that it works well in the demo project. Please refer to https:
 ## Install
 
 ```bash
-npm install @capacitor-community/stripe-terminal @stripe/terminal-js
+npm install @capacitor-community/stripe-terminal
 npx cap sync
 ```
 
