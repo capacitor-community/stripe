@@ -1,12 +1,7 @@
 # @capacitor-community/stripe-terminal
 
-Stripe SDK bindings for Capacitor Applications. __This plugin is still in beta.__
+Stripe SDK bindings for Capacitor Applications. __This plugin is still in rc(pre-release) version.__
 We have confirmed that it works well in the demo project. Please refer to https://github.com/capacitor-community/stripe/tree/main/demo/angular for the implementation.
-
-- [x] Tap To Pay
-- [x] Internet
-- [x] Bluetooth
-- [x] USB
 
 ## Install
 
@@ -57,7 +52,9 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 
 ## Usage
 
-### use native http client for getting a token
+### Simple collect payment
+
+#### Use plugin client
 
 ```typescript
 (async ()=> {
@@ -81,7 +78,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 });
 ```
 
-### set string token
+#### set string token
 
 ```typescript
 (async ()=> {
@@ -109,6 +106,95 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 });
 ````
 
+### Listen device update
+
+The device will **if necessary** automatically start updating itself. It is important to handle them as needed so as not to disrupt business operations.
+
+```ts
+(async ()=> {
+  StripeTerminal.addListener(TerminalEventsEnum.ReportAvailableUpdate, async ({ update }) => {
+    if (window.confirm("Will you update the device?")) {
+      await StripeTerminal.installAvailableUpdate();
+    }
+  });
+  StripeTerminal.addListener(TerminalEventsEnum.StartInstallingUpdate, async ({ update }) => {
+    console.log(update);
+    if (window.confirm("Will you interrupt the update?")) {
+      StripeTerminal.cancelInstallUpdate();
+    }
+  });
+  StripeTerminal.addListener(TerminalEventsEnum.ReaderSoftwareUpdateProgress, async ({ progress }) => {
+    // be able to use this value to create a progress bar.
+  });
+  StripeTerminal.addListener(TerminalEventsEnum.FinishInstallingUpdate, async ({ update }) => {
+    console.log(update);
+  });
+});
+```
+
+### Get terminal processing information
+
+For devices without leader screen, processing information must be retrieved and displayed on the mobile device. Get it with a listener.
+
+```ts
+/**
+ * Listen battery level. If the battery level is low, you can notify the user to charge the device.
+ */
+StripeTerminal.addListener(TerminalEventsEnum.BatteryLevel, async ({ level, charging, status }) => {
+  console.log(level, charging, status);
+});
+
+/**
+ * Listen reader event. You can get the reader's status and display it on the mobile device.
+ */
+StripeTerminal.addListener(TerminalEventsEnum.ReaderEvent, async ({ event }) => {
+  console.log(event);
+});
+
+/**
+ * Listen display message. You can get the message to be displayed on the mobile device.
+ */
+StripeTerminal.addListener(TerminalEventsEnum.RequestDisplayMessage, async ({ messageType, message }) => {
+  console.log(messageType, message);
+});
+
+/**
+ * Listen reader input. You can get the message what can be used for payment.
+ */
+StripeTerminal.addListener(TerminalEventsEnum.RequestReaderInput, async ({ options, message }) => {
+  console.log(options, message);
+});
+```
+
+### More details on the leader screen
+
+The contents of the payment can be shown on the display. This requires a leader screen on the device.
+This should be run before `collectPaymentMethod`.
+
+```ts
+await StripeTerminal.setReaderDisplay({
+  currency: 'usd',
+  tax: 0,
+  total: 1000,
+  lineItems: [{
+    displayName: 'winecode',
+    quantity: 2,
+    amount: 500
+  }] as CartLineItem[],
+})
+
+// Of course, erasure is also possible.
+await StripeTerminal.clearReaderDisplay();
+```
+
+### Simulate reader status changes for testing
+
+To implement updates, etc., we are facilitating an API to change the state of the simulator. This should be done before discoverReaders.
+
+```ts
+await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.UpdateAvailable })
+```
+
 ## API
 
 <docgen-index>
@@ -124,6 +210,12 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`collectPaymentMethod(...)`](#collectpaymentmethod)
 * [`cancelCollectPaymentMethod()`](#cancelcollectpaymentmethod)
 * [`confirmPaymentIntent()`](#confirmpaymentintent)
+* [`installAvailableUpdate()`](#installavailableupdate)
+* [`cancelInstallUpdate()`](#cancelinstallupdate)
+* [`setReaderDisplay(...)`](#setreaderdisplay)
+* [`clearReaderDisplay()`](#clearreaderdisplay)
+* [`rebootReader()`](#rebootreader)
+* [`cancelReaderReconnection()`](#cancelreaderreconnection)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded)
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders)
@@ -144,6 +236,9 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 * [`addListener(TerminalEventsEnum.RequestDisplayMessage, ...)`](#addlistenerterminaleventsenumrequestdisplaymessage)
 * [`addListener(TerminalEventsEnum.RequestReaderInput, ...)`](#addlistenerterminaleventsenumrequestreaderinput)
 * [`addListener(TerminalEventsEnum.PaymentStatusChange, ...)`](#addlistenerterminaleventsenumpaymentstatuschange)
+* [`addListener(TerminalEventsEnum.ReaderReconnectStarted, ...)`](#addlistenerterminaleventsenumreaderreconnectstarted)
+* [`addListener(TerminalEventsEnum.ReaderReconnectSucceeded, ...)`](#addlistenerterminaleventsenumreaderreconnectsucceeded)
+* [`addListener(TerminalEventsEnum.ReaderReconnectFailed, ...)`](#addlistenerterminaleventsenumreaderreconnectfailed)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -212,12 +307,12 @@ setSimulatorConfiguration(options: { update?: SimulateReaderUpdate; simulatedCar
 ### connectReader(...)
 
 ```typescript
-connectReader(options: { reader: ReaderInterface; }) => Promise<void>
+connectReader(options: { reader: ReaderInterface; autoReconnectOnUnexpectedDisconnect?: boolean; merchantDisplayName?: string; onBehalfOf?: string; }) => Promise<void>
 ```
 
-| Param         | Type                                                                     |
-| ------------- | ------------------------------------------------------------------------ |
-| **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; }</code> |
+| Param         | Type                                                                                                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; autoReconnectOnUnexpectedDisconnect?: boolean; merchantDisplayName?: string; onBehalfOf?: string; }</code> |
 
 --------------------
 
@@ -277,6 +372,64 @@ cancelCollectPaymentMethod() => Promise<void>
 
 ```typescript
 confirmPaymentIntent() => Promise<void>
+```
+
+--------------------
+
+
+### installAvailableUpdate()
+
+```typescript
+installAvailableUpdate() => Promise<void>
+```
+
+--------------------
+
+
+### cancelInstallUpdate()
+
+```typescript
+cancelInstallUpdate() => Promise<void>
+```
+
+--------------------
+
+
+### setReaderDisplay(...)
+
+```typescript
+setReaderDisplay(options: Cart) => Promise<void>
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code><a href="#cart">Cart</a></code> |
+
+--------------------
+
+
+### clearReaderDisplay()
+
+```typescript
+clearReaderDisplay() => Promise<void>
+```
+
+--------------------
+
+
+### rebootReader()
+
+```typescript
+rebootReader() => Promise<void>
+```
+
+--------------------
+
+
+### cancelReaderReconnection()
+
+```typescript
+cancelReaderReconnection() => Promise<void>
 ```
 
 --------------------
@@ -700,6 +853,54 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 --------------------
 
 
+### addListener(TerminalEventsEnum.ReaderReconnectStarted, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReaderReconnectStarted, listenerFunc: ({ reader, reason, }: { reader: ReaderInterface; reason: string; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectStarted</a></code>                                   |
+| **`listenerFunc`** | <code>({ reader, reason, }: { reader: <a href="#readerinterface">ReaderInterface</a>; reason: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.ReaderReconnectSucceeded, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReaderReconnectSucceeded, listenerFunc: ({ reader }: { reader: ReaderInterface; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectSucceeded</a></code>        |
+| **`listenerFunc`** | <code>({ reader }: { reader: <a href="#readerinterface">ReaderInterface</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(TerminalEventsEnum.ReaderReconnectFailed, ...)
+
+```typescript
+addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: ({ reader }: { reader: ReaderInterface; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectFailed</a></code>           |
+| **`listenerFunc`** | <code>({ reader }: { reader: <a href="#readerinterface">ReaderInterface</a>; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -715,15 +916,89 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 
 #### ReaderInterface
 
-<code>{ index: number; serialNumber: string; }</code>
+<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: <a href="#devicetype">DeviceType</a>; deviceSoftwareVersion: string; /** * iOS Only properties. These properties are not available on Android. */ isCharging: number; /** * Android Only properties. These properties are not available on iOS. */ baseUrl: string; bootloaderVersion: string; configVersion: string; emvKeyProfileId: string; firmwareVersion: string; hardwareVersion: string; macKeyProfileId: string; pinKeyProfileId: string; trackKeyProfileId: string; settingsVersion: string; pinKeysetId: string; /** * @deprecated This property has been deprecated and should use the `serialNumber` property. */ index?: number; }</code>
 
 
 #### ReaderSoftwareUpdateInterface
 
-<code>{ version: string; settingsVersion: string; requiredAt: number; timeEstimate: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; }</code>
+<code>{ deviceSoftwareVersion: string; estimatedUpdateTime: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; requiredAt: number; }</code>
+
+
+#### LocationInterface
+
+<code>{ id: string; displayName: string; address: { city: string; country: string; postalCode: string; line1: string; line2: string; state: string; }; ipAddress: string; }</code>
+
+
+#### Cart
+
+<code>{ currency: string; tax: number; total: number; lineItems: CartLineItem[]; }</code>
+
+
+#### CartLineItem
+
+<code>{ displayName: string; quantity: number; amount: number; }</code>
 
 
 ### Enums
+
+
+#### BatteryStatus
+
+| Members        | Value                   |
+| -------------- | ----------------------- |
+| **`Unknown`**  | <code>'UNKNOWN'</code>  |
+| **`Critical`** | <code>'CRITICAL'</code> |
+| **`Low`**      | <code>'LOW'</code>      |
+| **`Nominal`**  | <code>'NOMINAL'</code>  |
+
+
+#### UpdateTimeEstimate
+
+| Members                    | Value                                  |
+| -------------------------- | -------------------------------------- |
+| **`LessThanOneMinute`**    | <code>'LESS_THAN_ONE_MINUTE'</code>    |
+| **`OneToTwoMinutes`**      | <code>'ONE_TO_TWO_MINUTES'</code>      |
+| **`TwoToFiveMinutes`**     | <code>'TWO_TO_FIVE_MINUTES'</code>     |
+| **`FiveToFifteenMinutes`** | <code>'FIVE_TO_FIFTEEN_MINUTES'</code> |
+
+
+#### NetworkStatus
+
+| Members       | Value                  |
+| ------------- | ---------------------- |
+| **`Unknown`** | <code>'UNKNOWN'</code> |
+| **`Online`**  | <code>'ONLINE'</code>  |
+| **`Offline`** | <code>'OFFLINE'</code> |
+
+
+#### LocationStatus
+
+| Members       | Value                  |
+| ------------- | ---------------------- |
+| **`NotSet`**  | <code>'NOT_SET'</code> |
+| **`Set`**     | <code>'SET'</code>     |
+| **`Unknown`** | <code>'UNKNOWN'</code> |
+
+
+#### DeviceType
+
+| Members                | Value                           |
+| ---------------------- | ------------------------------- |
+| **`cotsDevice`**       | <code>'cotsDevice'</code>       |
+| **`wisePad3s`**        | <code>'wisePad3s'</code>        |
+| **`appleBuiltIn`**     | <code>'appleBuiltIn'</code>     |
+| **`chipper1X`**        | <code>'chipper1X'</code>        |
+| **`chipper2X`**        | <code>'chipper2X'</code>        |
+| **`etna`**             | <code>'etna'</code>             |
+| **`stripeM2`**         | <code>'stripeM2'</code>         |
+| **`stripeS700`**       | <code>'stripeS700'</code>       |
+| **`stripeS700DevKit`** | <code>'stripeS700Devkit'</code> |
+| **`verifoneP400`**     | <code>'verifoneP400'</code>     |
+| **`wiseCube`**         | <code>'wiseCube'</code>         |
+| **`wisePad3`**         | <code>'wisePad3'</code>         |
+| **`wisePosE`**         | <code>'wisePosE'</code>         |
+| **`wisePosEDevKit`**   | <code>'wisePosEDevkit'</code>   |
+| **`unknown`**          | <code>'unknown'</code>          |
 
 
 #### TerminalConnectTypes
@@ -808,6 +1083,9 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 | **`RequestDisplayMessage`**        | <code>'terminalRequestDisplayMessage'</code>        |
 | **`RequestReaderInput`**           | <code>'terminalRequestReaderInput'</code>           |
 | **`PaymentStatusChange`**          | <code>'terminalPaymentStatusChange'</code>          |
+| **`ReaderReconnectStarted`**       | <code>'terminalReaderReconnectStarted'</code>       |
+| **`ReaderReconnectSucceeded`**     | <code>'terminalReaderReconnectSucceeded'</code>     |
+| **`ReaderReconnectFailed`**        | <code>'terminalReaderReconnectFailed'</code>        |
 
 
 #### DisconnectReason
@@ -831,26 +1109,6 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 | **`NotConnected`** | <code>'NOT_CONNECTED'</code> |
 | **`Connecting`**   | <code>'CONNECTING'</code>    |
 | **`Connected`**    | <code>'CONNECTED'</code>     |
-
-
-#### UpdateTimeEstimate
-
-| Members                    | Value                                  |
-| -------------------------- | -------------------------------------- |
-| **`LessThanOneMinute`**    | <code>'LESS_THAN_ONE_MINUTE'</code>    |
-| **`OneToTwoMinutes`**      | <code>'ONE_TO_TWO_MINUTES'</code>      |
-| **`TwoToFiveMinutes`**     | <code>'TWO_TO_FIVE_MINUTES'</code>     |
-| **`FiveToFifteenMinutes`** | <code>'FIVE_TO_FIFTEEN_MINUTES'</code> |
-
-
-#### BatteryStatus
-
-| Members        | Value                   |
-| -------------- | ----------------------- |
-| **`Unknown`**  | <code>'UNKNOWN'</code>  |
-| **`Critical`** | <code>'CRITICAL'</code> |
-| **`Low`**      | <code>'LOW'</code>      |
-| **`Nominal`**  | <code>'NOMINAL'</code>  |
 
 
 #### ReaderEvent

@@ -18,6 +18,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { HelperService } from '../shared/helper.service';
 import {
+  CartLineItem,
   ReaderInterface, SimulateReaderUpdate,
   StripeTerminal,
   TerminalConnectTypes,
@@ -36,7 +37,9 @@ import {
 import {happyPathBluetoothItems, happyPathItems} from './happyPathItems';
 import {cancelPathItems} from './cancelPathItems';
 import {checkDiscoverMethodItems} from './checkDiscoverMethodItems';
-import {checkUpdateDeviceItems} from './checkUpdateDeviceItems';
+import {updateDeviceRequiredItems} from './updateDeviceRequiredItems';
+import {updateDeviceUpdateItems} from './updateDeviceUpdateItems';
+import {Stripe} from '@capacitor-community/stripe';
 
 @Component({
   selector: 'app-terminal',
@@ -145,20 +148,37 @@ export class TerminalPage {
       true,
     );
 
-    await StripeTerminal.collectPaymentMethod({ paymentIntent })
-      .then(() =>
-        this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
-      )
-      .catch(async (e) => {
-        await this.helper.updateItem(
-          this.eventItems,
-          'collectPaymentMethod',
-          false,
-        );
-        throw e;
-      });
+    if (readerType === TerminalConnectTypes.Internet) {
+      await StripeTerminal.setReaderDisplay({
+        currency: 'usd',
+        tax: 0,
+        total: 1000,
+        lineItems: [{
+          displayName: 'winecode',
+          quantity: 2,
+          amount: 500
+        }] as CartLineItem[],
+      })
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      await StripeTerminal.clearReaderDisplay();
+    }
+
+
 
     if (type === 'cancelPath') {
+      // During Collect, cancel the payment
+      StripeTerminal.collectPaymentMethod({ paymentIntent })
+        .catch(async (e) => {
+          await this.helper.updateItem(
+            this.eventItems,
+            'collectPaymentMethod',
+            false,
+          );
+          throw e;
+        });
+      await this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await StripeTerminal.cancelCollectPaymentMethod().catch(async (e) => {
         await this.helper.updateItem(
@@ -174,6 +194,18 @@ export class TerminalPage {
         true,
       );
     } else {
+      await StripeTerminal.collectPaymentMethod({ paymentIntent })
+        .then(() =>
+          this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+        )
+        .catch(async (e) => {
+          await this.helper.updateItem(
+            this.eventItems,
+            'collectPaymentMethod',
+            false,
+          );
+          throw e;
+        });
       await StripeTerminal.confirmPaymentIntent();
       await this.helper.updateItem(
         this.eventItems,
@@ -186,27 +218,101 @@ export class TerminalPage {
     this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
-  async checkUpdateDevice(readerType: TerminalConnectTypes = TerminalConnectTypes.Bluetooth, simulateReaderUpdate: SimulateReaderUpdate) {
-    await this.prepareTerminalEvents(structuredClone(checkUpdateDeviceItems));
+  async checkUpdateDeviceUpdate(readerType: TerminalConnectTypes = TerminalConnectTypes.Bluetooth) {
+    await this.prepareTerminalEvents(structuredClone(updateDeviceUpdateItems));
+    await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.UpdateAvailable })
+      .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:UPDATE_AVAILABLE', true));
 
-    switch (simulateReaderUpdate) {
-      case SimulateReaderUpdate.UpdateAvailable:
-        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.UpdateAvailable })
-          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:UPDATE_AVAILABLE', true));
-        break;
-      case SimulateReaderUpdate.LowBattery:
-        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.LowBattery })
-          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:LOW_BATTERY', true));
-        break;
-      case SimulateReaderUpdate.LowBatterySucceedConnect:
-        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.LowBatterySucceedConnect })
-          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:LOW_BATTERY_SUCCEED_CONNECT', true));
-        break;
-      case SimulateReaderUpdate.Required:
-        await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.Required })
-          .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:REQUIRED', true));
-        break;
+    const result = await StripeTerminal.discoverReaders({
+      type: readerType,
+      locationId:
+        [TerminalConnectTypes.Usb].includes(readerType)
+          ? 'tml_Ff37mAmk1XdBYT'  // Auckland, New Zealand
+          : 'tml_FOUOdQVIxvVdvN', // San Francisco, CA 94110
+    }).catch((e) => {
+      this.helper.updateItem(this.eventItems, 'discoverReaders', false);
+      throw e;
+    });
+
+    await this.helper.updateItem(
+      this.eventItems,
+      'discoverReaders',
+      result.readers.length > 0,
+    );
+
+    const selectedReader =
+      result.readers.length === 1
+        ? result.readers[0]
+        : await this.alertFilterReaders(result.readers);
+    console.log(selectedReader);
+    if (!selectedReader) {
+      alert('No reader selected');
+      return;
     }
+
+    await StripeTerminal.connectReader({
+      reader: selectedReader,
+    }).catch((e) => {
+      alert(e);
+      this.helper.updateItem(this.eventItems, 'connectReader', false);
+      throw e;
+    });
+    await this.helper.updateItem(this.eventItems, 'connectReader', true);
+
+    await StripeTerminal.installAvailableUpdate()
+      .then(() => this.helper.updateItem(this.eventItems, 'installAvailableUpdate', true));
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    await StripeTerminal.cancelInstallUpdate()
+      .then(() => this.helper.updateItem(this.eventItems, 'cancelInstallUpdate', true));
+
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    const { paymentIntent } = await firstValueFrom(
+      this.http.post<{
+        paymentIntent: string;
+      }>(environment.api + 'connection/intent', {}),
+    ).catch(async (e) => {
+      await this.helper.updateItem(
+        this.eventItems,
+        'HttpClientPaymentIntent',
+        false,
+      );
+      throw e;
+    });
+    await this.helper.updateItem(
+      this.eventItems,
+      'HttpClientPaymentIntent',
+      true,
+    );
+
+    await StripeTerminal.collectPaymentMethod({ paymentIntent })
+      .then(() =>
+        this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+      )
+      .catch(async (e) => {
+        await this.helper.updateItem(
+          this.eventItems,
+          'collectPaymentMethod',
+          false,
+        );
+        throw e;
+      });
+
+    await StripeTerminal.disconnectReader().catch((e) => {
+      this.helper.updateItem(this.eventItems, 'disconnectReader', false);
+      throw e;
+    });
+    await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
+
+    this.listenerHandlers.forEach((handler) => handler.remove());
+  }
+
+  async checkUpdateDeviceRequired(readerType: TerminalConnectTypes = TerminalConnectTypes.Bluetooth) {
+    await this.prepareTerminalEvents(structuredClone(updateDeviceRequiredItems));
+    await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.Required })
+      .then(() => this.helper.updateItem(this.eventItems, 'setSimulatorConfiguration:REQUIRED', true));
 
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
@@ -347,12 +453,14 @@ export class TerminalPage {
       const alert = await this.alertCtrl.create({
         header: `Select a reader`,
         message: `Select a reader to connect to.`,
+        backdropDismiss: false,
         inputs: readers.map((reader, index) => ({
           name: 'serialNumber',
           type: 'radio',
-          label: reader.serialNumber,
+          label: reader.deviceType,
           value: reader.serialNumber,
           checked: index === 0,
+          disabled: reader.status === 'OFFLINE'
         })),
         buttons: [
           {

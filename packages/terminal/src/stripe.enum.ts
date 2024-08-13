@@ -6,6 +6,49 @@ export enum TerminalConnectTypes {
   TapToPay = 'tap-to-pay',
 }
 
+/**
+ * Note: Don't need to use this enum. It's just for reference.
+ */
+export enum DeviceType {
+  cotsDevice = 'cotsDevice',
+  wisePad3s = 'wisePad3s',
+  appleBuiltIn = 'appleBuiltIn',
+  chipper1X = 'chipper1X',
+  chipper2X = 'chipper2X',
+  etna = 'etna',
+  stripeM2 = 'stripeM2',
+  stripeS700 = 'stripeS700',
+  stripeS700DevKit = 'stripeS700Devkit',
+  verifoneP400 = 'verifoneP400',
+  wiseCube = 'wiseCube',
+  wisePad3 = 'wisePad3',
+  wisePosE = 'wisePosE',
+  wisePosEDevKit = 'wisePosEDevkit',
+  unknown = 'unknown',
+}
+
+/**
+ * This group is useful for pick image.
+ * Reference: https://github.com/stripe/stripe-terminal-ios/blob/fc571ab441b14639243a11d19d8f62bbe93feea5/Example/Example/ReaderHeaderView.swift#L95-L113
+ */
+export enum DeviceGroup {
+  stripeM2 = 'stripe_m2',
+  chipper1X = 'chipper',
+  chipper2X = 'chipper',
+  wiseCube = 'chipper',
+  verifoneP400 = 'verifone',
+  wisePad3s = 'wisepad',
+  wisePad3 = 'wisepad',
+  wisePosEDevKit = 'wisepose',
+  etna = 'wisepose',
+  wisePosE = 'wisepose',
+  stripeS700DevKit = 's700',
+  stripeS700 = 's700',
+  appleBuiltIn = 'apple', // unknown change to apple
+  cotsDevice = 'unknown',
+  unknown = 'unknown',
+}
+
 export enum UpdateTimeEstimate {
   LessThanOneMinute = 'LESS_THAN_ONE_MINUTE',
   OneToTwoMinutes = 'ONE_TO_TWO_MINUTES',
@@ -58,6 +101,18 @@ export enum BatteryStatus {
   Critical = 'CRITICAL',
   Low = 'LOW',
   Nominal = 'NOMINAL',
+}
+
+export enum LocationStatus {
+  NotSet = 'NOT_SET',
+  Set = 'SET',
+  Unknown = 'UNKNOWN',
+}
+
+export enum NetworkStatus {
+  Unknown = 'UNKNOWN',
+  Online = 'ONLINE',
+  Offline = 'OFFLINE',
 }
 
 export enum ReaderEvent {

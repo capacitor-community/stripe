@@ -37,13 +37,13 @@
 
     <ion-item-divider><ion-label>Device Update - Happy Path</ion-label></ion-item-divider>
     <ion-item
-      (click)="checkUpdateDevice( terminalConnectTypes.Bluetooth, simulateReaderUpdate.UpdateAvailable)"
+      (click)="checkUpdateDeviceUpdate( terminalConnectTypes.Bluetooth)"
       button="true"
       detail="true"
     ><ion-label>simulateReaderUpdate.UpdateAvailable</ion-label></ion-item
     >
     <ion-item
-      (click)="checkUpdateDevice( terminalConnectTypes.Bluetooth, simulateReaderUpdate.Required)"
+      (click)="checkUpdateDeviceRequired( terminalConnectTypes.Bluetooth)"
       button="true"
       detail="true"
     ><ion-label>simulateReaderUpdate.Required</ion-label></ion-item

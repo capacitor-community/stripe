@@ -1,7 +1,7 @@
 import {ITestItems} from '../shared/interfaces';
 import {TerminalEventsEnum} from '@capacitor-community/stripe-terminal';
 
-export const checkUpdateDeviceItems: ITestItems[] = [
+export const updateDeviceUpdateItems: ITestItems[] = [
   {
     type: 'method',
     name: 'initialize',
@@ -10,32 +10,6 @@ export const checkUpdateDeviceItems: ITestItems[] = [
     type: 'event',
     name: TerminalEventsEnum.Loaded,
   },
-
-  {
-    type: 'method',
-    name: 'setSimulatorConfiguration:UPDATE_AVAILABLE',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.ReportAvailableUpdate,
-  },
-  {
-    type: 'method',
-    name: 'setSimulatorConfiguration:REQUIRED',
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.StartInstallingUpdate,
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.ReaderSoftwareUpdateProgress,
-  },
-  {
-    type: 'event',
-    name: TerminalEventsEnum.FinishInstallingUpdate,
-  },
-
   {
     type: 'method',
     name: 'discoverReaders',
@@ -51,6 +25,31 @@ export const checkUpdateDeviceItems: ITestItems[] = [
   {
     type: 'event',
     name: TerminalEventsEnum.ConnectedReader,
+  },
+
+  {
+    type: 'method',
+    name: 'setSimulatorConfiguration:UPDATE_AVAILABLE',
+  },
+  {
+    type: 'event',
+    name: TerminalEventsEnum.ReportAvailableUpdate,
+  },
+  {
+    type: 'method',
+    name: 'installAvailableUpdate',
+  },
+  {
+    type: 'event',
+    name: TerminalEventsEnum.StartInstallingUpdate,
+  },
+  {
+    type: 'event',
+    name: TerminalEventsEnum.ReaderSoftwareUpdateProgress,
+  },
+  {
+    type: 'method',
+    name: 'cancelInstallUpdate',
   },
   {
     type: 'method',

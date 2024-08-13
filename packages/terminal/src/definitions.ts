@@ -13,18 +13,87 @@ import type {
   PaymentStatus,
   DisconnectReason,
   ConnectionStatus,
+  NetworkStatus,
+  LocationStatus,
+  DeviceType,
 } from './stripe.enum';
 
 export type ReaderInterface = {
-  index: number;
+  /**
+   * The unique serial number is primary identifier inner plugin.
+   */
   serialNumber: string;
+
+  label: string;
+  batteryLevel: number;
+  batteryStatus: BatteryStatus;
+  simulated: boolean;
+  id: number;
+  availableUpdate: ReaderSoftwareUpdateInterface;
+  locationId: string;
+  ipAddress: string;
+  status: NetworkStatus;
+  location: LocationInterface;
+  locationStatus: LocationStatus;
+  deviceType: DeviceType;
+  deviceSoftwareVersion: string;
+
+  /**
+   * iOS Only properties. These properties are not available on Android.
+   */
+  isCharging: number;
+
+  /**
+   * Android Only properties. These properties are not available on iOS.
+   */
+  baseUrl: string;
+  bootloaderVersion: string;
+  configVersion: string;
+  emvKeyProfileId: string;
+  firmwareVersion: string;
+  hardwareVersion: string;
+  macKeyProfileId: string;
+  pinKeyProfileId: string;
+  trackKeyProfileId: string;
+  settingsVersion: string;
+  pinKeysetId: string;
+
+  /**
+   * @deprecated This property has been deprecated and should use the `serialNumber` property.
+   */
+  index?: number;
+};
+export type LocationInterface = {
+  id: string;
+  displayName: string;
+  address: {
+    city: string;
+    country: string;
+    postalCode: string;
+    line1: string;
+    line2: string;
+    state: string;
+  };
+  ipAddress: string;
 };
 
 export type ReaderSoftwareUpdateInterface = {
-  version: string;
-  settingsVersion: string;
+  deviceSoftwareVersion: string;
+  estimatedUpdateTime: UpdateTimeEstimate;
   requiredAt: number;
-  timeEstimate: UpdateTimeEstimate;
+};
+
+export type CartLineItem = {
+  displayName: string;
+  quantity: number;
+  amount: number;
+};
+
+export type Cart = {
+  currency: string;
+  tax: number;
+  total: number;
+  lineItems: CartLineItem[];
 };
 
 export * from './events.enum';
@@ -49,13 +118,37 @@ export interface StripeTerminalPlugin {
     simulatedCard?: SimulatedCardType;
     simulatedTipAmount?: number;
   }): Promise<void>;
-  connectReader(options: { reader: ReaderInterface }): Promise<void>;
+
+  /**
+   * @param options.autoReconnectOnUnexpectedDisconnect If true, the SDK will automatically attempt to reconnect to the reader. default is false.
+   */
+  connectReader(options: {
+    reader: ReaderInterface;
+    autoReconnectOnUnexpectedDisconnect?: boolean;
+
+    /**
+     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
+     */
+    merchantDisplayName?: string;
+
+    /**
+     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
+     * The Stripe account ID for which these funds are intended.
+     */
+    onBehalfOf?: string;
+  }): Promise<void>;
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
   disconnectReader(): Promise<void>;
   cancelDiscoverReaders(): Promise<void>;
   collectPaymentMethod(options: { paymentIntent: string }): Promise<void>;
   cancelCollectPaymentMethod(): Promise<void>;
   confirmPaymentIntent(): Promise<void>;
+  installAvailableUpdate(): Promise<void>;
+  cancelInstallUpdate(): Promise<void>;
+  setReaderDisplay(options: Cart): Promise<void>;
+  clearReaderDisplay(): Promise<void>;
+  rebootReader(): Promise<void>;
+  cancelReaderReconnection(): Promise<void>;
 
   addListener(
     eventName: TerminalEventsEnum.Loaded,
@@ -303,6 +396,27 @@ export interface StripeTerminalPlugin {
   addListener(
     eventName: TerminalEventsEnum.PaymentStatusChange,
     listenerFunc: ({ status }: { status: PaymentStatus }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: TerminalEventsEnum.ReaderReconnectStarted,
+    listenerFunc: ({
+      reader,
+      reason,
+    }: {
+      reader: ReaderInterface;
+      reason: string;
+    }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: TerminalEventsEnum.ReaderReconnectSucceeded,
+    listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: TerminalEventsEnum.ReaderReconnectFailed,
+    listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
