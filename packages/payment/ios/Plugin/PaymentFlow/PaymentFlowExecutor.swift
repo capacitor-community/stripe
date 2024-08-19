@@ -67,7 +67,7 @@ class PaymentFlowExecutor: NSObject {
                                                configuration: configuration) { [weak self] result in
                 switch result {
                 case .failure(let error):
-                    self?.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: ["error": error.localizedDescription])
+                    self?.plugin?.notifyListeners(PaymentFlowEvents.FailedToLoad.rawValue, data: ["error": error.localizedDescription as! String])
                     call.reject(error.localizedDescription)
                 case .success(let paymentSheetFlowController):
                     self?.paymentSheetFlowController = paymentSheetFlowController

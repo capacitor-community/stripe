@@ -98,7 +98,7 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
 }
 
 extension ApplePayExecutor {
-    func transformPKContactToJSON(contact: PKContact?) -> Any {
+    func transformPKContactToJSON(contact: PKContact?) -> JSArray {
         var nameFormatted = ""
         if #available(iOS 15.0, *) {
             nameFormatted = (contact?.name?.nameSuffix as? String ?? "")
@@ -124,14 +124,14 @@ extension ApplePayExecutor {
         dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
         let dataStringUTF8 = dataString.data(using: .utf8)!
         do {
-            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options: .allowFragments) as? [Dictionary<String, Any>] {
+            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options: .allowFragments) as? JSArray] {
                 return jsonArray
             }
         } catch let error as NSError {
             print(error)
-            return {}
+            return []
         }
-        return {}
+        return []
     }
 
     // For security reasons, Apple does not return the full address until a successful payment has been made.
