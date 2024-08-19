@@ -124,7 +124,7 @@ extension ApplePayExecutor {
         dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
         let dataStringUTF8 = dataString.data(using: .utf8)!
         do {
-            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options: .allowFragments) as? JSArray] {
+            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options: .allowFragments) as? JSArray {
                 return jsonArray
             }
         } catch let error as NSError {
