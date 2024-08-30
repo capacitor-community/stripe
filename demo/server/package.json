@@ -30,7 +30,7 @@
     "stripe": "^11.13.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^9.0.0",
+    "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/swagger": "^6.1.4",
     "@nestjs/testing": "^9.0.0",
