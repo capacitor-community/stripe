@@ -6,6 +6,7 @@ import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,11 +38,8 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.Interne
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.UsbConnectionConfiguration;
 import com.stripe.stripeterminal.external.models.ConnectionStatus;
-import com.stripe.stripeterminal.external.models.DeviceType;
 import com.stripe.stripeterminal.external.models.DisconnectReason;
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration;
-import com.stripe.stripeterminal.external.models.Location;
-import com.stripe.stripeterminal.external.models.LocationStatus;
 import com.stripe.stripeterminal.external.models.PaymentIntent;
 import com.stripe.stripeterminal.external.models.PaymentMethod;
 import com.stripe.stripeterminal.external.models.PaymentStatus;
@@ -282,15 +280,14 @@ public class StripeTerminal extends Executor {
         JSObject reader = call.getObject("reader");
         String serialNumber = reader.getString("serialNumber");
 
-        Reader foundReader =
-            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+        Reader foundReader = this.findReader(this.discoveredReadersList, serialNumber);
 
         if (serialNumber == null || foundReader == null) {
             call.reject("The reader value is not set correctly.");
             return;
         }
 
-        Boolean autoReconnectOnUnexpectedDisconnect = call.getBoolean("autoReconnectOnUnexpectedDisconnect", false);
+        Boolean autoReconnectOnUnexpectedDisconnect = Objects.requireNonNullElse(call.getBoolean("autoReconnectOnUnexpectedDisconnect", false), false);
 
         LocalMobileConnectionConfiguration config = new LocalMobileConnectionConfiguration(
             this.locationId,
@@ -331,8 +328,7 @@ public class StripeTerminal extends Executor {
         JSObject reader = call.getObject("reader");
         String serialNumber = reader.getString("serialNumber");
 
-        Reader foundReader =
-            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+        Reader foundReader = this.findReader(this.discoveredReadersList, serialNumber);
 
         if (serialNumber == null || foundReader == null) {
             call.reject("The reader value is not set correctly.");
@@ -347,8 +343,7 @@ public class StripeTerminal extends Executor {
         JSObject reader = call.getObject("reader");
         String serialNumber = reader.getString("serialNumber");
 
-        Reader foundReader =
-            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+        Reader foundReader = this.findReader(this.discoveredReadersList, serialNumber);
 
         if (serialNumber == null || foundReader == null) {
             call.reject("The reader value is not set correctly.");
@@ -363,14 +358,13 @@ public class StripeTerminal extends Executor {
         JSObject reader = call.getObject("reader");
         String serialNumber = reader.getString("serialNumber");
 
-        Reader foundReader =
-            this.discoveredReadersList.stream().filter(device -> serialNumber.equals(device.getSerialNumber())).findFirst().orElse(null);
+        Reader foundReader = this.findReader(this.discoveredReadersList, serialNumber);
 
         if (serialNumber == null || foundReader == null) {
             call.reject("The reader value is not set correctly.");
             return;
         }
-        Boolean autoReconnectOnUnexpectedDisconnect = call.getBoolean("autoReconnectOnUnexpectedDisconnect", false);
+        Boolean autoReconnectOnUnexpectedDisconnect = Objects.requireNonNullElse(call.getBoolean("autoReconnectOnUnexpectedDisconnect", false), false);
 
         BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(
             this.locationId,
@@ -402,12 +396,13 @@ public class StripeTerminal extends Executor {
     }
 
     public void collectPaymentMethod(final PluginCall call) {
-        if (call.getString("paymentIntent") == null) {
+        String paymentIntent = call.getString("paymentIntent");
+        if (paymentIntent == null) {
             call.reject("The value of paymentIntent is not set correctly.");
             return;
         }
         this.collectCall = call;
-        Terminal.getInstance().retrievePaymentIntent(call.getString("paymentIntent"), createPaymentIntentCallback);
+        Terminal.getInstance().retrievePaymentIntent(paymentIntent, createPaymentIntentCallback);
     }
 
     public void cancelCollectPaymentMethod(final PluginCall call) {
@@ -440,9 +435,15 @@ public class StripeTerminal extends Executor {
         }
 
         @Override
-        public void onFailure(@NonNull TerminalException ex) {
+        public void onFailure(@NonNull TerminalException exception) {
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
-            collectCall.reject(ex.getLocalizedMessage(), ex);
+            var returnObject = new JSObject();
+            returnObject.put("message", exception.getLocalizedMessage());
+            if (exception.getApiError() != null) {
+                returnObject.put("code", exception.getApiError().getCode());
+                returnObject.put("declineCode", exception.getApiError().getDeclineCode());
+            }
+            collectCall.reject(exception.getLocalizedMessage(), (String) null, returnObject);
         }
     };
 
@@ -453,7 +454,11 @@ public class StripeTerminal extends Executor {
             notifyListeners(TerminalEnumEvent.CollectedPaymentIntent.getWebEventName(), emptyObject);
 
             PaymentMethod pm = paymentIntent.getPaymentMethod();
-            CardPresentDetails card = pm.getCardPresentDetails() != null ? pm.getCardPresentDetails() : pm.getInteracPresentDetails();
+            CardPresentDetails card = null;
+
+            if (pm != null) {
+                card = pm.getCardPresentDetails() != null ? pm.getCardPresentDetails() : pm.getInteracPresentDetails();
+            }
 
             if (card != null) {
                 collectCall.resolve(
@@ -477,9 +482,19 @@ public class StripeTerminal extends Executor {
         }
 
         @Override
-        public void onFailure(@NonNull TerminalException ex) {
+        public void onFailure(@NonNull TerminalException exception) {
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
-            collectCall.reject(ex.getLocalizedMessage(), ex);
+            String errorCode = "generic_error";
+            if (exception.getApiError() != null && exception.getApiError().getCode() != null) {
+                errorCode = exception.getApiError().getCode();
+            }
+            var returnObject = new JSObject();
+            returnObject.put("message", exception.getLocalizedMessage());
+            if (exception.getApiError() != null) {
+                returnObject.put("code", exception.getApiError().getCode());
+                returnObject.put("declineCode", exception.getApiError().getDeclineCode());
+            }
+            collectCall.reject(exception.getLocalizedMessage(), errorCode, returnObject);
         }
     };
 
@@ -526,8 +541,8 @@ public class StripeTerminal extends Executor {
             return;
         }
 
-        int tax = call.getInt("tax", 0);
-        int total = call.getInt("total", 0);
+        int tax = Objects.requireNonNullElse(call.getInt("tax", 0), 0);
+        int total = Objects.requireNonNullElse(call.getInt("total", 0), 0);
         if (total == 0) {
             call.reject("You must provide a total value");
             return;
@@ -638,7 +653,7 @@ public class StripeTerminal extends Executor {
 
     private final PaymentIntentCallback confirmPaymentMethodCallback = new PaymentIntentCallback() {
         @Override
-        public void onSuccess(PaymentIntent paymentIntent) {
+        public void onSuccess(@NonNull PaymentIntent paymentIntent) {
             notifyListeners(TerminalEnumEvent.ConfirmedPaymentIntent.getWebEventName(), emptyObject);
             paymentIntentInstance = null;
             confirmPaymentIntentCall.resolve();
@@ -647,7 +662,13 @@ public class StripeTerminal extends Executor {
         @Override
         public void onFailure(TerminalException exception) {
             notifyListeners(TerminalEnumEvent.Failed.getWebEventName(), emptyObject);
-            confirmPaymentIntentCall.reject(exception.getLocalizedMessage());
+            var returnObject = new JSObject();
+            returnObject.put("message", exception.getLocalizedMessage());
+            if (exception.getApiError() != null) {
+                returnObject.put("code", exception.getApiError().getCode());
+                returnObject.put("declineCode", exception.getApiError().getDeclineCode());
+            }
+            confirmPaymentIntentCall.reject(exception.getLocalizedMessage(), (String) null, returnObject);
         }
     };
 
@@ -785,5 +806,25 @@ public class StripeTerminal extends Executor {
 
     private JSObject convertReaderSoftwareUpdate(ReaderSoftwareUpdate update) {
         return terminalMappers.mapFromReaderSoftwareUpdate(update);
+    }
+
+    private Reader findReader(List<Reader> discoveredReadersList, String serialNumber) {
+        Reader foundReader =
+                null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            foundReader = discoveredReadersList.stream()
+                    .filter(device -> serialNumber != null && serialNumber.equals(device.getSerialNumber()))
+                    .findFirst()
+                    .orElse(null);
+        } else {
+            for (Reader device : discoveredReadersList) {
+                if (serialNumber != null && serialNumber.equals(device.getSerialNumber())) {
+                    foundReader = device;
+                    break;
+                }
+            }
+        }
+
+        return foundReader;
     }
 }
