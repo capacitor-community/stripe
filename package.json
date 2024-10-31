@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-community/stripe",
-  "version": "6.2.1",
+  "version": "6.2.2",
   "engines": {
     "node": ">=18.0.0"
   },
