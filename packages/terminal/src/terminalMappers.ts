@@ -84,6 +84,7 @@ export const convertReaderInterface = (reader: Reader): ReaderInterface => {
     locationStatus: LocationStatus.Unknown,
     deviceType: mapFromDeviceType(reader.device_type),
     deviceSoftwareVersion: reader.device_sw_version,
+    discovering: false,
   };
 };
 
