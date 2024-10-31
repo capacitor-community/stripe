@@ -140,3 +140,11 @@ Made with [contributors-img](https://contrib.rocks).
 |              |                     Android                     |                     iOS                     |                  Web                   |
 |:------------:|:-----------------------------------------------:|:-------------------------------------------:|:--------------------------------------:|
 |   Identity   |   ![](demo/screenshots/identity-android.png)    |    ![](demo/screenshots/identity-ios.png)     | ![](demo/screenshots/identity-web.png) |
+
+## How to use Demo
+
+```bash
+% git clone git@github.com:capacitor-community/stripe.git
+% cd stripe && npm install && npm run build
+% cd demo && npm install && npm run cap && npx cap update
+```
