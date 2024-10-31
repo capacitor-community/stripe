@@ -2,7 +2,7 @@ service: capacitor-stripe-server
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs20.x
   region: ap-northeast-1
   environment:
     TZ: Asia/Tokyo
@@ -11,6 +11,12 @@ provider:
 
 plugins:
   - serverless-offline
+  - serverless-prune-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 3
 
 package:
   exclude:

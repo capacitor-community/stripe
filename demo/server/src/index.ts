@@ -1,26 +1,32 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Server } from 'http';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import * as awsServerlessExpress from 'aws-serverless-express';
-import * as express from 'express';
+import serverlessExpress from '@codegenie/serverless-express';
+import { Context, Handler } from 'aws-lambda';
+import express from 'express';
 
-let cachedServer: Server;
+import { AppModule } from './app.module';
 
-const bootstrapServer = async (): Promise<Server> => {
-  const expressApp = express();
-  const adapter = new ExpressAdapter(expressApp);
-  const app = await NestFactory.create(AppModule, adapter);
-  app.enableCors();
-  await app.init();
-  return awsServerlessExpress.createServer(expressApp);
-};
+let cachedServer: Handler;
 
-export const handler: APIGatewayProxyHandler = async (event, context) => {
+async function bootstrap() {
   if (!cachedServer) {
-    cachedServer = await bootstrapServer();
+    const expressApp = express();
+    const nestApp = await NestFactory.create(
+      AppModule,
+      new ExpressAdapter(expressApp),
+    );
+
+    nestApp.enableCors();
+
+    await nestApp.init();
+
+    cachedServer = serverlessExpress({ app: expressApp });
   }
-  return awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE')
-    .promise;
+
+  return cachedServer;
+}
+
+export const handler = async (event: any, context: Context, callback: any) => {
+  const server = await bootstrap();
+  return server(event, context, callback);
 };
