@@ -213,8 +213,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             } else if let paymentIntent = retrieveResult {
                 self.collectCancelable = Terminal.shared.collectPaymentMethod(paymentIntent) { collectResult, collectError in
                     if let error = collectError {
-                        self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: [:])
                         var errorDetails: [String: Any] = ["message": error.localizedDescription]
+                        self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: errorDetails)
                         call.reject(error.localizedDescription, nil, nil, errorDetails)
                     } else if let paymentIntent = collectResult {
                         self.plugin?.notifyListeners(TerminalEvents.CollectedPaymentIntent.rawValue, data: [:])
@@ -231,7 +231,6 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             Terminal.shared.confirmPaymentIntent(paymentIntent) { confirmResult, confirmError in
                 if let error = confirmError {
                     print("confirmPaymentIntent failed: \(error)")
-                    self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: [:])
                     var errorDetails: [String: Any] = ["message": error.localizedDescription]
                     if let paymentIntent = error.paymentIntent,
                        let originalJSON = paymentIntent.originalJSON as? [AnyHashable: Any],
@@ -244,7 +243,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                             errorDetails["code"] = errorCode
                         }
                     }
-
+                    self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: errorDetails)
                     call.reject(error.localizedDescription, nil, nil, errorDetails)
                 } else if let confirmedIntent = confirmResult {
                     print("PaymentIntent confirmed: \(confirmedIntent)")

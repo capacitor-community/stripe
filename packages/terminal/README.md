@@ -641,16 +641,16 @@ The Promise returned by `cancelCollectPaymentMethod()` will also be resolved.
 ### addListener(TerminalEventsEnum.Failed, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: () => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.Failed, listenerFunc: (info: { message: string; code?: string; declineCode?: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
 Emitted when either [`collectPaymentMethod()`](#collectpaymentmethod) or [`confirmPaymentIntent()`](#confirmpaymentintent)
 fails. The Promise returned by the relevant call will also be rejected.
 
-| Param              | Type                                                                     |
-| ------------------ | ------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Failed</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+| Param              | Type                                                                                      |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Failed</a></code>                  |
+| **`listenerFunc`** | <code>(info: { message: string; code?: string; declineCode?: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 

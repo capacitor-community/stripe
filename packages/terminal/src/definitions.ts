@@ -247,7 +247,11 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.Failed,
-    listenerFunc: () => void,
+    listenerFunc: (info: {
+      message: string;
+      code?: string;
+      declineCode?: string;
+    }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
