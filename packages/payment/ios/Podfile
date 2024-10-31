@@ -5,8 +5,8 @@ def capacitor_pods
   use_frameworks!
   pod 'Capacitor', :path => '../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../node_modules/@capacitor/ios'
-  pod 'StripePaymentSheet', '~> 23.29.0'
-  pod 'StripeApplePay', '~> 23.29.0'
+  pod 'StripePaymentSheet', '~> 23.32.0'
+  pod 'StripeApplePay', '~> 23.32.0'
 end
 
 target 'Plugin' do

@@ -13,6 +13,6 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}'
   s.ios.deployment_target  = '13.0'
   s.dependency 'Capacitor'
-  s.dependency 'StripeIdentity', '~> 23.29.0'
+  s.dependency 'StripeIdentity', '~> 23.32.0'
   s.swift_version = '5.1'
 end
