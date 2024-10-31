@@ -2,7 +2,7 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate, ReconnectionDelegate {
+public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, ReaderDelegate {
 
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
@@ -88,13 +88,38 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func connectReader(_ call: CAPPluginCall) {
+        let reader: JSObject = call.getObject("reader")!
+        let serialNumber: String = reader["serialNumber"] as! String
+
+        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
+            call.reject("reader is not match from descovered readers.")
+            return
+        }
+
+        let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
+
+        let connectionConfig: ConnectionConfiguration
         if self.type == .localMobile {
-            self.connectLocalMobileReader(call)
+            connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!)
+                .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
+                .build()
         } else if self.type == .internet {
-            self.connectInternetReader(call)
+            connectionConfig = try! InternetConnectionConfigurationBuilder()
+                .setFailIfInUse(true)
+                .build()
         } else {
-            // if self.type === DiscoveryMethod.bluetoothScan
-            self.connectBluetoothReader(call)
+            connectionConfig = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!)
+                .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
+                .build()
+        }
+
+        Terminal.shared.connectReader(foundReader, delegate: self, connectionConfig: connectionConfig) { reader, error in
+            if let reader = reader {
+                self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
+                call.resolve()
+            } else if let error = error {
+                call.reject(error.localizedDescription)
+            }
         }
     }
 
@@ -120,86 +145,6 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
                     self.plugin?.notifyListeners(TerminalEvents.DisconnectedReader.rawValue, data: [:])
                     call.resolve()
                 }
-            }
-        }
-    }
-
-    private func connectLocalMobileReader(_ call: CAPPluginCall) {
-        let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
-        let merchantDisplayName: String? = call.getString("merchantDisplayName")
-        let onBehalfOf: String? = call.getString("onBehalfOf")
-        let reader: JSObject = call.getObject("reader")!
-        let serialNumber: String = reader["serialNumber"] as! String
-
-        let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!)
-            .setMerchantDisplayName(merchantDisplayName ?? nil)
-            .setOnBehalfOf(onBehalfOf ?? nil)
-            .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
-            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
-            .build()
-
-        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
-            call.reject("reader is not match from descovered readers.")
-            return
-        }
-
-        Terminal.shared.connectLocalMobileReader(foundReader, delegate: self, connectionConfig: connectionConfig) { reader, error in
-            if let reader = reader {
-                self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
-                call.resolve()
-            } else if let error = error {
-                call.reject(error.localizedDescription)
-            }
-        }
-    }
-
-    private func connectInternetReader(_ call: CAPPluginCall) {
-        let reader: JSObject = call.getObject("reader")!
-        let serialNumber: String = reader["serialNumber"] as! String
-
-        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
-            call.reject("reader is not match from descovered readers.")
-            return
-        }
-
-        let config = try! InternetConnectionConfigurationBuilder()
-            .setFailIfInUse(true)
-            .build()
-
-        Terminal.shared.connectInternetReader(foundReader, connectionConfig: config) { reader, error in
-            if let reader = reader {
-                self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
-                call.resolve()
-            } else if let error = error {
-                call.reject(error.localizedDescription)
-            }
-        }
-    }
-
-    private func connectBluetoothReader(_ call: CAPPluginCall) {
-        let reader: JSObject = call.getObject("reader")!
-        let serialNumber: String = reader["serialNumber"] as! String
-
-        guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
-            call.reject("reader is not match from descovered readers.")
-            return
-        }
-
-        let autoReconnectOnUnexpectedDisconnect = call.getBool("autoReconnectOnUnexpectedDisconnect", false)
-        let merchantDisplayName: String? = call.getString("merchantDisplayName")
-        let onBehalfOf: String? = call.getString("onBehalfOf")
-
-        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!)
-            .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
-            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
-            .build()
-
-        Terminal.shared.connectBluetoothReader(foundReader, delegate: self, connectionConfig: config) { reader, error in
-            if let reader = reader {
-                self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
-                call.resolve()
-            } else if let error = error {
-                call.reject(error.localizedDescription)
             }
         }
     }
@@ -422,26 +367,21 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         self.plugin?.notifyListeners(TerminalEvents.ConnectionStatusChange.rawValue, data: ["status": TerminalMappers.mapFromConnectionStatus(status)])
     }
 
-    public func terminal(_ terminal: Terminal, didReportUnexpectedReaderDisconnect reader: Reader) {
-        self.plugin?.notifyListeners(TerminalEvents.UnexpectedReaderDisconnect.rawValue, data: ["reader": self.convertReaderInterface(reader: reader)])
-    }
-
     /*
-     * localMobile
+     * Reader
      */
-
-    public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+    public func reader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         self.installUpdateCancelable = cancelable
         self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: [
             "update": self.convertReaderSoftwareUpdate(update: update)
         ])
     }
 
-    public func localMobileReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
+    public func reader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
         self.plugin?.notifyListeners(TerminalEvents.ReaderSoftwareUpdateProgress.rawValue, data: ["progress": progress])
     }
 
-    public func localMobileReader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
+    public func reader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
         if (error) != nil {
             self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
                 "error": error!.localizedDescription
@@ -453,11 +393,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         ])
     }
 
-    public func localMobileReader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
+    public func reader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
         self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": TerminalMappers.mapFromReaderInputOptions(inputOptions), "message": inputOptions.rawValue])
     }
 
-    public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
+    public func reader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         let result = TerminalMappers.mapFromReaderDisplayMessage(displayMessage)
 
         self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
@@ -466,49 +406,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         ])
     }
 
-    /*
-     * bluetooth
-     */
-
-    public func reader(_: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
+    public func reader(_ reader: Reader, didReportAvailableUpdate update: ReaderSoftwareUpdate) {
         self.plugin?.notifyListeners(TerminalEvents.ReportAvailableUpdate.rawValue, data: [
             "update": self.convertReaderSoftwareUpdate(update: update)
-        ])
-    }
-
-    public func reader(_: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
-        self.installUpdateCancelable = cancelable
-        self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: [
-            "update": self.convertReaderSoftwareUpdate(update: update)
-        ])
-    }
-
-    public func reader(_: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
-        self.plugin?.notifyListeners(TerminalEvents.ReaderSoftwareUpdateProgress.rawValue, data: ["progress": progress])
-    }
-
-    public func reader(_: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
-        if (error) != nil {
-            self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
-                "error": error!.localizedDescription
-            ])
-            return
-        }
-        self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
-            "update": self.convertReaderSoftwareUpdate(update: update!)
-        ])
-    }
-
-    public func reader(_: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
-        self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": TerminalMappers.mapFromReaderInputOptions(inputOptions), "message": inputOptions.rawValue])
-    }
-
-    public func reader(_: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
-        let result = TerminalMappers.mapFromReaderDisplayMessage(displayMessage)
-
-        self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
-            "messageType": result,
-            "message": displayMessage.rawValue
         ])
     }
 

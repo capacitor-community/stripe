@@ -62,6 +62,7 @@ export type ReaderInterface = {
    * @deprecated This property has been deprecated and should use the `serialNumber` property.
    */
   index?: number;
+  discovering: boolean;
 };
 export type LocationInterface = {
   id: string;
@@ -79,7 +80,7 @@ export type LocationInterface = {
 
 export type ReaderSoftwareUpdateInterface = {
   deviceSoftwareVersion: string;
-  estimatedUpdateTime: UpdateTimeEstimate;
+  durationEstimate: UpdateTimeEstimate;
   requiredAt: number;
 };
 
@@ -127,12 +128,12 @@ export interface StripeTerminalPlugin {
     autoReconnectOnUnexpectedDisconnect?: boolean;
 
     /**
-     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
+     * iOS and TapToPayReader only. Android needs to be set to PaymentIntent only.
      */
     merchantDisplayName?: string;
 
     /**
-     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
+     * iOS and TapToPayReader only. Android needs to be set to PaymentIntent only.
      * The Stripe account ID for which these funds are intended.
      */
     onBehalfOf?: string;
