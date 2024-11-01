@@ -25,7 +25,6 @@ import com.stripe.stripeterminal.external.callable.Cancelable;
 import com.stripe.stripeterminal.external.callable.DiscoveryListener;
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback;
 import com.stripe.stripeterminal.external.callable.ReaderCallback;
-import com.stripe.stripeterminal.external.callable.ReaderListener;
 import com.stripe.stripeterminal.external.callable.TerminalListener;
 import com.stripe.stripeterminal.external.models.BatteryStatus;
 import com.stripe.stripeterminal.external.models.CardPresentDetails;
@@ -122,6 +121,11 @@ public class StripeTerminal extends Executor {
             public void onPaymentStatusChange(@NonNull PaymentStatus status) {
                 notifyListeners(TerminalEnumEvent.PaymentStatusChange.getWebEventName(), new JSObject().put("status", status.toString()));
             }
+
+            @Override
+            public void onDisconnect(@NotNull DisconnectReason reason) {
+                notifyListeners(TerminalEnumEvent.DisconnectedReader.getWebEventName(), new JSObject().put("reason", reason.toString()));
+            }
         };
         LogLevel logLevel = LogLevel.VERBOSE;
         this.tokenProvider =
@@ -170,7 +174,7 @@ public class StripeTerminal extends Executor {
             config = new DiscoveryConfiguration.TapToPayDiscoveryConfiguration(this.isTest);
             this.terminalConnectType = TerminalConnectTypes.TapToPay;
         } else if (Objects.equals(call.getString("type"), TerminalConnectTypes.Internet.getWebEventName())) {
-            config = new DiscoveryConfiguration.InternetDiscoveryConfiguration(this.locationId, this.isTest);
+            config = new DiscoveryConfiguration.InternetDiscoveryConfiguration(this.locationId, this.isTest, 0);
             this.terminalConnectType = TerminalConnectTypes.Internet;
         } else if (Objects.equals(call.getString("type"), TerminalConnectTypes.Usb.getWebEventName())) {
             config = new DiscoveryConfiguration.UsbDiscoveryConfiguration(0, this.isTest);
@@ -240,7 +244,7 @@ public class StripeTerminal extends Executor {
             );
             Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call));
         } else if (this.terminalConnectType == TerminalConnectTypes.Internet) {
-            InternetConnectionConfiguration config = new InternetConnectionConfiguration();
+            InternetConnectionConfiguration config = new InternetConnectionConfiguration(true, this.internetReaderListener);
             Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call));
         } else if (this.terminalConnectType == TerminalConnectTypes.Usb) {
             UsbConnectionConfiguration config = new UsbConnectionConfiguration(this.locationId);
@@ -289,33 +293,6 @@ public class StripeTerminal extends Executor {
                 }
             );
     }
-
-    ReaderReconnectionListener readerReconnectionListener = new ReaderReconnectionListener() {
-        @Override
-        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelable, @NonNull DisconnectReason reason) {
-            cancelReaderConnectionCancellable = cancelable;
-            notifyListeners(
-                TerminalEnumEvent.ReaderReconnectStarted.getWebEventName(),
-                new JSObject().put("reason", reason.toString()).put("reader", convertReaderInterface(reader))
-            );
-        }
-
-        @Override
-        public void onReaderReconnectSucceeded(@NonNull Reader reader) {
-            notifyListeners(
-                TerminalEnumEvent.ReaderReconnectSucceeded.getWebEventName(),
-                new JSObject().put("reader", convertReaderInterface(reader))
-            );
-        }
-
-        @Override
-        public void onReaderReconnectFailed(@NonNull Reader reader) {
-            notifyListeners(
-                TerminalEnumEvent.ReaderReconnectFailed.getWebEventName(),
-                new JSObject().put("reader", convertReaderInterface(reader))
-            );
-        }
-    };
 
     public void cancelDiscoverReaders(final PluginCall call) {
         if (discoveryCancelable == null || discoveryCancelable.isCompleted()) {
@@ -631,6 +608,13 @@ public class StripeTerminal extends Executor {
         };
     }
 
+    private InternetReaderListener internetReaderListener = new InternetReaderListener() {
+        @Override
+        public void onDisconnect(@NotNull DisconnectReason reason) {
+            notifyListeners(TerminalEnumEvent.DisconnectedReader.getWebEventName(), new JSObject().put("reason", reason.toString()));
+        }
+    };
+
     private ReaderListener readerListener() {
         return new ReaderListener() {
             @Override
@@ -724,7 +708,7 @@ public class StripeTerminal extends Executor {
             .put("serialNumber", reader.getSerialNumber())
             .put("id", reader.getId())
             .put("locationId", reader.getLocation() != null ? reader.getLocation().getId() : null)
-            .put("deviceSoftwareVersion", reader.getDeviceSwVersion$external_publish())
+            .put("deviceSoftwareVersion", reader.getDeviceSoftwareVersion())
             .put("simulated", reader.isSimulated())
             .put("serialNumber", reader.getSerialNumber())
             .put("ipAddress", reader.getIpAddress())
