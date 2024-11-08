@@ -4,7 +4,7 @@ import Capacitor
 class TerminalMappers {
     class func mapFromDeviceType(_ type: DeviceType) -> String {
         switch type {
-        case DeviceType.appleBuiltIn: return "appleBuiltIn"
+        case DeviceType.tapToPay: return "tapToPay"
         case DeviceType.chipper1X: return "chipper1X"
         case DeviceType.chipper2X: return "chipper2X"
         case DeviceType.etna: return "etna"
@@ -93,7 +93,7 @@ class TerminalMappers {
         }
         let result: JSObject = [
             "deviceSoftwareVersion": unwrappedUpdate.deviceSoftwareVersion,
-            "estimatedUpdateTime": mapFromUpdateTimeEstimate(unwrappedUpdate.estimatedUpdateTime),
+            "estimatedUpdateTime": mapFromUpdateTimeEstimate(unwrappedUpdate.durationEstimate),
             "requiredAt": convertDateToUnixTimestamp(date: unwrappedUpdate.requiredAt)
         ]
         return result

@@ -2,8 +2,8 @@ import Foundation
 import Capacitor
 import StripeTerminal
 
-public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDelegate, BluetoothReaderDelegate, TerminalDelegate, ReconnectionDelegate {
-
+public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, ReaderDelegate, MobileReaderDelegate, TapToPayReaderDelegate, InternetReaderDelegate {
+    
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
 
@@ -42,8 +42,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         self.locationId = call.getString("locationId")
 
         if TerminalConnectTypes.TapToPay.rawValue == connectType {
-            self.type = .localMobile
-            config = try LocalMobileDiscoveryConfigurationBuilder().setSimulated(self.isTest!).build()
+            self.type = .tapToPay
+            config = try TapToPayDiscoveryConfigurationBuilder().setSimulated(self.isTest!).build()
         } else if TerminalConnectTypes.Internet.rawValue == connectType {
             self.type = .internet
             config = try InternetDiscoveryConfigurationBuilder()
@@ -88,7 +88,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
     }
 
     public func connectReader(_ call: CAPPluginCall) {
-        if self.type == .localMobile {
+        if self.type == .tapToPay {
             self.connectLocalMobileReader(call)
         } else if self.type == .internet {
             self.connectInternetReader(call)
@@ -131,11 +131,10 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         let reader: JSObject = call.getObject("reader")!
         let serialNumber: String = reader["serialNumber"] as! String
 
-        let connectionConfig = try! LocalMobileConnectionConfigurationBuilder.init(locationId: self.locationId!)
+        let connectionConfig = try! TapToPayConnectionConfigurationBuilder.init(delegate: self, locationId: self.locationId!)
             .setMerchantDisplayName(merchantDisplayName ?? nil)
             .setOnBehalfOf(onBehalfOf ?? nil)
             .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
-            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
             .build()
 
         guard let foundReader = self.discoveredReadersList?.first(where: { $0.serialNumber == serialNumber }) else {
@@ -143,7 +142,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             return
         }
 
-        Terminal.shared.connectLocalMobileReader(foundReader, delegate: self, connectionConfig: connectionConfig) { reader, error in
+        Terminal.shared.connectReader(foundReader, connectionConfig: connectionConfig) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -162,11 +161,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
             return
         }
 
-        let config = try! InternetConnectionConfigurationBuilder()
+        let config = try! InternetConnectionConfigurationBuilder(delegate: self)
             .setFailIfInUse(true)
             .build()
 
-        Terminal.shared.connectInternetReader(foundReader, connectionConfig: config) { reader, error in
+        Terminal.shared.connectReader(foundReader, connectionConfig: config) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -189,12 +188,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         let merchantDisplayName: String? = call.getString("merchantDisplayName")
         let onBehalfOf: String? = call.getString("onBehalfOf")
 
-        let config = try! BluetoothConnectionConfigurationBuilder(locationId: self.locationId!)
+        let config = try! BluetoothConnectionConfigurationBuilder(delegate: self, locationId: self.locationId!)
             .setAutoReconnectOnUnexpectedDisconnect(autoReconnectOnUnexpectedDisconnect)
-            .setAutoReconnectionDelegate(autoReconnectOnUnexpectedDisconnect ? self : nil)
             .build()
 
-        Terminal.shared.connectBluetoothReader(foundReader, delegate: self, connectionConfig: config) { reader, error in
+        Terminal.shared.connectReader(foundReader, connectionConfig: config) { reader, error in
             if let reader = reader {
                 self.plugin?.notifyListeners(TerminalEvents.ConnectedReader.rawValue, data: [:])
                 call.resolve()
@@ -430,18 +428,18 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
      * localMobile
      */
 
-    public func localMobileReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
+    public func tapToPayReader(_ reader: Reader, didStartInstallingUpdate update: ReaderSoftwareUpdate, cancelable: Cancelable?) {
         self.installUpdateCancelable = cancelable
         self.plugin?.notifyListeners(TerminalEvents.StartInstallingUpdate.rawValue, data: [
             "update": self.convertReaderSoftwareUpdate(update: update)
         ])
     }
 
-    public func localMobileReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
+    public func tapToPayReader(_ reader: Reader, didReportReaderSoftwareUpdateProgress progress: Float) {
         self.plugin?.notifyListeners(TerminalEvents.ReaderSoftwareUpdateProgress.rawValue, data: ["progress": progress])
     }
 
-    public func localMobileReader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
+    public func tapToPayReader(_ reader: Reader, didFinishInstallingUpdate update: ReaderSoftwareUpdate?, error: Error?) {
         if (error) != nil {
             self.plugin?.notifyListeners(TerminalEvents.FinishInstallingUpdate.rawValue, data: [
                 "error": error!.localizedDescription
@@ -453,11 +451,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, LocalMobileReaderDeleg
         ])
     }
 
-    public func localMobileReader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
+    public func tapToPayReader(_ reader: Reader, didRequestReaderInput inputOptions: ReaderInputOptions = []) {
         self.plugin?.notifyListeners(TerminalEvents.RequestReaderInput.rawValue, data: ["options": TerminalMappers.mapFromReaderInputOptions(inputOptions), "message": inputOptions.rawValue])
     }
 
-    public func localMobileReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
+    public func tapToPayReader(_ reader: Reader, didRequestReaderDisplayMessage displayMessage: ReaderDisplayMessage) {
         let result = TerminalMappers.mapFromReaderDisplayMessage(displayMessage)
 
         self.plugin?.notifyListeners(TerminalEvents.RequestDisplayMessage.rawValue, data: [
