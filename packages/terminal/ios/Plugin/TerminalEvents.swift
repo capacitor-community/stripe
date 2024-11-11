@@ -1,5 +1,6 @@
 public enum TerminalEvents: String {
     case Loaded = "terminalLoaded"
+    case DiscoveringReaders = "terminalDiscoveringReaders"
     case DiscoveredReaders = "terminalDiscoveredReaders"
     case ConnectedReader = "terminalConnectedReader"
     case DisconnectedReader = "terminalDisconnectedReader"

@@ -995,7 +995,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 | Members                | Value                           |
 | ---------------------- | ------------------------------- |
-| **`cotsDevice`**       | <code>'cotsDevice'</code>       |
+| **`tapToPayDevice`**   | <code>'tapToPayDevice'</code>   |
 | **`wisePad3s`**        | <code>'wisePad3s'</code>        |
 | **`appleBuiltIn`**     | <code>'appleBuiltIn'</code>     |
 | **`chipper1X`**        | <code>'chipper1X'</code>        |
@@ -1075,6 +1075,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 | ---------------------------------- | --------------------------------------------------- |
 | **`Loaded`**                       | <code>'terminalLoaded'</code>                       |
 | **`DiscoveredReaders`**            | <code>'terminalDiscoveredReaders'</code>            |
+| **`DiscoveringReaders`**           | <code>'terminalDiscoveringReaders'</code>           |
 | **`CancelDiscoveredReaders`**      | <code>'terminalCancelDiscoveredReaders'</code>      |
 | **`ConnectedReader`**              | <code>'terminalConnectedReader'</code>              |
 | **`DisconnectedReader`**           | <code>'terminalDisconnectedReader'</code>           |

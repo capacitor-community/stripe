@@ -94,7 +94,7 @@ public class StripeTerminalPlugin extends Plugin {
         }
     }
 
-    @PluginMethod
+    @PluginMethod(returnType =  PluginMethod.RETURN_CALLBACK)
     public void discoverReaders(PluginCall call) {
         if (
             Objects.equals(call.getString("type"), TerminalConnectTypes.Bluetooth.getWebEventName()) ||
