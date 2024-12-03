@@ -578,7 +578,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
 class APIClient: ConnectionTokenProvider {
     weak var plugin: StripeTerminalPlugin?
     var tokenProviderEndpoint: String = ""
-    private var pendingCompletion: ConnectionTokenCompletionBlock?
+    private var pendingCompletion: [ConnectionTokenCompletionBlock] = []
 
     func initialize(plugin: StripeTerminalPlugin?, tokenProviderEndpoint: String) {
         self.plugin = plugin
@@ -587,7 +587,7 @@ class APIClient: ConnectionTokenProvider {
 
     func setConnectionToken(_ call: CAPPluginCall) {
         let token = call.getString("token", "")
-        if let completion = pendingCompletion {
+        if let completion = pendingCompletion.isEmpty ? nil : pendingCompletion.removeFirst() {
             if token == "" {
                 let error = NSError(domain: "com.getcapacitor.community.stripe.terminal",
                                     code: 3000,
@@ -598,7 +598,6 @@ class APIClient: ConnectionTokenProvider {
                 completion(token, nil)
                 call.resolve()
             }
-            pendingCompletion = nil
         } else {
             call.reject("Stripe Terminal do not pending fetchConnectionToken")
         }
@@ -607,7 +606,7 @@ class APIClient: ConnectionTokenProvider {
     // Fetches a ConnectionToken from your backend
     func fetchConnectionToken(_ completion: @escaping ConnectionTokenCompletionBlock) {
         if tokenProviderEndpoint == "" {
-            pendingCompletion = completion
+            pendingCompletion.append(completion)
             self.plugin?.notifyListeners(TerminalEvents.RequestedConnectionToken.rawValue, data: [:])
         } else {
             let config = URLSessionConfiguration.default

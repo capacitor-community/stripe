@@ -31,8 +31,7 @@ export class StripeTerminalWeb
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   private stripeTerminal: Terminal | undefined = undefined;
-  private tokenProviderPromiseResolve: ((value: string) => void) | undefined =
-    undefined;
+  private tokenProviderPromiseResolve: ((value: string) => void)[] = [];
   private discoveredReaders: ReaderInterface[] = [];
   private cachedFindReaders: Reader[] = [];
   private cachedPaymentIntent: ISdkManagedPaymentIntent | undefined = undefined;
@@ -62,7 +61,7 @@ export class StripeTerminalWeb
           return data.secret;
         } else {
           return new Promise<string>(
-            resolve => (this.tokenProviderPromiseResolve = resolve),
+            resolve => (this.tokenProviderPromiseResolve.push(resolve)),
           );
         }
       },
@@ -132,11 +131,15 @@ export class StripeTerminalWeb
   }
 
   async setConnectionToken(options: { token: string }): Promise<void> {
-    if (this.tokenProviderPromiseResolve === undefined) {
+    if (this.tokenProviderPromiseResolve.length === 0) {
       return;
     }
     console.log('setConnectionToken', options);
-    this.tokenProviderPromiseResolve(options.token);
+    const resolve = this.tokenProviderPromiseResolve.shift();
+    if (resolve === undefined) {
+      throw new Error('tokenProviderPromiseResolve is empty.');
+    }
+    resolve(options.token);
   }
 
   async setSimulatorConfiguration(options: {
