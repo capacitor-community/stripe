@@ -73,8 +73,8 @@ To use the latest Stripe Android, you need to version these up. To use the lates
 +   identityVersion = '20.39.+'
 
     // If you use @capacitor-community/stripe-terminal:
-+   stripeterminalCoreVersion = '3.5.0'
-+   stripeterminalLocalmobileVersion = '3.5.0'
++   stripeterminalCoreVersion = '4.0.0'
++   stripeterminalTapToPayVersion = '4.0.0'
   }
 ```
 
