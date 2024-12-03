@@ -22,7 +22,7 @@ import {
   mapFromCartToICart,
   mapFromConnectionStatus,
   mapFromPaymentStatus,
-} from './terminalMappers';
+} from './terminal-mappers';
 
 export class StripeTerminalWeb
   extends WebPlugin
