@@ -84,13 +84,15 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
     }
 
     public func connectReader(_ call: CAPPluginCall) {
-        if self.type == .tapToPay {
-            self.connectLocalMobileReader(call)
-        } else if self.type == .internet {
-            self.connectInternetReader(call)
-        } else {
-            // if self.type === DiscoveryMethod.bluetoothScan
-            self.connectBluetoothReader(call)
+        DispatchQueue.main.async {
+            if self.type == .tapToPay {
+                self.connectLocalMobileReader(call)
+            } else if self.type == .internet {
+                self.connectInternetReader(call)
+            } else {
+                // if self.type === DiscoveryMethod.bluetoothScan
+                self.connectBluetoothReader(call)
+            }
         }
     }
 
@@ -108,14 +110,12 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
             return
         }
 
-        DispatchQueue.main.async {
-            Terminal.shared.disconnectReader { error in
-                if let error = error {
-                    call.reject(error.localizedDescription)
-                } else {
-                    self.plugin?.notifyListeners(TerminalEvents.DisconnectedReader.rawValue, data: [:])
-                    call.resolve()
-                }
+        Terminal.shared.disconnectReader { error in
+            if let error = error {
+                call.reject(error.localizedDescription)
+            } else {
+                self.plugin?.notifyListeners(TerminalEvents.DisconnectedReader.rawValue, data: [:])
+                call.resolve()
             }
         }
     }
