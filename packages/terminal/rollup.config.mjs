@@ -4,7 +4,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorStripeIdentity',
+      name: 'capacitorStripe',
       globals: {
         '@capacitor/core': 'capacitorExports',
       },
