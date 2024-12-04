@@ -92,19 +92,6 @@ export class TerminalPage {
     }
     await this.prepareTerminalEvents(eventItems, readerType);
 
-    const result = await StripeTerminal.discoverReaders({
-      type: readerType,
-      locationId:
-        [TerminalConnectTypes.Usb].includes(
-          readerType,
-        )
-          ? 'tml_Ff37mAmk1XdBYT'
-          : 'tml_FOUOdQVIxvVdvN',
-    }).catch((e) => {
-      this.helper.updateItem(this.eventItems, 'discoverReaders', false);
-      throw e;
-    });
-
     const listenerHandler = await StripeTerminal.addListener(TerminalEventsEnum.DiscoveredReaders, async ({ readers }) => {
       if (readers?.length > 0) {
         const result = { readers };
@@ -220,6 +207,18 @@ export class TerminalPage {
       }
     });
 
+    const result = await StripeTerminal.discoverReaders({
+      type: readerType,
+      locationId:
+        [TerminalConnectTypes.Usb].includes(
+          readerType,
+        )
+          ? 'tml_Ff37mAmk1XdBYT'
+          : 'tml_FOUOdQVIxvVdvN',
+    }).catch((e) => {
+      this.helper.updateItem(this.eventItems, 'discoverReaders', false);
+      throw e;
+    });
   }
 
   async checkUpdateDeviceUpdate(readerType: TerminalConnectTypes = TerminalConnectTypes.Bluetooth) {
