@@ -4,7 +4,28 @@ import Capacitor
 import PassKit
 
 @objc(StripeTerminalPlugin)
-public class StripeTerminalPlugin: CAPPlugin {
+public class StripeTerminalPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "StripeTerminalPlugin" 
+    public let jsName = "StripeTerminal" 
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setConnectionToken", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "discoverReaders", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "cancelDiscoverReaders", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "connectReader", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getConnectedReader", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "disconnectReader", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "collectPaymentMethod", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "cancelCollectPaymentMethod", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "confirmPaymentIntent", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setSimulatorConfiguration", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "installAvailableUpdate", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "cancelInstallUpdate", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setReaderDisplay", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "clearReaderDisplay", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "rebootReader", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "cancelReaderReconnection", returnType: CAPPluginReturnPromise),
+    ] 
     private let implementation = StripeTerminal()
 
     override public func load() {

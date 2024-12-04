@@ -4,7 +4,24 @@ import StripePaymentSheet
 import StripeApplePay
 
 @objc(StripePlugin)
-public class StripePlugin: CAPPlugin {
+public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "StripePlugin" 
+    public let jsName = "Stripe" 
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "handleURLCallback", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "createPaymentSheet", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "presentPaymentSheet", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "createPaymentFlow", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "presentPaymentFlow", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "confirmPaymentFlow", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isApplePayAvailable", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "createApplePay", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "presentApplePay", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isGooglePayAvailable", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "createGooglePay", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "presentGooglePay", returnType: CAPPluginReturnPromise),
+    ] 
     private let paymentSheetExecutor = PaymentSheetExecutor()
     private let paymentFlowExecutor = PaymentFlowExecutor()
     private let applePayExecutor = ApplePayExecutor()
