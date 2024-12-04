@@ -48,7 +48,6 @@ public class TokenProvider implements ConnectionTokenProvider {
                 pending.onSuccess(token);
                 call.resolve();
             }
-            pendingCallback = null;
         } else {
             call.reject("Stripe Terminal do not pending fetchConnectionToken");
         }
