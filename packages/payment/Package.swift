@@ -10,7 +10,7 @@ let package = Package(
             targets: ["StripePlugin"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", branch: "6.x"),
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", branch: "main"),
         .package(url: "https://github.com/stripe/stripe-ios-spm.git", exact: "23.32.0")
     ],
     targets: [
