@@ -123,3 +123,45 @@ jobs:
       - name: verify
         run: npm run verify:android
         working-directory: ./packages/terminal
+
+  verify-payment-ios:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/payment
+      - name: verify
+        run: npm run verify:ios
+        working-directory: ./packages/payment
+
+  verify-identity-ios:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/identity
+      - name: verify
+        run: npm run verify:ios
+        working-directory: ./packages/identity
+
+  verify-terminal-ios:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/terminal
+      - name: verify
+        run: npm run verify:ios
+        working-directory: ./packages/terminal
