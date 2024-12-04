@@ -57,11 +57,6 @@ export type ReaderInterface = {
   trackKeyProfileId: string;
   settingsVersion: string;
   pinKeysetId: string;
-
-  /**
-   * @deprecated This property has been deprecated and should use the `serialNumber` property.
-   */
-  index?: number;
 };
 export type LocationInterface = {
   id: string;

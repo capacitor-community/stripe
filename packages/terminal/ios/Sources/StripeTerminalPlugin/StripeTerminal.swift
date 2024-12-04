@@ -72,12 +72,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
 
     public func terminal(_ terminal: Terminal, didUpdateDiscoveredReaders readers: [Reader]) {
         var readersJSObject: JSArray = []
-        var i = 0
         for reader in readers {
-            readersJSObject.append([
-                "index": i
-            ].merging(self.convertReaderInterface(reader: reader)) { (_, new) in new })
-            i += 1
+            readersJSObject.append(self.convertReaderInterface(reader: reader))
         }
         self.discoveredReadersList = readers
 
