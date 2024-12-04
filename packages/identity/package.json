@@ -13,7 +13,9 @@
     "android/src/main/",
     "android/build.gradle",
     "dist/",
-    "ios/Plugin/",
+    "ios/Sources",
+    "ios/Tests",
+    "Package.swift",
     "CapacitorCommunityStripeIdentity.podspec"
   ],
   "author": "Masahiko Sakakibara",
