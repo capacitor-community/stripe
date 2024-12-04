@@ -72,9 +72,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: 679f9673fdf30597493a6362a5d5bf233d46abc2
-  CapacitorCommunityStripe: 029a530c26bbc805b855da11375d347fb5398835
-  CapacitorCommunityStripeIdentity: 31f01cd07e07f9ff0b99dc4a80188b9518e8e12a
-  CapacitorCommunityStripeTerminal: 32c65d0b1ef96bec258074d5172215820f075dd1
+  CapacitorCommunityStripe: 278d037566b213a2faafe55005bc00e28967998f
+  CapacitorCommunityStripeIdentity: 5478f655a09293240507a65668b5992ce985991a
+  CapacitorCommunityStripeTerminal: 6d1bf34a320815231b1fd74c3c6a6a7c4f46ba8f
   CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
   StripeApplePay: fd4aeaa8af1ebbfe5e38390ef7b4607f66494f80
   StripeCameraCore: 2f226573bc1a84deba61ded08e2d3f49b0bd5a7d
