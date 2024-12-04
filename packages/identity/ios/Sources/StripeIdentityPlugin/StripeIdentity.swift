@@ -21,18 +21,28 @@ import StripeIdentity
             return
         }
 
-        // Configure a square brand logo. Recommended image size is 32 x 32 points.
-        let configuration = IdentityVerificationSheet.Configuration(
-            brandLogo: UIImage(named: "AppIcon")!
-        )
-        self.identityVerificationSheet = IdentityVerificationSheet(
-            verificationSessionId: verificationId!,
-            ephemeralKeySecret: ephemeralKeySecret!,
-            configuration: configuration
-        )
+        if let iconFileName = Bundle.main.object(forInfoDictionaryKey: "CFBundleIcons") as? [String: Any],
+           let primaryIcon = iconFileName["CFBundlePrimaryIcon"] as? [String: Any],
+           let iconFilesArray = primaryIcon["CFBundleIconFiles"] as? [String],
+           let fileName = iconFilesArray.first {
 
-        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Loaded.rawValue, data: [:])
-        call.resolve([:])
+            let configuration = IdentityVerificationSheet.Configuration(
+                brandLogo: UIImage(named: fileName) ?? UIImage()
+            )
+
+            self.identityVerificationSheet = IdentityVerificationSheet(
+                verificationSessionId: verificationId!,
+                ephemeralKeySecret: ephemeralKeySecret!,
+                configuration: configuration
+            )
+
+            self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Loaded.rawValue, data: [:])
+            call.resolve([:])
+        } else {
+            let errorText = "CFBundleIcons or CFBundlePrimaryIcon or CFBundleIconFiles is not found. You should check ios image assets"
+            self.plugin?.notifyListeners(IdentityVerificationSheetEvents.FailedToLoad.rawValue, data: ["message": errorText])
+            call.reject(errorText)
+        }
     }
 
     func present(_ call: CAPPluginCall) {
