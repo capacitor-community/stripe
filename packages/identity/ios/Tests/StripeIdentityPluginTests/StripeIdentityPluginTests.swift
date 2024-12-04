@@ -7,9 +7,9 @@ class StripeIdentityTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
 
         let implementation = StripeIdentity()
-//         let value = "Hello, World!"
-//         let result = implementation.echo(value)
-//
-//         XCTAssertEqual(value, result)
+        //         let value = "Hello, World!"
+        //         let result = implementation.echo(value)
+        //
+        //         XCTAssertEqual(value, result)
     }
 }
