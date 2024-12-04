@@ -105,12 +105,12 @@ export class TerminalPage {
       throw e;
     });
 
-    const listnerHandler = await StripeTerminal.addListener(TerminalEventsEnum.DiscoveredReaders, async ({ readers }) => {
+    const listenerHandler = await StripeTerminal.addListener(TerminalEventsEnum.DiscoveredReaders, async ({ readers }) => {
       if (readers?.length > 0) {
         const result = { readers };
         await this.helper.updateItem(this.eventItems, 'discoverReaders', true);
 
-        this.listenerHandlers.push(listnerHandler);
+        this.listenerHandlers.push(listenerHandler);
 
         const selectedReader =
           result.readers?.length === 1
