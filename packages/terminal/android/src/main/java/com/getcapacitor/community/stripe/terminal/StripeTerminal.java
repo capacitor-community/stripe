@@ -148,7 +148,8 @@ public class StripeTerminal extends Executor {
                     new SimulatorConfiguration(
                         SimulateReaderUpdate.valueOf(call.getString("update", "UPDATE_AVAILABLE")),
                         new SimulatedCard(SimulatedCardType.valueOf(call.getString("simulatedCard", "VISA"))),
-                        call.getLong("simulatedTipAmount", null)
+                        call.getLong("simulatedTipAmount", null),
+                        false
                     )
                 );
 

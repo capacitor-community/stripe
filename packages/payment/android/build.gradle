@@ -5,7 +5,7 @@ ext {
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.5.1'
 
     playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
-    stripeAndroidVersion = project.hasProperty('stripeAndroidVersion') ? rootProject.ext.stripeAndroidVersion : '20.52.+'
+    stripeAndroidVersion = project.hasProperty('stripeAndroidVersion') ? rootProject.ext.stripeAndroidVersion : '21.2.+'
     gsonVersion = project.hasProperty('gsonVersion') ? rootProject.ext.gsonVersion : '2.10.+'
 }
 
@@ -69,7 +69,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     implementation("com.stripe:stripe-android:$stripeAndroidVersion") {
-        exclude group: 'androidx.emoji2', module: 'emoji2'
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15to18'
     }
 
     implementation "com.google.code.gson:gson:$gsonVersion"
