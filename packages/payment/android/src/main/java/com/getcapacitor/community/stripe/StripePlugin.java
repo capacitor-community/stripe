@@ -64,49 +64,42 @@ public class StripePlugin extends Plugin {
             PaymentConfiguration.init(getContext(), metaData.publishableKey, metaData.stripeAccount);
             Stripe.setAppInfo(AppInfo.create(APP_INFO_NAME));
 
-            this.googlePayExecutor.googlePayLauncher =
-                new GooglePayLauncher(
-                    getActivity(),
-                    new GooglePayLauncher.Config(
-                        metaData.googlePayEnvironment,
-                        metaData.countryCode,
-                        metaData.displayName,
-                        metaData.emailAddressRequired,
-                        new GooglePayLauncher.BillingAddressConfig(
-                            metaData.billingAddressRequired,
-                            Objects.equals(metaData.billingAddressFormat, "Full")
-                                ? GooglePayLauncher.BillingAddressConfig.Format.Full
-                                : GooglePayLauncher.BillingAddressConfig.Format.Min,
-                            metaData.phoneNumberRequired
-                        ),
-                        metaData.existingPaymentMethodRequired
+            this.googlePayExecutor.googlePayLauncher = new GooglePayLauncher(
+                getActivity(),
+                new GooglePayLauncher.Config(
+                    metaData.googlePayEnvironment,
+                    metaData.countryCode,
+                    metaData.displayName,
+                    metaData.emailAddressRequired,
+                    new GooglePayLauncher.BillingAddressConfig(
+                        metaData.billingAddressRequired,
+                        Objects.equals(metaData.billingAddressFormat, "Full")
+                            ? GooglePayLauncher.BillingAddressConfig.Format.Full
+                            : GooglePayLauncher.BillingAddressConfig.Format.Min,
+                        metaData.phoneNumberRequired
                     ),
-                    (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
-                    (@NotNull GooglePayLauncher.Result result) ->
-                        this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
-                );
+                    metaData.existingPaymentMethodRequired
+                ),
+                (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
+                (@NotNull GooglePayLauncher.Result result) -> this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
+            );
         } else {
             Logger.info("Plugin didn't prepare Google Pay.");
         }
 
-        this.paymentSheetExecutor.paymentSheet =
-            new PaymentSheet(
-                getActivity(),
-                result -> {
-                    this.paymentSheetExecutor.onPaymentSheetResult(bridge, paymentSheetCallbackId, result);
-                }
-            );
+        this.paymentSheetExecutor.paymentSheet = new PaymentSheet(getActivity(), result -> {
+            this.paymentSheetExecutor.onPaymentSheetResult(bridge, paymentSheetCallbackId, result);
+        });
 
-        this.paymentFlowExecutor.flowController =
-            PaymentSheet.FlowController.create(
-                getActivity(),
-                paymentOption -> {
-                    this.paymentFlowExecutor.onPaymentOption(bridge, paymentFlowCallbackId, paymentOption);
-                },
-                result -> {
-                    this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
-                }
-            );
+        this.paymentFlowExecutor.flowController = PaymentSheet.FlowController.create(
+            getActivity(),
+            paymentOption -> {
+                this.paymentFlowExecutor.onPaymentOption(bridge, paymentFlowCallbackId, paymentOption);
+            },
+            result -> {
+                this.paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result);
+            }
+        );
 
         if (metaData.enableIdentifier) {
             Resources resources = getActivity().getApplicationContext().getResources();

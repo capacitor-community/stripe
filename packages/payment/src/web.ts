@@ -246,7 +246,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       'applePay',
       this.requestApplePay,
       this.requestApplePayOptions,
-      ApplePayEventsEnum
+      ApplePayEventsEnum,
     ) as Promise<{
       paymentResult: ApplePayResultInterface;
     }>;
@@ -273,7 +273,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       'googlePay',
       this.requestGooglePay,
       this.requestGooglePayOptions,
-      GooglePayEventsEnum
+      GooglePayEventsEnum,
     ) as Promise<{
       paymentResult: GooglePayResultInterface;
     }>;
@@ -319,7 +319,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     type: 'applePay' | 'googlePay',
     requestButton: StripeRequestButton | undefined,
     requestButtonOptions: CreateApplePayOption | CreateGooglePayOption | undefined,
-    EventsEnum: typeof ApplePayEventsEnum | typeof GooglePayEventsEnum
+    EventsEnum: typeof ApplePayEventsEnum | typeof GooglePayEventsEnum,
   ): Promise<{
     paymentResult: ApplePayResultInterface | GooglePayResultInterface;
   }> {
@@ -349,7 +349,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
           {
             payment_method: event.paymentMethod.id,
           },
-          { handleActions: false }
+          { handleActions: false },
         );
         if (confirmError) {
           event.complete('fail');

@@ -99,14 +99,8 @@ export type Cart = {
 export * from './events.enum';
 export * from './stripe.enum';
 export interface StripeTerminalPlugin {
-  initialize(options: {
-    tokenProviderEndpoint?: string;
-    isTest: boolean;
-  }): Promise<void>;
-  discoverReaders(options: {
-    type: TerminalConnectTypes;
-    locationId?: string;
-  }): Promise<{
+  initialize(options: { tokenProviderEndpoint?: string; isTest: boolean }): Promise<void>;
+  discoverReaders(options: { type: TerminalConnectTypes; locationId?: string }): Promise<{
     readers: ReaderInterface[];
   }>;
   setConnectionToken(options: { token: string }): Promise<void>;
@@ -150,10 +144,7 @@ export interface StripeTerminalPlugin {
   rebootReader(): Promise<void>;
   cancelReaderReconnection(): Promise<void>;
 
-  addListener(
-    eventName: TerminalEventsEnum.Loaded,
-    listenerFunc: () => void,
-  ): Promise<PluginListenerHandle>;
+  addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
   addListener(
     eventName: TerminalEventsEnum.RequestedConnectionToken,
@@ -165,10 +156,7 @@ export interface StripeTerminalPlugin {
     listenerFunc: ({ readers }: { readers: ReaderInterface[] }) => void,
   ): Promise<PluginListenerHandle>;
 
-  addListener(
-    eventName: TerminalEventsEnum.ConnectedReader,
-    listenerFunc: () => void,
-  ): Promise<PluginListenerHandle>;
+  addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
   /**
    * Emitted when the reader is disconnected, either in response to [`disconnectReader()`](#disconnectreader)
@@ -236,10 +224,7 @@ export interface StripeTerminalPlugin {
    * Emitted when [`cancelCollectPaymentMethod()`](#cancelcollectpaymentmethod) is called and succeeds.
    * The Promise returned by `cancelCollectPaymentMethod()` will also be resolved.
    */
-  addListener(
-    eventName: TerminalEventsEnum.Canceled,
-    listenerFunc: () => void,
-  ): Promise<PluginListenerHandle>;
+  addListener(eventName: TerminalEventsEnum.Canceled, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
   /**
    * Emitted when either [`collectPaymentMethod()`](#collectpaymentmethod) or [`confirmPaymentIntent()`](#confirmpaymentintent)
@@ -247,11 +232,7 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.Failed,
-    listenerFunc: (info: {
-      message: string;
-      code?: string;
-      declineCode?: string;
-    }) => void,
+    listenerFunc: (info: { message: string; code?: string; declineCode?: string }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
@@ -259,11 +240,7 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.ReportAvailableUpdate,
-    listenerFunc: ({
-      update,
-    }: {
-      update: ReaderSoftwareUpdateInterface;
-    }) => void,
+    listenerFunc: ({ update }: { update: ReaderSoftwareUpdateInterface }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
@@ -288,11 +265,7 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.StartInstallingUpdate,
-    listenerFunc: ({
-      update,
-    }: {
-      update: ReaderSoftwareUpdateInterface;
-    }) => void,
+    listenerFunc: ({ update }: { update: ReaderSoftwareUpdateInterface }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
@@ -335,15 +308,7 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.BatteryLevel,
-    listenerFunc: ({
-      level,
-      charging,
-      status,
-    }: {
-      level: number;
-      charging: boolean;
-      status: BatteryStatus;
-    }) => void,
+    listenerFunc: ({ level, charging, status }: { level: number; charging: boolean; status: BatteryStatus }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
@@ -365,13 +330,7 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.RequestDisplayMessage,
-    listenerFunc: ({
-      messageType,
-      message,
-    }: {
-      messageType: ReaderDisplayMessage;
-      message: string;
-    }) => void,
+    listenerFunc: ({ messageType, message }: { messageType: ReaderDisplayMessage; message: string }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
@@ -385,13 +344,7 @@ export interface StripeTerminalPlugin {
    */
   addListener(
     eventName: TerminalEventsEnum.RequestReaderInput,
-    listenerFunc: ({
-      options,
-      message,
-    }: {
-      options: ReaderInputOption[];
-      message: string;
-    }) => void,
+    listenerFunc: ({ options, message }: { options: ReaderInputOption[]; message: string }) => void,
   ): Promise<PluginListenerHandle>;
 
   /**
@@ -404,13 +357,7 @@ export interface StripeTerminalPlugin {
 
   addListener(
     eventName: TerminalEventsEnum.ReaderReconnectStarted,
-    listenerFunc: ({
-      reader,
-      reason,
-    }: {
-      reader: ReaderInterface;
-      reason: string;
-    }) => void,
+    listenerFunc: ({ reader, reason }: { reader: ReaderInterface; reason: string }) => void,
   ): Promise<PluginListenerHandle>;
 
   addListener(

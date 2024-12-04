@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", branch: "6.0.0")
-        .package(url: "https://github.com/stripe/stripe-ios-spm.git", exact: "23.32.0")
+            .package(url: "https://github.com/stripe/stripe-ios-spm.git", exact: "23.32.0")
     ],
     targets: [
         .target(
@@ -19,7 +19,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm")
-                .product(name: "StripeIdentity", package: "stripe-ios-spm")
+                    .product(name: "StripeIdentity", package: "stripe-ios-spm")
             ],
             path: "ios/Sources/StripeIdentityPlugin"),
         .testTarget(

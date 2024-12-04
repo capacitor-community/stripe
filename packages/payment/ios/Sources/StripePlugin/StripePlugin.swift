@@ -5,8 +5,8 @@ import StripeApplePay
 
 @objc(StripePlugin)
 public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "StripePlugin" 
-    public let jsName = "Stripe" 
+    public let identifier = "StripePlugin"
+    public let jsName = "Stripe"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "handleURLCallback", returnType: CAPPluginReturnPromise),
@@ -20,8 +20,8 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "presentApplePay", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "isGooglePayAvailable", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "createGooglePay", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "presentGooglePay", returnType: CAPPluginReturnPromise),
-    ] 
+        CAPPluginMethod(name: "presentGooglePay", returnType: CAPPluginReturnPromise)
+    ]
     private let paymentSheetExecutor = PaymentSheetExecutor()
     private let paymentFlowExecutor = PaymentFlowExecutor()
     private let applePayExecutor = ApplePayExecutor()

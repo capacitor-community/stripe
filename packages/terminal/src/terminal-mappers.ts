@@ -1,12 +1,7 @@
 import type { Reader } from '@stripe/terminal-js/types/terminal';
 
 import type { Cart, LocationInterface, ReaderInterface } from './definitions';
-import {
-  BatteryStatus,
-  DeviceType,
-  LocationStatus,
-  NetworkStatus,
-} from './definitions';
+import { BatteryStatus, DeviceType, LocationStatus, NetworkStatus } from './definitions';
 import type { ICart } from './stripe-types/proto';
 
 export const mapFromCartToICart = (cart: Cart): ICart => {
@@ -22,9 +17,7 @@ export const mapFromCartToICart = (cart: Cart): ICart => {
   };
 };
 
-export const mapFromConnectionStatus = (
-  connectionStatus: ConnectionStatus,
-): string => {
+export const mapFromConnectionStatus = (connectionStatus: ConnectionStatus): string => {
   switch (connectionStatus) {
     case ConnectionStatus.CONNECTED:
       return 'CONNECTED';
@@ -106,9 +99,7 @@ export const mapFromDeviceType = (type: ReaderDeviceType): DeviceType => {
   }
 };
 
-export const mapFromReaderNetworkStatus = (
-  status: string | null,
-): NetworkStatus => {
+export const mapFromReaderNetworkStatus = (status: string | null): NetworkStatus => {
   switch (status) {
     case 'offline':
       return NetworkStatus.Offline;

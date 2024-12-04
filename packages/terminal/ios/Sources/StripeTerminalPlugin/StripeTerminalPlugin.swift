@@ -5,8 +5,8 @@ import PassKit
 
 @objc(StripeTerminalPlugin)
 public class StripeTerminalPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "StripeTerminalPlugin" 
-    public let jsName = "StripeTerminal" 
+    public let identifier = "StripeTerminalPlugin"
+    public let jsName = "StripeTerminal"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "setConnectionToken", returnType: CAPPluginReturnPromise),
@@ -24,8 +24,8 @@ public class StripeTerminalPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "setReaderDisplay", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "clearReaderDisplay", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "rebootReader", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "cancelReaderReconnection", returnType: CAPPluginReturnPromise),
-    ] 
+        CAPPluginMethod(name: "cancelReaderReconnection", returnType: CAPPluginReturnPromise)
+    ]
     private let implementation = StripeTerminal()
 
     override public func load() {

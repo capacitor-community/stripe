@@ -1,12 +1,7 @@
 import { WebPlugin } from '@capacitor/core';
 import type { ISdkManagedPaymentIntent } from '@stripe/terminal-js';
 import { loadStripeTerminal } from '@stripe/terminal-js';
-import type {
-  DiscoverResult,
-  ErrorResponse,
-  Reader,
-  Terminal,
-} from '@stripe/terminal-js/types/terminal';
+import type { DiscoverResult, ErrorResponse, Reader, Terminal } from '@stripe/terminal-js/types/terminal';
 
 import { TerminalConnectTypes } from './definitions';
 import type {
@@ -24,10 +19,7 @@ import {
   mapFromPaymentStatus,
 } from './terminal-mappers';
 
-export class StripeTerminalWeb
-  extends WebPlugin
-  implements StripeTerminalPlugin
-{
+export class StripeTerminalWeb extends WebPlugin implements StripeTerminalPlugin {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   private stripeTerminal: Terminal | undefined = undefined;
@@ -37,10 +29,7 @@ export class StripeTerminalWeb
   private cachedPaymentIntent: ISdkManagedPaymentIntent | undefined = undefined;
   private isTest = false;
 
-  async initialize(options: {
-    tokenProviderEndpoint: string;
-    isTest: boolean;
-  }): Promise<void> {
+  async initialize(options: { tokenProviderEndpoint: string; isTest: boolean }): Promise<void> {
     if (this.stripeTerminal !== undefined) {
       throw new Error('Stripe Terminal has already been initialized');
     }
@@ -60,17 +49,15 @@ export class StripeTerminalWeb
           const data = await response.json();
           return data.secret;
         } else {
-          return new Promise<string>(
-            resolve => (this.tokenProviderPromiseResolve.push(resolve)),
-          );
+          return new Promise<string>((resolve) => this.tokenProviderPromiseResolve.push(resolve));
         }
       },
-      onConnectionStatusChange: status => {
+      onConnectionStatusChange: (status) => {
         this.notifyListeners(TerminalEventsEnum.ConnectionStatusChange, {
           status: mapFromConnectionStatus(status.status),
         });
       },
-      onPaymentStatusChange: status => {
+      onPaymentStatusChange: (status) => {
         this.notifyListeners(TerminalEventsEnum.PaymentStatusChange, {
           status: mapFromPaymentStatus(status.status),
         });
@@ -84,10 +71,7 @@ export class StripeTerminalWeb
     this.notifyListeners(TerminalEventsEnum.Loaded, null);
   }
 
-  async discoverReaders(options: {
-    type: TerminalConnectTypes;
-    locationId?: string;
-  }): Promise<{
+  async discoverReaders(options: { type: TerminalConnectTypes; locationId?: string }): Promise<{
     readers: ReaderInterface[];
   }> {
     if (this.stripeTerminal === undefined) {
@@ -95,9 +79,7 @@ export class StripeTerminalWeb
     }
 
     if (options.type !== TerminalConnectTypes.Internet) {
-      this.unavailable(
-        `${options.type} is selected. Web platform is supported only internet connection.`,
-      );
+      this.unavailable(`${options.type} is selected. Web platform is supported only internet connection.`);
     }
 
     const discoverResult = await this.stripeTerminal.discoverReaders({
@@ -108,12 +90,10 @@ export class StripeTerminalWeb
     if ((discoverResult as ErrorResponse).error) {
       throw new Error((discoverResult as ErrorResponse).error.message);
     }
-    this.cachedFindReaders = (
-      discoverResult as DiscoverResult
-    ).discoveredReaders;
-    this.discoveredReaders = (
-      discoverResult as DiscoverResult
-    ).discoveredReaders.map(reader => convertReaderInterface(reader));
+    this.cachedFindReaders = (discoverResult as DiscoverResult).discoveredReaders;
+    this.discoveredReaders = (discoverResult as DiscoverResult).discoveredReaders.map((reader) =>
+      convertReaderInterface(reader),
+    );
     this.notifyListeners(TerminalEventsEnum.DiscoveredReaders, {
       readers: this.discoveredReaders,
     });
@@ -151,9 +131,7 @@ export class StripeTerminalWeb
   }
 
   async connectReader(options: { reader: ReaderInterface }): Promise<void> {
-    const reader = this.cachedFindReaders.find(
-      reader => reader.serial_number === options.reader.serialNumber,
-    );
+    const reader = this.cachedFindReaders.find((reader) => reader.serial_number === options.reader.serialNumber);
     if (reader === undefined) {
       throw new Error('reader is not match from descovered readers.');
     }
@@ -181,12 +159,8 @@ export class StripeTerminalWeb
     this.notifyListeners(TerminalEventsEnum.DisconnectedReader, null);
   }
 
-  async collectPaymentMethod(options: {
-    paymentIntent: string;
-  }): Promise<void> {
-    const collectResult = await this.stripeTerminal?.collectPaymentMethod(
-      options.paymentIntent,
-    );
+  async collectPaymentMethod(options: { paymentIntent: string }): Promise<void> {
+    const collectResult = await this.stripeTerminal?.collectPaymentMethod(options.paymentIntent);
 
     if ((collectResult as ErrorResponse).error) {
       throw new Error((collectResult as ErrorResponse).error.message);
@@ -210,9 +184,7 @@ export class StripeTerminalWeb
     if (this.cachedPaymentIntent === undefined) {
       throw new Error('PaymentIntent is not cached.');
     }
-    const processResult = await this.stripeTerminal?.processPayment(
-      this.cachedPaymentIntent,
-    );
+    const processResult = await this.stripeTerminal?.processPayment(this.cachedPaymentIntent);
     if ((processResult as ErrorResponse).error) {
       throw new Error((processResult as ErrorResponse).error.message);
     }
@@ -227,7 +199,7 @@ export class StripeTerminalWeb
   }
   async setReaderDisplay(options: Cart): Promise<void> {
     await this.stripeTerminal?.setReaderDisplay({
-      type: "cart",
+      type: 'cart',
       cart: mapFromCartToICart(options),
     });
     console.log('setReaderDisplay', options);

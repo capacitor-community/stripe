@@ -106,13 +106,11 @@ public class StripeTerminal extends Executor {
         }
 
         this.activitySupplier.get()
-            .runOnUiThread(
-                () -> {
-                    TerminalApplicationDelegate.onCreate((Application) this.contextSupplier.get().getApplicationContext());
-                    notifyListeners(TerminalEnumEvent.Loaded.getWebEventName(), emptyObject);
-                    call.resolve();
-                }
-            );
+            .runOnUiThread(() -> {
+                TerminalApplicationDelegate.onCreate((Application) this.contextSupplier.get().getApplicationContext());
+                notifyListeners(TerminalEnumEvent.Loaded.getWebEventName(), emptyObject);
+                call.resolve();
+            });
         TerminalListener listener = new TerminalListener() {
             @Override
             public void onConnectionStatusChange(@NonNull ConnectionStatus status) {
@@ -128,8 +126,11 @@ public class StripeTerminal extends Executor {
             }
         };
         LogLevel logLevel = LogLevel.VERBOSE;
-        this.tokenProvider =
-            new TokenProvider(this.contextSupplier, call.getString("tokenProviderEndpoint", ""), this.notifyListenersFunction);
+        this.tokenProvider = new TokenProvider(
+            this.contextSupplier,
+            call.getString("tokenProviderEndpoint", ""),
+            this.notifyListenersFunction
+        );
         if (!Terminal.isInitialized()) {
             Terminal.initTerminal(this.contextSupplier.get().getApplicationContext(), logLevel, this.tokenProvider, listener);
         }
@@ -142,8 +143,7 @@ public class StripeTerminal extends Executor {
 
     public void setSimulatorConfiguration(PluginCall call) {
         try {
-            Terminal
-                .getInstance()
+            Terminal.getInstance()
                 .setSimulatorConfiguration(
                     new SimulatorConfiguration(
                         SimulateReaderUpdate.valueOf(call.getString("update", "UPDATE_AVAILABLE")),
@@ -203,24 +203,22 @@ public class StripeTerminal extends Executor {
             this.notifyListeners(TerminalEnumEvent.DiscoveredReaders.getWebEventName(), new JSObject().put("readers", readersJSObject));
             call.resolve(new JSObject().put("readers", readersJSObject));
         };
-        discoveryCancelable =
-            Terminal
-                .getInstance()
-                .discoverReaders(
-                    config,
-                    discoveryListener,
-                    new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(logTag, "Finished discovering readers");
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull TerminalException ex) {
-                            Log.d(logTag, ex.getLocalizedMessage());
-                        }
+        discoveryCancelable = Terminal.getInstance()
+            .discoverReaders(
+                config,
+                discoveryListener,
+                new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(logTag, "Finished discovering readers");
                     }
-                );
+
+                    @Override
+                    public void onFailure(@NonNull TerminalException ex) {
+                        Log.d(logTag, ex.getLocalizedMessage());
+                    }
+                }
+            );
     }
 
     public void connectReader(final PluginCall call) {
@@ -252,8 +250,7 @@ public class StripeTerminal extends Executor {
             return;
         }
 
-        Terminal
-            .getInstance()
+        Terminal.getInstance()
             .disconnectReader(
                 new Callback() {
                     @Override
@@ -282,7 +279,10 @@ public class StripeTerminal extends Executor {
             return;
         }
 
-        Boolean autoReconnectOnUnexpectedDisconnect = Objects.requireNonNullElse(call.getBoolean("autoReconnectOnUnexpectedDisconnect", false), false);
+        Boolean autoReconnectOnUnexpectedDisconnect = Objects.requireNonNullElse(
+            call.getBoolean("autoReconnectOnUnexpectedDisconnect", false),
+            false
+        );
 
         ConnectionConfiguration.TapToPayConnectionConfiguration config = new ConnectionConfiguration.TapToPayConnectionConfiguration(
             this.locationId,
@@ -296,25 +296,29 @@ public class StripeTerminal extends Executor {
         @Override
         public void onReaderReconnectFailed(@NonNull Reader reader) {
             notifyListeners(
-                    TerminalEnumEvent.ReaderReconnectFailed.getWebEventName(),
-                    new JSObject().put("reader", convertReaderInterface(reader))
+                TerminalEnumEvent.ReaderReconnectFailed.getWebEventName(),
+                new JSObject().put("reader", convertReaderInterface(reader))
             );
         }
 
         @Override
-        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelReconnect, @NonNull DisconnectReason reason) {
+        public void onReaderReconnectStarted(
+            @NonNull Reader reader,
+            @NonNull Cancelable cancelReconnect,
+            @NonNull DisconnectReason reason
+        ) {
             cancelReaderConnectionCancellable = cancelReconnect;
             notifyListeners(
-                    TerminalEnumEvent.ReaderReconnectStarted.getWebEventName(),
-                    new JSObject().put("reason", reason.toString()).put("reader", convertReaderInterface(reader))
+                TerminalEnumEvent.ReaderReconnectStarted.getWebEventName(),
+                new JSObject().put("reason", reason.toString()).put("reader", convertReaderInterface(reader))
             );
         }
 
         @Override
         public void onReaderReconnectSucceeded(@NonNull Reader reader) {
             notifyListeners(
-                    TerminalEnumEvent.ReaderReconnectSucceeded.getWebEventName(),
-                    new JSObject().put("reader", convertReaderInterface(reader))
+                TerminalEnumEvent.ReaderReconnectSucceeded.getWebEventName(),
+                new JSObject().put("reader", convertReaderInterface(reader))
             );
         }
 
@@ -331,32 +335,32 @@ public class StripeTerminal extends Executor {
         }
     };
 
-//    ReaderReconnectionListener readerReconnectionListener = new ReaderReconnectionListener() {
-//        @Override
-//        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelable, @NonNull DisconnectReason reason) {
-//            cancelReaderConnectionCancellable = cancelable;
-//            notifyListeners(
-//                TerminalEnumEvent.ReaderReconnectStarted.getWebEventName(),
-//                new JSObject().put("reason", reason.toString()).put("reader", convertReaderInterface(reader))
-//            );
-//        }
-//
-//        @Override
-//        public void onReaderReconnectSucceeded(@NonNull Reader reader) {
-//            notifyListeners(
-//                TerminalEnumEvent.ReaderReconnectSucceeded.getWebEventName(),
-//                new JSObject().put("reader", convertReaderInterface(reader))
-//            );
-//        }
-//
-//        @Override
-//        public void onReaderReconnectFailed(@NonNull Reader reader) {
-//            notifyListeners(
-//                TerminalEnumEvent.ReaderReconnectFailed.getWebEventName(),
-//                new JSObject().put("reader", convertReaderInterface(reader))
-//            );
-//        }
-//    };
+    //    ReaderReconnectionListener readerReconnectionListener = new ReaderReconnectionListener() {
+    //        @Override
+    //        public void onReaderReconnectStarted(@NonNull Reader reader, @NonNull Cancelable cancelable, @NonNull DisconnectReason reason) {
+    //            cancelReaderConnectionCancellable = cancelable;
+    //            notifyListeners(
+    //                TerminalEnumEvent.ReaderReconnectStarted.getWebEventName(),
+    //                new JSObject().put("reason", reason.toString()).put("reader", convertReaderInterface(reader))
+    //            );
+    //        }
+    //
+    //        @Override
+    //        public void onReaderReconnectSucceeded(@NonNull Reader reader) {
+    //            notifyListeners(
+    //                TerminalEnumEvent.ReaderReconnectSucceeded.getWebEventName(),
+    //                new JSObject().put("reader", convertReaderInterface(reader))
+    //            );
+    //        }
+    //
+    //        @Override
+    //        public void onReaderReconnectFailed(@NonNull Reader reader) {
+    //            notifyListeners(
+    //                TerminalEnumEvent.ReaderReconnectFailed.getWebEventName(),
+    //                new JSObject().put("reader", convertReaderInterface(reader))
+    //            );
+    //        }
+    //    };
 
     private void connectInternetReader(final PluginCall call) {
         JSObject reader = call.getObject("reader");
@@ -401,7 +405,10 @@ public class StripeTerminal extends Executor {
             call.reject("The reader value is not set correctly.");
             return;
         }
-        Boolean autoReconnectOnUnexpectedDisconnect = Objects.requireNonNullElse(call.getBoolean("autoReconnectOnUnexpectedDisconnect", false), false);
+        Boolean autoReconnectOnUnexpectedDisconnect = Objects.requireNonNullElse(
+            call.getBoolean("autoReconnectOnUnexpectedDisconnect", false),
+            false
+        );
 
         BluetoothConnectionConfiguration config = new BluetoothConnectionConfiguration(
             this.locationId,
@@ -613,8 +620,7 @@ public class StripeTerminal extends Executor {
 
         Cart cart = new Cart.Builder(currency, tax, total, cartLineItems).build();
 
-        Terminal
-            .getInstance()
+        Terminal.getInstance()
             .setReaderDisplay(
                 cart,
                 new Callback() {
@@ -632,8 +638,7 @@ public class StripeTerminal extends Executor {
     }
 
     public void clearReaderDisplay(final PluginCall call) {
-        Terminal
-            .getInstance()
+        Terminal.getInstance()
             .clearReaderDisplay(
                 new Callback() {
                     @Override
@@ -650,8 +655,7 @@ public class StripeTerminal extends Executor {
     }
 
     public void rebootReader(final PluginCall call) {
-        Terminal
-            .getInstance()
+        Terminal.getInstance()
             .rebootReader(
                 new Callback() {
                     @Override
@@ -846,13 +850,13 @@ public class StripeTerminal extends Executor {
     }
 
     private Reader findReader(List<Reader> discoveredReadersList, String serialNumber) {
-        Reader foundReader =
-                null;
+        Reader foundReader = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            foundReader = discoveredReadersList.stream()
-                    .filter(device -> serialNumber != null && serialNumber.equals(device.getSerialNumber()))
-                    .findFirst()
-                    .orElse(null);
+            foundReader = discoveredReadersList
+                .stream()
+                .filter(device -> serialNumber != null && serialNumber.equals(device.getSerialNumber()))
+                .findFirst()
+                .orElse(null);
         } else {
             for (Reader device : discoveredReadersList) {
                 if (serialNumber != null && serialNumber.equals(device.getSerialNumber())) {

@@ -15,7 +15,6 @@ import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.stripeterminal.external.callable.ConnectionTokenCallback;
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider;
 import com.stripe.stripeterminal.external.models.ConnectionTokenException;
-
 import java.util.ArrayList;
 import java.util.Objects;
 import org.json.JSONException;

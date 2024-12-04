@@ -20,15 +20,10 @@ export interface CreateIdentityVerificationSheetOption {
   clientSecret?: string;
 }
 
-export class StripeIdentityWeb
-  extends WebPlugin
-  implements StripeIdentityPlugin
-{
+export class StripeIdentityWeb extends WebPlugin implements StripeIdentityPlugin {
   private stripe: Stripe | null | undefined;
   private clientSecret: string | undefined;
-  async initialize(
-    options: InitializeIdentityVerificationSheetOption,
-  ): Promise<void> {
+  async initialize(options: InitializeIdentityVerificationSheetOption): Promise<void> {
     this.stripe = await loadStripe(options.publishableKey);
   }
   async create(options: CreateIdentityVerificationSheetOption): Promise<void> {
@@ -52,8 +47,7 @@ export class StripeIdentityWeb
           message,
         });
         return {
-          identityVerificationResult:
-            IdentityVerificationSheetEventsEnum.Canceled,
+          identityVerificationResult: IdentityVerificationSheetEventsEnum.Canceled,
         };
       }
       this.notifyListeners(IdentityVerificationSheetEventsEnum.Failed, {

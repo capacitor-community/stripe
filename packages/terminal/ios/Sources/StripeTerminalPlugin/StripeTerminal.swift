@@ -3,7 +3,7 @@ import Capacitor
 import StripeTerminal
 
 public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, ReaderDelegate, MobileReaderDelegate, TapToPayReaderDelegate, InternetReaderDelegate {
-    
+
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
 

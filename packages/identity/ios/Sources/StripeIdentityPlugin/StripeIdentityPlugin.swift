@@ -9,13 +9,13 @@ import PassKit
  */
 @objc(StripeIdentityPlugin)
 public class StripeIdentityPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "StripeIdentityPlugin" 
-    public let jsName = "StripeIdentity" 
+    public let identifier = "StripeIdentityPlugin"
+    public let jsName = "StripeIdentity"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "create", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "present", returnType: CAPPluginReturnPromise),
-    ] 
+        CAPPluginMethod(name: "present", returnType: CAPPluginReturnPromise)
+    ]
     private let implementation = StripeIdentity()
 
     override public func load() {
