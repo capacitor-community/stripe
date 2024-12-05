@@ -29,7 +29,7 @@ class StripePlugin : Plugin() {
 
     private val identityVerificationCallbackId: String? = null
 
-    private var metaData: MetaData? = null
+    private var metaData: MetaData = MetaData { this.context }
 
     private val paymentSheetExecutor = PaymentSheetExecutor(
         { this.context },
@@ -53,14 +53,13 @@ class StripePlugin : Plugin() {
     )
 
     override fun load() {
-        metaData = MetaData { this.context }
-        if (metaData!!.enableGooglePay) {
-            this.publishableKey = metaData!!.publishableKey
+        if (metaData.enableGooglePay) {
+            this.publishableKey = metaData.publishableKey
 
             PaymentConfiguration.init(
                 context,
-                metaData!!.publishableKey!!,
-                metaData!!.stripeAccount
+                metaData.publishableKey!!,
+                metaData.stripeAccount
             )
 
             Stripe.appInfo = AppInfo.create(APP_INFO_NAME);
@@ -68,16 +67,16 @@ class StripePlugin : Plugin() {
             googlePayExecutor.googlePayLauncher = GooglePayLauncher(
                 activity,
                 GooglePayLauncher.Config(
-                    metaData!!.googlePayEnvironment!!,
-                    metaData!!.countryCode!!,
-                    metaData!!.displayName!!,
-                    metaData!!.emailAddressRequired!!,
+                    metaData.googlePayEnvironment!!,
+                    metaData.countryCode!!,
+                    metaData.displayName!!,
+                    metaData.emailAddressRequired!!,
                     GooglePayLauncher.BillingAddressConfig(
-                        metaData!!.billingAddressRequired!!,
-                        if (metaData!!.billingAddressFormat == "Full") GooglePayLauncher.BillingAddressConfig.Format.Full else GooglePayLauncher.BillingAddressConfig.Format.Min,
-                        metaData!!.phoneNumberRequired!!
+                        metaData.billingAddressRequired!!,
+                        if (metaData.billingAddressFormat == "Full") GooglePayLauncher.BillingAddressConfig.Format.Full else GooglePayLauncher.BillingAddressConfig.Format.Min,
+                        metaData.phoneNumberRequired!!
                     ),
-                    metaData!!.existingPaymentMethodRequired!!
+                    metaData.existingPaymentMethodRequired!!
                 ),
                 { isReady: Boolean -> googlePayExecutor.isAvailable = isReady },
                 { result: GooglePayLauncher.Result ->
@@ -106,7 +105,7 @@ class StripePlugin : Plugin() {
             }
         )
 
-        if (metaData!!.enableIdentifier) {
+        if (metaData.enableIdentifier) {
             val resources = activity.applicationContext.resources
             val resourceId = resources.getIdentifier("ic_launcher", "mipmap", activity.packageName)
             val icon = Uri.Builder()
