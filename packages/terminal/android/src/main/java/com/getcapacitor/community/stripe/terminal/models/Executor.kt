@@ -7,7 +7,7 @@ import com.getcapacitor.JSObject
 import com.google.android.gms.common.util.BiConsumer
 
 abstract class Executor(
-    protected var contextSupplier: Supplier<Context?>,
+    protected var contextSupplier: Supplier<Context>,
     protected val activitySupplier: Supplier<Activity>,
     protected var notifyListenersFunction: BiConsumer<String, JSObject>,
     pluginLogTag: String,

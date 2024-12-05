@@ -56,7 +56,7 @@ import java.util.Objects
 
 //import com.stripe.stripeterminal.external.callable.ReaderReconnectionListener;
 class StripeTerminal(
-    contextSupplier: Supplier<Context?>,
+    contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
     notifyListenersFunction: BiConsumer<String, JSObject>,
     pluginLogTag: String
@@ -90,7 +90,7 @@ class StripeTerminal(
         val bluetooth = BluetoothAdapter.getDefaultAdapter()
         if (!bluetooth.isEnabled) {
             if (ActivityCompat.checkSelfPermission(
-                    contextSupplier.get()!!,
+                    contextSupplier.get(),
                     Manifest.permission.BLUETOOTH_CONNECT
                 ) ==
                 PackageManager.PERMISSION_GRANTED
@@ -101,7 +101,7 @@ class StripeTerminal(
 
         activitySupplier.get()
             .runOnUiThread {
-                onCreate((contextSupplier.get()!!.applicationContext as Application))
+                onCreate((contextSupplier.get().applicationContext as Application))
                 notifyListeners(TerminalEnumEvent.Loaded.webEventName, emptyObject)
                 call.resolve()
             }
@@ -123,12 +123,12 @@ class StripeTerminal(
         val logLevel = LogLevel.VERBOSE
         this.tokenProvider = TokenProvider(
             this.contextSupplier,
-            call.getString("tokenProviderEndpoint", ""),
+            call.getString("tokenProviderEndpoint", "")!!,
             this.notifyListenersFunction
         )
         if (!isInitialized()) {
             initTerminal(
-                contextSupplier.get()!!.applicationContext,
+                contextSupplier.get().applicationContext,
                 logLevel,
                 this.tokenProvider!!,
                 listener
@@ -144,7 +144,7 @@ class StripeTerminal(
     fun setSimulatorConfiguration(call: PluginCall) {
         try {
             val updateString = call.getString("update", "UPDATE_AVAILABLE")
-            val simulateReaderUpdate = SimulateReaderUpdate.values().find { it.name == updateString }
+            val simulateReaderUpdate = SimulateReaderUpdate.entries.find { it.name == updateString }
 
             Terminal.getInstance()
                 .simulatorConfiguration = SimulatorConfiguration(
@@ -163,7 +163,7 @@ class StripeTerminal(
 
     fun onDiscoverReaders(call: PluginCall) {
         if (ActivityCompat.checkSelfPermission(
-                contextSupplier.get()!!,
+                contextSupplier.get(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) !=
             PackageManager.PERMISSION_GRANTED
@@ -224,8 +224,8 @@ class StripeTerminal(
                         Log.d(logTag, "Finished discovering readers")
                     }
 
-                    override fun onFailure(ex: TerminalException) {
-                        Log.d(logTag, ex.localizedMessage)
+                    override fun onFailure(e: TerminalException) {
+                        Log.d(logTag, e.localizedMessage)
                     }
                 }
             )
@@ -271,8 +271,8 @@ class StripeTerminal(
                         call.resolve()
                     }
 
-                    override fun onFailure(ex: TerminalException) {
-                        call.reject(ex.localizedMessage, ex)
+                    override fun onFailure(e: TerminalException) {
+                        call.reject(e.localizedMessage, e)
                     }
                 }
             )
@@ -455,8 +455,8 @@ class StripeTerminal(
                     call.resolve()
                 }
 
-                override fun onFailure(ex: TerminalException) {
-                    call.reject(ex.localizedMessage, ex)
+                override fun onFailure(e: TerminalException) {
+                    call.reject(e.localizedMessage, e)
                 }
             }
         )
@@ -554,19 +554,19 @@ class StripeTerminal(
                 }
             }
 
-            override fun onFailure(exception: TerminalException) {
+            override fun onFailure(e: TerminalException) {
                 notifyListeners(TerminalEnumEvent.Failed.webEventName, emptyObject)
                 var errorCode: String? = "generic_error"
-                if (exception.apiError != null && exception.apiError!!.code != null) {
-                    errorCode = exception.apiError!!.code
+                if (e.apiError != null && e.apiError!!.code != null) {
+                    errorCode = e.apiError!!.code
                 }
                 val returnObject = JSObject()
-                returnObject.put("message", exception.localizedMessage)
-                if (exception.apiError != null) {
-                    returnObject.put("code", exception.apiError!!.code)
-                    returnObject.put("declineCode", exception.apiError!!.declineCode)
+                returnObject.put("message", e.localizedMessage)
+                if (e.apiError != null) {
+                    returnObject.put("code", e.apiError!!.code)
+                    returnObject.put("declineCode", e.apiError!!.declineCode)
                 }
-                collectCall!!.reject(exception.localizedMessage, errorCode, returnObject)
+                collectCall!!.reject(e.localizedMessage, errorCode, returnObject)
             }
         }
 
@@ -612,8 +612,8 @@ class StripeTerminal(
             return
         }
 
-        val tax = Objects.requireNonNullElse(call.getInt("tax", 0), 0)
-        val total = Objects.requireNonNullElse(call.getInt("total", 0), 0)
+        val tax: Int = call.getInt("tax", 0)!!
+        val total: Int = call.getInt("total", 0)!!
         if (total == 0) {
             call.reject("You must provide a total value")
             return
@@ -645,7 +645,7 @@ class StripeTerminal(
             }
         }
 
-        val cart: Cart = Cart.Builder(currency, tax!!.toLong(), total!!.toLong(), cartLineItems).build()
+        val cart: Cart = Cart.Builder(currency, tax.toLong(), total.toLong(), cartLineItems).build()
 
         Terminal.getInstance()
             .setReaderDisplay(
@@ -704,8 +704,8 @@ class StripeTerminal(
                     call.resolve()
                 }
 
-                override fun onFailure(ex: TerminalException) {
-                    call.reject(ex.localizedMessage, ex)
+                override fun onFailure(e: TerminalException) {
+                    call.reject(e.localizedMessage, e)
                 }
             }
         )
@@ -719,16 +719,16 @@ class StripeTerminal(
                 confirmPaymentIntentCall!!.resolve()
             }
 
-            override fun onFailure(exception: TerminalException) {
+            override fun onFailure(e: TerminalException) {
                 notifyListeners(TerminalEnumEvent.Failed.webEventName, emptyObject)
                 val returnObject = JSObject()
-                returnObject.put("message", exception.localizedMessage)
-                if (exception.apiError != null) {
-                    returnObject.put("code", exception.apiError!!.code)
-                    returnObject.put("declineCode", exception.apiError!!.declineCode)
+                returnObject.put("message", e.localizedMessage)
+                if (e.apiError != null) {
+                    returnObject.put("code", e.apiError!!.code)
+                    returnObject.put("declineCode", e.apiError!!.declineCode)
                 }
                 confirmPaymentIntentCall!!.reject(
-                    exception.localizedMessage,
+                    e.localizedMessage,
                     null as String?,
                     returnObject
                 )
@@ -742,14 +742,14 @@ class StripeTerminal(
 
     private fun readerCallback(call: PluginCall): ReaderCallback {
         return object : ReaderCallback {
-            override fun onSuccess(r: Reader) {
+            override fun onSuccess(reader: Reader) {
                 notifyListeners(TerminalEnumEvent.ConnectedReader.webEventName, emptyObject)
                 call.resolve()
             }
 
-            override fun onFailure(ex: TerminalException) {
-                ex.printStackTrace()
-                call.reject(ex.localizedMessage, ex)
+            override fun onFailure(e: TerminalException) {
+                e.printStackTrace()
+                call.reject(e.localizedMessage, e)
             }
         }
     }
@@ -778,13 +778,13 @@ class StripeTerminal(
 
             override fun onFinishInstallingUpdate(
                 update: ReaderSoftwareUpdate?,
-                error: TerminalException?
+                e: TerminalException?
             ) {
                 val eventObject = JSObject()
 
-                if (error != null) {
+                if (e != null) {
                     // note: Since errorCode cannot be obtained in iOS, use errorMessage for unification.
-                    eventObject.put("error", error.localizedMessage)
+                    eventObject.put("error", e.localizedMessage)
                     notifyListeners(
                         TerminalEnumEvent.FinishInstallingUpdate.webEventName,
                         eventObject
@@ -899,20 +899,11 @@ class StripeTerminal(
 
     private fun findReader(discoveredReadersList: List<Reader?>, serialNumber: String?): Reader? {
         var foundReader: Reader? = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            foundReader = discoveredReadersList
-                .stream()
-                .filter { device: Reader? -> serialNumber != null && serialNumber == device!!.serialNumber }
-                .findFirst()
-                .orElse(null)
-        } else {
-            for (device in discoveredReadersList) {
-                if (serialNumber != null && serialNumber == device!!.serialNumber) {
-                    foundReader = device
-                    break
-                }
-            }
-        }
+        foundReader = discoveredReadersList
+            .stream()
+            .filter { device: Reader? -> serialNumber != null && serialNumber == device!!.serialNumber }
+            .findFirst()
+            .orElse(null)
 
         return foundReader
     }

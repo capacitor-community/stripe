@@ -14,7 +14,7 @@ import com.stripe.android.paymentsheet.PaymentSheet.BillingDetailsCollectionConf
 import com.stripe.android.paymentsheet.PaymentSheetResult
 
 class PaymentSheetExecutor(
-    contextSupplier: Supplier<Context?>,
+    contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
     notifyListenersFunction: BiConsumer<String, JSObject>,
     pluginLogTag: String
@@ -113,12 +113,12 @@ class PaymentSheetExecutor(
                 )
             }
         } else {
-            val GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
+            val googlePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
 
             var environment: PaymentSheet.GooglePayConfiguration.Environment =
                 PaymentSheet.GooglePayConfiguration.Environment.Production
 
-            if (GooglePayEnvironment!!) {
+            if (googlePayEnvironment!!) {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
@@ -181,7 +181,7 @@ class PaymentSheetExecutor(
                 PaymentSheetEvents.Failed.webEventName,
                 JSObject().put(
                     "message",
-                    (paymentSheetResult as PaymentSheetResult.Failed).error.getLocalizedMessage()
+                    (paymentSheetResult).error.localizedMessage
                 )
             )
             notifyListenersFunction.accept(PaymentSheetEvents.Failed.webEventName, emptyObject)

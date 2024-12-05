@@ -11,7 +11,7 @@ import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.googlepaylauncher.GooglePayLauncher
 
 class GooglePayExecutor(
-    contextSupplier: Supplier<Context?>,
+    contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
     notifyListenersFunction: BiConsumer<String, JSObject>,
     pluginLogTag: String

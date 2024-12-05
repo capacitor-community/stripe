@@ -9,12 +9,11 @@ import com.getcapacitor.PluginCall
 import com.getcapacitor.community.stripe.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.paymentsheet.PaymentSheet
-import com.stripe.android.paymentsheet.PaymentSheet.FlowController.ConfigCallback
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import com.stripe.android.paymentsheet.model.PaymentOption
 
 class PaymentFlowExecutor(
-    contextSupplier: Supplier<Context?>,
+    contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
     notifyListenersFunction: BiConsumer<String, JSObject>,
     pluginLogTag: String
@@ -98,41 +97,41 @@ class PaymentFlowExecutor(
         if (setupIntentClientSecret != null) {
             flowController!!.configureWithSetupIntent(
                 setupIntentClientSecret,
-                paymentConfiguration,
-                ConfigCallback { success: Boolean, error: Throwable? ->
-                    if (success) {
-                        notifyListenersFunction.accept(
-                            PaymentFlowEvents.Loaded.webEventName,
-                            emptyObject
-                        )
-                        call.resolve()
-                    } else {
-                        notifyListenersFunction.accept(
-                            PaymentFlowEvents.FailedToLoad.webEventName,
-                            JSObject().put("error", error!!.localizedMessage)
-                        )
-                        call.reject(error.localizedMessage)
-                    }
-                })
+                paymentConfiguration
+            ) { success: Boolean, error: Throwable? ->
+                if (success) {
+                    notifyListenersFunction.accept(
+                        PaymentFlowEvents.Loaded.webEventName,
+                        emptyObject
+                    )
+                    call.resolve()
+                } else {
+                    notifyListenersFunction.accept(
+                        PaymentFlowEvents.FailedToLoad.webEventName,
+                        JSObject().put("error", error!!.localizedMessage)
+                    )
+                    call.reject(error.localizedMessage)
+                }
+            }
         } else if (paymentIntentClientSecret != null) {
             flowController!!.configureWithPaymentIntent(
                 paymentIntentClientSecret,
-                paymentConfiguration,
-                ConfigCallback { success: Boolean, error: Throwable? ->
-                    if (success) {
-                        notifyListenersFunction.accept(
-                            PaymentFlowEvents.Loaded.webEventName,
-                            emptyObject
-                        )
-                        call.resolve()
-                    } else {
-                        notifyListenersFunction.accept(
-                            PaymentFlowEvents.FailedToLoad.webEventName,
-                            JSObject().put("error", error!!.localizedMessage)
-                        )
-                        call.reject(error.localizedMessage)
-                    }
-                })
+                paymentConfiguration
+            ) { success: Boolean, error: Throwable? ->
+                if (success) {
+                    notifyListenersFunction.accept(
+                        PaymentFlowEvents.Loaded.webEventName,
+                        emptyObject
+                    )
+                    call.resolve()
+                } else {
+                    notifyListenersFunction.accept(
+                        PaymentFlowEvents.FailedToLoad.webEventName,
+                        JSObject().put("error", error!!.localizedMessage)
+                    )
+                    call.reject(error.localizedMessage)
+                }
+            }
         }
     }
 
@@ -180,7 +179,7 @@ class PaymentFlowExecutor(
         } else if (paymentSheetResult is PaymentSheetResult.Failed) {
             notifyListenersFunction.accept(
                 PaymentFlowEvents.Failed.webEventName,
-                JSObject().put("error", (paymentSheetResult as PaymentSheetResult.Failed).error.getLocalizedMessage())
+                JSObject().put("error", (paymentSheetResult).error.localizedMessage)
             )
             call.resolve(JSObject().put("paymentResult", PaymentFlowEvents.Failed.webEventName))
         } else if (paymentSheetResult is PaymentSheetResult.Completed) {

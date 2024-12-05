@@ -17,15 +17,15 @@ import org.json.JSONObject
 import java.util.Objects
 
 class TokenProvider(
-    protected var contextSupplier: Supplier<Context?>?,
-    protected val tokenProviderEndpoint: String?,
+    protected var contextSupplier: Supplier<Context>,
+    protected val tokenProviderEndpoint: String,
     protected var notifyListenersFunction: BiConsumer<String, JSObject>
 ) : ConnectionTokenProvider {
-    var pendingCallback: ArrayList<ConnectionTokenCallback> = ArrayList()
+    private var pendingCallback: ArrayList<ConnectionTokenCallback> = ArrayList()
 
     fun setConnectionToken(call: PluginCall) {
         val token = call.getString("token", "")
-        if (!pendingCallback.isEmpty()) {
+        if (pendingCallback.isNotEmpty()) {
             val pending = pendingCallback.removeAt(0)
             if (token == "") {
                 pending.onFailure(ConnectionTokenException("Missing `token` is empty"))
@@ -48,7 +48,7 @@ class TokenProvider(
             )
         } else {
             try {
-                val queue = Volley.newRequestQueue(contextSupplier!!.get())
+                val queue = Volley.newRequestQueue(contextSupplier.get())
                 val postRequest: StringRequest = object : StringRequest(
                     Method.POST,
                     this.tokenProviderEndpoint,
@@ -80,6 +80,6 @@ class TokenProvider(
     }
 
     protected fun notifyListeners(eventName: String?, data: JSObject?) {
-        notifyListenersFunction!!.accept(eventName!!, data!!)
+        notifyListenersFunction.accept(eventName!!, data!!)
     }
 }
