@@ -18,7 +18,18 @@ __Note: Stripe Web SDK is beta version. So this plugin's implement is experiment
 
 ### iOS
 
-- [iOS Configure your app](https://stripe.com/docs/terminal/payments/setup-integration?terminal-sdk-platform=ios#configure)
+Stripe Terminal require development target 14.0 or later. Change Podfile( `ios/App/Podfile` ) like below:
+
+```diff
+  require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+- platform :ios, '13.0'
++ platform :ios, '14.0'
+```
+
+Follow Stripe's documentation for other configuration items.
+
+- [Stripe - iOS Configure your app](https://stripe.com/docs/terminal/payments/setup-integration?terminal-sdk-platform=ios#configure)
 
 ### Android
 
