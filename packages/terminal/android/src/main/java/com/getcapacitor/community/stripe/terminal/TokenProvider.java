@@ -15,6 +15,7 @@ import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.stripeterminal.external.callable.ConnectionTokenCallback;
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider;
 import com.stripe.stripeterminal.external.models.ConnectionTokenException;
+import java.util.ArrayList;
 import java.util.Objects;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +25,7 @@ public class TokenProvider implements ConnectionTokenProvider {
     protected Supplier<Context> contextSupplier;
     protected final String tokenProviderEndpoint;
     protected BiConsumer<String, JSObject> notifyListenersFunction;
-    ConnectionTokenCallback pendingCallback = null;
+    ArrayList<ConnectionTokenCallback> pendingCallback = new ArrayList<>();
 
     public TokenProvider(
         Supplier<Context> contextSupplier,
@@ -38,15 +39,15 @@ public class TokenProvider implements ConnectionTokenProvider {
 
     public void setConnectionToken(PluginCall call) {
         String token = call.getString("token", "");
-        if (pendingCallback != null) {
+        if (!pendingCallback.isEmpty()) {
+            ConnectionTokenCallback pending = pendingCallback.remove(0);
             if (Objects.equals(token, "")) {
-                pendingCallback.onFailure(new ConnectionTokenException("Missing `token` is empty"));
+                pending.onFailure(new ConnectionTokenException("Missing `token` is empty"));
                 call.reject("Missing `token` is empty");
             } else {
-                pendingCallback.onSuccess(token);
+                pending.onSuccess(token);
                 call.resolve();
             }
-            pendingCallback = null;
         } else {
             call.reject("Stripe Terminal do not pending fetchConnectionToken");
         }
@@ -55,7 +56,7 @@ public class TokenProvider implements ConnectionTokenProvider {
     @Override
     public void fetchConnectionToken(ConnectionTokenCallback callback) {
         if (Objects.equals(this.tokenProviderEndpoint, "")) {
-            pendingCallback = callback;
+            pendingCallback.add(callback);
             this.notifyListeners(TerminalEnumEvent.RequestedConnectionToken.getWebEventName(), new JSObject());
         } else {
             try {

@@ -40,8 +40,8 @@ public class TerminalMappers {
 
         return new JSObject()
             .put("deviceSoftwareVersion", update.getVersion())
-            .put("estimatedUpdateTime", update.getTimeEstimate().toString())
-            .put("requiredAt", update.getRequiredAt().getTime());
+            .put("estimatedUpdateTime", update.getDurationEstimate().toString())
+            .put("requiredAt", update.getRequiredAtMs());
     }
 
     public String mapFromLocationStatus(LocationStatus status) {
@@ -73,7 +73,7 @@ public class TerminalMappers {
         return switch (type) {
             case CHIPPER_1X -> "chipper1X";
             case CHIPPER_2X -> "chipper2X";
-            case COTS_DEVICE -> "cotsDevice";
+            case TAP_TO_PAY_DEVICE -> "tapToPayDevice";
             case ETNA -> "etna";
             case STRIPE_M2 -> "stripeM2";
             case STRIPE_S700 -> "stripeS700";

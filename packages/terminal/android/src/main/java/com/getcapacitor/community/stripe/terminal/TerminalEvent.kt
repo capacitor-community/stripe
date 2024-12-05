@@ -2,6 +2,7 @@ package com.getcapacitor.community.stripe.terminal;
 
 enum class TerminalEnumEvent(val webEventName: String) {
     Loaded("terminalLoaded"),
+    DiscoveringReaders("terminalDiscoveringReaders"),
     DiscoveredReaders("terminalDiscoveredReaders"),
     CancelDiscoveredReaders("terminalCancelDiscoveredReaders"),
     ConnectedReader("terminalConnectedReader"),

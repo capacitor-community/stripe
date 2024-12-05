@@ -6,8 +6,8 @@ ext {
 
     playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
     volleyVersion = project.hasProperty('volleyVersion') ? rootProject.ext.volleyVersion : '1.2.1'
-    stripeterminalLocalmobileVersion = project.hasProperty('stripeterminalLocalmobileVersion') ? rootProject.ext.stripeterminalLocalmobileVersion : '3.10.+'
-    stripeterminalCoreVersion = project.hasProperty('stripeterminalCoreVersion') ? rootProject.ext.stripeterminalCoreVersion : '3.10.+'
+    stripeterminalTapToPayVersion = project.hasProperty('stripeterminalTapToPayVersion') ? rootProject.ext.stripeterminalTapToPayVersion : '4.1.0'
+    stripeterminalCoreVersion = project.hasProperty('stripeterminalCoreVersion') ? rootProject.ext.stripeterminalCoreVersion : '4.1.0'
 }
 
 buildscript {
@@ -70,7 +70,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     implementation "com.stripe:stripeterminal-core:$stripeterminalCoreVersion"
-    implementation "com.stripe:stripeterminal-localmobile:$stripeterminalLocalmobileVersion"
+    implementation "com.stripe:stripeterminal-taptopay:$stripeterminalTapToPayVersion"
     implementation "com.android.volley:volley:$volleyVersion"
     implementation "com.google.android.gms:play-services-wallet:$playServicesWalletVersion"
 }

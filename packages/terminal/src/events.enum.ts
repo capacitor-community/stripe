@@ -1,6 +1,7 @@
 export enum TerminalEventsEnum {
   Loaded = 'terminalLoaded',
   DiscoveredReaders = 'terminalDiscoveredReaders',
+  DiscoveringReaders = 'terminalDiscoveringReaders',
   CancelDiscoveredReaders = 'terminalCancelDiscoveredReaders',
   ConnectedReader = 'terminalConnectedReader',
   DisconnectedReader = 'terminalDisconnectedReader',

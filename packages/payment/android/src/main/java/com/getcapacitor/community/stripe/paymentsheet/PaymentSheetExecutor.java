@@ -70,31 +70,29 @@ public class PaymentSheetExecutor extends Executor {
             String nameCollectionMode = bdCollectionConfiguration.getString("name");
             String phoneCollectionMode = bdCollectionConfiguration.getString("phone");
             String addressCollectionMode = bdCollectionConfiguration.getString("address");
-            billingDetailsCollectionConfiguration =
-                new PaymentSheet.BillingDetailsCollectionConfiguration(
-                    (nameCollectionMode != null && nameCollectionMode.equals("always"))
-                        ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
-                        : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
-                    (phoneCollectionMode != null && phoneCollectionMode.equals("always"))
-                        ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
-                        : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
-                    (emailCollectionMode != null && emailCollectionMode.equals("always"))
-                        ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
-                        : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
-                    (addressCollectionMode != null && addressCollectionMode.equals("full"))
-                        ? PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Full
-                        : PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Automatic,
-                    false
-                );
+            billingDetailsCollectionConfiguration = new PaymentSheet.BillingDetailsCollectionConfiguration(
+                (nameCollectionMode != null && nameCollectionMode.equals("always"))
+                    ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
+                    : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
+                (phoneCollectionMode != null && phoneCollectionMode.equals("always"))
+                    ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
+                    : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
+                (emailCollectionMode != null && emailCollectionMode.equals("always"))
+                    ? PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
+                    : PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic,
+                (addressCollectionMode != null && addressCollectionMode.equals("full"))
+                    ? PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Full
+                    : PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Automatic,
+                false
+            );
         }
 
         if (!enableGooglePay) {
             if (bdCollectionConfiguration != null) {
-                paymentConfiguration =
-                    new PaymentSheet.Configuration.Builder(merchantDisplayName)
-                        .customer(customer)
-                        .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                        .build();
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                    .customer(customer)
+                    .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                    .build();
             } else {
                 paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName).customer(customer).build();
             }
@@ -108,18 +106,16 @@ public class PaymentSheetExecutor extends Executor {
             }
 
             if (bdCollectionConfiguration != null) {
-                paymentConfiguration =
-                    new PaymentSheet.Configuration.Builder(merchantDisplayName)
-                        .customer(customer)
-                        .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
-                        .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                        .build();
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                    .customer(customer)
+                    .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
+                    .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                    .build();
             } else {
-                paymentConfiguration =
-                    new PaymentSheet.Configuration.Builder(merchantDisplayName)
-                        .customer(customer)
-                        .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
-                        .build();
+                paymentConfiguration = new PaymentSheet.Configuration.Builder(merchantDisplayName)
+                    .customer(customer)
+                    .googlePay(new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US")))
+                    .build();
             }
         }
 

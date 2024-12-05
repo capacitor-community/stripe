@@ -10,7 +10,7 @@ export enum TerminalConnectTypes {
  * Note: Don't need to use this enum. It's just for reference.
  */
 export enum DeviceType {
-  cotsDevice = 'cotsDevice',
+  tapToPayDevice = 'tapToPayDevice',
   wisePad3s = 'wisePad3s',
   appleBuiltIn = 'appleBuiltIn',
   chipper1X = 'chipper1X',
@@ -45,7 +45,7 @@ export enum DeviceGroup {
   stripeS700DevKit = 's700',
   stripeS700 = 's700',
   appleBuiltIn = 'apple', // unknown change to apple
-  cotsDevice = 'unknown',
+  tapToPayDevice = 'tapToPayDevice',
   unknown = 'unknown',
 }
 

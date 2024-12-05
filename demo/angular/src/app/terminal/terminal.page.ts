@@ -92,6 +92,121 @@ export class TerminalPage {
     }
     await this.prepareTerminalEvents(eventItems, readerType);
 
+    const listenerHandler = await StripeTerminal.addListener(TerminalEventsEnum.DiscoveredReaders, async ({ readers }) => {
+      if (readers?.length > 0) {
+        const result = { readers };
+        await this.helper.updateItem(this.eventItems, 'discoverReaders', true);
+
+        this.listenerHandlers.push(listenerHandler);
+
+        const selectedReader =
+          result.readers?.length === 1
+            ? result.readers[0]
+            : await this.alertFilterReaders(result.readers);
+        console.log(selectedReader);
+        if (!selectedReader) {
+          alert('No reader selected');
+          return;
+        }
+
+        await StripeTerminal.connectReader({
+          reader: selectedReader,
+        }).catch((e) => {
+          alert(e);
+          this.helper.updateItem(this.eventItems, 'connectReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(this.eventItems, 'connectReader', true);
+
+        const { paymentIntent } = await firstValueFrom(
+          this.http.post<{
+            paymentIntent: string;
+          }>(environment.api + 'connection/intent', {}),
+        ).catch(async (e) => {
+          await this.helper.updateItem(
+            this.eventItems,
+            'HttpClientPaymentIntent',
+            false,
+          );
+          throw e;
+        });
+        await this.helper.updateItem(
+          this.eventItems,
+          'HttpClientPaymentIntent',
+          true,
+        );
+
+        if (readerType === TerminalConnectTypes.Internet) {
+          await StripeTerminal.setReaderDisplay({
+            currency: 'usd',
+            tax: 0,
+            total: 1000,
+            lineItems: [{
+              displayName: 'winecode',
+              quantity: 2,
+              amount: 500
+            }] as CartLineItem[],
+          })
+
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          await StripeTerminal.clearReaderDisplay();
+        }
+
+
+
+        if (type === 'cancelPath') {
+          // During Collect, cancel the payment
+          StripeTerminal.collectPaymentMethod({ paymentIntent })
+            .catch(async (e) => {
+              await this.helper.updateItem(
+                this.eventItems,
+                'collectPaymentMethod',
+                false,
+              );
+              throw e;
+            });
+          await this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await StripeTerminal.cancelCollectPaymentMethod().catch(async (e) => {
+            await this.helper.updateItem(
+              this.eventItems,
+              'cancelCollectPaymentMethod',
+              false,
+            );
+            throw e;
+          });
+          await this.helper.updateItem(
+            this.eventItems,
+            'cancelCollectPaymentMethod',
+            true,
+          );
+        } else {
+          await StripeTerminal.collectPaymentMethod({ paymentIntent })
+            .then(() =>
+              this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+            )
+            .catch(async (e) => {
+              await this.helper.updateItem(
+                this.eventItems,
+                'collectPaymentMethod',
+                false,
+              );
+              throw e;
+            });
+          await StripeTerminal.confirmPaymentIntent();
+          await this.helper.updateItem(
+            this.eventItems,
+            'confirmPaymentIntent',
+            true,
+          );
+        }
+
+        await StripeTerminal.disconnectReader();
+        this.listenerHandlers.forEach((handler) => handler.remove());
+      }
+    });
+
     const result = await StripeTerminal.discoverReaders({
       type: readerType,
       locationId:
@@ -104,118 +219,6 @@ export class TerminalPage {
       this.helper.updateItem(this.eventItems, 'discoverReaders', false);
       throw e;
     });
-
-    await this.helper.updateItem(
-      this.eventItems,
-      'discoverReaders',
-      result.readers.length > 0,
-    );
-
-    const selectedReader =
-      result.readers.length === 1
-        ? result.readers[0]
-        : await this.alertFilterReaders(result.readers);
-    console.log(selectedReader);
-    if (!selectedReader) {
-      alert('No reader selected');
-      return;
-    }
-
-    await StripeTerminal.connectReader({
-      reader: selectedReader,
-    }).catch((e) => {
-      alert(e);
-      this.helper.updateItem(this.eventItems, 'connectReader', false);
-      throw e;
-    });
-    await this.helper.updateItem(this.eventItems, 'connectReader', true);
-
-    const { paymentIntent } = await firstValueFrom(
-      this.http.post<{
-        paymentIntent: string;
-      }>(environment.api + 'connection/intent', {}),
-    ).catch(async (e) => {
-      await this.helper.updateItem(
-        this.eventItems,
-        'HttpClientPaymentIntent',
-        false,
-      );
-      throw e;
-    });
-    await this.helper.updateItem(
-      this.eventItems,
-      'HttpClientPaymentIntent',
-      true,
-    );
-
-    if (readerType === TerminalConnectTypes.Internet) {
-      await StripeTerminal.setReaderDisplay({
-        currency: 'usd',
-        tax: 0,
-        total: 1000,
-        lineItems: [{
-          displayName: 'winecode',
-          quantity: 2,
-          amount: 500
-        }] as CartLineItem[],
-      })
-
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      await StripeTerminal.clearReaderDisplay();
-    }
-
-
-
-    if (type === 'cancelPath') {
-      // During Collect, cancel the payment
-      StripeTerminal.collectPaymentMethod({ paymentIntent })
-        .catch(async (e) => {
-          await this.helper.updateItem(
-            this.eventItems,
-            'collectPaymentMethod',
-            false,
-          );
-          throw e;
-        });
-      await this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      await StripeTerminal.cancelCollectPaymentMethod().catch(async (e) => {
-        await this.helper.updateItem(
-          this.eventItems,
-          'cancelCollectPaymentMethod',
-          false,
-        );
-        throw e;
-      });
-      await this.helper.updateItem(
-        this.eventItems,
-        'cancelCollectPaymentMethod',
-        true,
-      );
-    } else {
-      await StripeTerminal.collectPaymentMethod({ paymentIntent })
-        .then(() =>
-          this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
-        )
-        .catch(async (e) => {
-          await this.helper.updateItem(
-            this.eventItems,
-            'collectPaymentMethod',
-            false,
-          );
-          throw e;
-        });
-      await StripeTerminal.confirmPaymentIntent();
-      await this.helper.updateItem(
-        this.eventItems,
-        'confirmPaymentIntent',
-        true,
-      );
-    }
-
-    await StripeTerminal.disconnectReader();
-    this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
   async checkUpdateDeviceUpdate(readerType: TerminalConnectTypes = TerminalConnectTypes.Bluetooth) {
@@ -234,79 +237,82 @@ export class TerminalPage {
       throw e;
     });
 
-    await this.helper.updateItem(
-      this.eventItems,
-      'discoverReaders',
-      result.readers.length > 0,
-    );
+    const listnerHandler = await StripeTerminal.addListener(TerminalEventsEnum.DiscoveredReaders, async ({ readers }) => {
+      if (readers?.length > 0) {
+        const result = { readers };
+        await this.helper.updateItem(this.eventItems, 'discoverReaders', true);
 
-    const selectedReader =
-      result.readers.length === 1
-        ? result.readers[0]
-        : await this.alertFilterReaders(result.readers);
-    console.log(selectedReader);
-    if (!selectedReader) {
-      alert('No reader selected');
-      return;
-    }
+        this.listenerHandlers.push(listnerHandler);
 
-    await StripeTerminal.connectReader({
-      reader: selectedReader,
-    }).catch((e) => {
-      alert(e);
-      this.helper.updateItem(this.eventItems, 'connectReader', false);
-      throw e;
-    });
-    await this.helper.updateItem(this.eventItems, 'connectReader', true);
+        const selectedReader =
+          result.readers?.length === 1
+            ? result.readers[0]
+            : await this.alertFilterReaders(result.readers);
+        console.log(selectedReader);
+        if (!selectedReader) {
+          alert('No reader selected');
+          return;
+        }
 
-    await StripeTerminal.installAvailableUpdate()
-      .then(() => this.helper.updateItem(this.eventItems, 'installAvailableUpdate', true));
+        await StripeTerminal.connectReader({
+          reader: selectedReader,
+        }).catch((e) => {
+          alert(e);
+          this.helper.updateItem(this.eventItems, 'connectReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(this.eventItems, 'connectReader', true);
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+        await StripeTerminal.installAvailableUpdate()
+          .then(() => this.helper.updateItem(this.eventItems, 'installAvailableUpdate', true));
 
-    await StripeTerminal.cancelInstallUpdate()
-      .then(() => this.helper.updateItem(this.eventItems, 'cancelInstallUpdate', true));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // await new Promise((resolve) => setTimeout(resolve, 5000));
+        await StripeTerminal.cancelInstallUpdate()
+          .then(() => this.helper.updateItem(this.eventItems, 'cancelInstallUpdate', true));
 
-    const { paymentIntent } = await firstValueFrom(
-      this.http.post<{
-        paymentIntent: string;
-      }>(environment.api + 'connection/intent', {}),
-    ).catch(async (e) => {
-      await this.helper.updateItem(
-        this.eventItems,
-        'HttpClientPaymentIntent',
-        false,
-      );
-      throw e;
-    });
-    await this.helper.updateItem(
-      this.eventItems,
-      'HttpClientPaymentIntent',
-      true,
-    );
+        // await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    await StripeTerminal.collectPaymentMethod({ paymentIntent })
-      .then(() =>
-        this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
-      )
-      .catch(async (e) => {
+        const { paymentIntent } = await firstValueFrom(
+          this.http.post<{
+            paymentIntent: string;
+          }>(environment.api + 'connection/intent', {}),
+        ).catch(async (e) => {
+          await this.helper.updateItem(
+            this.eventItems,
+            'HttpClientPaymentIntent',
+            false,
+          );
+          throw e;
+        });
         await this.helper.updateItem(
           this.eventItems,
-          'collectPaymentMethod',
-          false,
+          'HttpClientPaymentIntent',
+          true,
         );
-        throw e;
-      });
 
-    await StripeTerminal.disconnectReader().catch((e) => {
-      this.helper.updateItem(this.eventItems, 'disconnectReader', false);
-      throw e;
+        await StripeTerminal.collectPaymentMethod({ paymentIntent })
+          .then(() =>
+            this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+          )
+          .catch(async (e) => {
+            await this.helper.updateItem(
+              this.eventItems,
+              'collectPaymentMethod',
+              false,
+            );
+            throw e;
+          });
+
+        await StripeTerminal.disconnectReader().catch((e) => {
+          this.helper.updateItem(this.eventItems, 'disconnectReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
+
+        this.listenerHandlers.forEach((handler) => handler.remove());
+      }
     });
-    await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
-
-    this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
   async checkUpdateDeviceRequired(readerType: TerminalConnectTypes = TerminalConnectTypes.Bluetooth) {
@@ -325,71 +331,74 @@ export class TerminalPage {
       throw e;
     });
 
-    await this.helper.updateItem(
-      this.eventItems,
-      'discoverReaders',
-      result.readers.length > 0,
-    );
+    const listnerHandler = await StripeTerminal.addListener(TerminalEventsEnum.DiscoveredReaders, async ({ readers }) => {
+      if (readers?.length > 0) {
+        const result = { readers };
+        await this.helper.updateItem(this.eventItems, 'discoverReaders', true);
 
-    const selectedReader =
-      result.readers.length === 1
-        ? result.readers[0]
-        : await this.alertFilterReaders(result.readers);
-    console.log(selectedReader);
-    if (!selectedReader) {
-      alert('No reader selected');
-      return;
-    }
+        this.listenerHandlers.push(listnerHandler);
 
-    await StripeTerminal.connectReader({
-      reader: selectedReader,
-    }).catch((e) => {
-      alert(e);
-      this.helper.updateItem(this.eventItems, 'connectReader', false);
-      throw e;
-    });
-    await this.helper.updateItem(this.eventItems, 'connectReader', true);
+        const selectedReader =
+          result.readers?.length === 1
+            ? result.readers[0]
+            : await this.alertFilterReaders(result.readers);
+        console.log(selectedReader);
+        if (!selectedReader) {
+          alert('No reader selected');
+          return;
+        }
 
-    // await new Promise((resolve) => setTimeout(resolve, 5000));
+        await StripeTerminal.connectReader({
+          reader: selectedReader,
+        }).catch((e) => {
+          alert(e);
+          this.helper.updateItem(this.eventItems, 'connectReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(this.eventItems, 'connectReader', true);
 
-    const { paymentIntent } = await firstValueFrom(
-      this.http.post<{
-        paymentIntent: string;
-      }>(environment.api + 'connection/intent', {}),
-    ).catch(async (e) => {
-      await this.helper.updateItem(
-        this.eventItems,
-        'HttpClientPaymentIntent',
-        false,
-      );
-      throw e;
-    });
-    await this.helper.updateItem(
-      this.eventItems,
-      'HttpClientPaymentIntent',
-      true,
-    );
+        // await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    await StripeTerminal.collectPaymentMethod({ paymentIntent })
-      .then(() =>
-        this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
-      )
-      .catch(async (e) => {
+        const { paymentIntent } = await firstValueFrom(
+          this.http.post<{
+            paymentIntent: string;
+          }>(environment.api + 'connection/intent', {}),
+        ).catch(async (e) => {
+          await this.helper.updateItem(
+            this.eventItems,
+            'HttpClientPaymentIntent',
+            false,
+          );
+          throw e;
+        });
         await this.helper.updateItem(
           this.eventItems,
-          'collectPaymentMethod',
-          false,
+          'HttpClientPaymentIntent',
+          true,
         );
-        throw e;
-      });
 
-    await StripeTerminal.disconnectReader().catch((e) => {
-      this.helper.updateItem(this.eventItems, 'disconnectReader', false);
-      throw e;
-    });
-    await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
+        await StripeTerminal.collectPaymentMethod({ paymentIntent })
+          .then(() =>
+            this.helper.updateItem(this.eventItems, 'collectPaymentMethod', true),
+          )
+          .catch(async (e) => {
+            await this.helper.updateItem(
+              this.eventItems,
+              'collectPaymentMethod',
+              false,
+            );
+            throw e;
+          });
 
-    this.listenerHandlers.forEach((handler) => handler.remove());
+        await StripeTerminal.disconnectReader().catch((e) => {
+          this.helper.updateItem(this.eventItems, 'disconnectReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
+
+        this.listenerHandlers.forEach((handler) => handler.remove());
+      }
+    })
   }
 
   async checkDiscoverMethod() {
@@ -406,44 +415,52 @@ export class TerminalPage {
     await this.helper.updateItem(
       this.eventItems,
       'discoverReaders',
-      result.readers.length > 0,
+      result.readers?.length > 0,
     );
 
-    const selectedReader =
-      result.readers.length === 1
-        ? result.readers[0]
-        : await this.alertFilterReaders(result.readers);
-    if (!selectedReader) {
-      alert('No reader selected');
-      return;
-    }
+    const listenerHandler = await StripeTerminal.addListener(TerminalEventsEnum.DiscoveredReaders, async ({ readers }) => {
+      console.log('discoveredReaders Lisener', readers);
+      if (readers?.length > 0) {
+        this.listenerHandlers.push(listenerHandler);
 
-    await StripeTerminal.connectReader({
-      reader: selectedReader,
-    }).catch((e) => {
-      alert(e);
-      this.helper.updateItem(this.eventItems, 'connectReader', false);
-      throw e;
+        const selectedReader =
+          result.readers?.length === 1
+            ? result.readers[0]
+            : await this.alertFilterReaders(result.readers);
+        if (!selectedReader) {
+          alert('No reader selected');
+          return;
+        }
+
+        await StripeTerminal.connectReader({
+          reader: selectedReader,
+        }).catch((e) => {
+          alert(e);
+          this.helper.updateItem(this.eventItems, 'connectReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(this.eventItems, 'connectReader', true);
+
+        const { reader } = await StripeTerminal.getConnectedReader().catch((e) => {
+          this.helper.updateItem(this.eventItems, 'getConnectedReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(
+          this.eventItems,
+          'getConnectedReader',
+          reader !== null,
+        );
+
+        await StripeTerminal.disconnectReader().catch((e) => {
+          this.helper.updateItem(this.eventItems, 'disconnectReader', false);
+          throw e;
+        });
+        await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
+
+        this.listenerHandlers.forEach((handler) => handler.remove());
+
+      }
     });
-    await this.helper.updateItem(this.eventItems, 'connectReader', true);
-
-    const { reader } = await StripeTerminal.getConnectedReader().catch((e) => {
-      this.helper.updateItem(this.eventItems, 'getConnectedReader', false);
-      throw e;
-    });
-    await this.helper.updateItem(
-      this.eventItems,
-      'getConnectedReader',
-      reader !== null,
-    );
-
-    await StripeTerminal.disconnectReader().catch((e) => {
-      this.helper.updateItem(this.eventItems, 'disconnectReader', false);
-      throw e;
-    });
-    await this.helper.updateItem(this.eventItems, 'disconnectReader', true);
-
-    this.listenerHandlers.forEach((handler) => handler.remove());
   }
 
   private alertFilterReaders(
@@ -516,7 +533,7 @@ export class TerminalPage {
     }
     this.eventItems = eventItems;
     await StripeTerminal.initialize({
-      tokenProviderEndpoint: environment.api + 'connection/token',
+      // tokenProviderEndpoint: environment.api + 'connection/token',
       isTest: !readerType || readerType === TerminalConnectTypes.TapToPay,
     })
       .then(() => this.helper.updateItem(this.eventItems, 'initialize', true))

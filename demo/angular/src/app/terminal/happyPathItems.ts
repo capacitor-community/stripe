@@ -73,7 +73,7 @@ export const happyPathBluetoothItems: ITestItems[] = [
   },
   {
     type: 'event',
-    name: TerminalEventsEnum.DiscoveredReaders,
+    name: TerminalEventsEnum.DiscoveringReaders,
   },
   {
     type: 'method',

@@ -21,10 +21,8 @@ jobs:
     - name: Use cached node_modules
       uses: actions/cache@v4
       with:
-        path: ~/.npm
-        key: ${{ runner.os }}-v1-dependencies-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-v1-dependencies-
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
 
     - name: Build Payment package
       run: npm install && npm run build
@@ -78,6 +76,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Use cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/payment
@@ -97,6 +100,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Use cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/identity
@@ -117,9 +125,71 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Use cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/terminal
       - name: verify
         run: npm run verify:android
+        working-directory: ./packages/terminal
+
+  verify-payment-ios:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Use cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/payment
+      - name: verify
+        run: npm run verify:ios
+        working-directory: ./packages/payment
+
+  verify-identity-ios:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Use cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/identity
+      - name: verify
+        run: npm run verify:ios
+        working-directory: ./packages/identity
+
+  verify-terminal-ios:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Use cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+      - name: npm install
+        run: npm install
+        working-directory: ./packages/terminal
+      - name: verify
+        run: npm run verify:ios
         working-directory: ./packages/terminal

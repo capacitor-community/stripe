@@ -1,6 +1,6 @@
 import { updatePackage } from 'write-pkg';
 import path from 'path';
-import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 import { exec } from 'child_process';
 
 const workspaces = ['packages/payment', 'packages/identity', 'packages/terminal'];

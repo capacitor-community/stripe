@@ -72,48 +72,39 @@ public class PaymentFlowExecutor extends Executor {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test;
             }
 
-            paymentConfiguration =
-                new PaymentSheet.Configuration(
-                    merchantDisplayName,
-                    customer,
-                    new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US"))
-                );
+            paymentConfiguration = new PaymentSheet.Configuration(
+                merchantDisplayName,
+                customer,
+                new PaymentSheet.GooglePayConfiguration(environment, call.getString("countryCode", "US"))
+            );
         }
 
         if (setupIntentClientSecret != null) {
-            flowController.configureWithSetupIntent(
-                setupIntentClientSecret,
-                paymentConfiguration,
-                (success, error) -> {
-                    if (success) {
-                        notifyListenersFunction.accept(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
-                        call.resolve();
-                    } else {
-                        notifyListenersFunction.accept(
-                            PaymentFlowEvents.FailedToLoad.getWebEventName(),
-                            new JSObject().put("error", error.getLocalizedMessage())
-                        );
-                        call.reject(error.getLocalizedMessage());
-                    }
+            flowController.configureWithSetupIntent(setupIntentClientSecret, paymentConfiguration, (success, error) -> {
+                if (success) {
+                    notifyListenersFunction.accept(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
+                    call.resolve();
+                } else {
+                    notifyListenersFunction.accept(
+                        PaymentFlowEvents.FailedToLoad.getWebEventName(),
+                        new JSObject().put("error", error.getLocalizedMessage())
+                    );
+                    call.reject(error.getLocalizedMessage());
                 }
-            );
+            });
         } else if (paymentIntentClientSecret != null) {
-            flowController.configureWithPaymentIntent(
-                paymentIntentClientSecret,
-                paymentConfiguration,
-                (success, error) -> {
-                    if (success) {
-                        notifyListenersFunction.accept(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
-                        call.resolve();
-                    } else {
-                        notifyListenersFunction.accept(
-                            PaymentFlowEvents.FailedToLoad.getWebEventName(),
-                            new JSObject().put("error", error.getLocalizedMessage())
-                        );
-                        call.reject(error.getLocalizedMessage());
-                    }
+            flowController.configureWithPaymentIntent(paymentIntentClientSecret, paymentConfiguration, (success, error) -> {
+                if (success) {
+                    notifyListenersFunction.accept(PaymentFlowEvents.Loaded.getWebEventName(), emptyObject);
+                    call.resolve();
+                } else {
+                    notifyListenersFunction.accept(
+                        PaymentFlowEvents.FailedToLoad.getWebEventName(),
+                        new JSObject().put("error", error.getLocalizedMessage())
+                    );
+                    call.reject(error.getLocalizedMessage());
                 }
-            );
+            });
         }
     }
 

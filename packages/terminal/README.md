@@ -18,7 +18,18 @@ __Note: Stripe Web SDK is beta version. So this plugin's implement is experiment
 
 ### iOS
 
-- [iOS Configure your app](https://stripe.com/docs/terminal/payments/setup-integration?terminal-sdk-platform=ios#configure)
+Stripe Terminal require development target 14.0 or later. Change Podfile( `ios/App/Podfile` ) like below:
+
+```diff
+  require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+- platform :ios, '13.0'
++ platform :ios, '14.0'
+```
+
+Follow Stripe's documentation for other configuration items.
+
+- [Stripe - iOS Configure your app](https://stripe.com/docs/terminal/payments/setup-integration?terminal-sdk-platform=ios#configure)
 
 ### Android
 
@@ -660,15 +671,15 @@ fails. The Promise returned by the relevant call will also be rejected.
 ### addListener(TerminalEventsEnum.ReportAvailableUpdate, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.ReportAvailableUpdate, listenerFunc: ({ update, }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.ReportAvailableUpdate, listenerFunc: ({ update }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
 ```
 
 Emitted when a software update is available for the connected reader.
 
-| Param              | Type                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReportAvailableUpdate</a></code>                                        |
-| **`listenerFunc`** | <code>({ update, }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
+| Param              | Type                                                                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReportAvailableUpdate</a></code>                                       |
+| **`listenerFunc`** | <code>({ update }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -678,7 +689,7 @@ Emitted when a software update is available for the connected reader.
 ### addListener(TerminalEventsEnum.StartInstallingUpdate, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.StartInstallingUpdate, listenerFunc: ({ update, }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.StartInstallingUpdate, listenerFunc: ({ update }: { update: ReaderSoftwareUpdateInterface; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -700,10 +711,10 @@ to explain why connecting is taking longer than usual.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-start-installing-update.html)
 
-| Param              | Type                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.StartInstallingUpdate</a></code>                                        |
-| **`listenerFunc`** | <code>({ update, }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
+| Param              | Type                                                                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.StartInstallingUpdate</a></code>                                       |
+| **`listenerFunc`** | <code>({ update }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -756,7 +767,7 @@ addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: 
 ### addListener(TerminalEventsEnum.BatteryLevel, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, charging, status, }: { level: number; charging: boolean; status: BatteryStatus; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.BatteryLevel, listenerFunc: ({ level, charging, status }: { level: number; charging: boolean; status: BatteryStatus; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -765,10 +776,10 @@ Emitted upon connection and every 10 minutes.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-battery-level-update.html)
 
-| Param              | Type                                                                                                                                              |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.BatteryLevel</a></code>                                                                    |
-| **`listenerFunc`** | <code>({ level, charging, status, }: { level: number; charging: boolean; status: <a href="#batterystatus">BatteryStatus</a>; }) =&gt; void</code> |
+| Param              | Type                                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.BatteryLevel</a></code>                                                                   |
+| **`listenerFunc`** | <code>({ level, charging, status }: { level: number; charging: boolean; status: <a href="#batterystatus">BatteryStatus</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -798,7 +809,7 @@ addListener(eventName: TerminalEventsEnum.ReaderEvent, listenerFunc: ({ event }:
 ### addListener(TerminalEventsEnum.RequestDisplayMessage, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.RequestDisplayMessage, listenerFunc: ({ messageType, message, }: { messageType: ReaderDisplayMessage; message: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.RequestDisplayMessage, listenerFunc: ({ messageType, message }: { messageType: ReaderDisplayMessage; message: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -807,10 +818,10 @@ Emitted when the Terminal requests that a message be displayed in your app.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-request-reader-display-message.html)
 
-| Param              | Type                                                                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestDisplayMessage</a></code>                                                          |
-| **`listenerFunc`** | <code>({ messageType, message, }: { messageType: <a href="#readerdisplaymessage">ReaderDisplayMessage</a>; message: string; }) =&gt; void</code> |
+| Param              | Type                                                                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestDisplayMessage</a></code>                                                         |
+| **`listenerFunc`** | <code>({ messageType, message }: { messageType: <a href="#readerdisplaymessage">ReaderDisplayMessage</a>; message: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -820,7 +831,7 @@ Emitted when the Terminal requests that a message be displayed in your app.
 ### addListener(TerminalEventsEnum.RequestReaderInput, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.RequestReaderInput, listenerFunc: ({ options, message, }: { options: ReaderInputOption[]; message: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.RequestReaderInput, listenerFunc: ({ options, message }: { options: ReaderInputOption[]; message: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
 **Only applicable to Bluetooth and USB readers.**
@@ -831,10 +842,10 @@ the RequestDisplayMessage event will be emitted.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-request-reader-input.html)
 
-| Param              | Type                                                                                                |
-| ------------------ | --------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestReaderInput</a></code>                |
-| **`listenerFunc`** | <code>({ options, message, }: { options: ReaderInputOption[]; message: string; }) =&gt; void</code> |
+| Param              | Type                                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestReaderInput</a></code>               |
+| **`listenerFunc`** | <code>({ options, message }: { options: ReaderInputOption[]; message: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -862,13 +873,13 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 ### addListener(TerminalEventsEnum.ReaderReconnectStarted, ...)
 
 ```typescript
-addListener(eventName: TerminalEventsEnum.ReaderReconnectStarted, listenerFunc: ({ reader, reason, }: { reader: ReaderInterface; reason: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: TerminalEventsEnum.ReaderReconnectStarted, listenerFunc: ({ reader, reason }: { reader: ReaderInterface; reason: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param              | Type                                                                                                                       |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectStarted</a></code>                                   |
-| **`listenerFunc`** | <code>({ reader, reason, }: { reader: <a href="#readerinterface">ReaderInterface</a>; reason: string; }) =&gt; void</code> |
+| Param              | Type                                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectStarted</a></code>                                  |
+| **`listenerFunc`** | <code>({ reader, reason }: { reader: <a href="#readerinterface">ReaderInterface</a>; reason: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -922,7 +933,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 #### ReaderInterface
 
-<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: <a href="#devicetype">DeviceType</a>; deviceSoftwareVersion: string | null; /** * iOS Only properties. These properties are not available on Android. */ isCharging: number; /** * Android Only properties. These properties are not available on iOS. */ baseUrl: string; bootloaderVersion: string; configVersion: string; emvKeyProfileId: string; firmwareVersion: string; hardwareVersion: string; macKeyProfileId: string; pinKeyProfileId: string; trackKeyProfileId: string; settingsVersion: string; pinKeysetId: string; /** * @deprecated This property has been deprecated and should use the `serialNumber` property. */ index?: number; }</code>
+<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: <a href="#devicetype">DeviceType</a>; deviceSoftwareVersion: string | null; /** * iOS Only properties. These properties are not available on Android. */ isCharging: number; /** * Android Only properties. These properties are not available on iOS. */ baseUrl: string; bootloaderVersion: string; configVersion: string; emvKeyProfileId: string; firmwareVersion: string; hardwareVersion: string; macKeyProfileId: string; pinKeyProfileId: string; trackKeyProfileId: string; settingsVersion: string; pinKeysetId: string; }</code>
 
 
 #### ReaderSoftwareUpdateInterface
@@ -995,7 +1006,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 | Members                | Value                           |
 | ---------------------- | ------------------------------- |
-| **`cotsDevice`**       | <code>'cotsDevice'</code>       |
+| **`tapToPayDevice`**   | <code>'tapToPayDevice'</code>   |
 | **`wisePad3s`**        | <code>'wisePad3s'</code>        |
 | **`appleBuiltIn`**     | <code>'appleBuiltIn'</code>     |
 | **`chipper1X`**        | <code>'chipper1X'</code>        |
@@ -1075,6 +1086,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 | ---------------------------------- | --------------------------------------------------- |
 | **`Loaded`**                       | <code>'terminalLoaded'</code>                       |
 | **`DiscoveredReaders`**            | <code>'terminalDiscoveredReaders'</code>            |
+| **`DiscoveringReaders`**           | <code>'terminalDiscoveringReaders'</code>           |
 | **`CancelDiscoveredReaders`**      | <code>'terminalCancelDiscoveredReaders'</code>      |
 | **`ConnectedReader`**              | <code>'terminalConnectedReader'</code>              |
 | **`DisconnectedReader`**           | <code>'terminalDisconnectedReader'</code>           |

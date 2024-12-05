@@ -13,6 +13,7 @@ ext {
     androidxJunitVersion = '1.1.5'
     androidxEspressoCoreVersion = '3.5.1'
     cordovaAndroidVersion = '10.1.1'
+    kotlin_version= '1.8.10'
 
     // If you use @capacitor-community/stripe:
     // stripeAndroidVersion = '20.39.+'

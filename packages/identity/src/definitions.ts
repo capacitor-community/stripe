@@ -1,13 +1,7 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import type {
-  IdentityVerificationSheetEventsEnum,
-  IdentityVerificationSheetResultInterface,
-} from './events.enum';
-import type {
-  CreateIdentityVerificationSheetOption,
-  InitializeIdentityVerificationSheetOption,
-} from './web';
+import type { IdentityVerificationSheetEventsEnum, IdentityVerificationSheetResultInterface } from './events.enum';
+import type { CreateIdentityVerificationSheetOption, InitializeIdentityVerificationSheetOption } from './web';
 
 export * from './events.enum';
 export interface StripeIdentityError {
