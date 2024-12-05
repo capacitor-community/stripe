@@ -21,6 +21,26 @@
 
 ## Hint
 
+### Error: Unable to get provider androidx.startup.InitializationProvider
+
+> Unable to get provider androidx.startup.InitializationProvider: androidx.startup.StartupException: androidx.startup.StartupException: java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/lifecycle/ReportFragment$ActivityInitializationListener;
+
+If you got this error message at Android Studio, you should add next block to `android/app/build.gradle`.
+
+```diff
++ buildscript {
++   ext.kotlin_version = '2.0.+'
++   repositories {
++       google()
++       mavenCentral()
++   }
++   dependencies {
++     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
++   }
++ }
++ apply plugin: 'kotlin-android'
+```
+
 ### Versions
 
 Users of Capacitor v5 should use version v5 of the Plugin.
