@@ -4,6 +4,7 @@ import com.getcapacitor.JSObject
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Location
 import com.stripe.stripeterminal.external.models.LocationStatus
+import com.stripe.stripeterminal.external.models.NetworkStatus
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 
@@ -29,7 +30,7 @@ class TerminalMappers {
             .put("id", location.id)
             .put("displayName", location.displayName)
             .put("address", address)
-            .put("livemode", location.getLivemode())
+            .put("livemode", location.livemode)
     }
 
     fun mapFromReaderSoftwareUpdate(update: ReaderSoftwareUpdate?): JSObject {
@@ -56,9 +57,9 @@ class TerminalMappers {
         }
     }
 
-    fun mapFromNetworkStatus(status: NetworkStatus?): String {
+    fun mapFromNetworkStatus(status: Reader.NetworkStatus?): String {
         if (status == null) {
-            return "unknown"
+            return "UNKNOWN"
         }
 
         return when (status) {
