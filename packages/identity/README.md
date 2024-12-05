@@ -16,7 +16,7 @@ see more details on Stripe's native iOS SDK page [here](https://stripe.com/docs/
 
 ### Initialize Android
 
-change base application theme to `Theme.MaterialComponents.DayNight` at `res/values/styles.xml`:
+change base application theme to `Theme.MaterialComponents.DayNight` at `android/app/src/main/res/values/styles.xml`:
 
 ```diff xml: res/values/styles.xml
 - <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
