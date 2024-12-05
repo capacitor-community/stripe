@@ -65,7 +65,7 @@ class StripePlugin : Plugin() {
                 metaData!!.stripeAccount
             )
 
-//            Stripe.appInfo(AppInfo.create(APP_INFO_NAME))
+            Stripe.appInfo = AppInfo.create(APP_INFO_NAME);
 
             googlePayExecutor.googlePayLauncher = GooglePayLauncher(
                 activity,
@@ -133,7 +133,7 @@ class StripePlugin : Plugin() {
             val stripeAccountId = call.getString("stripeAccount", null)
 
             PaymentConfiguration.init(context, publishableKey!!, stripeAccountId)
-//            setAppInfo.setAppInfo(AppInfo.create(APP_INFO_NAME))
+            Stripe.appInfo = AppInfo.create(APP_INFO_NAME);
             call.resolve()
         } catch (e: Exception) {
             call.reject("unable to set publishable key: " + e.localizedMessage, e)
