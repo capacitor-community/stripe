@@ -25,7 +25,7 @@
 
 > Unable to get provider androidx.startup.InitializationProvider: androidx.startup.StartupException: androidx.startup.StartupException: java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/lifecycle/ReportFragment$ActivityInitializationListener;
 
-If you got this error message at Android Studio, you should add next block to `android/app/build.gradle`.
+If you got this error message at Android Studio, you should add next block to `android/app/build.gradle` like https://github.com/capacitor-community/stripe/blob/main/demo/angular/android/app/build.gradle#L61-L74
 
 ```diff
 + buildscript {
