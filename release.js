@@ -8,7 +8,13 @@ const workspaces = ['packages/payment', 'packages/identity', 'packages/terminal'
 workspaces.forEach(async (workspace) => {
   const releasePackagePath = path.resolve('./' + workspace);
   await updatePackage(releasePackagePath + '/package.json', { version: pkg.version });
-  exec(`cd ${releasePackagePath} && npm install && npm run build && npm publish`, (err, stdout, stderr) => {
+
+  const isStable = (version) => {
+    const stableRegex = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+    return stableRegex.test(version);
+  }
+
+  exec(`cd ${releasePackagePath} && npm install && npm run build && npm publish` + (isStable(pkg.version) ? '' : ' --tag next'), (err, stdout, stderr) => {
     if (err) {
       console.error(err);
       return;
