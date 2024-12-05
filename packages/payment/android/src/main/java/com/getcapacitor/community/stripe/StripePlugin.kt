@@ -14,12 +14,10 @@ import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.Stripe
-import com.stripe.android.core.AppInfo;
+import com.stripe.android.core.AppInfo
 import com.stripe.android.googlepaylauncher.GooglePayLauncher
-import com.stripe.android.paymentsheet.PaymentOptionCallback
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
-import com.stripe.android.paymentsheet.PaymentSheetResultCallback
 import com.stripe.android.paymentsheet.model.PaymentOption
 
 @NativePlugin(name = "Stripe", requestCodes = [9972, 50000, 50001, 6000])
@@ -100,10 +98,10 @@ class StripePlugin : Plugin() {
 
         paymentFlowExecutor.flowController = PaymentSheet.FlowController.create(
             activity,
-            PaymentOptionCallback { paymentOption: PaymentOption? ->
+            { paymentOption: PaymentOption? ->
                 paymentFlowExecutor.onPaymentOption(bridge, paymentFlowCallbackId, paymentOption)
             },
-            PaymentSheetResultCallback { result: PaymentSheetResult ->
+            { result: PaymentSheetResult ->
                 paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result)
             }
         )

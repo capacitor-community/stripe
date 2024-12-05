@@ -4,7 +4,6 @@ import com.getcapacitor.JSObject
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Location
 import com.stripe.stripeterminal.external.models.LocationStatus
-import com.stripe.stripeterminal.external.models.NetworkStatus
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 
