@@ -29,7 +29,7 @@ class StripePlugin : Plugin() {
 
     private val identityVerificationCallbackId: String? = null
 
-    private var metaData: MetaData = MetaData { this.context }
+    private lateinit var metaData: MetaData;
 
     private val paymentSheetExecutor = PaymentSheetExecutor(
         { this.context },
@@ -53,6 +53,7 @@ class StripePlugin : Plugin() {
     )
 
     override fun load() {
+        this.metaData = MetaData { this.context };
         if (metaData.enableGooglePay) {
             this.publishableKey = metaData.publishableKey
 
