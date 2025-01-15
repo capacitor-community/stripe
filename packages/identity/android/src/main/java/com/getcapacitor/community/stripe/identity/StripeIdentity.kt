@@ -72,7 +72,7 @@ class StripeIdentity(
         val call = bridge.getSavedCall(callbackId)
         notifyListeners(IdentityVerificationSheetEvent.Completed.webEventName, emptyObject)
 
-        if (call) {
+        if (call != null) {
             call.resolve(
                 JSObject().put(
                     "identityVerificationResult",
@@ -88,7 +88,7 @@ class StripeIdentity(
         val call = bridge.getSavedCall(callbackId)
         notifyListeners(IdentityVerificationSheetEvent.Canceled.webEventName, emptyObject)
 
-        if (call) {
+        if (call != null) {
             call.resolve(
                 JSObject().put(
                     "identityVerificationResult",
@@ -104,7 +104,7 @@ class StripeIdentity(
         val call = bridge.getSavedCall(callbackId)
         notifyListeners(IdentityVerificationSheetEvent.Failed.webEventName, emptyObject)
 
-        if (call) {
+        if (call != null) {
             call.resolve(
                 JSObject().put(
                     "identityVerificationResult",
