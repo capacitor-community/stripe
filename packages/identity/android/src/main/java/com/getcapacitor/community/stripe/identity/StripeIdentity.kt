@@ -71,33 +71,48 @@ class StripeIdentity(
     fun onVerificationCompleted(bridge: Bridge, callbackId: String?) {
         val call = bridge.getSavedCall(callbackId)
         notifyListeners(IdentityVerificationSheetEvent.Completed.webEventName, emptyObject)
-        call.resolve(
-            JSObject().put(
-                "identityVerificationResult",
-                IdentityVerificationSheetEvent.Completed.webEventName
+
+        if (call) {
+            call.resolve(
+                JSObject().put(
+                    "identityVerificationResult",
+                    IdentityVerificationSheetEvent.Completed.webEventName
+                )
             )
-        )
+        } else {
+            Logger.error("onVerificationCompleted: No callbackId found")
+        }
     }
 
     fun onVerificationCancelled(bridge: Bridge, callbackId: String?) {
         val call = bridge.getSavedCall(callbackId)
         notifyListeners(IdentityVerificationSheetEvent.Canceled.webEventName, emptyObject)
-        call.resolve(
-            JSObject().put(
-                "identityVerificationResult",
-                IdentityVerificationSheetEvent.Canceled.webEventName
+
+        if (call) {
+            call.resolve(
+                JSObject().put(
+                    "identityVerificationResult",
+                    IdentityVerificationSheetEvent.Canceled.webEventName
+                )
             )
-        )
+        } else {
+            Logger.error("onVerificationCancelled: No callbackId found")
+        }
     }
 
     fun onVerificationFailed(bridge: Bridge, callbackId: String?) {
         val call = bridge.getSavedCall(callbackId)
         notifyListeners(IdentityVerificationSheetEvent.Failed.webEventName, emptyObject)
-        call.resolve(
-            JSObject().put(
-                "identityVerificationResult",
-                IdentityVerificationSheetEvent.Failed.webEventName
+
+        if (call) {
+            call.resolve(
+                JSObject().put(
+                    "identityVerificationResult",
+                    IdentityVerificationSheetEvent.Failed.webEventName
+                )
             )
-        )
+        } else {
+            Logger.error("onVerificationFailed: No callbackId found")
+        }
     }
 }
