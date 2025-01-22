@@ -56,19 +56,3 @@ try {
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
-
-
-/*
- * used from @capacitor-community/stripe. If you remove this plugin, you can remove this code block.
- */
-buildscript {
-  ext.kotlin_version = '2.0.+'
-  repositories {
-    google()
-    mavenCentral()
-  }
-  dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-  }
-}
-apply plugin: 'kotlin-android'
