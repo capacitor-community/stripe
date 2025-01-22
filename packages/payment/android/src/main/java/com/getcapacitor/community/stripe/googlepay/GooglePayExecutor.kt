@@ -79,7 +79,7 @@ class GooglePayExecutor(
         } else if (result is GooglePayLauncher.Result.Failed) {
             notifyListenersFunction.accept(
                 GooglePayEvents.Failed.webEventName,
-                JSObject().put("error", (result as GooglePayLauncher.Result.Failed).error.getLocalizedMessage())
+                JSObject().put("error", (result.error.localizedMessage))
             )
             call.resolve(JSObject().put("paymentResult", GooglePayEvents.Failed.webEventName))
         }
