@@ -61,26 +61,8 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 
 ```diff
   ext {
--    minSdkVersion = 22
--    compileSdkVersion = 33
+-    minSdkVersion = 23
 +    minSdkVersion = 30
-+    compileSdkVersion = 34
-```
-
-And add next block to `android/app/build.gradle`.
-
-```diff
-+ buildscript {
-+   ext.kotlin_version = '2.0.+'
-+   repositories {
-+       google()
-+       mavenCentral()
-+   }
-+   dependencies {
-+     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-+   }
-+ }
-+ apply plugin: 'kotlin-android'
 ```
 
 ## Usage
