@@ -19,26 +19,24 @@
 | @capacitor-community/stripe-terminal | Support for in-person payments using Stripe  | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) |
 
 
-## Hint
+## Update to Capacitor v7
 
-### Error: Unable to get provider androidx.startup.InitializationProvider
+### Remove buildscript from `app/build.gradle`
 
-> Unable to get provider androidx.startup.InitializationProvider: androidx.startup.StartupException: androidx.startup.StartupException: java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/lifecycle/ReportFragment$ActivityInitializationListener;
-
-If you got this error message at Android Studio, you should add next block to `android/app/build.gradle` like https://github.com/capacitor-community/stripe/blob/main/demo/angular/android/app/build.gradle#L61-L74
+Good news for users who added a buildscript in v6 to eliminate the `Unable to get provider androidx.startup.InitializationProvider` error, it is no longer needed in Capacitor v7. Please remove the following
 
 ```diff
-+ buildscript {
-+   ext.kotlin_version = '2.0.+'
-+   repositories {
-+       google()
-+       mavenCentral()
-+   }
-+   dependencies {
-+     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-+   }
-+ }
-+ apply plugin: 'kotlin-android'
+- buildscript {
+-   ext.kotlin_version = '2.0.+'
+-   repositories {
+-       google()
+-       mavenCentral()
+-   }
+-   dependencies {
+-     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+-   }
+- }
+- apply plugin: 'kotlin-android'
 ```
 
 ### Versions
