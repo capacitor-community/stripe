@@ -83,6 +83,10 @@ And add next block to `android/app/build.gradle`.
 + apply plugin: 'kotlin-android'
 ```
 
+If you are developing apps for Stripe Android devices (e.g. Stripe Reader S700), follow the Stripe's documentation for the client-side setup.
+- [Stripe - Android configure your app](https://docs.stripe.com/terminal/features/apps-on-devices/build?terminal-sdk-platform=android&lang-android=java#setup-app)
+
+
 ## Usage
 
 ### Simple collect payment
@@ -1048,6 +1052,7 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 | **`Bluetooth`** | <code>'bluetooth'</code>  |
 | **`Usb`**       | <code>'usb'</code>        |
 | **`TapToPay`**  | <code>'tap-to-pay'</code> |
+| **`HandOff`**   | <code>'hand-off'</code>   |
 
 
 #### SimulateReaderUpdate

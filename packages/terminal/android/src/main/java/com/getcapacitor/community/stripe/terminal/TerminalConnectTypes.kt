@@ -6,4 +6,5 @@ enum class TerminalConnectTypes(val webEventName: String) {
     Bluetooth("bluetooth"),
     Usb("usb"),
     TapToPay("tap-to-pay"),
+    HandOff("hand-off"),
 }
