@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-community/stripe-identity",
-  "version": "6.5.0",
+  "version": "6.5.0-issues368-0",
   "engines": {
     "node": ">=18.0.0"
   },
