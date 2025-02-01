@@ -77,6 +77,7 @@ class StripeIdentity(
                 IdentityVerificationSheetEvent.Completed.webEventName
             )
         )
+        bridge.releaseCall(callbackId)
     }
 
     fun onVerificationCancelled(bridge: Bridge, callbackId: String?) {
@@ -88,6 +89,7 @@ class StripeIdentity(
                 IdentityVerificationSheetEvent.Canceled.webEventName
             )
         )
+        bridge.releaseCall(callbackId)
     }
 
     fun onVerificationFailed(bridge: Bridge, callbackId: String?) {
@@ -99,5 +101,6 @@ class StripeIdentity(
                 IdentityVerificationSheetEvent.Failed.webEventName
             )
         )
+        bridge.releaseCall(callbackId)
     }
 }
