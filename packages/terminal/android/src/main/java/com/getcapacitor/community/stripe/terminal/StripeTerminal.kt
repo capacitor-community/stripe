@@ -29,6 +29,7 @@ import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.callable.TapToPayReaderListener
 import com.stripe.stripeterminal.external.callable.TerminalListener
+import com.stripe.stripeterminal.external.callable.HandoffReaderListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
 import com.stripe.stripeterminal.external.models.CardPresentDetails
 import com.stripe.stripeterminal.external.models.Cart
@@ -194,6 +195,9 @@ class StripeTerminal(
         ) {
             config = DiscoveryConfiguration.BluetoothDiscoveryConfiguration(0, this.isTest!!)
             this.terminalConnectType = TerminalConnectTypes.Bluetooth
+        } else if (call.getString("type") == TerminalConnectTypes.HandOff.webEventName) {
+            config = DiscoveryConfiguration.HandoffDiscoveryConfiguration()
+            this.terminalConnectType = TerminalConnectTypes.HandOff
         } else {
             call.unimplemented(call.getString("type") + " is not support now")
             return
@@ -240,6 +244,8 @@ class StripeTerminal(
             this.connectUsbReader(call)
         } else if (this.terminalConnectType == TerminalConnectTypes.Bluetooth) {
             this.connectBluetoothReader(call)
+        } else if (this.terminalConnectType == TerminalConnectTypes.HandOff) {
+            this.connectHandOffReader(call)
         } else {
             call.reject("type is not defined.")
         }
@@ -438,6 +444,39 @@ class StripeTerminal(
                 this.readerListener()
             )
         Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call))
+    }
+
+    private fun connectHandOffReader(call: PluginCall) {
+        val reader = call.getObject("reader")
+        val serialNumber = reader.getString("serialNumber")
+        val foundReader = this.discoveredReadersList.firstOrNull()
+
+        if (serialNumber == null || foundReader == null) {
+            call.reject("The reader value is not set correctly.")
+            return
+        }
+
+        val config: ConnectionConfiguration.HandoffConnectionConfiguration = ConnectionConfiguration.HandoffConnectionConfiguration(
+            this.handoffReaderListener
+        )
+
+        Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call))
+    }
+
+    var handoffReaderListener: HandoffReaderListener = object : HandoffReaderListener {
+        override fun onDisconnect(reason: DisconnectReason) {
+            notifyListeners(
+                TerminalEnumEvent.DisconnectedReader.webEventName,
+                JSObject().put("reason", reason.toString())
+            )
+        }
+
+        override fun onReportReaderEvent(event: ReaderEvent) {
+            notifyListeners(
+                TerminalEnumEvent.ReaderEvent.webEventName,
+                JSObject().put("event", event.toString())
+            )
+        }
     }
 
     fun cancelDiscoverReaders(call: PluginCall) {
