@@ -4,6 +4,7 @@ export enum TerminalConnectTypes {
   Bluetooth = 'bluetooth',
   Usb = 'usb',
   TapToPay = 'tap-to-pay',
+  HandOff = 'hand-off',
 }
 
 /**
