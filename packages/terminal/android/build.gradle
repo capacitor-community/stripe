@@ -8,6 +8,7 @@ ext {
     volleyVersion = project.hasProperty('volleyVersion') ? rootProject.ext.volleyVersion : '1.2.1'
     stripeterminalTapToPayVersion = project.hasProperty('stripeterminalTapToPayVersion') ? rootProject.ext.stripeterminalTapToPayVersion : '4.1.0'
     stripeterminalCoreVersion = project.hasProperty('stripeterminalCoreVersion') ? rootProject.ext.stripeterminalCoreVersion : '4.1.0'
+    stripeterminalHandoffClientVersion = project.hasProperty('stripeterminalHandoffClientVersion') ? rootProject.ext.stripeterminalHandoffClientVersion : '4.1.0'
 }
 
 buildscript {
@@ -71,6 +72,7 @@ dependencies {
 
     implementation "com.stripe:stripeterminal-core:$stripeterminalCoreVersion"
     implementation "com.stripe:stripeterminal-taptopay:$stripeterminalTapToPayVersion"
+    implementation "com.stripe:stripeterminal-handoffclient:$stripeterminalHandoffClientVersion"
     implementation "com.android.volley:volley:$volleyVersion"
     implementation "com.google.android.gms:play-services-wallet:$playServicesWalletVersion"
 }

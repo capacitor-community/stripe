@@ -5,7 +5,7 @@ ext {
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.6.1'
 
     playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
-    stripeAndroidVersion = project.hasProperty('stripeAndroidVersion') ? rootProject.ext.stripeAndroidVersion : '21.2.+'
+    stripeAndroidVersion = project.hasProperty('stripeAndroidVersion') ? rootProject.ext.stripeAndroidVersion : '21.4.+'
     gsonVersion = project.hasProperty('gsonVersion') ? rootProject.ext.gsonVersion : '2.10.+'
 }
 
