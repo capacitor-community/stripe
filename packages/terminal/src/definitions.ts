@@ -364,22 +364,4 @@ export interface StripeTerminalPlugin {
     eventName: TerminalEventsEnum.ReaderReconnectFailed,
     listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
   ): Promise<PluginListenerHandle>;
-
-  /**
-   * @deprecated
-   * This method has been deprecated and replaced by the `collectPaymentMethod`.
-   * Similarly, note that TerminalEvents.Completed is now obsolete.
-   * And, method `confirmPaymentIntent` added to be executed after `collectPaymentMethod` is executed.
-   *
-   * This is left as type string to avoid accidental use.
-   */
-  collect: string;
-
-  /**
-   * @deprecated
-   * This method has been deprecated and replaced by the `cancelCollectPaymentMethod`.
-   *
-   * This is left as type string to avoid accidental use.
-   */
-  cancelCollect: string;
 }

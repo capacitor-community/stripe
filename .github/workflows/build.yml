@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: set up JDK 17
+    - name: set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'zulu'
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -67,10 +67,10 @@ jobs:
   verify-payment-android:
     runs-on: ubuntu-latest
     steps:
-      - name: set up JDK 17
+      - name: set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -91,10 +91,10 @@ jobs:
   verify-identity-android:
     runs-on: ubuntu-latest
     steps:
-      - name: set up JDK 17
+      - name: set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -116,10 +116,10 @@ jobs:
   verify-terminal-android:
     runs-on: ubuntu-latest
     steps:
-      - name: set up JDK 17
+      - name: set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'zulu'
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
