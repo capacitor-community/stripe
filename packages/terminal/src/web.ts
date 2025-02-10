@@ -79,7 +79,7 @@ export class StripeTerminalWeb extends WebPlugin implements StripeTerminalPlugin
     }
 
     if (options.type !== TerminalConnectTypes.Internet) {
-      this.unavailable(`${options.type} is selected. Web platform is supported only internet connection.`);
+      throw this.unavailable(`${options.type} is selected. Web platform is supported only internet connection.`);
     }
 
     const discoverResult = await this.stripeTerminal.discoverReaders({
