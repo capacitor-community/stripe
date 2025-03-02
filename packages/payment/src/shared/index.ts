@@ -40,7 +40,7 @@ export type AddressCollectionMode = 'automatic' | 'full';
 /**
  * Billing details collection options.
  */
-export type CollectionMode = 'automatic' | 'always';
+export type CollectionMode = 'automatic' | 'always' | 'never';
 
 interface BillingDetailsCollectionConfiguration {
   /**

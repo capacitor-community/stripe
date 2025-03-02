@@ -125,6 +125,8 @@ class PaymentSheetExecutor: NSObject {
         switch mode {
         case "full":
             return .full
+        case "never":
+            return .never
         default:
             return .automatic
         }

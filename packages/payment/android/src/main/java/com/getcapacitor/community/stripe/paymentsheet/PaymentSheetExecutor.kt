@@ -93,8 +93,10 @@ class PaymentSheetExecutor(
                     ) CollectionMode.Always else CollectionMode.Automatic,
                     if ((emailCollectionMode != null && emailCollectionMode == "always")
                     ) CollectionMode.Always else CollectionMode.Automatic,
+
                     if ((addressCollectionMode != null && addressCollectionMode == "full")
-                    ) AddressCollectionMode.Full else AddressCollectionMode.Automatic,
+                    ) AddressCollectionMode.Full else if ((addressCollectionMode != null && addressCollectionMode == "never")
+                    ) AddressCollectionMode.Never else AddressCollectionMode.Automatic,
                     false
                 )
         }
