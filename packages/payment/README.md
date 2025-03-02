@@ -768,7 +768,7 @@ iOS Only
 
 Billing details collection options.
 
-<code>'automatic' | 'always'</code>
+<code>'automatic' | 'always' | 'never'</code>
 
 
 #### AddressCollectionMode
