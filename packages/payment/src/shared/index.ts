@@ -124,6 +124,13 @@ export interface BasePaymentOption {
    * @default true
    */
   withZipCode?: boolean
+
+  /**
+   * use GooglePay.
+   * Required if enableGooglePay is true for setupIntents.
+   * @default "USD"
+   */
+  currencyCode?: string;
 }
 
 export interface CreateApplePayOption {
