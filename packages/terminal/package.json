@@ -51,11 +51,11 @@
   "devDependencies": {
     "@capacitor/android": "^7.0.0",
     "@capacitor/core": "^7.0.0",
-    "@capacitor/docgen": "^0.3.0",
     "@capacitor/ios": "^7.0.0",
     "@ionic/eslint-config": "^0.4.0",
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/swiftlint-config": "^2.0.0",
+    "@rdlabo/capacitor-docgen": "^0.4.1",
     "eslint": "^8.57.0",
     "prettier": "^3.4.2",
     "prettier-plugin-java": "^2.6.6",
