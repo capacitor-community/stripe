@@ -19,6 +19,43 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 
 <docgen-index>
 
+* [`initialize(...)`](#initialize)
+* [`handleURLCallback(...)`](#handleurlcallback)
+* [`isApplePayAvailable()`](#isapplepayavailable)
+* [`createApplePay(...)`](#createapplepay)
+* [`presentApplePay()`](#presentapplepay)
+* [`addListener(ApplePayEventsEnum.Loaded, ...)`](#addlistenerapplepayeventsenumloaded-)
+* [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload-)
+* [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted-)
+* [`addListener(ApplePayEventsEnum.Canceled, ...)`](#addlistenerapplepayeventsenumcanceled-)
+* [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed-)
+* [`addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenerapplepayeventsenumdidselectshippingcontact-)
+* [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod-)
+* [`isGooglePayAvailable()`](#isgooglepayavailable)
+* [`createGooglePay(...)`](#creategooglepay)
+* [`presentGooglePay()`](#presentgooglepay)
+* [`addListener(GooglePayEventsEnum.Loaded, ...)`](#addlistenergooglepayeventsenumloaded-)
+* [`addListener(GooglePayEventsEnum.FailedToLoad, ...)`](#addlistenergooglepayeventsenumfailedtoload-)
+* [`addListener(GooglePayEventsEnum.Completed, ...)`](#addlistenergooglepayeventsenumcompleted-)
+* [`addListener(GooglePayEventsEnum.Canceled, ...)`](#addlistenergooglepayeventsenumcanceled-)
+* [`addListener(GooglePayEventsEnum.Failed, ...)`](#addlistenergooglepayeventsenumfailed-)
+* [`createPaymentFlow(...)`](#createpaymentflow)
+* [`presentPaymentFlow()`](#presentpaymentflow)
+* [`confirmPaymentFlow()`](#confirmpaymentflow)
+* [`addListener(PaymentFlowEventsEnum.Loaded, ...)`](#addlistenerpaymentfloweventsenumloaded-)
+* [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload-)
+* [`addListener(PaymentFlowEventsEnum.Opened, ...)`](#addlistenerpaymentfloweventsenumopened-)
+* [`addListener(PaymentFlowEventsEnum.Completed, ...)`](#addlistenerpaymentfloweventsenumcompleted-)
+* [`addListener(PaymentFlowEventsEnum.Canceled, ...)`](#addlistenerpaymentfloweventsenumcanceled-)
+* [`addListener(PaymentFlowEventsEnum.Failed, ...)`](#addlistenerpaymentfloweventsenumfailed-)
+* [`addListener(PaymentFlowEventsEnum.Created, ...)`](#addlistenerpaymentfloweventsenumcreated-)
+* [`createPaymentSheet(...)`](#createpaymentsheet)
+* [`presentPaymentSheet()`](#presentpaymentsheet)
+* [`addListener(PaymentSheetEventsEnum.Loaded, ...)`](#addlistenerpaymentsheeteventsenumloaded-)
+* [`addListener(PaymentSheetEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentsheeteventsenumfailedtoload-)
+* [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted-)
+* [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled-)
+* [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed-)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -28,53 +65,544 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-This is for @capacitor/docgen only.
-Not use in product.
+### initialize(...)
+
+```typescript
+initialize(opts: StripeInitializationOptions) => Promise<void>
+```
+
+| Param      | Type                                                                                |
+| ---------- | ----------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#stripeinitializationoptions">StripeInitializationOptions</a></code> |
+
+--------------------
+
+
+### handleURLCallback(...)
+
+```typescript
+handleURLCallback(opts: StripeURLHandlingOptions) => Promise<void>
+```
+
+iOS Only
+
+| Param      | Type                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#stripeurlhandlingoptions">StripeURLHandlingOptions</a></code> |
+
+--------------------
+
+
+### isApplePayAvailable()
+
+```typescript
+isApplePayAvailable() => Promise<void>
+```
+
+--------------------
+
+
+### createApplePay(...)
+
+```typescript
+createApplePay(options: CreateApplePayOption) => Promise<void>
+```
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createapplepayoption">CreateApplePayOption</a></code> |
+
+--------------------
+
+
+### presentApplePay()
+
+```typescript
+presentApplePay() => Promise<{ paymentResult: ApplePayResultInterface; }>
+```
+
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#applepayresultinterface">ApplePayResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Loaded, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                               |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.FailedToLoad, listenerFunc: (error: string) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                        |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Completed, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                        |
+| ------------------ | --------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                  |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.Failed, listenerFunc: (error: string) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                  |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.DidSelectShippingContact, listenerFunc: (data: DidSelectShippingContact) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a></code>       |
+| **`listenerFunc`** | <code>(data: <a href="#didselectshippingcontact">DidSelectShippingContact</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)
+
+```typescript
+addListener(eventName: ApplePayEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: DidSelectShippingContact) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code>         |
+| **`listenerFunc`** | <code>(data: <a href="#didselectshippingcontact">DidSelectShippingContact</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### isGooglePayAvailable()
+
+```typescript
+isGooglePayAvailable() => Promise<void>
+```
+
+--------------------
+
+
+### createGooglePay(...)
+
+```typescript
+createGooglePay(options: CreateGooglePayOption) => Promise<void>
+```
+
+| Param         | Type                                                                    |
+| ------------- | ----------------------------------------------------------------------- |
+| **`options`** | <code><a href="#creategooglepayoption">CreateGooglePayOption</a></code> |
+
+--------------------
+
+
+### presentGooglePay()
+
+```typescript
+presentGooglePay() => Promise<{ paymentResult: GooglePayResultInterface; }>
+```
+
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#googlepayresultinterface">GooglePayResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Loaded, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.FailedToLoad, listenerFunc: (error: string) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                          |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Completed, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                          |
+| ------------------ | ----------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                    |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                         |
+| ------------------ | ---------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                   |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(GooglePayEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: GooglePayEventsEnum.Failed, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                 |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### createPaymentFlow(...)
+
+```typescript
+createPaymentFlow(options: CreatePaymentFlowOption) => Promise<void>
+```
+
+| Param         | Type                                                                        |
+| ------------- | --------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createpaymentflowoption">CreatePaymentFlowOption</a></code> |
+
+--------------------
+
+
+### presentPaymentFlow()
+
+```typescript
+presentPaymentFlow() => Promise<{ cardNumber: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ cardNumber: string; }&gt;</code>
+
+--------------------
+
+
+### confirmPaymentFlow()
+
+```typescript
+confirmPaymentFlow() => Promise<{ paymentResult: PaymentFlowResultInterface; }>
+```
+
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentflowresultinterface">PaymentFlowResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Loaded, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.FailedToLoad, listenerFunc: (error: string) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                              |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Opened, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Opened, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Opened</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                     |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Completed, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                              |
+| ------------------ | --------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                        |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Failed, listenerFunc: (error: string) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                        |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentFlowEventsEnum.Created, ...)
+
+```typescript
+addListener(eventName: PaymentFlowEventsEnum.Created, listenerFunc: (info: { cardNumber: string; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                            |
+| ------------------ | ------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Created</a></code> |
+| **`listenerFunc`** | <code>(info: { cardNumber: string; }) =&gt; void</code>                         |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### createPaymentSheet(...)
+
+```typescript
+createPaymentSheet(options: CreatePaymentSheetOption) => Promise<void>
+```
+
+| Param         | Type                                                                          |
+| ------------- | ----------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#createpaymentsheetoption">CreatePaymentSheetOption</a></code> |
+
+--------------------
+
+
+### presentPaymentSheet()
+
+```typescript
+presentPaymentSheet() => Promise<{ paymentResult: PaymentSheetResultInterface; }>
+```
+
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#paymentsheetresultinterface">PaymentSheetResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Loaded, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Loaded, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Loaded</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                       |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.FailedToLoad, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.FailedToLoad, listenerFunc: (error: string) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.FailedToLoad</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                                |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Completed, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Completed, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                          |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                               |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                         |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(PaymentSheetEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: string) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>(error: string) =&gt; void</code>                                          |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
 
 ### Interfaces
-
-
-#### StripePlugin
-
-| Method                   | Signature                                                                                                                                                                                                                                                                   | Description |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **initialize**           | (opts: <a href="#stripeinitializationoptions">StripeInitializationOptions</a>) =&gt; Promise&lt;void&gt;                                                                                                                                                                    |             |
-| **handleURLCallback**    | (opts: <a href="#stripeurlhandlingoptions">StripeURLHandlingOptions</a>) =&gt; Promise&lt;void&gt;                                                                                                                                                                          | iOS Only    |
-| **isApplePayAvailable**  | () =&gt; Promise&lt;void&gt;                                                                                                                                                                                                                                                |             |
-| **createApplePay**       | (options: <a href="#createapplepayoption">CreateApplePayOption</a>) =&gt; Promise&lt;void&gt;                                                                                                                                                                               |             |
-| **presentApplePay**      | () =&gt; Promise&lt;{ paymentResult: <a href="#applepayresultinterface">ApplePayResultInterface</a>; }&gt;                                                                                                                                                                  |             |
-| **addListener**          | (eventName: <a href="#applepayeventsenum">ApplePayEventsEnum.Loaded</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                         |             |
-| **addListener**          | (eventName: <a href="#applepayeventsenum">ApplePayEventsEnum.FailedToLoad</a>, listenerFunc: (error: string) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                      |             |
-| **addListener**          | (eventName: <a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                      |             |
-| **addListener**          | (eventName: <a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                       |             |
-| **addListener**          | (eventName: <a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a>, listenerFunc: (error: string) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                            |             |
-| **addListener**          | (eventName: <a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a>, listenerFunc: (data: <a href="#didselectshippingcontact">DidSelectShippingContact</a>) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; |             |
-| **addListener**          | (eventName: <a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a>, listenerFunc: (data: <a href="#didselectshippingcontact">DidSelectShippingContact</a>) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;   |             |
-| **isGooglePayAvailable** | () =&gt; Promise&lt;void&gt;                                                                                                                                                                                                                                                |             |
-| **createGooglePay**      | (options: <a href="#creategooglepayoption">CreateGooglePayOption</a>) =&gt; Promise&lt;void&gt;                                                                                                                                                                             |             |
-| **presentGooglePay**     | () =&gt; Promise&lt;{ paymentResult: <a href="#googlepayresultinterface">GooglePayResultInterface</a>; }&gt;                                                                                                                                                                |             |
-| **addListener**          | (eventName: <a href="#googlepayeventsenum">GooglePayEventsEnum.Loaded</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                       |             |
-| **addListener**          | (eventName: <a href="#googlepayeventsenum">GooglePayEventsEnum.FailedToLoad</a>, listenerFunc: (error: string) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                    |             |
-| **addListener**          | (eventName: <a href="#googlepayeventsenum">GooglePayEventsEnum.Completed</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                    |             |
-| **addListener**          | (eventName: <a href="#googlepayeventsenum">GooglePayEventsEnum.Canceled</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                     |             |
-| **addListener**          | (eventName: <a href="#googlepayeventsenum">GooglePayEventsEnum.Failed</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                       |             |
-| **createPaymentFlow**    | (options: <a href="#createpaymentflowoption">CreatePaymentFlowOption</a>) =&gt; Promise&lt;void&gt;                                                                                                                                                                         |             |
-| **presentPaymentFlow**   | () =&gt; Promise&lt;{ cardNumber: string; }&gt;                                                                                                                                                                                                                             |             |
-| **confirmPaymentFlow**   | () =&gt; Promise&lt;{ paymentResult: <a href="#paymentflowresultinterface">PaymentFlowResultInterface</a>; }&gt;                                                                                                                                                            |             |
-| **addListener**          | (eventName: <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Loaded</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                   |             |
-| **addListener**          | (eventName: <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.FailedToLoad</a>, listenerFunc: (error: string) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                |             |
-| **addListener**          | (eventName: <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Opened</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                   |             |
-| **addListener**          | (eventName: <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Completed</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                |             |
-| **addListener**          | (eventName: <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Canceled</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                 |             |
-| **addListener**          | (eventName: <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Failed</a>, listenerFunc: (error: string) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                      |             |
-| **addListener**          | (eventName: <a href="#paymentfloweventsenum">PaymentFlowEventsEnum.Created</a>, listenerFunc: (info: { cardNumber: string; }) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                     |             |
-| **createPaymentSheet**   | (options: <a href="#createpaymentsheetoption">CreatePaymentSheetOption</a>) =&gt; Promise&lt;void&gt;                                                                                                                                                                       |             |
-| **presentPaymentSheet**  | () =&gt; Promise&lt;{ paymentResult: <a href="#paymentsheetresultinterface">PaymentSheetResultInterface</a>; }&gt;                                                                                                                                                          |             |
-| **addListener**          | (eventName: <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Loaded</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                                 |             |
-| **addListener**          | (eventName: <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.FailedToLoad</a>, listenerFunc: (error: string) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                              |             |
-| **addListener**          | (eventName: <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Completed</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                              |             |
-| **addListener**          | (eventName: <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Canceled</a>, listenerFunc: () =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                               |             |
-| **addListener**          | (eventName: <a href="#paymentsheeteventsenum">PaymentSheetEventsEnum.Failed</a>, listenerFunc: (error: string) =&gt; void) =&gt; Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;                                                                    |             |
 
 
 #### StripeInitializationOptions
@@ -201,15 +729,6 @@ Not use in product.
 | **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                  | <code>""</code>         |
 | **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                         | <code>undefined</code>  |
 | **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
-
-
-#### CapacitorStripeContext
-
-| Prop                       | Type                                                  |
-| -------------------------- | ----------------------------------------------------- |
-| **`stripe`**               | <code><a href="#stripeplugin">StripePlugin</a></code> |
-| **`isApplePayAvailable`**  | <code>boolean</code>                                  |
-| **`isGooglePayAvailable`** | <code>boolean</code>                                  |
 
 
 ### Type Aliases
