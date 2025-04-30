@@ -39,12 +39,3 @@ export interface CapacitorStripeContext {
   isApplePayAvailable: boolean;
   isGooglePayAvailable: boolean;
 }
-
-/**
- * This is for @capacitor/docgen only.
- * Not use in product.
- */
-export interface DocGenType {
-  stripe: StripePlugin;
-  context: CapacitorStripeContext;
-}
