@@ -1,6 +1,6 @@
 # @capacitor-community/stripe
 
-Stripe Identity SDK bindings for Capacitor Applications
+Stripe SDK bindings for Capacitor Applications
 
 ## Install
 
