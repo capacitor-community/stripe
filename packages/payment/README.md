@@ -699,6 +699,7 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 | **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                  | <code>""</code>         |
 | **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                         | <code>undefined</code>  |
 | **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
+| **`currencyCode`**                          | <code>string</code>                                                                                     | use GooglePay. Required if enableGooglePay is true for setupIntents.                             | <code>"USD"</code>      |
 
 
 #### BillingDetailsCollectionConfiguration
@@ -729,6 +730,7 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 | **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                  | <code>""</code>         |
 | **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                         | <code>undefined</code>  |
 | **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
+| **`currencyCode`**                          | <code>string</code>                                                                                     | use GooglePay. Required if enableGooglePay is true for setupIntents.                             | <code>"USD"</code>      |
 
 
 ### Type Aliases
