@@ -23,20 +23,19 @@ import {
 } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-demo',
-  templateUrl: 'demo.page.html',
-  styleUrls: ['demo.page.scss'],
-  standalone: true,
-  imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonListHeader,
-    IonLabel,
-    IonItem,
-  ],
+    selector: 'app-demo',
+    templateUrl: 'demo.page.html',
+    styleUrls: ['demo.page.scss'],
+    imports: [
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonListHeader,
+        IonLabel,
+        IonItem,
+    ]
 })
 export class DemoPage implements OnInit {
   processSheet: 'willReady' | 'Ready' = 'willReady';

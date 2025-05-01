@@ -84,21 +84,20 @@ const cancelPathItems: ITestItems[] = [
 ];
 
 @Component({
-  selector: 'app-flow',
-  templateUrl: 'flow.page.html',
-  styleUrls: ['flow.page.scss'],
-  standalone: true,
-  imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonListHeader,
-    IonLabel,
-    IonItem,
-    IonIcon,
-  ],
+    selector: 'app-flow',
+    templateUrl: 'flow.page.html',
+    styleUrls: ['flow.page.scss'],
+    imports: [
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonListHeader,
+        IonLabel,
+        IonItem,
+        IonIcon,
+    ]
 })
 export class FlowPage {
   public eventItems: ITestItems[] = [];

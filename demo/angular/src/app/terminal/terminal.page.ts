@@ -42,23 +42,22 @@ import {updateDeviceUpdateItems} from './updateDeviceUpdateItems';
 import {Stripe} from '@capacitor-community/stripe';
 
 @Component({
-  selector: 'app-terminal',
-  templateUrl: './terminal.page.html',
-  styleUrls: ['./terminal.page.scss'],
-  standalone: true,
-  imports: [
-    FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonListHeader,
-    IonLabel,
-    IonItemDivider,
-    IonItem,
-    IonIcon,
-  ],
+    selector: 'app-terminal',
+    templateUrl: './terminal.page.html',
+    styleUrls: ['./terminal.page.scss'],
+    imports: [
+        FormsModule,
+        IonHeader,
+        IonToolbar,
+        IonTitle,
+        IonContent,
+        IonList,
+        IonListHeader,
+        IonLabel,
+        IonItemDivider,
+        IonItem,
+        IonIcon,
+    ]
 })
 export class TerminalPage {
   public eventItems: ITestItems[] = [];
