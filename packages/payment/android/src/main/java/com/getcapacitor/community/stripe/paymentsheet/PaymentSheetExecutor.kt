@@ -132,7 +132,7 @@ class PaymentSheetExecutor(
                     googlePay = PaymentSheet.GooglePayConfiguration(
                         environment,
                         call.getString("countryCode", "US")!!,
-                        call.getString("currencyCode", "USD")!!
+                        call.getString("currencyCode", null)
                     ),
                 )
             } else {
@@ -142,7 +142,7 @@ class PaymentSheetExecutor(
                     googlePay = PaymentSheet.GooglePayConfiguration(
                         environment,
                         call.getString("countryCode", "US")!!,
-                        call.getString("currencyCode", "USD")!!
+                        call.getString("currencyCode", null)
                     ),
                 )
             }
