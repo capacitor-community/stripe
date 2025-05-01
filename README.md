@@ -163,6 +163,6 @@ Made with [contributors-img](https://contrib.rocks).
 
 ```bash
 % git clone git@github.com:capacitor-community/stripe.git
-% cd stripe && npm install && npm run build
+% cd packages/payment && npm install && npm run build
 % cd demo && npm install && npm run cap && npx cap update
 ```
