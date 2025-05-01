@@ -4,7 +4,10 @@ import { environment } from './environments/environment';
 
 import { defineCustomElements } from 'stripe-pwa-elements/loader';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { routes } from './app/app.routes';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import {

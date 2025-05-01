@@ -76,20 +76,20 @@ const cancelPathItems: ITestItems[] = [
 ];
 
 @Component({
-    selector: 'app-identity',
-    templateUrl: './identity.page.html',
-    styleUrls: ['./identity.page.scss'],
-    imports: [
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonList,
-        IonListHeader,
-        IonLabel,
-        IonItem,
-        IonIcon,
-    ]
+  selector: 'app-identity',
+  templateUrl: './identity.page.html',
+  styleUrls: ['./identity.page.scss'],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonListHeader,
+    IonLabel,
+    IonItem,
+    IonIcon,
+  ],
 })
 export class IdentityPage {
   public eventItems: ITestItems[] = [];

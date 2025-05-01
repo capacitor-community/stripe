@@ -1,10 +1,5 @@
-import {ITestItems} from '../shared/interfaces';
-import {
-  DisconnectReason,
-  ReaderDisplayMessage,
-  ReaderEvent,
-  TerminalEventsEnum
-} from '@capacitor-community/stripe-terminal';
+import { ITestItems } from '../shared/interfaces';
+import { TerminalEventsEnum } from '@capacitor-community/stripe-terminal';
 
 export const happyPathItems: ITestItems[] = [
   {
@@ -56,7 +51,6 @@ export const happyPathItems: ITestItems[] = [
     name: TerminalEventsEnum.DisconnectedReader,
   },
 ];
-
 
 export const happyPathBluetoothItems: ITestItems[] = [
   {

@@ -73,20 +73,20 @@ const cancelPathItems: ITestItems[] = [
 ];
 
 @Component({
-    selector: 'app-sheet',
-    templateUrl: 'sheet.page.html',
-    styleUrls: ['sheet.page.scss'],
-    imports: [
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonList,
-        IonListHeader,
-        IonLabel,
-        IonItem,
-        IonIcon,
-    ]
+  selector: 'app-sheet',
+  templateUrl: 'sheet.page.html',
+  styleUrls: ['sheet.page.scss'],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonListHeader,
+    IonLabel,
+    IonItem,
+    IonIcon,
+  ],
 })
 export class SheetPage {
   public eventItems: ITestItems[] = [];

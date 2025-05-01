@@ -84,20 +84,20 @@ const cancelPathItems: ITestItems[] = [
 ];
 
 @Component({
-    selector: 'app-flow',
-    templateUrl: 'flow.page.html',
-    styleUrls: ['flow.page.scss'],
-    imports: [
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonList,
-        IonListHeader,
-        IonLabel,
-        IonItem,
-        IonIcon,
-    ]
+  selector: 'app-flow',
+  templateUrl: 'flow.page.html',
+  styleUrls: ['flow.page.scss'],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonListHeader,
+    IonLabel,
+    IonItem,
+    IonIcon,
+  ],
 })
 export class FlowPage {
   public eventItems: ITestItems[] = [];
@@ -186,7 +186,7 @@ export class FlowPage {
         );
     } else {
       await Stripe.presentPaymentFlow()
-        .then((data) =>
+        .then(() =>
           this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false),
         )
         .catch(() =>
