@@ -66,6 +66,8 @@ class StripeIdentityPlugin : Plugin() {
     @PluginMethod
     fun present(call: PluginCall) {
         identityVerificationCallbackId = call.callbackId
+
+        call.setKeepAlive(true);
         bridge.saveCall(call)
 
         implementation.present(call)
