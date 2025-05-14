@@ -85,19 +85,38 @@ class PaymentSheetExecutor(
             val nameCollectionMode = bdCollectionConfiguration.getString("name")
             val phoneCollectionMode = bdCollectionConfiguration.getString("phone")
             val addressCollectionMode = bdCollectionConfiguration.getString("address")
+
+            val nameMode = when (nameCollectionMode) {
+                "always" -> CollectionMode.Always
+                "never" -> CollectionMode.Never
+                else -> CollectionMode.Automatic
+            }
+
+            val phoneMode = when (phoneCollectionMode) {
+                "always" -> CollectionMode.Always
+                "never" -> CollectionMode.Never
+                else -> CollectionMode.Automatic
+            }
+
+            val emailMode = when (emailCollectionMode) {
+                "always" -> CollectionMode.Always
+                "never" -> CollectionMode.Never
+                else -> CollectionMode.Automatic
+            }
+
+            val addressMode = when (addressCollectionMode) {
+                "full" -> AddressCollectionMode.Full
+                "never" -> AddressCollectionMode.Never
+                else -> AddressCollectionMode.Automatic
+            }
+
             billingDetailsCollectionConfiguration =
                 PaymentSheet.BillingDetailsCollectionConfiguration(
-                    if ((nameCollectionMode != null && nameCollectionMode == "always")
-                    ) CollectionMode.Always else CollectionMode.Automatic,
-                    if ((phoneCollectionMode != null && phoneCollectionMode == "always")
-                    ) CollectionMode.Always else CollectionMode.Automatic,
-                    if ((emailCollectionMode != null && emailCollectionMode == "always")
-                    ) CollectionMode.Always else CollectionMode.Automatic,
-
-                    if ((addressCollectionMode != null && addressCollectionMode == "full")
-                    ) AddressCollectionMode.Full else if ((addressCollectionMode != null && addressCollectionMode == "never")
-                    ) AddressCollectionMode.Never else AddressCollectionMode.Automatic,
-                    false
+                    nameMode,
+                    phoneMode,
+                    emailMode,
+                    addressMode,
+                    attachDefaultsToPaymentMethod = false
                 )
         }
 

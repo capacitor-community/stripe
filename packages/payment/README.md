@@ -757,7 +757,7 @@ Billing details collection options.
 
 Billing details collection options.
 
-<code>'automatic' | 'full'</code>
+<code>'automatic' | 'full' | 'never'</code>
 
 
 #### PaymentFlowResultInterface
