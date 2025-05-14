@@ -35,7 +35,7 @@ export interface CreatePaymentFlowOption extends BasePaymentOption {
 /**
  * Billing details collection options.
  */
-export type AddressCollectionMode = 'automatic' | 'full';
+export type AddressCollectionMode = 'automatic' | 'full' | 'never';
 
 /**
  * Billing details collection options.
