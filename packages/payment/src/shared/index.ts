@@ -54,7 +54,7 @@ export interface Address {
   state?: string;
 }
 
-interface AddressDetails {
+export interface AddressDetails {
   name?: string;
   address?: Address;
   phone?: string;
