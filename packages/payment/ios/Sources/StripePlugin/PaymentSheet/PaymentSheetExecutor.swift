@@ -68,13 +68,13 @@ class PaymentSheetExecutor: NSObject {
                 let val: String = value as? String ?? "automatic"
                 switch key {
                 case "email":
-                    configuration.billingDetailsCollectionConfiguration.email = getCollectionModeValue(mode: val)
+                    configuration.billingDetailsCollectionConfiguration.email = PaymentSheetHelper().getCollectionModeValue(mode: val)
                 case "name":
-                    configuration.billingDetailsCollectionConfiguration.name = getCollectionModeValue(mode: val)
+                    configuration.billingDetailsCollectionConfiguration.name = PaymentSheetHelper().getCollectionModeValue(mode: val)
                 case "phone":
-                    configuration.billingDetailsCollectionConfiguration.phone = getCollectionModeValue(mode: val)
+                    configuration.billingDetailsCollectionConfiguration.phone = PaymentSheetHelper().getCollectionModeValue(mode: val)
                 case "address":
-                    configuration.billingDetailsCollectionConfiguration.address = getAddressCollectionModeValue(mode: val)
+                    configuration.billingDetailsCollectionConfiguration.address = PaymentSheetHelper().getAddressCollectionModeValue(mode: val)
                 default:
                     return
                 }
@@ -112,25 +112,4 @@ class PaymentSheetExecutor: NSObject {
         }
     }
 
-    func getCollectionModeValue(mode: String) -> PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode {
-        switch mode {
-        case "always":
-            return .always
-        case "never":
-            return .never
-        default:
-            return .automatic
-        }
-    }
-
-    func getAddressCollectionModeValue(mode: String) -> PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode {
-        switch mode {
-        case "full":
-            return .full
-        case "never":
-            return .never
-        default:
-            return .automatic
-        }
-    }
 }

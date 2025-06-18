@@ -61,6 +61,25 @@ class PaymentFlowExecutor: NSObject {
         if customerId != nil && customerEphemeralKeySecret != nil {
             configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
         }
+        
+        let billingDetailsCollectionConfiguration = call.getObject("billingDetailsCollectionConfiguration") ?? nil
+        if billingDetailsCollectionConfiguration != nil {
+            billingDetailsCollectionConfiguration?.forEach({ (key: String, value: JSValue) in
+                let val: String = value as? String ?? "automatic"
+                switch key {
+                case "email":
+                    configuration.billingDetailsCollectionConfiguration.email = PaymentSheetHelper().getCollectionModeValue(mode: val)
+                case "name":
+                    configuration.billingDetailsCollectionConfiguration.name = PaymentSheetHelper().getCollectionModeValue(mode: val)
+                case "phone":
+                    configuration.billingDetailsCollectionConfiguration.phone = PaymentSheetHelper().getCollectionModeValue(mode: val)
+                case "address":
+                    configuration.billingDetailsCollectionConfiguration.address = PaymentSheetHelper().getAddressCollectionModeValue(mode: val)
+                default:
+                    return
+                }
+            })
+        }
 
         if setupIntentClientSecret != nil {
             PaymentSheet.FlowController.create(setupIntentClientSecret: setupIntentClientSecret!,
