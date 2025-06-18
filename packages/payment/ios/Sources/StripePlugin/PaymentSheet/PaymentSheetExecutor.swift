@@ -80,6 +80,33 @@ class PaymentSheetExecutor: NSObject {
                 }
             })
         }
+        
+        let defaultBillingDetails = call.getObject("defaultBillingDetails") ?? nil
+        if defaultBillingDetails != nil {
+            defaultBillingDetails?.forEach({ (key: String, value: JSValue) in
+                switch key {
+                case "email":
+                    configuration.defaultBillingDetails.email = value as? String
+                case "name":
+                    configuration.defaultBillingDetails.name = value as? String
+                case "phone":
+                    configuration.defaultBillingDetails.phone = value as? String
+                case "address":
+                    let val = value as? JSObject
+                    let address = PaymentSheet.Address(
+                        city: val?["city"] as? String,
+                        country: val?["country"] as? String,
+                        line1: val?["line1"] as? String,
+                        line2: val?["line2"] as? String,
+                        postalCode: val?["postalCode"] as? String,
+                        state: val?["state"] as? String,
+                    )
+                    configuration.defaultBillingDetails.address = address
+                default:
+                    return
+                }
+            })
+        }
 
         if setupIntentClientSecret != nil {
             self.paymentSheet = PaymentSheet(setupIntentClientSecret: setupIntentClientSecret!, configuration: configuration)
