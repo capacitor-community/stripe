@@ -3,6 +3,7 @@ public enum TerminalEvents: String {
     case DiscoveringReaders = "terminalDiscoveringReaders"
     case DiscoveredReaders = "terminalDiscoveredReaders"
     case ConnectedReader = "terminalConnectedReader"
+    case CancelDiscoveredReaders = "terminalCancelDiscoveredReaders"
     case DisconnectedReader = "terminalDisconnectedReader"
     case ConnectionStatusChange = "terminalConnectionStatusChange"
     case UnexpectedReaderDisconnect = "terminalUnexpectedReaderDisconnect"
