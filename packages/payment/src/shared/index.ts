@@ -42,7 +42,7 @@ export type AddressCollectionMode = 'automatic' | 'full' | 'never';
  */
 export type CollectionMode = 'automatic' | 'always' | 'never';
 
-interface Address {
+export interface Address {
   /**
    * Two-letter country code (ISO 3166-1 alpha-2).
    */
