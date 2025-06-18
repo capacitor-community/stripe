@@ -61,7 +61,7 @@ export interface AddressDetails {
   isCheckboxSelected?: boolean;
 }
 
-interface DefaultBillingDetails {
+export interface DefaultBillingDetails {
   email?: string;
   name?: string;
   phone?: string;
