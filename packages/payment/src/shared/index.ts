@@ -42,6 +42,32 @@ export type AddressCollectionMode = 'automatic' | 'full' | 'never';
  */
 export type CollectionMode = 'automatic' | 'always' | 'never';
 
+interface Address {
+  /**
+   * Two-letter country code (ISO 3166-1 alpha-2).
+   */
+  country?: string;
+  city?: string;
+  line1?: string;
+  line2?: string;
+  postalCode?: string;
+  state?: string;
+}
+
+interface AddressDetails {
+  name?: string;
+  address?: Address;
+  phone?: string;
+  isCheckboxSelected?: boolean;
+}
+
+interface DefaultBillingDetails {
+  email?: string;
+  name?: string;
+  phone?: string;
+  address?: Address;
+}
+
 interface BillingDetailsCollectionConfiguration {
   /**
    * Configuration for how billing details are collected during checkout.
@@ -54,7 +80,20 @@ interface BillingDetailsCollectionConfiguration {
 
 export interface BasePaymentOption {
   /**
+   * Optional defaultBillingDetails
+   * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#set-default-billing-details
+   */
+  defaultBillingDetails?: DefaultBillingDetails;
+
+  /**
+   * Optional shippingDetails
+   * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=android#prefill-addresses
+   */
+  shippingDetails?: AddressDetails;
+
+  /**
    * Optional billingDetailsCollectionConfiguration
+   * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#customize-billing-details-collection
    */
   billingDetailsCollectionConfiguration?: BillingDetailsCollectionConfiguration;
 
