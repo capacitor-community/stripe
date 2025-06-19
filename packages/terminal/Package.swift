@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "7.0.0"),
-        .package(url: "https://github.com/stripe/stripe-terminal-ios.git", exact: "4.3.0")
+        .package(url: "https://github.com/stripe/stripe-terminal-ios.git", exact: "4.5.0")
     ],
     targets: [
         .target(
