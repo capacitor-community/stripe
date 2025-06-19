@@ -48,7 +48,8 @@ class StripeIdentityPlugin : Plugin() {
             } else if (verificationFlowResult is VerificationFlowResult.Failed) {
                 // If the flow fails, you should display the localized error
                 // message to your user using throwable.getLocalizedMessage()
-                implementation.onVerificationFailed(bridge, identityVerificationCallbackId)
+                val errorMessage = verificationFlowResult.throwable.localizedMessage;
+                implementation.onVerificationFailed(bridge, errorMessage, identityVerificationCallbackId)
             }
         }
     }

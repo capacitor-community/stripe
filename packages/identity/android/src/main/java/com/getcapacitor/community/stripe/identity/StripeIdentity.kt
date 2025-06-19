@@ -69,38 +69,70 @@ class StripeIdentity(
     }
 
     fun onVerificationCompleted(bridge: Bridge, callbackId: String?) {
-        val call = bridge.getSavedCall(callbackId)
-        notifyListeners(IdentityVerificationSheetEvent.Completed.webEventName, emptyObject)
-        call.resolve(
+        notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject().put(
-                "identityVerificationResult",
+                "result",
                 IdentityVerificationSheetEvent.Completed.webEventName
             )
         )
-        bridge.releaseCall(callbackId)
+
+        val call = bridge.getSavedCall(callbackId)
+        notifyListeners(IdentityVerificationSheetEvent.Completed.webEventName, emptyObject)
+        if (call !== null) {
+            call.resolve(
+                JSObject().put(
+                    "identityVerificationResult",
+                    IdentityVerificationSheetEvent.Completed.webEventName
+                )
+            )
+            bridge.releaseCall(callbackId)
+        }
     }
 
     fun onVerificationCancelled(bridge: Bridge, callbackId: String?) {
-        val call = bridge.getSavedCall(callbackId)
-        notifyListeners(IdentityVerificationSheetEvent.Canceled.webEventName, emptyObject)
-        call.resolve(
+        notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject().put(
-                "identityVerificationResult",
+                "result",
                 IdentityVerificationSheetEvent.Canceled.webEventName
             )
         )
-        bridge.releaseCall(callbackId)
+
+        val call = bridge.getSavedCall(callbackId)
+        notifyListeners(IdentityVerificationSheetEvent.Canceled.webEventName, emptyObject)
+        if (call !== null) {
+            call.resolve(
+                JSObject().put(
+                    "identityVerificationResult",
+                    IdentityVerificationSheetEvent.Canceled.webEventName
+                )
+            )
+            bridge.releaseCall(callbackId)
+        }
     }
 
-    fun onVerificationFailed(bridge: Bridge, callbackId: String?) {
+    fun onVerificationFailed(bridge: Bridge, errorMessage: String?, callbackId: String?) {
+        notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
+            JSObject()
+                .put(
+                    "result",
+                    IdentityVerificationSheetEvent.Failed.webEventName
+                )
+                .put(
+                    "error",
+                    JSObject().put("message", errorMessage)
+                )
+        )
+
         val call = bridge.getSavedCall(callbackId)
         notifyListeners(IdentityVerificationSheetEvent.Failed.webEventName, emptyObject)
-        call.resolve(
-            JSObject().put(
-                "identityVerificationResult",
-                IdentityVerificationSheetEvent.Failed.webEventName
+        if (call !== null) {
+            call.resolve(
+                JSObject().put(
+                    "identityVerificationResult",
+                    IdentityVerificationSheetEvent.Failed.webEventName
+                )
             )
-        )
-        bridge.releaseCall(callbackId)
+            bridge.releaseCall(callbackId)
+        }
     }
 }
