@@ -86,22 +86,29 @@ class PaymentFlowExecutor: NSObject {
             defaultBillingDetails?.forEach({ (key: String, value: JSValue) in
                 switch key {
                 case "email":
-                    configuration.defaultBillingDetails.email = value as? String
+                    if let val = value as? String {
+                        configuration.defaultBillingDetails.email = val
+                    }
                 case "name":
-                    configuration.defaultBillingDetails.name = value as? String
+                    if let val = value as? String {
+                        configuration.defaultBillingDetails.name = val
+                    }
                 case "phone":
-                    configuration.defaultBillingDetails.phone = value as? String
+                    if let val = value as? String {
+                        configuration.defaultBillingDetails.phone = val
+                    }
                 case "address":
-                    let val = value as? JSObject
-                    let address = PaymentSheet.Address(
-                        city: val?["city"] as? String,
-                        country: val?["country"] as? String,
-                        line1: val?["line1"] as? String,
-                        line2: val?["line2"] as? String,
-                        postalCode: val?["postalCode"] as? String,
-                        state: val?["state"] as? String,
-                    )
-                    configuration.defaultBillingDetails.address = address
+                    if let val = value as? JSObject {
+                        let address = PaymentSheet.Address(
+                            city: val["city"] as? String,
+                            country: val["country"] as? String,
+                            line1: val["line1"] as? String,
+                            line2: val["line2"] as? String,
+                            postalCode: val["postalCode"] as? String,
+                            state: val["state"] as? String
+                        )
+                        configuration.defaultBillingDetails.address = address
+                    }
                 default:
                     return
                 }
