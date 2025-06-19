@@ -57,7 +57,7 @@ jobs:
 
     - name: Build Android Debug APK
       working-directory: ./demo/angular/android
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
