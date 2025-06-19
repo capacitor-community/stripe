@@ -81,18 +81,21 @@ interface BillingDetailsCollectionConfiguration {
 export interface BasePaymentOption {
   /**
    * Optional defaultBillingDetails
+   * This is ios/android only. not support web.
    * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#set-default-billing-details
    */
   defaultBillingDetails?: DefaultBillingDetails;
 
   /**
    * Optional shippingDetails
+   * This is android only. ios requires an address element.
    * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=android#prefill-addresses
    */
   shippingDetails?: AddressDetails;
 
   /**
    * Optional billingDetailsCollectionConfiguration
+   * This is ios/android only. not support web.
    * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#customize-billing-details-collection
    */
   billingDetailsCollectionConfiguration?: BillingDetailsCollectionConfiguration;
