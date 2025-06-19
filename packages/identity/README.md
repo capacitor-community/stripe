@@ -243,6 +243,7 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 
 | Prop          | Type                |
 | ------------- | ------------------- |
+| **`code`**    | <code>string</code> |
 | **`message`** | <code>string</code> |
 
 
