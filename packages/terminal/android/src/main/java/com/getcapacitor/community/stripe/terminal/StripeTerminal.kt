@@ -203,6 +203,11 @@ class StripeTerminal(
             return
         }
 
+        notifyListeners(
+            TerminalEnumEvent.DiscoveringReaders.webEventName,
+            emptyObject
+        )
+
         discoveryCancelable = Terminal.getInstance()
             .discoverReaders(
                 config,

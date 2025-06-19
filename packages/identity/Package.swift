@@ -3,15 +3,15 @@ import PackageDescription
 
 let package = Package(
     name: "CapacitorCommunityStripeIdentity",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v14)],
     products: [
         .library(
             name: "CapacitorCommunityStripeIdentity",
             targets: ["StripeIdentityPlugin"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "6.0.0"),
-        .package(url: "https://github.com/stripe/stripe-ios-spm.git", exact: "24.4.1")
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "7.0.0"),
+        .package(url: "https://github.com/stripe/stripe-ios-spm.git", exact: "24.12.1")
     ],
     targets: [
         .target(

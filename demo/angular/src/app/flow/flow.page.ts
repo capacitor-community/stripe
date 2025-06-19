@@ -87,7 +87,6 @@ const cancelPathItems: ITestItems[] = [
   selector: 'app-flow',
   templateUrl: 'flow.page.html',
   styleUrls: ['flow.page.scss'],
-  standalone: true,
   imports: [
     IonHeader,
     IonToolbar,
@@ -187,7 +186,7 @@ export class FlowPage {
         );
     } else {
       await Stripe.presentPaymentFlow()
-        .then((data) =>
+        .then(() =>
           this.helper.updateItem(this.eventItems, 'presentPaymentFlow', false),
         )
         .catch(() =>

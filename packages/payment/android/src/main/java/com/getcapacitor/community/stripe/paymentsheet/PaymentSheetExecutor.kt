@@ -6,12 +6,14 @@ import androidx.core.util.Supplier
 import com.getcapacitor.Bridge
 import com.getcapacitor.JSObject
 import com.getcapacitor.PluginCall
+import com.getcapacitor.community.stripe.helper.PaymentSheetHelper
 import com.getcapacitor.community.stripe.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode
 import com.stripe.android.paymentsheet.PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode
 import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.stripe.android.paymentsheet.addresselement.AddressDetails
 
 class PaymentSheetExecutor(
     contextSupplier: Supplier<Context>,
@@ -77,41 +79,21 @@ class PaymentSheetExecutor(
         ) PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret!!)
         else null
 
-        var billingDetailsCollectionConfiguration: PaymentSheet.BillingDetailsCollectionConfiguration? = null
-        val bdCollectionConfiguration =
+
+        val defaultBillingDetailsConfiguration = PaymentSheetHelper().fromJSObjectToBillingDetails(call.getObject("defaultBillingDetails", null))
+        val shippingDetailsConfiguration = PaymentSheetHelper().fromJSObjectToShippingDetails(call.getObject("shippingDetails", null));
+        val billingDetailsCollectionConfiguration = PaymentSheetHelper().fromJSObjectToBillingCollectionConfig(
             call.getObject("billingDetailsCollectionConfiguration", null)
-        if (bdCollectionConfiguration != null) {
-            val emailCollectionMode = bdCollectionConfiguration.getString("email")
-            val nameCollectionMode = bdCollectionConfiguration.getString("name")
-            val phoneCollectionMode = bdCollectionConfiguration.getString("phone")
-            val addressCollectionMode = bdCollectionConfiguration.getString("address")
-            billingDetailsCollectionConfiguration =
-                PaymentSheet.BillingDetailsCollectionConfiguration(
-                    if ((nameCollectionMode != null && nameCollectionMode == "always")
-                    ) CollectionMode.Always else CollectionMode.Automatic,
-                    if ((phoneCollectionMode != null && phoneCollectionMode == "always")
-                    ) CollectionMode.Always else CollectionMode.Automatic,
-                    if ((emailCollectionMode != null && emailCollectionMode == "always")
-                    ) CollectionMode.Always else CollectionMode.Automatic,
-                    if ((addressCollectionMode != null && addressCollectionMode == "full")
-                    ) AddressCollectionMode.Full else AddressCollectionMode.Automatic,
-                    false
-                )
-        }
+        )
 
         if (!enableGooglePay!!) {
-            paymentConfiguration = if (bdCollectionConfiguration != null) {
-                PaymentSheet.Configuration(
-                    merchantDisplayName,
-                    customer,
-                    billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration!!
-                )
-            } else {
-                PaymentSheet.Configuration(
-                    merchantDisplayName,
-                    customer,
-                )
-            }
+            paymentConfiguration = PaymentSheet.Configuration(
+                merchantDisplayName,
+                customer,
+                shippingDetails = shippingDetailsConfiguration,
+                defaultBillingDetails = defaultBillingDetailsConfiguration,
+                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration
+            )
         } else {
             val googlePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
 
@@ -122,26 +104,18 @@ class PaymentSheetExecutor(
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
-            paymentConfiguration = if (bdCollectionConfiguration != null) {
-                PaymentSheet.Configuration(
-                    merchantDisplayName,
-                    customer,
-                    billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration!!,
-                    googlePay = PaymentSheet.GooglePayConfiguration(
-                        environment,
-                        call.getString("countryCode", "US")!!
-                    ),
-                )
-            } else {
-                PaymentSheet.Configuration(
-                    merchantDisplayName,
-                    customer,
-                    googlePay = PaymentSheet.GooglePayConfiguration(
-                        environment,
-                        call.getString("countryCode", "US")!!
-                    ),
-                )
-            }
+            paymentConfiguration = PaymentSheet.Configuration(
+                merchantDisplayName,
+                customer,
+                shippingDetails = shippingDetailsConfiguration,
+                defaultBillingDetails = defaultBillingDetailsConfiguration,
+                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration,
+                googlePay = PaymentSheet.GooglePayConfiguration(
+                    environment,
+                    call.getString("countryCode", "US")!!,
+                    call.getString("currencyCode", null)
+                ),
+            )
         }
 
         notifyListenersFunction.accept(PaymentSheetEvents.Loaded.webEventName, emptyObject)

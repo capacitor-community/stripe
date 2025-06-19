@@ -1,5 +1,5 @@
-import {ITestItems} from '../shared/interfaces';
-import {TerminalEventsEnum} from '@capacitor-community/stripe-terminal';
+import { ITestItems } from '../shared/interfaces';
+import { TerminalEventsEnum } from '@capacitor-community/stripe-terminal';
 
 export const checkDiscoverMethodItems: ITestItems[] = [
   {

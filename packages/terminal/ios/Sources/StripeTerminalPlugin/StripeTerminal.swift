@@ -59,6 +59,8 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
         }
 
         self.discoverCall = call
+        self.plugin?.notifyListeners(TerminalEvents.DiscoveringReaders.rawValue, data: [:])
+        
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
             if let error = error {
                 print("discoverReaders failed: \(error)")
@@ -377,6 +379,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
                 if let error = error {
                     call.reject(error.localizedDescription)
                 } else {
+                    self.plugin?.notifyListeners(TerminalEvents.CancelDiscoveredReaders.rawValue, data: [:])
                     call.resolve()
                 }
             }

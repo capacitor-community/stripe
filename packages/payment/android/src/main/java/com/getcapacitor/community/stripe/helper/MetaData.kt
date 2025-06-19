@@ -51,10 +51,6 @@ class MetaData(protected var contextSupplier: Supplier<Context>) {
                 "com.getcapacitor.community.stripe.google_pay_existing_payment_method_required"
             )
 
-            // @deprecated. will remove at v6.0.0
-            enableIdentifier =
-                appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.enableIdentifier")
-
             val isTest =
                 appInfo.metaData.getBoolean("com.getcapacitor.community.stripe.google_pay_is_testing")
             googlePayEnvironment = if (isTest) {

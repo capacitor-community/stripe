@@ -6,6 +6,7 @@ import androidx.core.util.Supplier
 import com.getcapacitor.Bridge
 import com.getcapacitor.JSObject
 import com.getcapacitor.PluginCall
+import com.getcapacitor.community.stripe.helper.PaymentSheetHelper
 import com.getcapacitor.community.stripe.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.paymentsheet.PaymentSheet
@@ -72,8 +73,20 @@ class PaymentFlowExecutor(
         ) PaymentSheet.CustomerConfiguration(customerId, customerEphemeralKeySecret!!)
         else null
 
+        val defaultBillingDetailsConfiguration = PaymentSheetHelper().fromJSObjectToBillingDetails(call.getObject("defaultBillingDetails", null))
+        val shippingDetailsConfiguration = PaymentSheetHelper().fromJSObjectToShippingDetails(call.getObject("shippingDetails", null));
+        val billingDetailsCollectionConfiguration = PaymentSheetHelper().fromJSObjectToBillingCollectionConfig(
+            call.getObject("billingDetailsCollectionConfiguration", null)
+        )
+
         if (!enableGooglePay!!) {
-            paymentConfiguration = PaymentSheet.Configuration(merchantDisplayName, customer)
+            paymentConfiguration = PaymentSheet.Configuration(
+                merchantDisplayName,
+                customer,
+                shippingDetails = shippingDetailsConfiguration,
+                defaultBillingDetails = defaultBillingDetailsConfiguration,
+                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration,
+            )
         } else {
             val GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
 
@@ -87,9 +100,13 @@ class PaymentFlowExecutor(
             paymentConfiguration = PaymentSheet.Configuration(
                 merchantDisplayName,
                 customer,
-                PaymentSheet.GooglePayConfiguration(
+                shippingDetails = shippingDetailsConfiguration,
+                defaultBillingDetails = defaultBillingDetailsConfiguration,
+                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration,
+                googlePay = PaymentSheet.GooglePayConfiguration(
                     environment,
-                    call.getString("countryCode", "US")!!
+                    call.getString("countryCode", "US")!!,
+                    call.getString("currencyCode", null)
                 )
             )
         }

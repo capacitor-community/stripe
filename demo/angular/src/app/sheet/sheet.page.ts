@@ -76,7 +76,6 @@ const cancelPathItems: ITestItems[] = [
   selector: 'app-sheet',
   templateUrl: 'sheet.page.html',
   styleUrls: ['sheet.page.scss'],
-  standalone: true,
   imports: [
     IonHeader,
     IonToolbar,

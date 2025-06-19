@@ -14,7 +14,7 @@ export class HelperService {
     items: ITestItems[],
     name: string,
     result: boolean,
-    value: any = undefined,
+    value: unknown = undefined,
   ) {
     await new Promise<void>((resolve) => {
       this.zone.run(() => {
@@ -25,10 +25,12 @@ export class HelperService {
             if (item.expect === undefined) {
               item.result = result;
             } else if (Array.isArray(item.expect) && value) {
-              // @ts-ignore
+              // @ts-expect-error: valueがanyであるため
               item.result = item.expect.includes(value.toString());
             } else if (value && typeof value === 'object') {
-              item.result = JSON.stringify(value).includes(item.expect.toString());
+              item.result = JSON.stringify(value).includes(
+                item.expect.toString(),
+              );
             } else {
               if (item.expect === 'error') {
                 item.result = this.receiveErrorValue(value);
@@ -42,7 +44,7 @@ export class HelperService {
     });
   }
 
-  private receiveErrorValue(value: any): boolean {
+  private receiveErrorValue(value: unknown): boolean {
     return value.hasOwnProperty('code') && value.hasOwnProperty('message');
   }
 }

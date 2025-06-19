@@ -79,7 +79,6 @@ const cancelPathItems: ITestItems[] = [
   selector: 'app-identity',
   templateUrl: './identity.page.html',
   styleUrls: ['./identity.page.scss'],
-  standalone: true,
   imports: [
     IonHeader,
     IonToolbar,

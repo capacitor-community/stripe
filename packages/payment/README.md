@@ -1,6 +1,6 @@
 # @capacitor-community/stripe
 
-Stripe Identity SDK bindings for Capacitor Applications
+Stripe SDK bindings for Capacitor Applications
 
 ## Install
 
@@ -19,43 +19,43 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 
 <docgen-index>
 
+* [`initialize(...)`](#initialize)
+* [`handleURLCallback(...)`](#handleurlcallback)
 * [`isApplePayAvailable()`](#isapplepayavailable)
 * [`createApplePay(...)`](#createapplepay)
 * [`presentApplePay()`](#presentapplepay)
-* [`addListener(ApplePayEventsEnum.Loaded, ...)`](#addlistenerapplepayeventsenumloaded)
-* [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload)
-* [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted)
-* [`addListener(ApplePayEventsEnum.Canceled, ...)`](#addlistenerapplepayeventsenumcanceled)
-* [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed)
-* [`addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenerapplepayeventsenumdidselectshippingcontact)
-* [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod)
+* [`addListener(ApplePayEventsEnum.Loaded, ...)`](#addlistenerapplepayeventsenumloaded-)
+* [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload-)
+* [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted-)
+* [`addListener(ApplePayEventsEnum.Canceled, ...)`](#addlistenerapplepayeventsenumcanceled-)
+* [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed-)
+* [`addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenerapplepayeventsenumdidselectshippingcontact-)
+* [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod-)
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`createGooglePay(...)`](#creategooglepay)
 * [`presentGooglePay()`](#presentgooglepay)
-* [`addListener(GooglePayEventsEnum.Loaded, ...)`](#addlistenergooglepayeventsenumloaded)
-* [`addListener(GooglePayEventsEnum.FailedToLoad, ...)`](#addlistenergooglepayeventsenumfailedtoload)
-* [`addListener(GooglePayEventsEnum.Completed, ...)`](#addlistenergooglepayeventsenumcompleted)
-* [`addListener(GooglePayEventsEnum.Canceled, ...)`](#addlistenergooglepayeventsenumcanceled)
-* [`addListener(GooglePayEventsEnum.Failed, ...)`](#addlistenergooglepayeventsenumfailed)
+* [`addListener(GooglePayEventsEnum.Loaded, ...)`](#addlistenergooglepayeventsenumloaded-)
+* [`addListener(GooglePayEventsEnum.FailedToLoad, ...)`](#addlistenergooglepayeventsenumfailedtoload-)
+* [`addListener(GooglePayEventsEnum.Completed, ...)`](#addlistenergooglepayeventsenumcompleted-)
+* [`addListener(GooglePayEventsEnum.Canceled, ...)`](#addlistenergooglepayeventsenumcanceled-)
+* [`addListener(GooglePayEventsEnum.Failed, ...)`](#addlistenergooglepayeventsenumfailed-)
 * [`createPaymentFlow(...)`](#createpaymentflow)
 * [`presentPaymentFlow()`](#presentpaymentflow)
 * [`confirmPaymentFlow()`](#confirmpaymentflow)
-* [`addListener(PaymentFlowEventsEnum.Loaded, ...)`](#addlistenerpaymentfloweventsenumloaded)
-* [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload)
-* [`addListener(PaymentFlowEventsEnum.Opened, ...)`](#addlistenerpaymentfloweventsenumopened)
-* [`addListener(PaymentFlowEventsEnum.Completed, ...)`](#addlistenerpaymentfloweventsenumcompleted)
-* [`addListener(PaymentFlowEventsEnum.Canceled, ...)`](#addlistenerpaymentfloweventsenumcanceled)
-* [`addListener(PaymentFlowEventsEnum.Failed, ...)`](#addlistenerpaymentfloweventsenumfailed)
-* [`addListener(PaymentFlowEventsEnum.Created, ...)`](#addlistenerpaymentfloweventsenumcreated)
+* [`addListener(PaymentFlowEventsEnum.Loaded, ...)`](#addlistenerpaymentfloweventsenumloaded-)
+* [`addListener(PaymentFlowEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentfloweventsenumfailedtoload-)
+* [`addListener(PaymentFlowEventsEnum.Opened, ...)`](#addlistenerpaymentfloweventsenumopened-)
+* [`addListener(PaymentFlowEventsEnum.Completed, ...)`](#addlistenerpaymentfloweventsenumcompleted-)
+* [`addListener(PaymentFlowEventsEnum.Canceled, ...)`](#addlistenerpaymentfloweventsenumcanceled-)
+* [`addListener(PaymentFlowEventsEnum.Failed, ...)`](#addlistenerpaymentfloweventsenumfailed-)
+* [`addListener(PaymentFlowEventsEnum.Created, ...)`](#addlistenerpaymentfloweventsenumcreated-)
 * [`createPaymentSheet(...)`](#createpaymentsheet)
 * [`presentPaymentSheet()`](#presentpaymentsheet)
-* [`addListener(PaymentSheetEventsEnum.Loaded, ...)`](#addlistenerpaymentsheeteventsenumloaded)
-* [`addListener(PaymentSheetEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentsheeteventsenumfailedtoload)
-* [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted)
-* [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled)
-* [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed)
-* [`initialize(...)`](#initialize)
-* [`handleURLCallback(...)`](#handleurlcallback)
+* [`addListener(PaymentSheetEventsEnum.Loaded, ...)`](#addlistenerpaymentsheeteventsenumloaded-)
+* [`addListener(PaymentSheetEventsEnum.FailedToLoad, ...)`](#addlistenerpaymentsheeteventsenumfailedtoload-)
+* [`addListener(PaymentSheetEventsEnum.Completed, ...)`](#addlistenerpaymentsheeteventsenumcompleted-)
+* [`addListener(PaymentSheetEventsEnum.Canceled, ...)`](#addlistenerpaymentsheeteventsenumcanceled-)
+* [`addListener(PaymentSheetEventsEnum.Failed, ...)`](#addlistenerpaymentsheeteventsenumfailed-)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -65,8 +65,33 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-This is for @capacitor/docgen only.
-Not use in product.
+### initialize(...)
+
+```typescript
+initialize(opts: StripeInitializationOptions) => Promise<void>
+```
+
+| Param      | Type                                                                                |
+| ---------- | ----------------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#stripeinitializationoptions">StripeInitializationOptions</a></code> |
+
+--------------------
+
+
+### handleURLCallback(...)
+
+```typescript
+handleURLCallback(opts: StripeURLHandlingOptions) => Promise<void>
+```
+
+iOS Only
+
+| Param      | Type                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| **`opts`** | <code><a href="#stripeurlhandlingoptions">StripeURLHandlingOptions</a></code> |
+
+--------------------
+
 
 ### isApplePayAvailable()
 
@@ -577,35 +602,22 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 --------------------
 
 
-### initialize(...)
-
-```typescript
-initialize(opts: StripeInitializationOptions) => Promise<void>
-```
-
-| Param      | Type                                                                                |
-| ---------- | ----------------------------------------------------------------------------------- |
-| **`opts`** | <code><a href="#stripeinitializationoptions">StripeInitializationOptions</a></code> |
-
---------------------
-
-
-### handleURLCallback(...)
-
-```typescript
-handleURLCallback(opts: StripeURLHandlingOptions) => Promise<void>
-```
-
-iOS Only
-
-| Param      | Type                                                                          |
-| ---------- | ----------------------------------------------------------------------------- |
-| **`opts`** | <code><a href="#stripeurlhandlingoptions">StripeURLHandlingOptions</a></code> |
-
---------------------
-
-
 ### Interfaces
+
+
+#### StripeInitializationOptions
+
+| Prop                 | Type                | Description                                       |
+| -------------------- | ------------------- | ------------------------------------------------- |
+| **`publishableKey`** | <code>string</code> |                                                   |
+| **`stripeAccount`**  | <code>string</code> | Optional. Making API calls for connected accounts |
+
+
+#### StripeURLHandlingOptions
+
+| Prop      | Type                |
+| --------- | ------------------- |
+| **`url`** | <code>string</code> |
 
 
 #### CreateApplePayOption
@@ -671,22 +683,57 @@ iOS Only
 
 #### CreatePaymentFlowOption
 
-| Prop                                        | Type                                                                                                    | Description                                                                                      | Default                 |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------- |
-| **`paymentIntentClientSecret`**             | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`setupIntentClientSecret`**               | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`billingDetailsCollectionConfiguration`** | <code><a href="#billingdetailscollectionconfiguration">BillingDetailsCollectionConfiguration</a></code> | Optional billingDetailsCollectionConfiguration                                                   |                         |
-| **`customerEphemeralKeySecret`**            | <code>string</code>                                                                                     | Any documentation call 'ephemeralKey'                                                            |                         |
-| **`customerId`**                            | <code>string</code>                                                                                     | Any documentation call 'customer'                                                                |                         |
-| **`enableApplePay`**                        | <code>boolean</code>                                                                                    | If you set payment method ApplePay, this set true                                                | <code>false</code>      |
-| **`applePayMerchantId`**                    | <code>string</code>                                                                                     | If set enableApplePay false, Plugin ignore here.                                                 |                         |
-| **`enableGooglePay`**                       | <code>boolean</code>                                                                                    | If you set payment method GooglePay, this set true                                               | <code>false</code>      |
-| **`GooglePayIsTesting`**                    | <code>boolean</code>                                                                                    |                                                                                                  | <code>false,</code>     |
-| **`countryCode`**                           | <code>string</code>                                                                                     | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here. | <code>"US"</code>       |
-| **`merchantDisplayName`**                   | <code>string</code>                                                                                     |                                                                                                  | <code>"App Name"</code> |
-| **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                  | <code>""</code>         |
-| **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                         | <code>undefined</code>  |
-| **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
+| Prop                                        | Type                                                                                                    | Description                                                                                                                                                                                                             | Default                 |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| **`paymentIntentClientSecret`**             | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret                                                                                                                         |                         |
+| **`setupIntentClientSecret`**               | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret                                                                                                                         |                         |
+| **`defaultBillingDetails`**                 | <code><a href="#defaultbillingdetails">DefaultBillingDetails</a></code>                                 | Optional defaultBillingDetails This is ios/android only. not support web. https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#set-default-billing-details                          |                         |
+| **`shippingDetails`**                       | <code><a href="#addressdetails">AddressDetails</a></code>                                               | Optional shippingDetails This is android only. ios requires an address element. https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=android#prefill-addresses                          |                         |
+| **`billingDetailsCollectionConfiguration`** | <code><a href="#billingdetailscollectionconfiguration">BillingDetailsCollectionConfiguration</a></code> | Optional billingDetailsCollectionConfiguration This is ios/android only. not support web. https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#customize-billing-details-collection |                         |
+| **`customerEphemeralKeySecret`**            | <code>string</code>                                                                                     | Any documentation call 'ephemeralKey'                                                                                                                                                                                   |                         |
+| **`customerId`**                            | <code>string</code>                                                                                     | Any documentation call 'customer'                                                                                                                                                                                       |                         |
+| **`enableApplePay`**                        | <code>boolean</code>                                                                                    | If you set payment method ApplePay, this set true                                                                                                                                                                       | <code>false</code>      |
+| **`applePayMerchantId`**                    | <code>string</code>                                                                                     | If set enableApplePay false, Plugin ignore here.                                                                                                                                                                        |                         |
+| **`enableGooglePay`**                       | <code>boolean</code>                                                                                    | If you set payment method GooglePay, this set true                                                                                                                                                                      | <code>false</code>      |
+| **`GooglePayIsTesting`**                    | <code>boolean</code>                                                                                    |                                                                                                                                                                                                                         | <code>false,</code>     |
+| **`countryCode`**                           | <code>string</code>                                                                                     | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here.                                                                                                                        | <code>"US"</code>       |
+| **`merchantDisplayName`**                   | <code>string</code>                                                                                     |                                                                                                                                                                                                                         | <code>"App Name"</code> |
+| **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                                                                                                                                         | <code>""</code>         |
+| **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                                                                                                                                                | <code>undefined</code>  |
+| **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                                                                                                                                                 | <code>true</code>       |
+| **`currencyCode`**                          | <code>string</code>                                                                                     | use GooglePay. Required if enableGooglePay is true for setupIntents.                                                                                                                                                    | <code>"USD"</code>      |
+
+
+#### DefaultBillingDetails
+
+| Prop          | Type                                        |
+| ------------- | ------------------------------------------- |
+| **`email`**   | <code>string</code>                         |
+| **`name`**    | <code>string</code>                         |
+| **`phone`**   | <code>string</code>                         |
+| **`address`** | <code><a href="#address">Address</a></code> |
+
+
+#### Address
+
+| Prop             | Type                | Description                                   |
+| ---------------- | ------------------- | --------------------------------------------- |
+| **`country`**    | <code>string</code> | Two-letter country code (ISO 3166-1 alpha-2). |
+| **`city`**       | <code>string</code> |                                               |
+| **`line1`**      | <code>string</code> |                                               |
+| **`line2`**      | <code>string</code> |                                               |
+| **`postalCode`** | <code>string</code> |                                               |
+| **`state`**      | <code>string</code> |                                               |
+
+
+#### AddressDetails
+
+| Prop                     | Type                                        |
+| ------------------------ | ------------------------------------------- |
+| **`name`**               | <code>string</code>                         |
+| **`address`**            | <code><a href="#address">Address</a></code> |
+| **`phone`**              | <code>string</code>                         |
+| **`isCheckboxSelected`** | <code>boolean</code>                        |
 
 
 #### BillingDetailsCollectionConfiguration
@@ -701,54 +748,25 @@ iOS Only
 
 #### CreatePaymentSheetOption
 
-| Prop                                        | Type                                                                                                    | Description                                                                                      | Default                 |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------- |
-| **`paymentIntentClientSecret`**             | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`setupIntentClientSecret`**               | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret  |                         |
-| **`billingDetailsCollectionConfiguration`** | <code><a href="#billingdetailscollectionconfiguration">BillingDetailsCollectionConfiguration</a></code> | Optional billingDetailsCollectionConfiguration                                                   |                         |
-| **`customerEphemeralKeySecret`**            | <code>string</code>                                                                                     | Any documentation call 'ephemeralKey'                                                            |                         |
-| **`customerId`**                            | <code>string</code>                                                                                     | Any documentation call 'customer'                                                                |                         |
-| **`enableApplePay`**                        | <code>boolean</code>                                                                                    | If you set payment method ApplePay, this set true                                                | <code>false</code>      |
-| **`applePayMerchantId`**                    | <code>string</code>                                                                                     | If set enableApplePay false, Plugin ignore here.                                                 |                         |
-| **`enableGooglePay`**                       | <code>boolean</code>                                                                                    | If you set payment method GooglePay, this set true                                               | <code>false</code>      |
-| **`GooglePayIsTesting`**                    | <code>boolean</code>                                                                                    |                                                                                                  | <code>false,</code>     |
-| **`countryCode`**                           | <code>string</code>                                                                                     | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here. | <code>"US"</code>       |
-| **`merchantDisplayName`**                   | <code>string</code>                                                                                     |                                                                                                  | <code>"App Name"</code> |
-| **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                  | <code>""</code>         |
-| **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                         | <code>undefined</code>  |
-| **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                          | <code>true</code>       |
-
-
-#### StripeInitializationOptions
-
-| Prop                 | Type                | Description                                       |
-| -------------------- | ------------------- | ------------------------------------------------- |
-| **`publishableKey`** | <code>string</code> |                                                   |
-| **`stripeAccount`**  | <code>string</code> | Optional. Making API calls for connected accounts |
-
-
-#### StripeURLHandlingOptions
-
-| Prop      | Type                |
-| --------- | ------------------- |
-| **`url`** | <code>string</code> |
-
-
-#### StripePlugin
-
-| Method                | Signature                                                                                                | Description |
-| --------------------- | -------------------------------------------------------------------------------------------------------- | ----------- |
-| **initialize**        | (opts: <a href="#stripeinitializationoptions">StripeInitializationOptions</a>) =&gt; Promise&lt;void&gt; |             |
-| **handleURLCallback** | (opts: <a href="#stripeurlhandlingoptions">StripeURLHandlingOptions</a>) =&gt; Promise&lt;void&gt;       | iOS Only    |
-
-
-#### CapacitorStripeContext
-
-| Prop                       | Type                                                  |
-| -------------------------- | ----------------------------------------------------- |
-| **`stripe`**               | <code><a href="#stripeplugin">StripePlugin</a></code> |
-| **`isApplePayAvailable`**  | <code>boolean</code>                                  |
-| **`isGooglePayAvailable`** | <code>boolean</code>                                  |
+| Prop                                        | Type                                                                                                    | Description                                                                                                                                                                                                             | Default                 |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| **`paymentIntentClientSecret`**             | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret                                                                                                                         |                         |
+| **`setupIntentClientSecret`**               | <code>string</code>                                                                                     | Any documentation call 'paymentIntent' Set paymentIntentClientSecret or setupIntentClientSecret                                                                                                                         |                         |
+| **`defaultBillingDetails`**                 | <code><a href="#defaultbillingdetails">DefaultBillingDetails</a></code>                                 | Optional defaultBillingDetails This is ios/android only. not support web. https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#set-default-billing-details                          |                         |
+| **`shippingDetails`**                       | <code><a href="#addressdetails">AddressDetails</a></code>                                               | Optional shippingDetails This is android only. ios requires an address element. https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=android#prefill-addresses                          |                         |
+| **`billingDetailsCollectionConfiguration`** | <code><a href="#billingdetailscollectionconfiguration">BillingDetailsCollectionConfiguration</a></code> | Optional billingDetailsCollectionConfiguration This is ios/android only. not support web. https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#customize-billing-details-collection |                         |
+| **`customerEphemeralKeySecret`**            | <code>string</code>                                                                                     | Any documentation call 'ephemeralKey'                                                                                                                                                                                   |                         |
+| **`customerId`**                            | <code>string</code>                                                                                     | Any documentation call 'customer'                                                                                                                                                                                       |                         |
+| **`enableApplePay`**                        | <code>boolean</code>                                                                                    | If you set payment method ApplePay, this set true                                                                                                                                                                       | <code>false</code>      |
+| **`applePayMerchantId`**                    | <code>string</code>                                                                                     | If set enableApplePay false, Plugin ignore here.                                                                                                                                                                        |                         |
+| **`enableGooglePay`**                       | <code>boolean</code>                                                                                    | If you set payment method GooglePay, this set true                                                                                                                                                                      | <code>false</code>      |
+| **`GooglePayIsTesting`**                    | <code>boolean</code>                                                                                    |                                                                                                                                                                                                                         | <code>false,</code>     |
+| **`countryCode`**                           | <code>string</code>                                                                                     | use ApplePay and GooglePay. If set enableApplePay and enableGooglePay false, Plugin ignore here.                                                                                                                        | <code>"US"</code>       |
+| **`merchantDisplayName`**                   | <code>string</code>                                                                                     |                                                                                                                                                                                                                         | <code>"App Name"</code> |
+| **`returnURL`**                             | <code>string</code>                                                                                     |                                                                                                                                                                                                                         | <code>""</code>         |
+| **`style`**                                 | <code>'alwaysLight' \| 'alwaysDark'</code>                                                              | iOS Only                                                                                                                                                                                                                | <code>undefined</code>  |
+| **`withZipCode`**                           | <code>boolean</code>                                                                                    | Platform: Web only Show ZIP code field.                                                                                                                                                                                 | <code>true</code>       |
+| **`currencyCode`**                          | <code>string</code>                                                                                     | use GooglePay. Required if enableGooglePay is true for setupIntents.                                                                                                                                                    | <code>"USD"</code>      |
 
 
 ### Type Aliases
@@ -768,14 +786,14 @@ iOS Only
 
 Billing details collection options.
 
-<code>'automatic' | 'always'</code>
+<code>'automatic' | 'always' | 'never'</code>
 
 
 #### AddressCollectionMode
 
 Billing details collection options.
 
-<code>'automatic' | 'full'</code>
+<code>'automatic' | 'full' | 'never'</code>
 
 
 #### PaymentFlowResultInterface

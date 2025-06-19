@@ -37,13 +37,6 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   private requestGooglePay: StripeRequestButton | undefined;
   private requestGooglePayOptions: CreateGooglePayOption | undefined;
 
-  constructor() {
-    super({
-      name: 'Stripe',
-      platforms: ['web'],
-    });
-  }
-
   async initialize(options: StripeInitializationOptions): Promise<void> {
     if (typeof options.publishableKey !== 'string' || options.publishableKey.trim().length === 0) {
       throw new Error('you must provide a valid key');
