@@ -1,14 +1,14 @@
 PODS:
   - Capacitor (7.0.1):
     - CapacitorCordova
-  - CapacitorCommunityStripe (7.0.3):
+  - CapacitorCommunityStripe (7.1.2):
     - Capacitor
     - StripeApplePay (~> 24.12.1)
     - StripePaymentSheet (~> 24.12.1)
-  - CapacitorCommunityStripeIdentity (7.0.3):
+  - CapacitorCommunityStripeIdentity (7.1.2):
     - Capacitor
     - StripeIdentity (~> 24.12.1)
-  - CapacitorCommunityStripeTerminal (7.0.3):
+  - CapacitorCommunityStripeTerminal (7.1.2):
     - Capacitor
     - StripeTerminal (~> 4.3.0)
   - CapacitorCordova (7.0.1)
@@ -72,9 +72,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: de199cba6c8b20995428ad0b7cb0bc6ca625ffd4
-  CapacitorCommunityStripe: 71b0af35d137fb931d2589535795dea1d71e4b98
-  CapacitorCommunityStripeIdentity: 9d5d9b063ecbad96ac8e75aafa614af5365813e6
-  CapacitorCommunityStripeTerminal: ed4bb76bd81fa4a9d78e0ff83ceff8973c86939c
+  CapacitorCommunityStripe: 5d3431d36c4ca3aeb6a1afe6a1eba8edcf5025bd
+  CapacitorCommunityStripeIdentity: 646ac7c75d25c9ca1f804e02c327b240d304a4c6
+  CapacitorCommunityStripeTerminal: 2b54bcf6e5a0d2e6955073b9bdb1140abd1dd059
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
   StripeApplePay: 3caeb241c08f79b5f11024a96409317b50347e71
   StripeCameraCore: 72e4e03df07aaa942de761104818850e2c5d85e1

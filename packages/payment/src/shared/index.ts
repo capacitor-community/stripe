@@ -42,6 +42,32 @@ export type AddressCollectionMode = 'automatic' | 'full' | 'never';
  */
 export type CollectionMode = 'automatic' | 'always' | 'never';
 
+export interface Address {
+  /**
+   * Two-letter country code (ISO 3166-1 alpha-2).
+   */
+  country?: string;
+  city?: string;
+  line1?: string;
+  line2?: string;
+  postalCode?: string;
+  state?: string;
+}
+
+export interface AddressDetails {
+  name?: string;
+  address?: Address;
+  phone?: string;
+  isCheckboxSelected?: boolean;
+}
+
+export interface DefaultBillingDetails {
+  email?: string;
+  name?: string;
+  phone?: string;
+  address?: Address;
+}
+
 interface BillingDetailsCollectionConfiguration {
   /**
    * Configuration for how billing details are collected during checkout.
@@ -54,7 +80,23 @@ interface BillingDetailsCollectionConfiguration {
 
 export interface BasePaymentOption {
   /**
+   * Optional defaultBillingDetails
+   * This is ios/android only. not support web.
+   * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#set-default-billing-details
+   */
+  defaultBillingDetails?: DefaultBillingDetails;
+
+  /**
+   * Optional shippingDetails
+   * This is android only. ios requires an address element.
+   * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=android#prefill-addresses
+   */
+  shippingDetails?: AddressDetails;
+
+  /**
    * Optional billingDetailsCollectionConfiguration
+   * This is ios/android only. not support web.
+   * https://docs.stripe.com/payments/mobile/collect-addresses?payment-ui=mobile&platform=ios#customize-billing-details-collection
    */
   billingDetailsCollectionConfiguration?: BillingDetailsCollectionConfiguration;
 

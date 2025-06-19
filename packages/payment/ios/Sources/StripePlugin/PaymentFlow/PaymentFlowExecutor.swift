@@ -61,6 +61,59 @@ class PaymentFlowExecutor: NSObject {
         if customerId != nil && customerEphemeralKeySecret != nil {
             configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
         }
+        
+        let billingDetailsCollectionConfiguration = call.getObject("billingDetailsCollectionConfiguration") ?? nil
+        if billingDetailsCollectionConfiguration != nil {
+            billingDetailsCollectionConfiguration?.forEach({ (key: String, value: JSValue) in
+                let val: String = value as? String ?? "automatic"
+                switch key {
+                case "email":
+                    configuration.billingDetailsCollectionConfiguration.email = PaymentSheetHelper().getCollectionModeValue(mode: val)
+                case "name":
+                    configuration.billingDetailsCollectionConfiguration.name = PaymentSheetHelper().getCollectionModeValue(mode: val)
+                case "phone":
+                    configuration.billingDetailsCollectionConfiguration.phone = PaymentSheetHelper().getCollectionModeValue(mode: val)
+                case "address":
+                    configuration.billingDetailsCollectionConfiguration.address = PaymentSheetHelper().getAddressCollectionModeValue(mode: val)
+                default:
+                    return
+                }
+            })
+        }
+        
+        let defaultBillingDetails = call.getObject("defaultBillingDetails") ?? nil
+        if defaultBillingDetails != nil {
+            defaultBillingDetails?.forEach({ (key: String, value: JSValue) in
+                switch key {
+                case "email":
+                    if let val = value as? String {
+                        configuration.defaultBillingDetails.email = val
+                    }
+                case "name":
+                    if let val = value as? String {
+                        configuration.defaultBillingDetails.name = val
+                    }
+                case "phone":
+                    if let val = value as? String {
+                        configuration.defaultBillingDetails.phone = val
+                    }
+                case "address":
+                    if let val = value as? JSObject {
+                        let address = PaymentSheet.Address(
+                            city: val["city"] as? String,
+                            country: val["country"] as? String,
+                            line1: val["line1"] as? String,
+                            line2: val["line2"] as? String,
+                            postalCode: val["postalCode"] as? String,
+                            state: val["state"] as? String
+                        )
+                        configuration.defaultBillingDetails.address = address
+                    }
+                default:
+                    return
+                }
+            })
+        }
 
         if setupIntentClientSecret != nil {
             PaymentSheet.FlowController.create(setupIntentClientSecret: setupIntentClientSecret!,
