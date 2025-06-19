@@ -4,6 +4,7 @@ export enum IdentityVerificationSheetEventsEnum {
   Completed = 'identityVerificationSheetCompleted',
   Canceled = 'identityVerificationSheetCanceled',
   Failed = 'identityVerificationSheetFailed',
+  VerificationResult = 'identityVerificationResult'
 }
 
 export type IdentityVerificationSheetResultInterface =

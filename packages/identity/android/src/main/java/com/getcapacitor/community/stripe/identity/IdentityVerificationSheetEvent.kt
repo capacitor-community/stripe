@@ -7,4 +7,5 @@ enum class IdentityVerificationSheetEvent(val webEventName: String) {
     Completed("identityVerificationSheetCompleted"),
     Canceled("identityVerificationSheetCanceled"),
     Failed("identityVerificationSheetFailed"),
+    VerificationResult("identityVerificationResult"),
 }
