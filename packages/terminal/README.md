@@ -283,12 +283,12 @@ initialize(options: { tokenProviderEndpoint?: string; isTest: boolean; }) => Pro
 ### discoverReaders(...)
 
 ```typescript
-discoverReaders(options: { type: TerminalConnectTypes; locationId?: string; }) => Promise<{ readers: ReaderInterface[]; }>
+discoverReaders(options: DiscoverReadersOptions) => Promise<{ readers: ReaderInterface[]; }>
 ```
 
-| Param         | Type                                                                                                  |
-| ------------- | ----------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ type: <a href="#terminalconnecttypes">TerminalConnectTypes</a>; locationId?: string; }</code> |
+| Param         | Type                                                                      |
+| ------------- | ------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#discoverreadersoptions">DiscoverReadersOptions</a></code> |
 
 **Returns:** <code>Promise&lt;{ readers: ReaderInterface[]; }&gt;</code>
 
@@ -491,6 +491,9 @@ addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc
 ```typescript
 addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: ({ readers }: { readers: ReaderInterface[]; }) => void) => Promise<PluginListenerHandle>
 ```
+
+When searching for iOS Bluetooth, this will be executed multiple times.
+https://docs.stripe.com/terminal/payments/connect-reader?terminal-sdk-platform=ios&reader-type=bluetooth
 
 | Param              | Type                                                                                |
 | ------------------ | ----------------------------------------------------------------------------------- |
@@ -921,6 +924,15 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 
 ### Interfaces
+
+
+#### DiscoverReadersOptions
+
+| Prop                        | Type                                                                  | Description                                                                                                                                                                                                                                                                                                                                           |
+| --------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`type`**                  | <code><a href="#terminalconnecttypes">TerminalConnectTypes</a></code> |                                                                                                                                                                                                                                                                                                                                                       |
+| **`locationId`**            | <code>string</code>                                                   |                                                                                                                                                                                                                                                                                                                                                       |
+| **`bluetoothScanWaitTime`** | <code>number</code>                                                   | Only applies to Bluetooth scan discovery (iOS only). During discovery, readers are reported via DiscoveryDelegate.didUpdateDiscoveredReaders. This timeout controls how long to wait before resolving the `discoverReaders` method with the current list. If this setting is not specified or is set to 0, the initial scan results will be returned. |
 
 
 #### PluginListenerHandle

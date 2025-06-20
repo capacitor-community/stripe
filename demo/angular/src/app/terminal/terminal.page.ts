@@ -254,6 +254,7 @@ export class TerminalPage {
       locationId: [TerminalConnectTypes.Usb].includes(readerType)
         ? 'tml_Ff37mAmk1XdBYT' // Auckland, New Zealand
         : 'tml_FOUOdQVIxvVdvN', // San Francisco, CA 94110
+      bluetoothScanWaitTime: 2000,
     }).catch((e) => {
       this.helper.updateItem(this.eventItems, 'discoverReaders', false);
       throw e;

@@ -91,11 +91,25 @@ export type Cart = {
   lineItems: CartLineItem[];
 };
 
+export interface DiscoverReadersOptions {
+  type: TerminalConnectTypes;
+  locationId?: string;
+
+  /**
+   * Only applies to Bluetooth scan discovery (iOS only).
+   * During discovery, readers are reported via DiscoveryDelegate.didUpdateDiscoveredReaders.
+   * This timeout controls how long to wait before resolving the `discoverReaders` method with the current list.
+   *
+   * If this setting is not specified or is set to 0, the initial scan results will be returned.
+   */
+  bluetoothScanWaitTime?: number;
+}
+
 export * from './events.enum';
 export * from './stripe.enum';
 export interface StripeTerminalPlugin {
   initialize(options: { tokenProviderEndpoint?: string; isTest: boolean }): Promise<void>;
-  discoverReaders(options: { type: TerminalConnectTypes; locationId?: string }): Promise<{
+  discoverReaders(options: DiscoverReadersOptions): Promise<{
     readers: ReaderInterface[];
   }>;
   setConnectionToken(options: { token: string }): Promise<void>;
@@ -146,6 +160,10 @@ export interface StripeTerminalPlugin {
     listenerFunc: () => void,
   ): Promise<PluginListenerHandle>;
 
+  /**
+   * When searching for iOS Bluetooth, this will be executed multiple times.
+   * https://docs.stripe.com/terminal/payments/connect-reader?terminal-sdk-platform=ios&reader-type=bluetooth
+   */
   addListener(
     eventName: TerminalEventsEnum.DiscoveredReaders,
     listenerFunc: ({ readers }: { readers: ReaderInterface[] }) => void,
