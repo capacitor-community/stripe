@@ -63,6 +63,9 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
         
         let bluetoothScanWaitTime = call.getDouble("bluetoothScanWaitTime") ?? 0
         if (self.type == .bluetoothScan && bluetoothScanWaitTime != 0) {
+            // When bluetoothScanWaitTime is non-zero, we defer the resolution of the call
+            // using a timer. In this case, discoverCall is not assigned because the resolution
+            // logic is handled asynchronously after the wait time.
             DispatchQueue.main.asyncAfter(deadline: .now()  + bluetoothScanWaitTime / 1000.0) {
                 var readersJSObject: JSArray = []
                 for reader in self.discoveredReadersList ?? [] {
