@@ -1,43 +1,43 @@
 PODS:
   - Capacitor (7.0.1):
     - CapacitorCordova
-  - CapacitorCommunityStripe (7.2.0-0):
+  - CapacitorCommunityStripe (7.2.0):
     - Capacitor
-    - StripeApplePay (~> 24.15.0)
-    - StripePaymentSheet (~> 24.15.0)
-  - CapacitorCommunityStripeIdentity (7.2.0-0):
+    - StripeApplePay (~> 24.16.1)
+    - StripePaymentSheet (~> 24.16.1)
+  - CapacitorCommunityStripeIdentity (7.2.0):
     - Capacitor
-    - StripeIdentity (~> 24.15.0)
-  - CapacitorCommunityStripeTerminal (7.2.0-0):
+    - StripeIdentity (~> 24.16.1)
+  - CapacitorCommunityStripeTerminal (7.2.0):
     - Capacitor
     - StripeTerminal (~> 4.5.0)
   - CapacitorCordova (7.0.1)
-  - StripeApplePay (24.15.0):
-    - StripeCore (= 24.15.0)
-  - StripeCameraCore (24.15.0):
-    - StripeCore (= 24.15.0)
-  - StripeCore (24.15.0)
-  - StripeIdentity (24.15.0):
-    - StripeCameraCore (= 24.15.0)
-    - StripeCore (= 24.15.0)
-    - StripeUICore (= 24.15.0)
-  - StripePayments (24.15.0):
-    - StripeCore (= 24.15.0)
-    - StripePayments/Stripe3DS2 (= 24.15.0)
-  - StripePayments/Stripe3DS2 (24.15.0):
-    - StripeCore (= 24.15.0)
-  - StripePaymentSheet (24.15.0):
-    - StripeApplePay (= 24.15.0)
-    - StripeCore (= 24.15.0)
-    - StripePayments (= 24.15.0)
-    - StripePaymentsUI (= 24.15.0)
-  - StripePaymentsUI (24.15.0):
-    - StripeCore (= 24.15.0)
-    - StripePayments (= 24.15.0)
-    - StripeUICore (= 24.15.0)
+  - StripeApplePay (24.16.1):
+    - StripeCore (= 24.16.1)
+  - StripeCameraCore (24.16.1):
+    - StripeCore (= 24.16.1)
+  - StripeCore (24.16.1)
+  - StripeIdentity (24.16.1):
+    - StripeCameraCore (= 24.16.1)
+    - StripeCore (= 24.16.1)
+    - StripeUICore (= 24.16.1)
+  - StripePayments (24.16.1):
+    - StripeCore (= 24.16.1)
+    - StripePayments/Stripe3DS2 (= 24.16.1)
+  - StripePayments/Stripe3DS2 (24.16.1):
+    - StripeCore (= 24.16.1)
+  - StripePaymentSheet (24.16.1):
+    - StripeApplePay (= 24.16.1)
+    - StripeCore (= 24.16.1)
+    - StripePayments (= 24.16.1)
+    - StripePaymentsUI (= 24.16.1)
+  - StripePaymentsUI (24.16.1):
+    - StripeCore (= 24.16.1)
+    - StripePayments (= 24.16.1)
+    - StripeUICore (= 24.16.1)
   - StripeTerminal (4.5.0)
-  - StripeUICore (24.15.0):
-    - StripeCore (= 24.15.0)
+  - StripeUICore (24.16.1):
+    - StripeCore (= 24.16.1)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -72,19 +72,19 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: de199cba6c8b20995428ad0b7cb0bc6ca625ffd4
-  CapacitorCommunityStripe: a77d559454ace3f86f3aa0c697d11af9e2c9cc2d
-  CapacitorCommunityStripeIdentity: f8114787ba95bfa47d65560c9ec89cc9e1733ae0
-  CapacitorCommunityStripeTerminal: 31e91aff05d23d0aaf816ac7b7faaef850e87453
+  CapacitorCommunityStripe: 82fdfc30b65aee21b0a40ce2529068edf4ffe423
+  CapacitorCommunityStripeIdentity: 5f32c804b673fe6679fdfdb176a934f51696ac39
+  CapacitorCommunityStripeTerminal: dd4f8c0c98b9e927fb8e408187ba4e59e4e43f44
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
-  StripeApplePay: e7a2f5fa07cbdba9c56cb7586cbfd4e7e32ed895
-  StripeCameraCore: c040c0f17fe3aa8b4d86c04aba733a0bc3f67b58
-  StripeCore: 224f995bb108e3be3bdf6cfab918657edf325559
-  StripeIdentity: c8e2ca8194721d65ca0a3435800305d05a74418c
-  StripePayments: 07ad9e3c5f22e0b068874c47c2ec37663f1b7aa5
-  StripePaymentSheet: f576ebb935f7bf3ef956d302ade75b9148906a65
-  StripePaymentsUI: d0549558424d3884b3fb7b8f3905ea685e750600
+  StripeApplePay: 4303d484ec3b43d96b73a3127470674f8484a27d
+  StripeCameraCore: acc675f63989d9f919a733add3225c6dcee548ca
+  StripeCore: 45ccc543ea1d54f00f03dd4813b4ab1071ae5d34
+  StripeIdentity: 87480865e135349a478057c935a7f217df00ce57
+  StripePayments: 3f3cd1970de45f1d26d263bb5a6be5cfd9df93eb
+  StripePaymentSheet: edfe0ecd4d1d25ac3a3bda7c53e80e7c2df7a1e0
+  StripePaymentsUI: f3e663c841a0c9303e315f61db145f96667db9c0
   StripeTerminal: 29fc3756591e0ae42f7cd43619b4293cdcfa9374
-  StripeUICore: dbd893086aa4fe697517624af2f1f0cea3218ac8
+  StripeUICore: 1ddbdd49d9fde119d9e64c17e7e79d49c29ccb98
 
 PODFILE CHECKSUM: c75ca255b97ee461832b20e6cdf6d1da533d4019
 
