@@ -15,12 +15,12 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^19.2.9",
-    "@angular/core": "^19.2.9",
-    "@angular/forms": "^19.2.9",
-    "@angular/platform-browser": "^19.2.9",
-    "@angular/platform-browser-dynamic": "^19.2.9",
-    "@angular/router": "^19.2.9",
+    "@angular/common": "^20.2.4",
+    "@angular/core": "^20.2.4",
+    "@angular/forms": "^20.2.4",
+    "@angular/platform-browser": "^20.2.4",
+    "@angular/platform-browser-dynamic": "^20.2.4",
+    "@angular/router": "^20.2.4",
     "@capacitor-community/stripe": "file:../../packages/payment",
     "@capacitor-community/stripe-identity": "file:../../packages/identity",
     "@capacitor-community/stripe-terminal": "file:../../packages/terminal",
@@ -34,11 +34,11 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^19.2.10",
-    "@angular/cli": "^19.2.10",
-    "@angular/compiler": "^19.2.9",
-    "@angular/compiler-cli": "^19.2.9",
-    "@angular/language-service": "^19.2.9",
+    "@angular/build": "^20.2.2",
+    "@angular/cli": "^20.2.2",
+    "@angular/compiler": "^20.2.4",
+    "@angular/compiler-cli": "^20.2.4",
+    "@angular/language-service": "^20.2.4",
     "@capacitor/cli": "^7.0.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.25.1",
@@ -46,8 +46,8 @@
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
-    "angular-eslint": "19.3.0",
-    "eslint": "^9.23.0",
+    "angular-eslint": "20.2.0",
+    "eslint": "^9.28.0",
     "jasmine-core": "~3.8.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.3.16",
@@ -59,7 +59,7 @@
     "prettier": "^3.5.3",
     "protractor": "~7.0.0",
     "typescript": "^5.8.3",
-    "typescript-eslint": "8.27.0"
+    "typescript-eslint": "^8.33.1"
   },
   "description": "An Ionic project"
 }

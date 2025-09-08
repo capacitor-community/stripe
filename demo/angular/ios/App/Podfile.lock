@@ -10,34 +10,34 @@ PODS:
     - StripeIdentity (~> 24.16.1)
   - CapacitorCommunityStripeTerminal (7.2.0):
     - Capacitor
-    - StripeTerminal (~> 4.5.0)
+    - StripeTerminal (~> 4.7.0)
   - CapacitorCordova (7.0.1)
-  - StripeApplePay (24.16.1):
-    - StripeCore (= 24.16.1)
-  - StripeCameraCore (24.16.1):
-    - StripeCore (= 24.16.1)
-  - StripeCore (24.16.1)
-  - StripeIdentity (24.16.1):
-    - StripeCameraCore (= 24.16.1)
-    - StripeCore (= 24.16.1)
-    - StripeUICore (= 24.16.1)
-  - StripePayments (24.16.1):
-    - StripeCore (= 24.16.1)
-    - StripePayments/Stripe3DS2 (= 24.16.1)
-  - StripePayments/Stripe3DS2 (24.16.1):
-    - StripeCore (= 24.16.1)
-  - StripePaymentSheet (24.16.1):
-    - StripeApplePay (= 24.16.1)
-    - StripeCore (= 24.16.1)
-    - StripePayments (= 24.16.1)
-    - StripePaymentsUI (= 24.16.1)
-  - StripePaymentsUI (24.16.1):
-    - StripeCore (= 24.16.1)
-    - StripePayments (= 24.16.1)
-    - StripeUICore (= 24.16.1)
-  - StripeTerminal (4.5.0)
-  - StripeUICore (24.16.1):
-    - StripeCore (= 24.16.1)
+  - StripeApplePay (24.16.2):
+    - StripeCore (= 24.16.2)
+  - StripeCameraCore (24.16.2):
+    - StripeCore (= 24.16.2)
+  - StripeCore (24.16.2)
+  - StripeIdentity (24.16.2):
+    - StripeCameraCore (= 24.16.2)
+    - StripeCore (= 24.16.2)
+    - StripeUICore (= 24.16.2)
+  - StripePayments (24.16.2):
+    - StripeCore (= 24.16.2)
+    - StripePayments/Stripe3DS2 (= 24.16.2)
+  - StripePayments/Stripe3DS2 (24.16.2):
+    - StripeCore (= 24.16.2)
+  - StripePaymentSheet (24.16.2):
+    - StripeApplePay (= 24.16.2)
+    - StripeCore (= 24.16.2)
+    - StripePayments (= 24.16.2)
+    - StripePaymentsUI (= 24.16.2)
+  - StripePaymentsUI (24.16.2):
+    - StripeCore (= 24.16.2)
+    - StripePayments (= 24.16.2)
+    - StripeUICore (= 24.16.2)
+  - StripeTerminal (4.7.0)
+  - StripeUICore (24.16.2):
+    - StripeCore (= 24.16.2)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -74,17 +74,17 @@ SPEC CHECKSUMS:
   Capacitor: de199cba6c8b20995428ad0b7cb0bc6ca625ffd4
   CapacitorCommunityStripe: 82fdfc30b65aee21b0a40ce2529068edf4ffe423
   CapacitorCommunityStripeIdentity: 5f32c804b673fe6679fdfdb176a934f51696ac39
-  CapacitorCommunityStripeTerminal: dd4f8c0c98b9e927fb8e408187ba4e59e4e43f44
+  CapacitorCommunityStripeTerminal: 59cfad2cecc0781d7f4a84529f65e3e161a4fcaa
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
-  StripeApplePay: 4303d484ec3b43d96b73a3127470674f8484a27d
-  StripeCameraCore: acc675f63989d9f919a733add3225c6dcee548ca
-  StripeCore: 45ccc543ea1d54f00f03dd4813b4ab1071ae5d34
-  StripeIdentity: 87480865e135349a478057c935a7f217df00ce57
-  StripePayments: 3f3cd1970de45f1d26d263bb5a6be5cfd9df93eb
-  StripePaymentSheet: edfe0ecd4d1d25ac3a3bda7c53e80e7c2df7a1e0
-  StripePaymentsUI: f3e663c841a0c9303e315f61db145f96667db9c0
-  StripeTerminal: 29fc3756591e0ae42f7cd43619b4293cdcfa9374
-  StripeUICore: 1ddbdd49d9fde119d9e64c17e7e79d49c29ccb98
+  StripeApplePay: 66dc43ec1284904a2cf4c5a0906f86296d23afbd
+  StripeCameraCore: 4bfdf6b43536346102c61ae46c634f275deb5b78
+  StripeCore: f3a62397cecaf4da1827bcf07de7312ec1f3b96e
+  StripeIdentity: 1ed535d6873f17781f53552a7e9397b90ccdfab3
+  StripePayments: b3e7817d821ceedd469008d17d94a1494ff1b624
+  StripePaymentSheet: f4f5b71cef665f05a185c29b2d4b59e7dd8c117d
+  StripePaymentsUI: d489e73bf790da1c74e642021475b1a09a4a4500
+  StripeTerminal: 960112008f29d0ec0ecf69e26856b91a0dc2b722
+  StripeUICore: 723e5024c83acb5ba5e71335e110a471b182a74d
 
 PODFILE CHECKSUM: c75ca255b97ee461832b20e6cdf6d1da533d4019
 
