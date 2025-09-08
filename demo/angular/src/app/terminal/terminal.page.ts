@@ -229,7 +229,7 @@ export class TerminalPage {
 
     await StripeTerminal.discoverReaders({
       type: readerType,
-      locationId: [TerminalConnectTypes.Usb].includes(readerType)
+      locationId: [TerminalConnectTypes.Usb, TerminalConnectTypes.Bluetooth].includes(readerType)
         ? 'tml_Ff37mAmk1XdBYT'
         : 'tml_FOUOdQVIxvVdvN',
     }).catch((e) => {
@@ -254,7 +254,7 @@ export class TerminalPage {
 
     await StripeTerminal.discoverReaders({
       type: readerType,
-      locationId: [TerminalConnectTypes.Usb].includes(readerType)
+      locationId: [TerminalConnectTypes.Usb, TerminalConnectTypes.Bluetooth].includes(readerType)
         ? 'tml_Ff37mAmk1XdBYT' // Auckland, New Zealand
         : 'tml_FOUOdQVIxvVdvN', // San Francisco, CA 94110
       bluetoothScanWaitTime: 2000,
@@ -384,7 +384,7 @@ export class TerminalPage {
 
     await StripeTerminal.discoverReaders({
       type: readerType,
-      locationId: [TerminalConnectTypes.Usb].includes(readerType)
+      locationId: [TerminalConnectTypes.Usb, TerminalConnectTypes.Bluetooth].includes(readerType)
         ? 'tml_Ff37mAmk1XdBYT' // Auckland, New Zealand
         : 'tml_FOUOdQVIxvVdvN', // San Francisco, CA 94110
     }).catch((e) => {
