@@ -81,6 +81,6 @@
     }
   },
   "dependencies": {
-    "@stripe/terminal-js": "^0.13.0"
+    "@stripe/terminal-js": "^0.24.0"
   }
 }
