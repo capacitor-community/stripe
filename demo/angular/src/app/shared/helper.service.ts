@@ -1,11 +1,16 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { ITestItems } from './interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HelperService {
-  constructor(private zone: NgZone) {}
+  private zone = inject(NgZone);
+
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   /**
    * items is not Deep Copy, this is substitution

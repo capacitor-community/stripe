@@ -60,6 +60,9 @@ import { updateDeviceUpdateItems } from './updateDeviceUpdateItems';
   ],
 })
 export class TerminalPage {
+  private http = inject(HttpClient);
+  private helper = inject(HelperService);
+
   public eventItems: ITestItems[] = [];
   public terminalConnectTypes = TerminalConnectTypes;
   public simulateReaderUpdate = SimulateReaderUpdate;
@@ -68,10 +71,10 @@ export class TerminalPage {
   public readonly platform = inject(Platform);
   private readonly alertCtrl = inject(AlertController);
 
-  constructor(
-    private http: HttpClient,
-    private helper: HelperService,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
   }
 

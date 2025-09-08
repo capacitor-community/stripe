@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   Address,
   ApplePayEventsEnum,
@@ -39,6 +39,8 @@ import {
   ],
 })
 export class DemoPage implements OnInit {
+  private http = inject(HttpClient);
+
   processSheet: 'willReady' | 'Ready' = 'willReady';
   processFlow: 'willReady' | 'Ready' | 'canConfirm' = 'willReady';
   processApplePay: 'willReady' | 'Ready' = 'willReady';
@@ -46,7 +48,10 @@ export class DemoPage implements OnInit {
   isApplePayAvailable = false;
   isGooglePayAvailable = false;
 
-  constructor(private http: HttpClient) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   async ngOnInit() {
     Stripe.addListener(PaymentSheetEventsEnum.Loaded, () => {

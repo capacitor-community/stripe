@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
 import { ITestItems } from '../shared/interfaces';
 import { environment } from '../../environments/environment';
@@ -89,13 +89,16 @@ const cancelPathItems: ITestItems[] = [
   ],
 })
 export class SheetPage {
+  private http = inject(HttpClient);
+  private helper = inject(HelperService);
+
   public eventItems: ITestItems[] = [];
   private readonly listenerHandlers: PluginListenerHandle[] = [];
 
-  constructor(
-    private http: HttpClient,
-    private helper: HelperService,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
   }
 
