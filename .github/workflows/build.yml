@@ -22,7 +22,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: node_modules
-        key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+        key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v2
 
     - name: Build Payment package
       run: npm install && npm run build
