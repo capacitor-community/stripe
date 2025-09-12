@@ -40,13 +40,11 @@ class PaymentFlowExecutor: NSObject {
             configuration.returnURL = returnURL
         }
 
-        if #available(iOS 13.0, *) {
-            let style = call.getString("style") ?? ""
-            if style == "alwaysLight" {
-                configuration.style = .alwaysLight
-            } else if style == "alwaysDark" {
-                configuration.style = .alwaysDark
-            }
+        let style = call.getString("style") ?? ""
+        if style == "alwaysLight" {
+            configuration.style = .alwaysLight
+        } else if style == "alwaysDark" {
+            configuration.style = .alwaysDark
         }
 
         let applePayMerchantId = call.getString("applePayMerchantId") ?? ""
