@@ -153,12 +153,12 @@ extension ApplePayExecutor {
         }
     }
 
-    func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
-        let clientSecret = self.appleClientSecret
-        let error: String? = nil // Call the completion block with the client secret or an error
-        completion(clientSecret, error as? Error)
-        let jsonArray = self.transformPKContactToJSON(contact: paymentInformation.shippingContact)
-        self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact": jsonArray])
+    func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment) async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            continuation.resume(with: .success(self.appleClientSecret))
+            let jsonArray = self.transformPKContactToJSON(contact: paymentInformation.shippingContact)
+            self.plugin?.notifyListeners(ApplePayEvents.DidCreatePaymentMethod.rawValue, data: ["contact": jsonArray])
+        }
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPApplePayContext.PaymentStatus, error: Error?) {
