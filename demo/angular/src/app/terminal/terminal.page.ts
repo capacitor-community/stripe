@@ -72,7 +72,7 @@ export class TerminalPage {
   private readonly alertCtrl = inject(AlertController);
 
   /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
+  constructor();
 
   constructor() {
     addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
