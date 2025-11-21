@@ -30,7 +30,7 @@ class PaymentFlowExecutor: NSObject {
         // MARK: Create a PaymentSheet instance
         var configuration = PaymentSheet.Configuration()
 
-        let paymentMethodLayout = call.getString("paymentMethodLayout") ?? "auto"
+        let paymentMethodLayout = call.getString("paymentMethodLayout") ?? "automatic"
         if paymentMethodLayout == "horizontal" {
             configuration.paymentMethodLayout = .horizontal
         } else if paymentMethodLayout == "vertical" {
