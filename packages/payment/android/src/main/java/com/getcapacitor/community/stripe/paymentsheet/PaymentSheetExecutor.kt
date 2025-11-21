@@ -10,10 +10,7 @@ import com.getcapacitor.community.stripe.helper.PaymentSheetHelper
 import com.getcapacitor.community.stripe.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.paymentsheet.PaymentSheet
-import com.stripe.android.paymentsheet.PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode
-import com.stripe.android.paymentsheet.PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode
 import com.stripe.android.paymentsheet.PaymentSheetResult
-import com.stripe.android.paymentsheet.addresselement.AddressDetails
 
 class PaymentSheetExecutor(
     contextSupplier: Supplier<Context>,
@@ -29,7 +26,7 @@ class PaymentSheetExecutor(
 ) {
     var paymentSheet: PaymentSheet? = null
     private val emptyObject = JSObject()
-    private var paymentConfiguration: PaymentSheet.Configuration? = null
+    private val configurationBuilder = PaymentSheet.Configuration.Builder("")
 
     private var paymentIntentClientSecret: String? = null
     private var setupIntentClientSecret: String? = null
@@ -93,36 +90,29 @@ class PaymentSheetExecutor(
             call.getObject("billingDetailsCollectionConfiguration", null)
         )
 
-        if (!enableGooglePay!!) {
-            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
-                .customer(customer)
-                .defaultBillingDetails(defaultBillingDetailsConfiguration)
-                .shippingDetails(shippingDetailsConfiguration)
-                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                .paymentMethodLayout(paymentMethodLayout)
-                .build()
-        } else {
-            val googlePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
+        configurationBuilder
+            .merchantDisplayName(merchantDisplayName)
+            .customer(customer)
+            .defaultBillingDetails(defaultBillingDetailsConfiguration)
+            .shippingDetails(shippingDetailsConfiguration)
+            .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+            .paymentMethodLayout(paymentMethodLayout)
+
+        if (enableGooglePay!!) {
+            val googlePayEnvironment = call.getBoolean("GooglePayIsTesting", false)!!
 
             var environment: PaymentSheet.GooglePayConfiguration.Environment =
                 PaymentSheet.GooglePayConfiguration.Environment.Production
 
-            if (googlePayEnvironment!!) {
+            if (googlePayEnvironment) {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
-            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
-                .customer(customer)
-                .defaultBillingDetails(defaultBillingDetailsConfiguration)
-                .shippingDetails(shippingDetailsConfiguration)
-                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                .paymentMethodLayout(paymentMethodLayout)
-                .googlePay(PaymentSheet.GooglePayConfiguration(
+            configurationBuilder.googlePay(PaymentSheet.GooglePayConfiguration(
                     environment,
                     call.getString("countryCode", "US")!!,
                     call.getString("currencyCode", null)
                 ))
-                .build()
         }
 
         notifyListenersFunction.accept(PaymentSheetEvents.Loaded.webEventName, emptyObject)
@@ -134,12 +124,12 @@ class PaymentSheetExecutor(
             if (paymentIntentClientSecret != null) {
                 paymentSheet!!.presentWithPaymentIntent(
                     paymentIntentClientSecret!!,
-                    paymentConfiguration
+                    configurationBuilder.build()
                 )
             } else {
                 paymentSheet!!.presentWithSetupIntent(
                     setupIntentClientSecret!!,
-                    paymentConfiguration
+                    configurationBuilder.build()
                 )
             }
         } catch (ex: Exception) {

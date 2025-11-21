@@ -28,7 +28,7 @@ class PaymentFlowExecutor(
 ) {
     var flowController: PaymentSheet.FlowController? = null
     private val emptyObject = JSObject()
-    private var paymentConfiguration: PaymentSheet.Configuration? = null
+    private val configurationBuilder = PaymentSheet.Configuration.Builder("")
 
     init {
         this.contextSupplier = contextSupplier
@@ -44,7 +44,7 @@ class PaymentFlowExecutor(
             "horizontal" -> PaymentMethodLayout.Horizontal
             "vertical"   -> PaymentMethodLayout.Vertical
             "automatic"  -> PaymentMethodLayout.Automatic
-            else         -> PaymentSheet.PaymentMethodLayout.Automatic
+            else         -> PaymentMethodLayout.Automatic
         }
 
         if (paymentIntentClientSecret == null && setupIntentClientSecret == null) {
@@ -86,43 +86,36 @@ class PaymentFlowExecutor(
         val billingDetailsCollectionConfiguration = PaymentSheetHelper().fromJSObjectToBillingCollectionConfig(
             call.getObject("billingDetailsCollectionConfiguration", null)
         )
-        if (!enableGooglePay!!) {
-            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
-                .customer(customer)
-                .defaultBillingDetails(defaultBillingDetailsConfiguration)
-                .shippingDetails(shippingDetailsConfiguration)
-                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                .paymentMethodLayout(paymentMethodLayout)
-                .build()
 
-        } else {
-            val GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
+        configurationBuilder
+            .merchantDisplayName(merchantDisplayName)
+            .customer(customer)
+            .defaultBillingDetails(defaultBillingDetailsConfiguration)
+            .shippingDetails(shippingDetailsConfiguration)
+            .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+            .paymentMethodLayout(paymentMethodLayout)
+
+        if (enableGooglePay!!) {
+            val googlePayEnvironment = call.getBoolean("GooglePayIsTesting", false)!!
 
             var environment: PaymentSheet.GooglePayConfiguration.Environment =
                 PaymentSheet.GooglePayConfiguration.Environment.Production
 
-            if (GooglePayEnvironment!!) {
+            if (googlePayEnvironment) {
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
-            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
-                .customer(customer)
-                .defaultBillingDetails(defaultBillingDetailsConfiguration)
-                .shippingDetails(shippingDetailsConfiguration)
-                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
-                .paymentMethodLayout(paymentMethodLayout)
-                .googlePay(PaymentSheet.GooglePayConfiguration(
-                    environment,
-                    call.getString("countryCode", "US")!!,
-                    call.getString("currencyCode", null)
-                ))
-                .build()
+            configurationBuilder.googlePay(PaymentSheet.GooglePayConfiguration(
+                environment,
+                call.getString("countryCode", "US")!!,
+                call.getString("currencyCode", null)
+            ))
         }
 
         if (setupIntentClientSecret != null) {
             flowController!!.configureWithSetupIntent(
                 setupIntentClientSecret,
-                paymentConfiguration
+                configurationBuilder.build()
             ) { success: Boolean, error: Throwable? ->
                 if (success) {
                     notifyListenersFunction.accept(
@@ -141,7 +134,7 @@ class PaymentFlowExecutor(
         } else if (paymentIntentClientSecret != null) {
             flowController!!.configureWithPaymentIntent(
                 paymentIntentClientSecret,
-                paymentConfiguration
+                configurationBuilder.build()
             ) { success: Boolean, error: Throwable? ->
                 if (success) {
                     notifyListenersFunction.accept(
