@@ -25,8 +25,8 @@ class PaymentSheetExecutor(
     "PaymentSheetExecutor"
 ) {
     var paymentSheet: PaymentSheet? = null
+    private var configurationBuilder: PaymentSheet.Configuration.Builder? = null
     private val emptyObject = JSObject()
-    private val configurationBuilder = PaymentSheet.Configuration.Builder("")
 
     private var paymentIntentClientSecret: String? = null
     private var setupIntentClientSecret: String? = null
@@ -90,8 +90,7 @@ class PaymentSheetExecutor(
             call.getObject("billingDetailsCollectionConfiguration", null)
         )
 
-        configurationBuilder
-            .merchantDisplayName(merchantDisplayName)
+        configurationBuilder = PaymentSheet.Configuration.Builder(merchantDisplayName)
             .customer(customer)
             .defaultBillingDetails(defaultBillingDetailsConfiguration)
             .shippingDetails(shippingDetailsConfiguration)
@@ -108,7 +107,7 @@ class PaymentSheetExecutor(
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
-            configurationBuilder.googlePay(PaymentSheet.GooglePayConfiguration(
+            configurationBuilder!!.googlePay(PaymentSheet.GooglePayConfiguration(
                     environment,
                     call.getString("countryCode", "US")!!,
                     call.getString("currencyCode", null)
@@ -124,12 +123,12 @@ class PaymentSheetExecutor(
             if (paymentIntentClientSecret != null) {
                 paymentSheet!!.presentWithPaymentIntent(
                     paymentIntentClientSecret!!,
-                    configurationBuilder.build()
+                    configurationBuilder!!.build()
                 )
             } else {
                 paymentSheet!!.presentWithSetupIntent(
                     setupIntentClientSecret!!,
-                    configurationBuilder.build()
+                    configurationBuilder!!.build()
                 )
             }
         } catch (ex: Exception) {

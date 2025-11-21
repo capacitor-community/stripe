@@ -27,8 +27,8 @@ class PaymentFlowExecutor(
     "PaymentFlowExecutor"
 ) {
     var flowController: PaymentSheet.FlowController? = null
+    private var configurationBuilder: PaymentSheet.Configuration.Builder? = null
     private val emptyObject = JSObject()
-    private val configurationBuilder = PaymentSheet.Configuration.Builder("")
 
     init {
         this.contextSupplier = contextSupplier
@@ -87,8 +87,7 @@ class PaymentFlowExecutor(
             call.getObject("billingDetailsCollectionConfiguration", null)
         )
 
-        configurationBuilder
-            .merchantDisplayName(merchantDisplayName)
+        configurationBuilder = PaymentSheet.Configuration.Builder(merchantDisplayName)
             .customer(customer)
             .defaultBillingDetails(defaultBillingDetailsConfiguration)
             .shippingDetails(shippingDetailsConfiguration)
@@ -105,7 +104,7 @@ class PaymentFlowExecutor(
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
-            configurationBuilder.googlePay(PaymentSheet.GooglePayConfiguration(
+            configurationBuilder!!.googlePay(PaymentSheet.GooglePayConfiguration(
                 environment,
                 call.getString("countryCode", "US")!!,
                 call.getString("currencyCode", null)
@@ -115,7 +114,7 @@ class PaymentFlowExecutor(
         if (setupIntentClientSecret != null) {
             flowController!!.configureWithSetupIntent(
                 setupIntentClientSecret,
-                configurationBuilder.build()
+                configurationBuilder!!.build()
             ) { success: Boolean, error: Throwable? ->
                 if (success) {
                     notifyListenersFunction.accept(
@@ -134,7 +133,7 @@ class PaymentFlowExecutor(
         } else if (paymentIntentClientSecret != null) {
             flowController!!.configureWithPaymentIntent(
                 paymentIntentClientSecret,
-                configurationBuilder.build()
+                configurationBuilder!!.build()
             ) { success: Boolean, error: Throwable? ->
                 if (success) {
                     notifyListenersFunction.accept(
