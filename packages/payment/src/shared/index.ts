@@ -154,7 +154,7 @@ export interface BasePaymentOption {
   returnURL?: string | undefined;
 
   /**
-   * @url https://docs.stripe.com/payments/accept-a-payment?platform=android&locale=ja-JP#android-customization
+   * @url https://docs.stripe.com/payments/accept-a-payment?platform=android#android-customization
    * @default "automatic"
    */
   paymentMethodLayout?: 'horizontal' | 'vertical' | 'automatic' | undefined;
