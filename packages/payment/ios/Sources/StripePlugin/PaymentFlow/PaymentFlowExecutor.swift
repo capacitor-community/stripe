@@ -30,6 +30,15 @@ class PaymentFlowExecutor: NSObject {
         // MARK: Create a PaymentSheet instance
         var configuration = PaymentSheet.Configuration()
 
+        let paymentMethodLayout = call.getString("paymentMethodLayout") ?? "auto"
+        if paymentMethodLayout == "horizontal" {
+            configuration.paymentMethodLayout = .horizontal
+        } else if paymentMethodLayout == "vertical" {
+            configuration.paymentMethodLayout = .vertical
+        } else {
+            configuration.paymentMethodLayout = .automatic
+        }
+
         let merchantDisplayName = call.getString("merchantDisplayName") ?? ""
         if merchantDisplayName != "" {
             configuration.merchantDisplayName = merchantDisplayName
@@ -59,7 +68,7 @@ class PaymentFlowExecutor: NSObject {
         if customerId != nil && customerEphemeralKeySecret != nil {
             configuration.customer = .init(id: customerId!, ephemeralKeySecret: customerEphemeralKeySecret!)
         }
-        
+
         let billingDetailsCollectionConfiguration = call.getObject("billingDetailsCollectionConfiguration") ?? nil
         if billingDetailsCollectionConfiguration != nil {
             billingDetailsCollectionConfiguration?.forEach({ (key: String, value: JSValue) in
@@ -78,7 +87,7 @@ class PaymentFlowExecutor: NSObject {
                 }
             })
         }
-        
+
         let defaultBillingDetails = call.getObject("defaultBillingDetails") ?? nil
         if defaultBillingDetails != nil {
             defaultBillingDetails?.forEach({ (key: String, value: JSValue) in

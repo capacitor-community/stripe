@@ -10,6 +10,7 @@ import com.getcapacitor.community.stripe.helper.PaymentSheetHelper
 import com.getcapacitor.community.stripe.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheet.PaymentMethodLayout
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import com.stripe.android.paymentsheet.model.PaymentOption
 
@@ -38,6 +39,13 @@ class PaymentFlowExecutor(
         val setupIntentClientSecret = call.getString("setupIntentClientSecret", null)
         val customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null)
         val customerId = call.getString("customerId", null)
+
+        val paymentMethodLayout: PaymentMethodLayout = when (call.getString("paymentMethodLayout", "automatic")) {
+            "horizontal" -> PaymentMethodLayout.Horizontal
+            "vertical"   -> PaymentMethodLayout.Vertical
+            "automatic"  -> PaymentMethodLayout.Automatic
+            else         -> PaymentSheet.PaymentMethodLayout.Automatic
+        }
 
         if (paymentIntentClientSecret == null && setupIntentClientSecret == null) {
             val errorText =
@@ -78,15 +86,15 @@ class PaymentFlowExecutor(
         val billingDetailsCollectionConfiguration = PaymentSheetHelper().fromJSObjectToBillingCollectionConfig(
             call.getObject("billingDetailsCollectionConfiguration", null)
         )
-
         if (!enableGooglePay!!) {
-            paymentConfiguration = PaymentSheet.Configuration(
-                merchantDisplayName,
-                customer,
-                shippingDetails = shippingDetailsConfiguration,
-                defaultBillingDetails = defaultBillingDetailsConfiguration,
-                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration,
-            )
+            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
+                .customer(customer)
+                .defaultBillingDetails(defaultBillingDetailsConfiguration)
+                .shippingDetails(shippingDetailsConfiguration)
+                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                .paymentMethodLayout(paymentMethodLayout)
+                .build()
+
         } else {
             val GooglePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
 
@@ -97,18 +105,18 @@ class PaymentFlowExecutor(
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
-            paymentConfiguration = PaymentSheet.Configuration(
-                merchantDisplayName,
-                customer,
-                shippingDetails = shippingDetailsConfiguration,
-                defaultBillingDetails = defaultBillingDetailsConfiguration,
-                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration,
-                googlePay = PaymentSheet.GooglePayConfiguration(
+            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
+                .customer(customer)
+                .defaultBillingDetails(defaultBillingDetailsConfiguration)
+                .shippingDetails(shippingDetailsConfiguration)
+                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                .paymentMethodLayout(paymentMethodLayout)
+                .googlePay(PaymentSheet.GooglePayConfiguration(
                     environment,
                     call.getString("countryCode", "US")!!,
                     call.getString("currencyCode", null)
-                )
-            )
+                ))
+                .build()
         }
 
         if (setupIntentClientSecret != null) {

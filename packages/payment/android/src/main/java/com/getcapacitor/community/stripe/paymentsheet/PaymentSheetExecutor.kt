@@ -45,6 +45,13 @@ class PaymentSheetExecutor(
         val customerEphemeralKeySecret = call.getString("customerEphemeralKeySecret", null)
         val customerId = call.getString("customerId", null)
 
+        val paymentMethodLayout: PaymentSheet.PaymentMethodLayout = when (call.getString("paymentMethodLayout", "automatic")) {
+            "horizontal" -> PaymentSheet.PaymentMethodLayout.Horizontal
+            "vertical"   -> PaymentSheet.PaymentMethodLayout.Vertical
+            "automatic"  -> PaymentSheet.PaymentMethodLayout.Automatic
+            else         -> PaymentSheet.PaymentMethodLayout.Automatic
+        }
+
         if (paymentIntentClientSecret == null && setupIntentClientSecret == null) {
             val errorText =
                 "Invalid Params. This method require paymentIntentClientSecret or setupIntentClientSecret."
@@ -87,13 +94,13 @@ class PaymentSheetExecutor(
         )
 
         if (!enableGooglePay!!) {
-            paymentConfiguration = PaymentSheet.Configuration(
-                merchantDisplayName,
-                customer,
-                shippingDetails = shippingDetailsConfiguration,
-                defaultBillingDetails = defaultBillingDetailsConfiguration,
-                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration
-            )
+            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
+                .customer(customer)
+                .defaultBillingDetails(defaultBillingDetailsConfiguration)
+                .shippingDetails(shippingDetailsConfiguration)
+                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                .paymentMethodLayout(paymentMethodLayout)
+                .build()
         } else {
             val googlePayEnvironment = call.getBoolean("GooglePayIsTesting", false)
 
@@ -104,18 +111,18 @@ class PaymentSheetExecutor(
                 environment = PaymentSheet.GooglePayConfiguration.Environment.Test
             }
 
-            paymentConfiguration = PaymentSheet.Configuration(
-                merchantDisplayName,
-                customer,
-                shippingDetails = shippingDetailsConfiguration,
-                defaultBillingDetails = defaultBillingDetailsConfiguration,
-                billingDetailsCollectionConfiguration = billingDetailsCollectionConfiguration,
-                googlePay = PaymentSheet.GooglePayConfiguration(
+            paymentConfiguration = PaymentSheet.Configuration.Builder(merchantDisplayName = merchantDisplayName)
+                .customer(customer)
+                .defaultBillingDetails(defaultBillingDetailsConfiguration)
+                .shippingDetails(shippingDetailsConfiguration)
+                .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
+                .paymentMethodLayout(paymentMethodLayout)
+                .googlePay(PaymentSheet.GooglePayConfiguration(
                     environment,
                     call.getString("countryCode", "US")!!,
                     call.getString("currencyCode", null)
-                ),
-            )
+                ))
+                .build()
         }
 
         notifyListenersFunction.accept(PaymentSheetEvents.Loaded.webEventName, emptyObject)
