@@ -30,6 +30,15 @@ class PaymentSheetExecutor: NSObject {
         // MARK: Create a PaymentSheet instance
         var configuration = PaymentSheet.Configuration()
 
+        let paymentMethodLayout = call.getString("paymentMethodLayout") ?? "automatic"
+        if paymentMethodLayout == "horizontal" {
+            configuration.paymentMethodLayout = .horizontal
+        } else if paymentMethodLayout == "vertical" {
+            configuration.paymentMethodLayout = .vertical
+        } else {
+            configuration.paymentMethodLayout = .automatic
+        }
+
         let merchantDisplayName = call.getString("merchantDisplayName") ?? ""
         if merchantDisplayName != "" {
             configuration.merchantDisplayName = merchantDisplayName
@@ -78,7 +87,7 @@ class PaymentSheetExecutor: NSObject {
                 }
             })
         }
-        
+
         let defaultBillingDetails = call.getObject("defaultBillingDetails") ?? nil
         if defaultBillingDetails != nil {
             defaultBillingDetails?.forEach({ (key: String, value: JSValue) in
