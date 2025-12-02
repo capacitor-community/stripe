@@ -5,7 +5,7 @@ import type { DiscoverResult, ErrorResponse, Reader, Terminal } from '@stripe/te
 
 import { TerminalConnectTypes } from './definitions';
 import type {
-  StripeTerminalPlugin,
+  StripeTerminalAppOnDevicesPlugin,
   ReaderInterface,
   SimulateReaderUpdate,
   SimulatedCardType,
@@ -19,7 +19,7 @@ import {
   mapFromPaymentStatus,
 } from './terminal-mappers';
 
-export class StripeTerminalWeb extends WebPlugin implements StripeTerminalPlugin {
+export class StripeTerminalAppOnDevicesWeb extends WebPlugin implements StripeTerminalAppOnDevicesPlugin {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   private stripeTerminal: Terminal | undefined = undefined;
