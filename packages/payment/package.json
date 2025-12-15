@@ -2,7 +2,7 @@
   "name": "@capacitor-community/stripe",
   "version": "8.0.0",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
