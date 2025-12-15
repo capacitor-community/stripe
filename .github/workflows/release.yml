@@ -35,6 +35,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Read workspaces
+        id: workspaces
+        run: |
+          WORKSPACES=$(node -e "const fs=require('fs'); const ws=JSON.parse(fs.readFileSync('package.json','utf8')).workspaces||[]; console.log(ws.join(' '));")
+          echo "list=$WORKSPACES" >> $GITHUB_OUTPUT
+          echo "Workspaces: $WORKSPACES"
+
+      - name: Build all workspaces
+        run: npm run build -ws --if-present
+
       - name: Update package.json versions
         run: |
           node -e "
@@ -43,7 +53,7 @@ jobs:
           import { fileURLToPath } from 'url';
           
           const __dirname = path.dirname(fileURLToPath(import.meta.url));
-          const workspaces = ['packages/payment', 'packages/identity', 'packages/terminal'];
+          const workspaces = '${{ steps.workspaces.outputs.list }}'.split(' ').filter(Boolean);
           const version = '${{ steps.tag_version.outputs.version }}';
           
           for (const workspace of workspaces) {
@@ -66,18 +76,12 @@ jobs:
           VERSION="${{ steps.tag_version.outputs.version }}"
           IS_STABLE=$(echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' && echo "true" || echo "false")
           
-          for workspace in packages/payment packages/identity packages/terminal; do
+          for workspace in ${{ steps.workspaces.outputs.list }}; do
             echo "Publishing $workspace..."
-            cd "$workspace"
-            npm install
-            npm run build
-            
             if [ "$IS_STABLE" = "true" ]; then
-              npm publish --provenance
+              npm publish --provenance --workspace "$workspace"
             else
-              npm publish --provenance --tag next
+              npm publish --provenance --tag next --workspace "$workspace"
             fi
-            
-            cd ../..
           done
 
