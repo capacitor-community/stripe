@@ -68,6 +68,7 @@
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/swiftlint-config": "^2.0.0",
     "@rdlabo/capacitor-docgen": "^0.4.1",
+    "@types/node": "^14.18.0",
     "@types/react": "^16.14.3",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "eslint": "^8.57.0",

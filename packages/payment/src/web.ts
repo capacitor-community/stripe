@@ -182,7 +182,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       throw new Error();
     }
 
-    this.flowStripe = stripe;
+    this.flowStripe = stripe as Stripe;
     this.flowCardNumberElement = cardNumberElement;
 
     this.notifyListeners(PaymentFlowEventsEnum.Created, {
