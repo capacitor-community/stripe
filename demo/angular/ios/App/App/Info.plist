@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>capacitor-stripe</string>
+	<string>capacitor-stripe</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,6 +22,18 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>このアプリは、Bluetooth を使用してサポート対象のカードリーダーに接続します。</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth access is required to connect to supported card readers.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Need camera access for read credit card.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location access is required to accept payments.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -45,17 +57,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Need camera access for read credit card.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location access is required to accept payments.</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>bluetooth-central</string>
-	</array>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth access is required to connect to supported card readers.</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>このアプリは、Bluetooth を使用してサポート対象のカードリーダーに接続します。</string>
 </dict>
 </plist>

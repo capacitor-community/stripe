@@ -321,7 +321,7 @@ export class DemoPage implements OnInit {
           amount: 1099.0,
         },
       ],
-      merchantIdentifier: 'merchant.com.getcapacitor.stripe',
+      merchantIdentifier: 'merchant.com.capacitor.stripe',
       requiredShippingContactFields: [
         'postalAddress',
         'phoneNumber',
@@ -352,7 +352,7 @@ export class DemoPage implements OnInit {
           amount: 1099.0,
         },
       ],
-      merchantIdentifier: 'merchant.com.getcapacitor.stripe',
+      merchantIdentifier: 'merchant.com.capacitor.stripe',
       countryCode: 'US',
       currency: 'USD',
     });
