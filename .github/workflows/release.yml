@@ -54,23 +54,14 @@ jobs:
           git checkout "$DEFAULT_BRANCH"
           git merge --ff-only "$GITHUB_SHA"
 
-      - name: Update package.json versions
+      - name: Update workspace package.json versions
         run: |
-          node -e "
-          import { updatePackage } from 'write-pkg';
-          import path from 'path';
-          import { fileURLToPath } from 'url';
-          
-          const __dirname = path.dirname(fileURLToPath(import.meta.url));
-          const workspaces = '${{ steps.workspaces.outputs.list }}'.split(' ').filter(Boolean);
-          const version = '${{ steps.tag_version.outputs.version }}';
-          
-          for (const workspace of workspaces) {
-            const packagePath = path.resolve(__dirname, '..', workspace, 'package.json');
-            await updatePackage(packagePath, { version });
-            console.log(\`Updated \${workspace}/package.json to version \${version}\`);
-          }
-          "
+          VERSION="${{ steps.tag_version.outputs.version }}"
+          echo "Setting workspace versions to $VERSION"
+          for workspace in ${{ steps.workspaces.outputs.list }}; do
+            echo "Updating $workspace/package.json..."
+            npm version "$VERSION" --no-git-tag-version --workspace "$workspace"
+          done
 
       - name: Build all workspaces
         run: npm run build -ws --if-present
