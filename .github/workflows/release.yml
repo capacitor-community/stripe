@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Extract version from tag
+        id: tag_version
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG_NAME#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION from tag: $TAG_NAME"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update package.json versions
+        run: |
+          node -e "
+          import { updatePackage } from 'write-pkg';
+          import path from 'path';
+          import { fileURLToPath } from 'url';
+          
+          const __dirname = path.dirname(fileURLToPath(import.meta.url));
+          const workspaces = ['packages/payment', 'packages/identity', 'packages/terminal'];
+          const version = '${{ steps.tag_version.outputs.version }}';
+          
+          for (const workspace of workspaces) {
+            const packagePath = path.resolve(__dirname, '..', workspace, 'package.json');
+            await updatePackage(packagePath, { version });
+            console.log(\`Updated \${workspace}/package.json to version \${version}\`);
+          }
+          "
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add packages/*/package.json
+          git commit -m "chore: update package versions to ${{ steps.tag_version.outputs.version }}" || exit 0
+          git push
+
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION="${{ steps.tag_version.outputs.version }}"
+          IS_STABLE=$(echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' && echo "true" || echo "false")
+          
+          for workspace in packages/payment packages/identity packages/terminal; do
+            echo "Publishing $workspace..."
+            cd "$workspace"
+            npm install
+            npm run build
+            
+            if [ "$IS_STABLE" = "true" ]; then
+              npm publish
+            else
+              npm publish --tag next
+            fi
+            
+            cd ../..
+          done
+
