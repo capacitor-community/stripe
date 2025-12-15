@@ -84,12 +84,6 @@ jobs:
       - name: npm install
         run: npm install
         working-directory: ./packages/payment
-
-      - name: Force Gradle for Payment Android
-        working-directory: ./packages/payment/android
-        run: |
-          ./gradlew wrapper --gradle-version 8.2 --distribution-type bin
-
       - name: verify
         run: npm run verify:android
         working-directory: ./packages/payment
