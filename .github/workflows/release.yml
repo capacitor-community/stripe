@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -42,8 +44,12 @@ jobs:
           echo "list=$WORKSPACES" >> $GITHUB_OUTPUT
           echo "Workspaces: $WORKSPACES"
 
-      - name: Build all workspaces
-        run: npm run build -ws --if-present
+      - name: Switch to default branch and align with tag commit
+        run: |
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          git fetch origin "$DEFAULT_BRANCH"
+          git checkout "$DEFAULT_BRANCH"
+          git merge --ff-only "$GITHUB_SHA"
 
       - name: Update package.json versions
         run: |
@@ -63,13 +69,16 @@ jobs:
           }
           "
 
+      - name: Build all workspaces
+        run: npm run build -ws --if-present
+
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add packages/*/package.json
-          git commit -m "chore: update package versions to ${{ steps.tag_version.outputs.version }}" || exit 0
-          git push
+          git commit -m "chore: update workspace versions to ${{ steps.tag_version.outputs.version }}" || exit 0
+          git push origin HEAD
 
       - name: Publish packages
         run: |
