@@ -1,43 +1,43 @@
 PODS:
-  - Capacitor (7.0.1):
+  - Capacitor (7.4.4):
     - CapacitorCordova
-  - CapacitorCommunityStripe (7.2.1):
+  - CapacitorCommunityStripe (7.2.2):
     - Capacitor
     - StripeApplePay (~> 25.1.0)
     - StripePaymentSheet (~> 25.1.0)
-  - CapacitorCommunityStripeIdentity (7.2.1):
+  - CapacitorCommunityStripeIdentity (7.2.2):
     - Capacitor
     - StripeIdentity (~> 25.1.0)
-  - CapacitorCommunityStripeTerminal (7.2.1):
+  - CapacitorCommunityStripeTerminal (7.2.2):
     - Capacitor
     - StripeTerminal (= 4.7.3)
-  - CapacitorCordova (7.0.1)
-  - StripeApplePay (25.1.0):
-    - StripeCore (= 25.1.0)
-  - StripeCameraCore (25.1.0):
-    - StripeCore (= 25.1.0)
-  - StripeCore (25.1.0)
-  - StripeIdentity (25.1.0):
-    - StripeCameraCore (= 25.1.0)
-    - StripeCore (= 25.1.0)
-    - StripeUICore (= 25.1.0)
-  - StripePayments (25.1.0):
-    - StripeCore (= 25.1.0)
-    - StripePayments/Stripe3DS2 (= 25.1.0)
-  - StripePayments/Stripe3DS2 (25.1.0):
-    - StripeCore (= 25.1.0)
-  - StripePaymentSheet (25.1.0):
-    - StripeApplePay (= 25.1.0)
-    - StripeCore (= 25.1.0)
-    - StripePayments (= 25.1.0)
-    - StripePaymentsUI (= 25.1.0)
-  - StripePaymentsUI (25.1.0):
-    - StripeCore (= 25.1.0)
-    - StripePayments (= 25.1.0)
-    - StripeUICore (= 25.1.0)
+  - CapacitorCordova (7.4.4)
+  - StripeApplePay (25.1.1):
+    - StripeCore (= 25.1.1)
+  - StripeCameraCore (25.1.1):
+    - StripeCore (= 25.1.1)
+  - StripeCore (25.1.1)
+  - StripeIdentity (25.1.1):
+    - StripeCameraCore (= 25.1.1)
+    - StripeCore (= 25.1.1)
+    - StripeUICore (= 25.1.1)
+  - StripePayments (25.1.1):
+    - StripeCore (= 25.1.1)
+    - StripePayments/Stripe3DS2 (= 25.1.1)
+  - StripePayments/Stripe3DS2 (25.1.1):
+    - StripeCore (= 25.1.1)
+  - StripePaymentSheet (25.1.1):
+    - StripeApplePay (= 25.1.1)
+    - StripeCore (= 25.1.1)
+    - StripePayments (= 25.1.1)
+    - StripePaymentsUI (= 25.1.1)
+  - StripePaymentsUI (25.1.1):
+    - StripeCore (= 25.1.1)
+    - StripePayments (= 25.1.1)
+    - StripeUICore (= 25.1.1)
   - StripeTerminal (4.7.3)
-  - StripeUICore (25.1.0):
-    - StripeCore (= 25.1.0)
+  - StripeUICore (25.1.1):
+    - StripeCore (= 25.1.1)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -71,20 +71,20 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
 
 SPEC CHECKSUMS:
-  Capacitor: de199cba6c8b20995428ad0b7cb0bc6ca625ffd4
-  CapacitorCommunityStripe: 684052203ba8abd2cf74b464df0603ab3e6e464d
-  CapacitorCommunityStripeIdentity: f8dbf6be3961097ba7b3075258776bccc3ec2f81
-  CapacitorCommunityStripeTerminal: 23da4329032aa23d3bc40b630a36dc978f664496
-  CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
-  StripeApplePay: baa0634219c168df6a50c7d76ae0d9bff39dbaf9
-  StripeCameraCore: e12d90fd62abcf5a1cb9bb8a85d72e5cbb7e7666
-  StripeCore: 6078969b9c9b205081bc8d66991e2a6d4bd3e994
-  StripeIdentity: 7d40804f948a38e6c99fa53d0400a3d955758a00
-  StripePayments: b80892b98f25f4ee890773755f2940727aefcb57
-  StripePaymentSheet: 77673b324a5cc5c9327f5c8cfcdf13d2f6495dde
-  StripePaymentsUI: 057811da34b69e89a06ec1962fffe4247b98ee92
+  Capacitor: 358dd1c3fdd71d969547b17e159fd8a7736cb45f
+  CapacitorCommunityStripe: a1f447178b87af6bdedc838e50fabd7f7e214abb
+  CapacitorCommunityStripeIdentity: 15ee6756a473dbf01765bbbc3126efa24b1dfe74
+  CapacitorCommunityStripeTerminal: 3b812deed0ca772987a15aa258eae42bf7b53fa8
+  CapacitorCordova: bf648a636f3c153f652d312ae145fb508b6ffced
+  StripeApplePay: 4428e5826335017151eeff87e9d36f6688eaa593
+  StripeCameraCore: 3855662b0bb4c01186ee90e1d1c0bbe78e29dce9
+  StripeCore: 76440c9bf61bd84149014414ced3470b8d94eb8e
+  StripeIdentity: f32cd5bdd56eacc7070ac9ea8e93070e7410f358
+  StripePayments: ace6def8949ed33434a5db2f8fdd184388636be5
+  StripePaymentSheet: ec3dadf54b470250a40b3c5f7164641a0f1063c3
+  StripePaymentsUI: 702926af8eae0901821907014ab90c72fc3eabab
   StripeTerminal: b9e92913da8a08ff5c62af75056ad39bf8b02ac6
-  StripeUICore: 4f47fdd3895f23c6e02879ef27126f62af7058ff
+  StripeUICore: c3de64fb6ab7ef376128e862f6bc6817e0a964e9
 
 PODFILE CHECKSUM: c75ca255b97ee461832b20e6cdf6d1da533d4019
 
