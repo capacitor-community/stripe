@@ -215,8 +215,8 @@ export class DemoPage implements OnInit {
             line2: '',
             postalCode: '94107',
             state: 'CA',
-          }
-        }
+          },
+        },
       });
     } else {
       const { paymentIntent } = await firstValueFrom(
