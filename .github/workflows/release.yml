@@ -88,9 +88,9 @@ jobs:
           for workspace in ${{ steps.workspaces.outputs.list }}; do
             echo "Publishing $workspace..."
             if [ "$IS_STABLE" = "true" ]; then
-              npm publish --provenance --workspace "$workspace"
+              npm publish --provenance --access public --workspace "$workspace"
             else
-              npm publish --provenance --tag next --workspace "$workspace"
+              npm publish --provenance --access public --tag next --workspace "$workspace"
             fi
           done
 
