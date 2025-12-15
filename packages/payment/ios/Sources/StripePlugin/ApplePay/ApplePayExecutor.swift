@@ -98,40 +98,39 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
 }
 
 extension ApplePayExecutor {
-    func transformPKContactToJSON(contact: PKContact?) -> JSArray {
+    func transformPKContactToJSON(contact: PKContact?) -> JSObject {
+        guard let contact else {
+            return [:]
+        }
+        
+        
+        let name = contact.name
+        let address = contact.postalAddress
+        
         var nameFormatted = ""
         if #available(iOS 15.0, *) {
-            nameFormatted = (contact?.name?.nameSuffix as? String ?? "")
+            nameFormatted = (contact.name?.nameSuffix as? String ?? "")
         }
-        var dataString = "[{" +
-        "\"givenName\":\"\(contact?.name?.givenName as? String ?? "")\"," +
-        "\"familyName\":\"\(contact?.name?.familyName as? String ?? "")\"," +
-        "\"middleName\":\"\(contact?.name?.middleName as? String ?? "")\"," +
-        "\"namePrefix\":\"\(contact?.name?.namePrefix as? String ?? "")\"," +
-        "\"nameSuffix\":\"\(contact?.name?.nameSuffix as? String ?? "")\"," +
-        "\"nameFormatted\":\"\(nameFormatted)\"," +
-        "\"phoneNumber\":\"\(contact?.phoneNumber?.stringValue as? String ?? "")\"," +
-        "\"nickname\":\"\(contact?.name?.nickname as? String ?? "")\"," +
-        "\"street\":\"\(contact?.postalAddress?.street as? String ?? "")\"," +
-        "\"city\":\"\(contact?.postalAddress?.city as? String ?? "")\"," +
-        "\"state\":\"\(contact?.postalAddress?.state as? String ?? "")\"," +
-        "\"postalCode\":\"\(contact?.postalAddress?.postalCode as? String ?? "")\"," +
-        "\"country\":\"\(contact?.postalAddress?.country as? String ?? "")\"," +
-        "\"isoCountryCode\":\"\(contact?.postalAddress?.isoCountryCode as? String ?? "")\"," +
-        "\"subAdministrativeArea\":\"\(contact?.postalAddress?.subAdministrativeArea as? String ?? "")\"," +
-        "\"subLocality\":\"\(contact?.postalAddress?.subLocality as? String ?? "")\"" +
-        "}]"
-        dataString = dataString.replacingOccurrences(of: "\n", with: "\\n")
-        let dataStringUTF8 = dataString.data(using: .utf8)!
-        do {
-            if let jsonArray = try JSONSerialization.jsonObject(with: dataStringUTF8, options: .allowFragments) as? JSArray {
-                return jsonArray
-            }
-        } catch let error as NSError {
-            print(error)
-            return []
-        }
-        return []
+        
+        return [
+             "givenName": name?.givenName ?? "",
+             "familyName": name?.familyName ?? "",
+             "middleName": name?.middleName ?? "",
+             "namePrefix": name?.namePrefix ?? "",
+             "nameSuffix": name?.nameSuffix ?? "",
+             "nameFormatted": nameFormatted,
+             "nickname": name?.nickname ?? "",
+             "phoneNumber": contact.phoneNumber?.stringValue ?? "",
+             "emailAddress": contact.emailAddress ?? "",
+             "street": address?.street ?? "",
+             "city": address?.city ?? "",
+             "state": address?.state ?? "",
+             "postalCode": address?.postalCode ?? "",
+             "country": address?.country ?? "",
+             "isoCountryCode": address?.isoCountryCode ?? "",
+             "subAdministrativeArea": address?.subAdministrativeArea ?? "",
+             "subLocality": address?.subLocality ?? ""
+         ]
     }
 
     // For security reasons, Apple does not return the full address until a successful payment has been made.
