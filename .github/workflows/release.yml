@@ -35,7 +35,7 @@ jobs:
           echo "Extracted version: $VERSION from tag: $TAG_NAME"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Read workspaces
         id: workspaces
