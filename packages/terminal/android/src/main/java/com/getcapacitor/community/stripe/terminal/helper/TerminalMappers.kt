@@ -78,7 +78,6 @@ class TerminalMappers {
             DeviceType.STRIPE_S700 -> "stripeS700"
             DeviceType.STRIPE_S700_DEVKIT -> "stripeS700Devkit"
             DeviceType.UNKNOWN -> "unknown"
-            DeviceType.VERIFONE_P400 -> "verifoneP400"
             DeviceType.WISECUBE -> "wiseCube"
             DeviceType.WISEPAD_3 -> "wisePad3"
             DeviceType.WISEPAD_3S -> "wisePad3s"
