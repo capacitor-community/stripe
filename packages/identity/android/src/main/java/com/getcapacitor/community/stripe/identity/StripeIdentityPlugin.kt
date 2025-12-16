@@ -64,9 +64,6 @@ class StripeIdentityPlugin : Plugin() {
 
     @PluginMethod
     fun present(call: PluginCall) {
-        call.setKeepAlive(true);
-        bridge.saveCall(call)
-
         implementation.present(call)
     }
 }
