@@ -62,7 +62,7 @@ And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/
 ```diff
   ext {
 -    minSdkVersion = 23
-+    minSdkVersion = 30
++    minSdkVersion = 26
 ```
 
 If you are developing apps for Stripe Android devices (e.g. Stripe Reader S700), follow the Stripe's documentation for the client-side setup.
