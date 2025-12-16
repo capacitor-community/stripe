@@ -44,20 +44,7 @@ Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 + <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
 
-If used in conjunction with the `@capacitor-community/stripe` plugin, the following settings may be necessary
-
-Add packagingOptions to your `android/app/build.gradle` file:
-
-```diff
-android {
-...
-+  packagingOptions {
-+    resources.excludes.add("org/bouncycastle/x509/*")
-+  }
-}
-```
-
-And update minSdkVersion to 26 And compileSdkVersion to 34 in your `android/app/build.gradle` file:
+And update minSdkVersion to 26 in your `android/app/build.gradle` file:
 
 ```diff
   ext {
