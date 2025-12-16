@@ -13,8 +13,6 @@ import com.stripe.android.identity.IdentityVerificationSheet.VerificationFlowRes
 
 @CapacitorPlugin(name = "StripeIdentity")
 class StripeIdentityPlugin : Plugin() {
-    private var identityVerificationCallbackId: String? = null
-
     private val implementation = StripeIdentity(
         { this.context },
         { this.activity },
@@ -40,16 +38,16 @@ class StripeIdentityPlugin : Plugin() {
             if (verificationFlowResult is VerificationFlowResult.Completed) {
                 // The user has completed uploading their documents.
                 // Let them know that the verification is processing.
-                implementation.onVerificationCompleted(bridge, identityVerificationCallbackId)
+                implementation.onVerificationCompleted(bridge)
             } else if (verificationFlowResult is VerificationFlowResult.Canceled) {
                 // The user did not complete uploading their documents.
                 // You should allow them to try again.
-                implementation.onVerificationCancelled(bridge, identityVerificationCallbackId)
+                implementation.onVerificationCancelled(bridge)
             } else if (verificationFlowResult is VerificationFlowResult.Failed) {
                 // If the flow fails, you should display the localized error
                 // message to your user using throwable.getLocalizedMessage()
                 val errorMessage = verificationFlowResult.throwable.localizedMessage;
-                implementation.onVerificationFailed(bridge, errorMessage, identityVerificationCallbackId)
+                implementation.onVerificationFailed(bridge, errorMessage)
             }
         }
     }
@@ -66,8 +64,6 @@ class StripeIdentityPlugin : Plugin() {
 
     @PluginMethod
     fun present(call: PluginCall) {
-        identityVerificationCallbackId = call.callbackId
-
         call.setKeepAlive(true);
         bridge.saveCall(call)
 
