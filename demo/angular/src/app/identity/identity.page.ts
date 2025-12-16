@@ -43,7 +43,6 @@ const happyPathItems: ITestItems[] = [
   {
     type: 'method',
     name: 'presentIdentityVerificationSheet',
-    expect: [IdentityVerificationSheetEventsEnum.Completed],
   },
   {
     type: 'event',
@@ -72,7 +71,6 @@ const cancelPathItems: ITestItems[] = [
   {
     type: 'method',
     name: 'presentIdentityVerificationSheet',
-    expect: [IdentityVerificationSheetEventsEnum.Canceled],
   },
   {
     type: 'event',
@@ -107,9 +105,6 @@ export class IdentityPage {
 
   public eventItems: ITestItems[] = [];
   private readonly listenerHandlers: PluginListenerHandle[] = [];
-
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
 
   constructor() {
     addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
@@ -172,12 +167,11 @@ export class IdentityPage {
         ),
       );
 
-    await StripeIdentity.present().then((data) => {
+    await StripeIdentity.present().then(() => {
       return this.helper.updateItem(
         this.eventItems,
         'presentIdentityVerificationSheet',
-        undefined,
-        data.identityVerificationResult,
+        true,
       );
     });
 

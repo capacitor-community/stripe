@@ -2,7 +2,7 @@ import { WebPlugin } from '@capacitor/core';
 import type { Stripe } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-import type { deprecatedIdentityVerificationResult, StripeIdentityPlugin } from './definitions';
+import type { StripeIdentityPlugin } from './definitions';
 import { IdentityVerificationSheetEventsEnum } from './definitions';
 
 export interface InitializeIdentityVerificationSheetOption {
@@ -29,7 +29,7 @@ export class StripeIdentityWeb extends WebPlugin implements StripeIdentityPlugin
     this.clientSecret = options.clientSecret;
     this.notifyListeners(IdentityVerificationSheetEventsEnum.Loaded, null);
   }
-  async present(): Promise<deprecatedIdentityVerificationResult> {
+  async present(): Promise<void> {
     if (!this.stripe) {
       throw new Error('Stripe is not initialized.');
     }
@@ -38,36 +38,21 @@ export class StripeIdentityWeb extends WebPlugin implements StripeIdentityPlugin
     }
     const { error } = await this.stripe.verifyIdentity(this.clientSecret);
     if (error) {
-      const { code, message } = error;
+      const { code } = error;
       if (code === 'session_cancelled') {
-        this.notifyListeners(IdentityVerificationSheetEventsEnum.Canceled, {
-          message,
-        });
-
         this.notifyListeners(IdentityVerificationSheetEventsEnum.VerificationResult, {
           result: IdentityVerificationSheetEventsEnum.Canceled,
         });
-        return {
-          identityVerificationResult: IdentityVerificationSheetEventsEnum.Canceled,
-        };
+        return;
       }
-      this.notifyListeners(IdentityVerificationSheetEventsEnum.Failed, error);
-
       this.notifyListeners(IdentityVerificationSheetEventsEnum.VerificationResult, {
         result: IdentityVerificationSheetEventsEnum.Failed,
         error,
       });
-      return {
-        identityVerificationResult: IdentityVerificationSheetEventsEnum.Failed,
-      };
+      return;
     }
-    this.notifyListeners(IdentityVerificationSheetEventsEnum.Completed, null);
-
     this.notifyListeners(IdentityVerificationSheetEventsEnum.VerificationResult, {
       result: IdentityVerificationSheetEventsEnum.Completed,
     });
-    return {
-      identityVerificationResult: IdentityVerificationSheetEventsEnum.Completed,
-    };
   }
 }

@@ -48,9 +48,6 @@ export class DemoPage implements OnInit {
   isApplePayAvailable = false;
   isGooglePayAvailable = false;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
   constructor() {}
 
   async ngOnInit() {

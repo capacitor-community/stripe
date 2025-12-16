@@ -57,9 +57,7 @@ import StripeIdentity
                         self.plugin?.notifyListeners(IdentityVerificationSheetEvents.VerificationResult.rawValue, data: [
                             "result": IdentityVerificationSheetEvents.Completed.rawValue
                         ])
-                        
-                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Completed.rawValue, data: [:])
-                        call.resolve(["identityVerificationResult": IdentityVerificationSheetEvents.Completed.rawValue])
+                        call.resolve([:])
                     case .flowCanceled:
                         // The user did not complete uploading their documents.
                         // You should allow them to try again.
@@ -67,9 +65,7 @@ import StripeIdentity
                         self.plugin?.notifyListeners(IdentityVerificationSheetEvents.VerificationResult.rawValue, data: [
                             "result": IdentityVerificationSheetEvents.Canceled.rawValue
                         ])
-                        
-                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Canceled.rawValue, data: [:])
-                        call.resolve(["identityVerificationResult": IdentityVerificationSheetEvents.Canceled.rawValue])
+                        call.resolve([:])
                     case .flowFailed(let error):
                         // If the flow fails, you should display the localized error
                         // message to your user using error.localizedDescription
@@ -81,9 +77,7 @@ import StripeIdentity
                                 "message": error.localizedDescription
                             ]
                         ])
-                        
-                        self.plugin?.notifyListeners(IdentityVerificationSheetEvents.Failed.rawValue, data: ["message": error.localizedDescription])
-                        call.resolve(["identityVerificationResult": IdentityVerificationSheetEvents.Failed.rawValue])
+                        call.resolve([:])
                     }
                 })
             }
