@@ -11,6 +11,7 @@ class TerminalMappers {
         case DeviceType.stripeM2: return "stripeM2"
         case DeviceType.stripeS700: return "stripeS700"
         case DeviceType.stripeS700DevKit: return "stripeS700Devkit"
+        case DeviceType.verifoneP400: return "verifoneP400"
         case DeviceType.wiseCube: return "wiseCube"
         case DeviceType.wisePad3: return "wisePad3"
         case DeviceType.wisePosE: return "wisePosE"
@@ -250,7 +251,6 @@ class TerminalMappers {
         case ConnectionStatus.connected: return "CONNECTED"
         case ConnectionStatus.connecting: return "CONNECTING"
         case ConnectionStatus.notConnected: return "NOT_CONNECTED"
-        case ConnectionStatus.reconnecting: return "RECONNECTING"
         default: return "UNKNOWN"
         }
     }

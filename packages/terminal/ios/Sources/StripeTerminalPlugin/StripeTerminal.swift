@@ -25,7 +25,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
         self.isTest = call.getBool("isTest", true)
         if self.isInitialize == false {
             apiClient.initialize(plugin: self.plugin, tokenProviderEndpoint: call.getString("tokenProviderEndpoint", ""))
-            Terminal.initWithTokenProvider(apiClient)
+            Terminal.setTokenProvider(apiClient)
         }
         self.isInitialize = true
         self.plugin?.notifyListeners(TerminalEvents.Loaded.rawValue, data: [:])
@@ -249,14 +249,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
                     print("confirmPaymentIntent failed: \(error)")
                     var errorDetails: [String: Any] = ["message": error.localizedDescription]
                     if let paymentIntent = error.paymentIntent,
-                       let lastPaymentError = paymentIntent.lastPaymentError {
-
-                        if let declineCode = lastPaymentError.declineCode {
-                            errorDetails["declineCode"] = declineCode
+                       let originalJSON = paymentIntent.originalJSON as? [AnyHashable: Any],
+                       let lastPaymentError = originalJSON["last_payment_error"] as? [String: Any] {
+                        if let errorCode = lastPaymentError["decline_code"] as? String {
+                            errorDetails["declineCode"] = errorCode
                         }
 
-                        if let code = lastPaymentError.code {
-                            errorDetails["code"] = code
+                        if let errorCode = lastPaymentError["code"] as? String {
+                            errorDetails["code"] = errorCode
                         }
                     }
                     self.plugin?.notifyListeners(TerminalEvents.Failed.rawValue, data: errorDetails)

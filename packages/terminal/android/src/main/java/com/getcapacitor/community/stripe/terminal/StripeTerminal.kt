@@ -17,7 +17,7 @@ import com.getcapacitor.community.stripe.terminal.helper.TerminalMappers
 import com.getcapacitor.community.stripe.terminal.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.Terminal.Companion.init
+import com.stripe.stripeterminal.Terminal.Companion.initTerminal
 import com.stripe.stripeterminal.Terminal.Companion.isInitialized
 import com.stripe.stripeterminal.TerminalApplicationDelegate.onCreate
 import com.stripe.stripeterminal.external.callable.Callback
@@ -29,12 +29,12 @@ import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.callable.TapToPayReaderListener
 import com.stripe.stripeterminal.external.callable.TerminalListener
-import com.stripe.stripeterminal.external.callable.AppsOnDevicesListener
+import com.stripe.stripeterminal.external.callable.HandoffReaderListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
 import com.stripe.stripeterminal.external.models.CardPresentDetails
 import com.stripe.stripeterminal.external.models.Cart
 import com.stripe.stripeterminal.external.models.CartLineItem
-import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfiguration
+import com.stripe.stripeterminal.external.models.CollectConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionStatus
 import com.stripe.stripeterminal.external.models.DisconnectReason
@@ -128,12 +128,11 @@ class StripeTerminal(
             this.notifyListenersFunction
         )
         if (!isInitialized()) {
-            init(
+            initTerminal(
                 contextSupplier.get().applicationContext,
                 logLevel,
                 this.tokenProvider!!,
-                listener,
-                null // OfflineListener - not used in this implementation
+                listener
             )
         }
         Terminal.getInstance()
@@ -197,7 +196,7 @@ class StripeTerminal(
             config = DiscoveryConfiguration.BluetoothDiscoveryConfiguration(0, this.isTest!!)
             this.terminalConnectType = TerminalConnectTypes.Bluetooth
         } else if (call.getString("type") == TerminalConnectTypes.HandOff.webEventName) {
-            config = DiscoveryConfiguration.AppsOnDevicesDiscoveryConfiguration()
+            config = DiscoveryConfiguration.HandoffDiscoveryConfiguration()
             this.terminalConnectType = TerminalConnectTypes.HandOff
         } else {
             call.unimplemented(call.getString("type") + " is not support now")
@@ -400,8 +399,8 @@ class StripeTerminal(
 
         val config: ConnectionConfiguration.InternetConnectionConfiguration =
             ConnectionConfiguration.InternetConnectionConfiguration(
-                this.internetReaderListener,
-                true
+                true,
+                this.internetReaderListener
             )
         Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call))
     }
@@ -462,14 +461,14 @@ class StripeTerminal(
             return
         }
 
-        val config: ConnectionConfiguration.AppsOnDevicesConnectionConfiguration = ConnectionConfiguration.AppsOnDevicesConnectionConfiguration(
+        val config: ConnectionConfiguration.HandoffConnectionConfiguration = ConnectionConfiguration.HandoffConnectionConfiguration(
             this.handoffReaderListener
         )
 
         Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call))
     }
 
-    var handoffReaderListener: AppsOnDevicesListener = object : AppsOnDevicesListener {
+    var handoffReaderListener: HandoffReaderListener = object : HandoffReaderListener {
         override fun onDisconnect(reason: DisconnectReason) {
             notifyListeners(
                 TerminalEnumEvent.DisconnectedReader.webEventName,
@@ -540,8 +539,8 @@ class StripeTerminal(
     private val createPaymentIntentCallback: PaymentIntentCallback =
         object : PaymentIntentCallback {
             override fun onSuccess(paymentIntent: PaymentIntent) {
-                val collectConfig: CollectPaymentIntentConfiguration =
-                    CollectPaymentIntentConfiguration.Builder().updatePaymentIntent(true).build()
+                val collectConfig: CollectConfiguration =
+                    CollectConfiguration.Builder().updatePaymentIntent(true).build()
                 collectCancelable = Terminal.getInstance().collectPaymentMethod(
                     paymentIntent,
                     collectPaymentMethodCallback,
