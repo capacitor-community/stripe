@@ -1,0 +1,33 @@
+{
+  "originHash" : "87e181fb6509eb87942a59402a640ac1f01172d601c922de34a8cea6131575d5",
+  "pins" : [
+    {
+      "identity" : "capacitor-swift-pm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ionic-team/capacitor-swift-pm.git",
+      "state" : {
+        "revision" : "596259033e94829dffc552a40e7129262122995e",
+        "version" : "8.0.0"
+      }
+    },
+    {
+      "identity" : "stripe-ios-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stripe/stripe-ios-spm.git",
+      "state" : {
+        "revision" : "9f50d57223bec0db5ccaaaae81153148075fa83f",
+        "version" : "25.3.0"
+      }
+    },
+    {
+      "identity" : "stripe-terminal-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stripe/stripe-terminal-ios.git",
+      "state" : {
+        "revision" : "05b6932bb5bae758d42141ecee08391a9f21803c",
+        "version" : "4.7.3"
+      }
+    }
+  ],
+  "version" : 3
+}
