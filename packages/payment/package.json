@@ -82,8 +82,8 @@
   "peerDependencies": {
     "@capacitor/core": ">=8.0.0",
     "react": "^17.0.0 || ^18.0.0",
-    "stripe-pwa-elements": "^2.1.0",
-    "@stripe/stripe-js": "^1.25.0"
+    "stripe-pwa-elements": "^3.0.0",
+    "@stripe/stripe-js": "^8.4.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
