@@ -49,10 +49,6 @@ const happyPathItems: ITestItems[] = [
     name: IdentityVerificationSheetEventsEnum.VerificationResult,
     expect: IdentityVerificationSheetEventsEnum.Completed,
   },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Completed,
-  },
 ];
 
 const cancelPathItems: ITestItems[] = [
@@ -76,10 +72,6 @@ const cancelPathItems: ITestItems[] = [
     type: 'event',
     name: IdentityVerificationSheetEventsEnum.VerificationResult,
     expect: IdentityVerificationSheetEventsEnum.Canceled,
-  },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Canceled,
   },
 ];
 
