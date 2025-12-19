@@ -63,12 +63,13 @@ class StripeIdentity(
                 ephemeralKeySecret!!
             )
             Logger.info("Presented Identity Verification Sheet")
+            call.resolve()
         } catch (ex: Exception) {
             call.reject(ex.localizedMessage, ex)
         }
     }
 
-    fun onVerificationCompleted(bridge: Bridge) {
+    fun onVerificationCompleted() {
         notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject().put(
                 "result",
@@ -77,7 +78,7 @@ class StripeIdentity(
         )
     }
 
-    fun onVerificationCancelled(bridge: Bridge) {
+    fun onVerificationCancelled() {
         notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject().put(
                 "result",
@@ -86,7 +87,7 @@ class StripeIdentity(
         )
     }
 
-    fun onVerificationFailed(bridge: Bridge, errorMessage: String?) {
+    fun onVerificationFailed(errorMessage: String?) {
         notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject()
                 .put(

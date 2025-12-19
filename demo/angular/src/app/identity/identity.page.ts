@@ -25,6 +25,7 @@ import {
   IonListHeader,
   IonTitle,
   IonToolbar,
+  Platform,
 } from '@ionic/angular/standalone';
 
 const happyPathItems: ITestItems[] = [
@@ -94,6 +95,7 @@ const cancelPathItems: ITestItems[] = [
 export class IdentityPage {
   private http = inject(HttpClient);
   private helper = inject(HelperService);
+  private platform = inject(Platform);
 
   public eventItems: ITestItems[] = [];
   private readonly listenerHandlers: PluginListenerHandle[] = [];
@@ -166,6 +168,10 @@ export class IdentityPage {
         true,
       );
     });
+
+    if (this.platform.is('hybrid') && this.platform.is('android')) {
+      await new Promise<void>(resolve => StripeIdentity.addListener(IdentityVerificationSheetEventsEnum.VerificationResult, () => resolve()));
+    }
 
     this.listenerHandlers.forEach((handler) => handler.remove());
   }
