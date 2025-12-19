@@ -106,9 +106,6 @@ export class FlowPage {
   public eventItems: ITestItems[] = [];
   private readonly listenerHandlers: PluginListenerHandle[] = [];
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
   constructor() {
     addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
   }

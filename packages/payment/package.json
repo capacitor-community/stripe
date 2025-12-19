@@ -1,8 +1,8 @@
 {
   "name": "@capacitor-community/stripe",
-  "version": "7.2.3",
+  "version": "8.0.0",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "description": "Stripe SDK bindings for Capacitor Applications",
   "main": "dist/plugin.cjs.js",
@@ -61,28 +61,29 @@
     "update:elements": "npm i stripe-pwa-elements@latest && cd demo/angular && npm i stripe-pwa-elements@latest"
   },
   "devDependencies": {
-    "@capacitor/android": "^7.0.0",
-    "@capacitor/core": "^7.0.0",
-    "@capacitor/ios": "^7.0.0",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
     "@ionic/eslint-config": "^0.4.0",
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/swiftlint-config": "^2.0.0",
     "@rdlabo/capacitor-docgen": "^0.4.1",
-    "@types/node": "^14.18.0",
+    "@types/node": "^24.10.1",
     "@types/react": "^16.14.3",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
-    "eslint": "^8.57.0",
-    "prettier": "^3.4.2",
-    "prettier-plugin-java": "^2.6.6",
-    "rimraf": "^6.0.1",
-    "rollup": "^4.30.1",
+    "eslint": "^8.57.1",
+    "prettier": "^3.6.2",
+    "prettier-plugin-java": "^2.7.7",
+    "rimraf": "^6.1.0",
+    "rollup": "^4.53.2",
     "swiftlint": "^2.0.0",
-    "typescript": "~4.1.5"
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@capacitor/core": ">=7.0.0",
+    "@capacitor/core": ">=8.0.0",
     "react": "^17.0.0 || ^18.0.0",
-    "stripe-pwa-elements": "^2.1.0"
+    "stripe-pwa-elements": "^3.0.0",
+    "@stripe/stripe-js": "^8.4.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",

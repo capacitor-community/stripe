@@ -2,7 +2,7 @@
   "name": "@capacitor-community/stripe",
   "version": "7.2.3",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "type": "module",
   "private": false,

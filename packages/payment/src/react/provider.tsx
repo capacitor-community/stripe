@@ -28,31 +28,35 @@ export const CapacitorStripeProvider :FC<CapacitorStripeProviderProps> = ({
     const [isApplePayAvailable, setApplePayAvailableStatus] = useState(false)
     const [isGooglePayAvailable, setGooglePayAvailableStatus] = useState(false)
     useEffect(() => {
-        const prom = Capacitor.isNativePlatform() ? Promise.resolve() : defineCustomElements()
-        prom.then(() => {
-            if (!initializeOptions.publishableKey) return
-            Stripe.initialize(initializeOptions)
-                .then(() => {
-                    return Stripe.isApplePayAvailable().then(() => {
-                        setApplePayAvailableStatus(true)
-                    }).catch(() => {
-                        setApplePayAvailableStatus(false)
-                    })
-                })
-                .then(() => {
-                    return Stripe.isGooglePayAvailable().then(() => {
-                        setGooglePayAvailableStatus(true)
-                    }).catch(() => {
-                        setGooglePayAvailableStatus(false)
-                    })
-                })
-                .then(() => {
-                    setStripe(Stripe)
-                })
-        });
+      if (!Capacitor.isNativePlatform()) {
+        defineCustomElements();
+      }
+      if (!initializeOptions.publishableKey) {
+        throw new Error('publishableKey must be needed');
+      }
+      Stripe.initialize(initializeOptions)
+        .then(() => {
+          return Stripe.isApplePayAvailable().then(() => {
+            setApplePayAvailableStatus(true)
+          }).catch(() => {
+            setApplePayAvailableStatus(false)
+          })
+        })
+        .then(() => {
+          return Stripe.isGooglePayAvailable().then(() => {
+            setGooglePayAvailableStatus(true)
+          }).catch(() => {
+            setGooglePayAvailableStatus(false)
+          })
+        })
+        .then(() => {
+          setStripe(Stripe)
+        })
     }, [initializeOptions, setApplePayAvailableStatus])
     if (!stripe) {
-        if (fallback) return <>{fallback}</>
+        if (fallback) {
+          return <>{fallback}</>
+        }
         return null;
     }
     return (

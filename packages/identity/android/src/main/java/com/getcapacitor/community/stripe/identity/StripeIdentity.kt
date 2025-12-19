@@ -63,54 +63,31 @@ class StripeIdentity(
                 ephemeralKeySecret!!
             )
             Logger.info("Presented Identity Verification Sheet")
+            call.resolve()
         } catch (ex: Exception) {
             call.reject(ex.localizedMessage, ex)
         }
     }
 
-    fun onVerificationCompleted(bridge: Bridge, callbackId: String?) {
+    fun onVerificationCompleted() {
         notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject().put(
                 "result",
                 IdentityVerificationSheetEvent.Completed.webEventName
             )
         )
-
-        val call = bridge.getSavedCall(callbackId)
-        notifyListeners(IdentityVerificationSheetEvent.Completed.webEventName, emptyObject)
-        if (call !== null) {
-            call.resolve(
-                JSObject().put(
-                    "identityVerificationResult",
-                    IdentityVerificationSheetEvent.Completed.webEventName
-                )
-            )
-            bridge.releaseCall(callbackId)
-        }
     }
 
-    fun onVerificationCancelled(bridge: Bridge, callbackId: String?) {
+    fun onVerificationCancelled() {
         notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject().put(
                 "result",
                 IdentityVerificationSheetEvent.Canceled.webEventName
             )
         )
-
-        val call = bridge.getSavedCall(callbackId)
-        notifyListeners(IdentityVerificationSheetEvent.Canceled.webEventName, emptyObject)
-        if (call !== null) {
-            call.resolve(
-                JSObject().put(
-                    "identityVerificationResult",
-                    IdentityVerificationSheetEvent.Canceled.webEventName
-                )
-            )
-            bridge.releaseCall(callbackId)
-        }
     }
 
-    fun onVerificationFailed(bridge: Bridge, errorMessage: String?, callbackId: String?) {
+    fun onVerificationFailed(errorMessage: String?) {
         notifyListeners(IdentityVerificationSheetEvent.VerificationResult.webEventName,
             JSObject()
                 .put(
@@ -122,17 +99,5 @@ class StripeIdentity(
                     JSObject().put("message", errorMessage)
                 )
         )
-
-        val call = bridge.getSavedCall(callbackId)
-        notifyListeners(IdentityVerificationSheetEvent.Failed.webEventName, emptyObject)
-        if (call !== null) {
-            call.resolve(
-                JSObject().put(
-                    "identityVerificationResult",
-                    IdentityVerificationSheetEvent.Failed.webEventName
-                )
-            )
-            bridge.releaseCall(callbackId)
-        }
     }
 }

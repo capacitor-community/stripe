@@ -61,9 +61,6 @@ await StripeIdentity.present();
 * [`addListener(IdentityVerificationSheetEventsEnum.Loaded, ...)`](#addlisteneridentityverificationsheeteventsenumloaded-)
 * [`addListener(IdentityVerificationSheetEventsEnum.FailedToLoad, ...)`](#addlisteneridentityverificationsheeteventsenumfailedtoload-)
 * [`addListener(IdentityVerificationSheetEventsEnum.VerificationResult, ...)`](#addlisteneridentityverificationsheeteventsenumverificationresult-)
-* [`addListener(IdentityVerificationSheetEventsEnum.Completed, ...)`](#addlisteneridentityverificationsheeteventsenumcompleted-)
-* [`addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)`](#addlisteneridentityverificationsheeteventsenumcanceled-)
-* [`addListener(IdentityVerificationSheetEventsEnum.Failed, ...)`](#addlisteneridentityverificationsheeteventsenumfailed-)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -102,10 +99,8 @@ create(options: CreateIdentityVerificationSheetOption) => Promise<void>
 ### present()
 
 ```typescript
-present() => Promise<deprecatedIdentityVerificationResult>
+present() => Promise<void>
 ```
-
-**Returns:** <code>Promise&lt;<a href="#deprecatedidentityverificationresult">deprecatedIdentityVerificationResult</a>&gt;</code>
 
 --------------------
 
@@ -158,54 +153,6 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.VerificationResult, l
 --------------------
 
 
-### addListener(IdentityVerificationSheetEventsEnum.Completed, ...)
-
-```typescript
-addListener(eventName: IdentityVerificationSheetEventsEnum.Completed, listenerFunc: () => void) => Promise<PluginListenerHandle>
-```
-
-| Param              | Type                                                                                                          |
-| ------------------ | ------------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Completed</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                                                    |
-
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
-
---------------------
-
-
-### addListener(IdentityVerificationSheetEventsEnum.Canceled, ...)
-
-```typescript
-addListener(eventName: IdentityVerificationSheetEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
-```
-
-| Param              | Type                                                                                                         |
-| ------------------ | ------------------------------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Canceled</a></code> |
-| **`listenerFunc`** | <code>() =&gt; void</code>                                                                                   |
-
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
-
---------------------
-
-
-### addListener(IdentityVerificationSheetEventsEnum.Failed, ...)
-
-```typescript
-addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc: (info: StripeIdentityError) => void) => Promise<PluginListenerHandle>
-```
-
-| Param              | Type                                                                                                       |
-| ------------------ | ---------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#identityverificationsheeteventsenum">IdentityVerificationSheetEventsEnum.Failed</a></code> |
-| **`listenerFunc`** | <code>(info: <a href="#stripeidentityerror">StripeIdentityError</a>) =&gt; void</code>                     |
-
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
-
---------------------
-
-
 ### Interfaces
 
 
@@ -223,13 +170,6 @@ addListener(eventName: IdentityVerificationSheetEventsEnum.Failed, listenerFunc:
 | **`verificationId`**     | <code>string</code> |                                                       |
 | **`ephemeralKeySecret`** | <code>string</code> |                                                       |
 | **`clientSecret`**       | <code>string</code> | This client secret is used only for the web platform. |
-
-
-#### deprecatedIdentityVerificationResult
-
-| Prop                             | Type                                                                                                          |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **`identityVerificationResult`** | <code><a href="#identityverificationsheetresultinterface">IdentityVerificationSheetResultInterface</a></code> |
 
 
 #### PluginListenerHandle

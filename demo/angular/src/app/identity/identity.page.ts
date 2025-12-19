@@ -25,6 +25,7 @@ import {
   IonListHeader,
   IonTitle,
   IonToolbar,
+  Platform,
 } from '@ionic/angular/standalone';
 
 const happyPathItems: ITestItems[] = [
@@ -43,16 +44,11 @@ const happyPathItems: ITestItems[] = [
   {
     type: 'method',
     name: 'presentIdentityVerificationSheet',
-    expect: [IdentityVerificationSheetEventsEnum.Completed],
   },
   {
     type: 'event',
     name: IdentityVerificationSheetEventsEnum.VerificationResult,
     expect: IdentityVerificationSheetEventsEnum.Completed,
-  },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Completed,
   },
 ];
 
@@ -72,16 +68,11 @@ const cancelPathItems: ITestItems[] = [
   {
     type: 'method',
     name: 'presentIdentityVerificationSheet',
-    expect: [IdentityVerificationSheetEventsEnum.Canceled],
   },
   {
     type: 'event',
     name: IdentityVerificationSheetEventsEnum.VerificationResult,
     expect: IdentityVerificationSheetEventsEnum.Canceled,
-  },
-  {
-    type: 'event',
-    name: IdentityVerificationSheetEventsEnum.Canceled,
   },
 ];
 
@@ -104,12 +95,10 @@ const cancelPathItems: ITestItems[] = [
 export class IdentityPage {
   private http = inject(HttpClient);
   private helper = inject(HelperService);
+  private platform = inject(Platform);
 
   public eventItems: ITestItems[] = [];
   private readonly listenerHandlers: PluginListenerHandle[] = [];
-
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
 
   constructor() {
     addIcons({ playOutline, notificationsCircleOutline, checkmarkCircle });
@@ -172,14 +161,17 @@ export class IdentityPage {
         ),
       );
 
-    await StripeIdentity.present().then((data) => {
+    await StripeIdentity.present().then(() => {
       return this.helper.updateItem(
         this.eventItems,
         'presentIdentityVerificationSheet',
-        undefined,
-        data.identityVerificationResult,
+        true,
       );
     });
+
+    if (this.platform.is('hybrid') && this.platform.is('android')) {
+      await new Promise<void>(resolve => StripeIdentity.addListener(IdentityVerificationSheetEventsEnum.VerificationResult, () => resolve()));
+    }
 
     this.listenerHandlers.forEach((handler) => handler.remove());
   }

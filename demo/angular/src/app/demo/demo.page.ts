@@ -48,9 +48,6 @@ export class DemoPage implements OnInit {
   isApplePayAvailable = false;
   isGooglePayAvailable = false;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
   constructor() {}
 
   async ngOnInit() {
@@ -215,8 +212,8 @@ export class DemoPage implements OnInit {
             line2: '',
             postalCode: '94107',
             state: 'CA',
-          }
-        }
+          },
+        },
       });
     } else {
       const { paymentIntent } = await firstValueFrom(

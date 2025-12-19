@@ -21,42 +21,25 @@
 
 ## Hint
 
-### Using v7, we recommend to remove buildscript from `app/build.gradle`
-
-Good news for users who added a buildscript in v6 to eliminate the `Unable to get provider androidx.startup.InitializationProvider` error, it is no longer needed in Capacitor v7. Please remove the following
-
-```diff
-- buildscript {
--   ext.kotlin_version = '2.0.+'
--   repositories {
--       google()
--       mavenCentral()
--   }
--   dependencies {
--     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
--   }
-- }
-- apply plugin: 'kotlin-android'
-```
-
 ### Versions
 
-Users of Capacitor v6 should use version v6 of the Plugin.
+Users of Capacitor v7 should use version v7 of the Plugin.
 
 ```bash
-% npm install @capacitor-community/stripe@6
-% npm install @capacitor-community/stripe-identity@6
-% npm install @capacitor-community/stripe-terminal@6
+% npm install @capacitor-community/stripe@7
+% npm install @capacitor-community/stripe-identity@7
+% npm install @capacitor-community/stripe-terminal@7
 ```
 
 ### How to use Stripe Android currently package
 
 Capacitor Android 7's default settings is here:
 
-```
-minSdkVersion = 22
-compileSdkVersion = 35
-targetSdkVersion = 35
+```gradle
+ext {
+    minSdkVersion = 24
+    compileSdkVersion = 36
+    targetSdkVersion = 36
 ```
 
 To use the latest Stripe Android, you need to version these up. To use the latest features, follow these steps.
@@ -68,31 +51,32 @@ To use the latest Stripe Android, you need to version these up. To use the lates
 
 ```diff
   ext {
--   minSdkVersion = 23
+-   minSdkVersio = 24
 +   minSdkVersion = 26
-    compileSdkVersion = 35
-    targetSdkVersion = 35
-    androidxActivityVersion = '1.9.2'
-    androidxAppCompatVersion = '1.7.0'
-    androidxCoordinatorLayoutVersion = '1.2.0'
-    androidxCoreVersion = '1.15.0'
-    androidxFragmentVersion = '1.8.4'
-    coreSplashScreenVersion = '1.0.1'
-    androidxWebkitVersion = '1.12.1'
+    compileSdkVersion = 36
+    targetSdkVersion = 36
+    androidxActivityVersion = '1.11.0'
+    androidxAppCompatVersion = '1.7.1'
+    androidxCoordinatorLayoutVersion = '1.3.0'
+    androidxCoreVersion = '1.17.0'
+    androidxFragmentVersion = '1.8.9'
+    coreSplashScreenVersion = '1.2.0'
+    androidxWebkitVersion = '1.14.0'
     junitVersion = '4.13.2'
-    androidxJunitVersion = '1.2.1'
-    androidxEspressoCoreVersion = '3.6.1'
-    cordovaAndroidVersion = '10.1.1'
+    androidxJunitVersion = '1.3.0'
+    androidxEspressoCoreVersion = '3.7.0'
+    cordovaAndroidVersion = '14.0.1'
 
-    // If you use @capacitor-community/stripe:
-+   stripeAndroidVersion = '21.3.+'
+    // If you will set @capacitor-community/stripe:
++   stripeAndroidVersion = 【Your version】
 
-    // If you use @capacitor-community/stripe-identity:
-+   identityVersion = '21.3.+'
+    // If you will set @capacitor-community/stripe-identity:
++   identityVersion = 【Your version】
 
-    // If you use @capacitor-community/stripe-terminal:
-+   stripeterminalCoreVersion = '4.5.0'
-+   stripeterminalTapToPayVersion = '4.5.0'
+    // If you will set @capacitor-community/stripe-terminal:
++   stripeterminalCoreVersion =【Your version】
++   stripeterminalTapToPayVersion =【Your version】
++   stripeterminalAppOnDevicesVersion  =【Your version】
   }
 ```
 
@@ -163,6 +147,6 @@ Made with [contributors-img](https://contrib.rocks).
 
 ```bash
 % git clone git@github.com:capacitor-community/stripe.git
-% cd packages/payment && npm install && npm run build
+% cd npm install && npm run build
 % cd demo && npm install && npm run cap && npx cap update
 ```
