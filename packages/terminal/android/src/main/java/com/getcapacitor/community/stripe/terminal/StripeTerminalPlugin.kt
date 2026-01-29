@@ -202,4 +202,9 @@ class StripeTerminalPlugin : Plugin() {
     fun cancelReaderReconnection(call: PluginCall) {
         implementation.cancelReaderReconnection(call)
     }
+
+    @PluginMethod
+    fun setTapToPayUxConfiguration(call: PluginCall) {
+        implementation.setTapToPayUxConfiguration(call)
+    }
 }

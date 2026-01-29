@@ -6,6 +6,7 @@ import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -49,6 +50,7 @@ import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
+import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.log.LogLevel
 import org.json.JSONException
@@ -899,6 +901,73 @@ class StripeTerminal(
                     JSObject().put("reason", reason.toString())
                 )
             }
+        }
+    }
+
+    fun setTapToPayUxConfiguration(call: PluginCall) {
+        try {
+            val builder = TapToPayUxConfiguration.Builder()
+
+            // Parse colors
+            call.getObject("colors")?.let { colorsObj ->
+                val colorSchemeBuilder = TapToPayUxConfiguration.ColorScheme.Builder()
+                colorsObj.getString("primary")?.let { colorSchemeBuilder.primary(parseColor(it)) }
+                colorsObj.getString("success")?.let { colorSchemeBuilder.success(parseColor(it)) }
+                colorsObj.getString("error")?.let { colorSchemeBuilder.error(parseColor(it)) }
+                builder.colors(colorSchemeBuilder.build())
+            }
+
+            // Parse dark mode
+            call.getString("darkMode")?.let { darkModeStr ->
+                val darkMode = when (darkModeStr) {
+                    "DARK" -> TapToPayUxConfiguration.DarkMode.DARK
+                    "LIGHT" -> TapToPayUxConfiguration.DarkMode.LIGHT
+                    else -> TapToPayUxConfiguration.DarkMode.SYSTEM
+                }
+                builder.darkMode(darkMode)
+            }
+
+            // TODO: Tap zone support requires Stripe Terminal SDK v5+
+            // Uncomment when upgrading from v4.7 to v5+
+            // call.getObject("tapZone")?.let { tapZoneObj ->
+            //     val tapZone = when (tapZoneObj.getString("type")) {
+            //         "front" -> TapToPayUxConfiguration.TapZone.Front(
+            //             tapZoneObj.getDouble("xBias")?.toFloat() ?: 0.5f,
+            //             tapZoneObj.getDouble("yBias")?.toFloat() ?: 0.5f
+            //         )
+            //         "behind" -> TapToPayUxConfiguration.TapZone.Behind(
+            //             tapZoneObj.getDouble("xBias")?.toFloat() ?: 0.5f,
+            //             tapZoneObj.getDouble("yBias")?.toFloat() ?: 0.5f
+            //         )
+            //         "above" -> TapToPayUxConfiguration.TapZone.Above(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         "below" -> TapToPayUxConfiguration.TapZone.Below(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         "left" -> TapToPayUxConfiguration.TapZone.Left(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         "right" -> TapToPayUxConfiguration.TapZone.Right(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         else -> TapToPayUxConfiguration.TapZone.Default
+            //     }
+            //     builder.tapZone(tapZone)
+            // }
+
+            Terminal.getInstance().setTapToPayUxConfiguration(builder.build())
+            call.resolve()
+        } catch (ex: Exception) {
+            call.reject(ex.message)
+        }
+    }
+
+    private fun parseColor(colorStr: String): TapToPayUxConfiguration.Color {
+        return if (colorStr == "default") {
+            TapToPayUxConfiguration.Color.Default
+        } else {
+            TapToPayUxConfiguration.Color.Value(Color.parseColor(colorStr))
         }
     }
 

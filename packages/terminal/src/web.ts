@@ -10,6 +10,7 @@ import type {
   SimulateReaderUpdate,
   SimulatedCardType,
   Cart,
+  TapToPayUxConfiguration,
 } from './definitions';
 import { TerminalEventsEnum } from './events.enum';
 import {
@@ -212,6 +213,10 @@ export class StripeTerminalWeb extends WebPlugin implements StripeTerminalPlugin
   }
   async cancelReaderReconnection(): Promise<void> {
     console.log('cancelReaderReconnection');
+  }
+
+  async setTapToPayUxConfiguration(_options: TapToPayUxConfiguration): Promise<void> {
+    console.log('setTapToPayUxConfiguration is only supported on Android');
   }
 
   collect = 'deprecated';
