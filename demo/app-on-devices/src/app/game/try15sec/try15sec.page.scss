@@ -1,0 +1,35 @@
+.timer-wrapper {
+  margin-bottom: 32px;
+
+  .timer {
+    font-size: 4rem;
+    font-weight: bold;
+  }
+
+  .timer--hidden {
+    color: #ccc;
+  }
+}
+
+.result {
+  min-height: 56px;
+}
+
+.result-message {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.result-message--success {
+  color: #10b981;
+}
+
+.result-message--fail {
+  color: #ef4444;
+}
+
+.retry-note {
+  font-size: 13px;
+  color: #666;
+}

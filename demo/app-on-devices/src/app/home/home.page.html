@@ -1,20 +1,19 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-buttons slot="start">
+      <ion-button size="large"><ion-icon name="settings" slot="icon-only" color="primary"></ion-icon></ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
+<ion-content>
   <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <h1>stripe</h1>
+    <p>Terminal sample app</p>
   </div>
 </ion-content>
+<ion-footer>
+  <ion-toolbar class="ion-text-center">
+    <ion-button class="ion-margin button-square" expand="block" routerLink="/input">New payment</ion-button>
+  </ion-toolbar>
+</ion-footer>

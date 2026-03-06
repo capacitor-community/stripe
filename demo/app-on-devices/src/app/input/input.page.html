@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container">
+    <h2>Enter amount</h2>
+    <h3>{{ amountService.amountDisplay() | currency  }}</h3>
+    <ion-grid>
+      <ion-row>
+        @for(item of [1, 2, 3]; track item) {
+          <ion-col><ion-button fill="clear" size="large" (click)="amountService.onDigit(item)">{{ item }}</ion-button></ion-col>
+        }
+      </ion-row>
+      <ion-row>
+        @for(item of [4, 5, 6]; track item) {
+          <ion-col><ion-button fill="clear" size="large" (click)="amountService.onDigit(item)">{{ item }}</ion-button></ion-col>
+        }
+      </ion-row>
+
+      <ion-row>
+        @for(item of [7, 8, 9]; track item) {
+          <ion-col><ion-button fill="clear" size="large" (click)="amountService.onDigit(item)">{{ item }}</ion-button></ion-col>
+        }
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button fill="clear" size="large" (click)="amountService.onBackspace()">
+            <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col><ion-button fill="clear" size="large" (click)="amountService.onDigit(0)">{{ 0 }}</ion-button></ion-col>
+        <ion-col></ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar class="ion-text-center">
+    <ion-button class="ion-margin button-square" expand="block" [disabled]="amountService.amount() <= 0" (click)="requestPayment()">Request payment</ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>15-sec Challenge</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container">
+    <h3>Stop at exactly 15.00s</h3>
+    <div class="timer-wrapper">
+      @if (showTimer()) {
+        <div class="timer">
+          {{ displaySeconds() }} sec
+        </div>
+      } @else {
+        <div class="timer timer--hidden">？？？</div>
+      }
+    </div>
+
+    @if (!isRunning()) {
+      <ion-button
+        color="primary"
+        size="large"
+        (click)="startGame()"
+      >
+        START
+      </ion-button>
+    } @else {
+      <ion-button color="danger"
+                  size="large" (click)="stopGame()">
+        STOP
+      </ion-button>
+    }
+  </div>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <div class="result ion-padding-start">
+      @if (resultMessage()) {
+        <div
+          class="result-message"
+          [class.result-message--success]="isSuccess()"
+          [class.result-message--fail]="isSuccess() === false"
+        >
+          {{ resultMessage() }}
+        </div>
+        <div class="retry-note">You can try as many times as you like.</div>
+      }
+    </div>
+    <ion-buttons slot="end"><ion-button (click)="modalCtrl.dismiss(isSuccess())">Finish</ion-button></ion-buttons>
+  </ion-toolbar>
+</ion-footer>
