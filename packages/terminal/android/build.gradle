@@ -6,9 +6,9 @@ ext {
 
     playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
     volleyVersion = project.hasProperty('volleyVersion') ? rootProject.ext.volleyVersion : '1.2.1'
-    stripeterminalTapToPayVersion = project.hasProperty('stripeterminalTapToPayVersion') ? rootProject.ext.stripeterminalTapToPayVersion : '5.1.+'
-    stripeterminalCoreVersion = project.hasProperty('stripeterminalCoreVersion') ? rootProject.ext.stripeterminalCoreVersion : '5.1.+'
-    stripeterminalAppOnDevicesVersion = project.hasProperty('stripeterminalAppOnDevicesVersion') ? rootProject.ext.stripeterminalAppOnDevicesVersion : '5.1.+'
+    stripeterminalTapToPayVersion = project.hasProperty('stripeterminalTapToPayVersion') ? rootProject.ext.stripeterminalTapToPayVersion : '5.3.+'
+    stripeterminalCoreVersion = project.hasProperty('stripeterminalCoreVersion') ? rootProject.ext.stripeterminalCoreVersion : '5.3.+'
+    stripeterminalAppOnDevicesVersion = project.hasProperty('stripeterminalAppOnDevicesVersion') ? rootProject.ext.stripeterminalAppOnDevicesVersion : '5.3.+'
 }
 
 buildscript {
