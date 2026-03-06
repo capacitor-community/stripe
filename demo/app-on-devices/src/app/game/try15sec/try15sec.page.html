@@ -6,41 +6,44 @@
 
 <ion-content>
   <div id="container">
-    <h3>Stop at exactly 15.00s</h3>
-    <div class="timer-wrapper">
-      @if (showTimer()) {
-        <div class="timer">
-          {{ displaySeconds() }} sec
-        </div>
-      } @else {
-        <div class="timer timer--hidden">？？？</div>
-      }
-    </div>
+    @if (!isSuccess()) {
+      <h2>Stop at exactly 15.00s</h2>
+      <div class="timer-wrapper">
+        @if (showTimer()) {
+          <div class="timer">
+            {{ displaySeconds() }} sec
+          </div>
+        } @else {
+          <div class="timer timer--hidden">？？？</div>
+        }
+      </div>
 
-    @if (!isRunning()) {
-      <ion-button
-        color="primary"
-        size="large"
-        (click)="startGame()"
-      >
-        START
-      </ion-button>
+      @if (!isRunning()) {
+        <ion-button
+          color="primary"
+          size="large"
+          (click)="startGame()"
+        >
+          START
+        </ion-button>
+      } @else {
+        <ion-button color="danger"
+                    size="large" (click)="stopGame()">
+          STOP
+        </ion-button>
+      }
     } @else {
-      <ion-button color="danger"
-                  size="large" (click)="stopGame()">
-        STOP
-      </ion-button>
+      <h2>Congratulations🎉</h2>
+      <h3>Perfect timing. 50% off!</h3>
     }
   </div>
 </ion-content>
 <ion-footer>
   <ion-toolbar>
     <div class="result ion-padding-start">
-      @if (resultMessage()) {
+      @if (resultMessage() && !isSuccess()) {
         <div
-          class="result-message"
-          [class.result-message--success]="isSuccess()"
-          [class.result-message--fail]="isSuccess() === false"
+          class="result-message result-message--fail"
         >
           {{ resultMessage() }}
         </div>
