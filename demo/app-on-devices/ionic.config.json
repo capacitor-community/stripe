@@ -1,0 +1,7 @@
+{
+  "name": "app-on-devices",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
