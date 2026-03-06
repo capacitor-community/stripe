@@ -11,6 +11,7 @@ import {
   NavController,
 } from '@ionic/angular/standalone';
 import { AmountService } from '../amount.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-receipt',
@@ -26,6 +27,7 @@ import { AmountService } from '../amount.service';
     FormsModule,
     IonFooter,
     IonButton,
+    RouterLink,
   ],
 })
 export class ReceiptPage {
@@ -34,5 +36,5 @@ export class ReceiptPage {
 
   finishPayment() {
     return this.navCtrl.navigateRoot('/home');
-  };
+  }
 }
