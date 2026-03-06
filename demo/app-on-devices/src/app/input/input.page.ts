@@ -58,7 +58,8 @@ export class InputPage {
       await modal.present();
       const { data } = await modal.onWillDismiss<boolean>();
       if (data) {
-        // TODO
+        const half = Number.parseInt(this.amountService.input(), 10);
+        this.amountService.input.set(String(Math.floor(half / 2)));
       }
     }
 
