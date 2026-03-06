@@ -25,6 +25,8 @@ export const mapFromConnectionStatus = (connectionStatus: ConnectionStatus): str
       return 'CONNECTING';
     case ConnectionStatus.NOT_CONNECTED:
       return 'NOT_CONNECTED';
+    case ConnectionStatus.RECONNECTING:
+      return 'RECONNECTING';
     default:
       return 'UNKNOWN';
   }
@@ -129,6 +131,7 @@ export enum ConnectionStatus {
   CONNECTING = 'connecting',
   CONNECTED = 'connected',
   NOT_CONNECTED = 'not_connected',
+  RECONNECTING = 'reconnecting',
 }
 
 // import {
