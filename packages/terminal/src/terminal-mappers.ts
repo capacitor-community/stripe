@@ -86,8 +86,6 @@ export const mapFromDeviceType = (type: ReaderDeviceType): DeviceType => {
       return DeviceType.chipper2X;
     case 'stripe_m2':
       return DeviceType.stripeM2;
-    case 'verifone_P400':
-      return DeviceType.verifoneP400;
     case 'bbpos_wisepad3':
       return DeviceType.wisePad3;
     case 'bbpos_wisepos_e':
@@ -116,7 +114,7 @@ type ReaderDeviceType =
   | 'bbpos_wisepos_e'
   | 'stripe_m2'
   | 'verifone_P400'
-  | 'stripe_s700'; // added
+  | 'stripe_s700';
 
 export enum PaymentStatus {
   NOT_READY = 'not_ready',
