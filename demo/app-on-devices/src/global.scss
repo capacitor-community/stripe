@@ -10,20 +10,20 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
+@use "@ionic/angular/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
+@use "@ionic/angular/css/normalize.css";
+@use "@ionic/angular/css/structure.css";
+@use "@ionic/angular/css/typography.css";
+@use "@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
+@use "@ionic/angular/css/padding.css";
+@use "@ionic/angular/css/float-elements.css";
+@use "@ionic/angular/css/text-alignment.css";
+@use "@ionic/angular/css/text-transformation.css";
+@use "@ionic/angular/css/flex-utils.css";
 
 /**
  * Ionic Dark Mode
@@ -34,8 +34,8 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@use '@ionic/angular/css/palettes/dark.system.css';
 
-@import '@rdlabo/ionic-theme-md3/dist/css/default-variables.css';
-@import '@rdlabo/ionic-theme-md3/dist/css/ionic-theme-md3.css';
-@import "theme/styles";
+@use '@rdlabo/ionic-theme-md3/dist/css/default-variables.css';
+@use '@rdlabo/ionic-theme-md3/dist/css/ionic-theme-md3.css';
+@use "theme/styles";
