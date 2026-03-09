@@ -125,8 +125,6 @@ class StripeTerminalPlugin : Plugin() {
 
     @PluginMethod
     fun connectReader(call: PluginCall) {
-        Log.d(logTag, "=======================================")
-        Log.d(logTag, call.toString())
         if (call.getString("type") == TerminalConnectTypes.Bluetooth.webEventName) {
             Log.d(
                 "Capacitor:permission bluetooth_old",

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -17,9 +17,11 @@ import {
   Platform,
   AlertController,
   ModalController,
+  LoadingController,
 } from '@ionic/angular/standalone';
 import { AmountService } from '../amount.service';
 import { Try15secPage } from '../game/try15sec/try15sec.page';
+import { StripeTerminal } from '@capacitor-community/stripe-terminal';
 
 @Component({
   selector: 'app-input',
@@ -46,6 +48,7 @@ export class InputPage {
   readonly platform = inject(Platform);
   readonly alertCtrl = inject(AlertController);
   readonly navCtrl = inject(NavController);
+  readonly loadingCtrl = inject(LoadingController);
   readonly modalCtrl = inject(ModalController);
   readonly amountService = inject(AmountService);
 
@@ -63,12 +66,25 @@ export class InputPage {
       }
     }
 
-
     if (this.platform.is('hybrid')) {
-      // TODO
-    } else {
-      this.navCtrl.navigateRoot('/receipt');
+      await this.runPayment();
     }
+    await this.navCtrl.navigateRoot('/receipt');
+  }
+
+  async runPayment() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Create paymentIntent...',
+    });
+    await loading.present();
+    const { paymentIntent } = await this.amountService.createPaymentIntent(
+      Number.parseInt(this.amountService.input(), 10),
+    );
+    loading.message = 'Collect PaymentMethod';
+    await StripeTerminal.collectPaymentMethod({ paymentIntent });
+    loading.message = 'Confirm PaymentIntent';
+    await StripeTerminal.confirmPaymentIntent();
+    await loading.dismiss();
   }
 
   async confirmChallenge() {
@@ -90,6 +106,6 @@ export class InputPage {
         ],
       });
       await alert.present();
-    })
+    });
   }
 }

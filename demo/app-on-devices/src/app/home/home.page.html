@@ -14,6 +14,6 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar class="ion-text-center">
-    <ion-button class="ion-margin button-square" expand="block" routerLink="/input">New payment</ion-button>
+    <ion-button class="ion-margin button-square" expand="block" routerLink="/input" [disabled]="!amountService.isReady()">New payment</ion-button>
   </ion-toolbar>
 </ion-footer>

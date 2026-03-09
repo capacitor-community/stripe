@@ -1,9 +1,15 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { environment } from '../environments/environment';
+import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AmountService {
+  readonly http = inject(HttpClient);
+
+  readonly isReady = signal<boolean>(false);
   readonly input = signal<string>('0');
   readonly amount = computed<number>(() => {
     const cents = Number.parseInt(this.input(), 10);
@@ -24,5 +30,16 @@ export class AmountService {
 
   onBackspace() {
     this.input.update((prev) => (prev.length <= 1 ? '0' : prev.slice(0, -1)));
+  }
+
+  createPaymentIntent(amount: number, currency = 'USD') {
+    return firstValueFrom(
+      this.http.post<{
+        paymentIntent: string;
+      }>(environment.api + 'connection/intent', {
+        amount,
+        currency
+      }),
+    );
   }
 }
