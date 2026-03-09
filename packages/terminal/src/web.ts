@@ -218,7 +218,4 @@ export class StripeTerminalWeb extends WebPlugin implements StripeTerminalPlugin
   async setTapToPayUxConfiguration(_options: TapToPayUxConfiguration): Promise<void> {
     console.log('setTapToPayUxConfiguration is only supported on Android');
   }
-
-  collect = 'deprecated';
-  cancelCollect = 'deprecated';
 }
