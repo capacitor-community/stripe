@@ -106,11 +106,6 @@ class StripeTerminalPlugin : Plugin() {
                 "type"
             ) == TerminalConnectTypes.Simulated.webEventName
         ) {
-            Log.d(
-                "Capacitor:permission bluetooth_old",
-                getPermissionState("bluetooth_old").toString()
-            )
-            Log.d("Capacitor:permission bluetooth", getPermissionState("bluetooth").toString())
             if (Build.VERSION.SDK_INT <= 30 && getPermissionState("bluetooth_old") != PermissionState.GRANTED) {
                 requestPermissionForAlias("bluetooth_old", call, "bluetoothOldPermsCallback")
             } else if (Build.VERSION.SDK_INT > 30 && getPermissionState("bluetooth") != PermissionState.GRANTED) {
@@ -130,6 +125,8 @@ class StripeTerminalPlugin : Plugin() {
 
     @PluginMethod
     fun connectReader(call: PluginCall) {
+        Log.d(logTag, "=======================================")
+        Log.d(logTag, call.toString())
         if (call.getString("type") == TerminalConnectTypes.Bluetooth.webEventName) {
             Log.d(
                 "Capacitor:permission bluetooth_old",
