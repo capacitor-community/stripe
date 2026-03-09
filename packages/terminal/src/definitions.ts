@@ -91,6 +91,58 @@ export type Cart = {
   lineItems: CartLineItem[];
 };
 
+/**
+ * Color value for TapToPayUxConfiguration.
+ * Use 'default' to use Stripe's default color, or a hex string like '#965D35'.
+ */
+export type TapToPayColor = 'default' | string;
+
+/**
+ * Dark mode setting for Tap to Pay UX.
+ */
+export enum TapToPayDarkMode {
+  System = 'SYSTEM',
+  Dark = 'DARK',
+  Light = 'LIGHT',
+}
+
+/**
+ * Color scheme for the Tap to Pay screen.
+ */
+export interface TapToPayColorScheme {
+  /** Primary color (tap zone indicator). Hex string or 'default'. */
+  primary?: TapToPayColor;
+  /** Success state color. Hex string or 'default'. */
+  success?: TapToPayColor;
+  /** Error state color. Hex string or 'default'. */
+  error?: TapToPayColor;
+}
+
+/**
+ * Tap zone position configuration.
+ * Controls where the tap indicator appears on screen.
+ */
+export type TapToPayTapZone =
+  | { type: 'default' }
+  | { type: 'front'; xBias: number; yBias: number }
+  | { type: 'behind'; xBias: number; yBias: number }
+  | { type: 'above'; bias?: number }
+  | { type: 'below'; bias?: number }
+  | { type: 'left'; bias?: number }
+  | { type: 'right'; bias?: number };
+
+/**
+ * Configuration for the Tap to Pay UX (Android only).
+ */
+export interface TapToPayUxConfiguration {
+  /** Color scheme for the Tap to Pay screen */
+  colors?: TapToPayColorScheme;
+  /** Dark mode setting */
+  darkMode?: TapToPayDarkMode;
+  /** Tap zone position configuration */
+  tapZone?: TapToPayTapZone;
+}
+
 export interface DiscoverReadersOptions {
   type: TerminalConnectTypes;
   locationId?: string;
@@ -152,6 +204,13 @@ export interface StripeTerminalPlugin {
   clearReaderDisplay(): Promise<void>;
   rebootReader(): Promise<void>;
   cancelReaderReconnection(): Promise<void>;
+
+  /**
+   * Configure the Tap to Pay UX appearance (Android only).
+   * Call this after initialize() but before connectReader().
+   * Has no effect on iOS or web platforms.
+   */
+  setTapToPayUxConfiguration(options: TapToPayUxConfiguration): Promise<void>;
 
   addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void): Promise<PluginListenerHandle>;
 

@@ -222,6 +222,7 @@ await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.Up
 * [`clearReaderDisplay()`](#clearreaderdisplay)
 * [`rebootReader()`](#rebootreader)
 * [`cancelReaderReconnection()`](#cancelreaderreconnection)
+* [`setTapToPayUxConfiguration(...)`](#settaptopayuxconfiguration)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded-)
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken-)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders-)
@@ -437,6 +438,23 @@ rebootReader() => Promise<void>
 ```typescript
 cancelReaderReconnection() => Promise<void>
 ```
+
+--------------------
+
+
+### setTapToPayUxConfiguration(...)
+
+```typescript
+setTapToPayUxConfiguration(options: TapToPayUxConfiguration) => Promise<void>
+```
+
+Configure the Tap to Pay UX appearance (Android only).
+Call this after initialize() but before connectReader().
+Has no effect on iOS or web platforms.
+
+| Param         | Type                                                                        |
+| ------------- | --------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#taptopayuxconfiguration">TapToPayUxConfiguration</a></code> |
 
 --------------------
 
@@ -922,6 +940,28 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 | **`bluetoothScanWaitTime`** | <code>number</code>                                                   | Only applies to Bluetooth scan discovery (iOS only). During discovery, readers are reported via DiscoveryDelegate.didUpdateDiscoveredReaders. This timeout controls how long to wait before resolving the `discoverReaders` method with the current list. If this setting is not specified or is set to 0, the initial scan results will be returned. |
 
 
+#### TapToPayUxConfiguration
+
+Configuration for the Tap to Pay UX (Android only).
+
+| Prop           | Type                                                                | Description                            |
+| -------------- | ------------------------------------------------------------------- | -------------------------------------- |
+| **`colors`**   | <code><a href="#taptopaycolorscheme">TapToPayColorScheme</a></code> | Color scheme for the Tap to Pay screen |
+| **`darkMode`** | <code><a href="#taptopaydarkmode">TapToPayDarkMode</a></code>       | Dark mode setting                      |
+| **`tapZone`**  | <code><a href="#taptopaytapzone">TapToPayTapZone</a></code>         | Tap zone position configuration        |
+
+
+#### TapToPayColorScheme
+
+Color scheme for the Tap to Pay screen.
+
+| Prop          | Type                                                    | Description                                                  |
+| ------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
+| **`primary`** | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Primary color (tap zone indicator). Hex string or 'default'. |
+| **`success`** | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Success state color. Hex string or 'default'.                |
+| **`error`**   | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Error state color. Hex string or 'default'.                  |
+
+
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
@@ -960,6 +1000,22 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 #### CartLineItem
 
 <code>{ displayName: string; quantity: number; amount: number; }</code>
+
+
+#### TapToPayColor
+
+Color value for <a href="#taptopayuxconfiguration">TapToPayUxConfiguration</a>.
+Use 'default' to use Stripe's default color, or a hex string like '#965D35'.
+
+<code>'default' | string</code>
+
+
+#### TapToPayTapZone
+
+Tap zone position configuration.
+Controls where the tap indicator appears on screen.
+
+<code>{ type: 'default' } | { type: 'front'; xBias: number; yBias: number } | { type: 'behind'; xBias: number; yBias: number } | { type: 'above'; bias?: number } | { type: 'below'; bias?: number } | { type: 'left'; bias?: number } | { type: 'right'; bias?: number }</code>
 
 
 ### Enums
@@ -1080,6 +1136,15 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 | **`OfflinePinSCARetry`**              | <code>'OFFLINE_PIN_SCA_RETRY'</code>              |
 | **`OnlinePinCVM`**                    | <code>'ONLINE_PIN_CVM'</code>                     |
 | **`OnlinePinSCARetry`**               | <code>'ONLINE_PIN_SCA_RETRY'</code>               |
+
+
+#### TapToPayDarkMode
+
+| Members      | Value                 |
+| ------------ | --------------------- |
+| **`System`** | <code>'SYSTEM'</code> |
+| **`Dark`**   | <code>'DARK'</code>   |
+| **`Light`**  | <code>'LIGHT'</code>  |
 
 
 #### TerminalEventsEnum

@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/receipt"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container" class="ion-padding">
+    <form #f=ngForm>
+      <ion-input fill="outline" label="email" labelPlacement="floating" [(ngModel)]="email" name="email" [required]="true" type="email" class="ion-text-left"></ion-input>
+    </form>
+    <ion-button class="ion-margin-top button-square" expand="block" [disabled]="f.form.invalid" (click)="sendEmail()">Send</ion-button>
+  </div>
+</ion-content>

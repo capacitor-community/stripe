@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button href="stripe://settings/" target="_blank"><ion-icon name="settings" slot="icon-only" color="primary"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container">
+    <h1>stripe</h1>
+    <p>Terminal sample app</p>
+  </div>
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="ion-text-center">
+    <ion-button class="ion-margin button-square" expand="block" routerLink="/input" [disabled]="!amountService.isReady()">New payment</ion-button>
+  </ion-toolbar>
+</ion-footer>

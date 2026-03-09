@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stripe/stripe-terminal-ios.git",
       "state" : {
-        "revision" : "05b6932bb5bae758d42141ecee08391a9f21803c",
-        "version" : "4.7.3"
+        "revision" : "49c94bcb8f62eca89578938b7d399eb6ad13ebe7",
+        "version" : "5.3.0"
       }
     }
   ],

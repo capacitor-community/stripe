@@ -6,6 +6,7 @@ import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -17,7 +18,7 @@ import com.getcapacitor.community.stripe.terminal.helper.TerminalMappers
 import com.getcapacitor.community.stripe.terminal.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.Terminal.Companion.initTerminal
+import com.stripe.stripeterminal.Terminal.Companion.init
 import com.stripe.stripeterminal.Terminal.Companion.isInitialized
 import com.stripe.stripeterminal.TerminalApplicationDelegate.onCreate
 import com.stripe.stripeterminal.external.callable.Callback
@@ -29,12 +30,12 @@ import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.callable.TapToPayReaderListener
 import com.stripe.stripeterminal.external.callable.TerminalListener
-import com.stripe.stripeterminal.external.callable.HandoffReaderListener
+import com.stripe.stripeterminal.external.callable.AppsOnDevicesListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
 import com.stripe.stripeterminal.external.models.CardPresentDetails
 import com.stripe.stripeterminal.external.models.Cart
 import com.stripe.stripeterminal.external.models.CartLineItem
-import com.stripe.stripeterminal.external.models.CollectConfiguration
+import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionStatus
 import com.stripe.stripeterminal.external.models.DisconnectReason
@@ -49,6 +50,7 @@ import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
+import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.log.LogLevel
 import org.json.JSONException
@@ -128,11 +130,12 @@ class StripeTerminal(
             this.notifyListenersFunction
         )
         if (!isInitialized()) {
-            initTerminal(
+            init(
                 contextSupplier.get().applicationContext,
                 logLevel,
                 this.tokenProvider!!,
-                listener
+                listener,
+                null // OfflineListener - not used in this implementation
             )
         }
         Terminal.getInstance()
@@ -196,17 +199,12 @@ class StripeTerminal(
             config = DiscoveryConfiguration.BluetoothDiscoveryConfiguration(0, this.isTest!!)
             this.terminalConnectType = TerminalConnectTypes.Bluetooth
         } else if (call.getString("type") == TerminalConnectTypes.HandOff.webEventName) {
-            config = DiscoveryConfiguration.HandoffDiscoveryConfiguration()
+            config = DiscoveryConfiguration.AppsOnDevicesDiscoveryConfiguration()
             this.terminalConnectType = TerminalConnectTypes.HandOff
         } else {
             call.unimplemented(call.getString("type") + " is not support now")
             return
         }
-
-        notifyListeners(
-            TerminalEnumEvent.DiscoveringReaders.webEventName,
-            emptyObject
-        )
 
         discoveryCancelable = Terminal.getInstance()
             .discoverReaders(
@@ -399,8 +397,8 @@ class StripeTerminal(
 
         val config: ConnectionConfiguration.InternetConnectionConfiguration =
             ConnectionConfiguration.InternetConnectionConfiguration(
-                true,
-                this.internetReaderListener
+                this.internetReaderListener,
+                true
             )
         Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call))
     }
@@ -461,14 +459,14 @@ class StripeTerminal(
             return
         }
 
-        val config: ConnectionConfiguration.HandoffConnectionConfiguration = ConnectionConfiguration.HandoffConnectionConfiguration(
+        val config: ConnectionConfiguration.AppsOnDevicesConnectionConfiguration = ConnectionConfiguration.AppsOnDevicesConnectionConfiguration(
             this.handoffReaderListener
         )
 
         Terminal.getInstance().connectReader(foundReader, config, this.readerCallback(call))
     }
 
-    var handoffReaderListener: HandoffReaderListener = object : HandoffReaderListener {
+    var handoffReaderListener: AppsOnDevicesListener = object : AppsOnDevicesListener {
         override fun onDisconnect(reason: DisconnectReason) {
             notifyListeners(
                 TerminalEnumEvent.DisconnectedReader.webEventName,
@@ -539,8 +537,8 @@ class StripeTerminal(
     private val createPaymentIntentCallback: PaymentIntentCallback =
         object : PaymentIntentCallback {
             override fun onSuccess(paymentIntent: PaymentIntent) {
-                val collectConfig: CollectConfiguration =
-                    CollectConfiguration.Builder().updatePaymentIntent(true).build()
+                val collectConfig: CollectPaymentIntentConfiguration =
+                    CollectPaymentIntentConfiguration.Builder().updatePaymentIntent(true).build()
                 collectCancelable = Terminal.getInstance().collectPaymentMethod(
                     paymentIntent,
                     collectPaymentMethodCallback,
@@ -899,6 +897,73 @@ class StripeTerminal(
                     JSObject().put("reason", reason.toString())
                 )
             }
+        }
+    }
+
+    fun setTapToPayUxConfiguration(call: PluginCall) {
+        try {
+            val builder = TapToPayUxConfiguration.Builder()
+
+            // Parse colors
+            call.getObject("colors")?.let { colorsObj ->
+                val colorSchemeBuilder = TapToPayUxConfiguration.ColorScheme.Builder()
+                colorsObj.getString("primary")?.let { colorSchemeBuilder.primary(parseColor(it)) }
+                colorsObj.getString("success")?.let { colorSchemeBuilder.success(parseColor(it)) }
+                colorsObj.getString("error")?.let { colorSchemeBuilder.error(parseColor(it)) }
+                builder.colors(colorSchemeBuilder.build())
+            }
+
+            // Parse dark mode
+            call.getString("darkMode")?.let { darkModeStr ->
+                val darkMode = when (darkModeStr) {
+                    "DARK" -> TapToPayUxConfiguration.DarkMode.DARK
+                    "LIGHT" -> TapToPayUxConfiguration.DarkMode.LIGHT
+                    else -> TapToPayUxConfiguration.DarkMode.SYSTEM
+                }
+                builder.darkMode(darkMode)
+            }
+
+            // TODO: Tap zone support requires Stripe Terminal SDK v5+
+            // Uncomment when upgrading from v4.7 to v5+
+            // call.getObject("tapZone")?.let { tapZoneObj ->
+            //     val tapZone = when (tapZoneObj.getString("type")) {
+            //         "front" -> TapToPayUxConfiguration.TapZone.Front(
+            //             tapZoneObj.getDouble("xBias")?.toFloat() ?: 0.5f,
+            //             tapZoneObj.getDouble("yBias")?.toFloat() ?: 0.5f
+            //         )
+            //         "behind" -> TapToPayUxConfiguration.TapZone.Behind(
+            //             tapZoneObj.getDouble("xBias")?.toFloat() ?: 0.5f,
+            //             tapZoneObj.getDouble("yBias")?.toFloat() ?: 0.5f
+            //         )
+            //         "above" -> TapToPayUxConfiguration.TapZone.Above(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         "below" -> TapToPayUxConfiguration.TapZone.Below(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         "left" -> TapToPayUxConfiguration.TapZone.Left(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         "right" -> TapToPayUxConfiguration.TapZone.Right(
+            //             tapZoneObj.getDouble("bias")?.toFloat() ?: 0.5f
+            //         )
+            //         else -> TapToPayUxConfiguration.TapZone.Default
+            //     }
+            //     builder.tapZone(tapZone)
+            // }
+
+            Terminal.getInstance().setTapToPayUxConfiguration(builder.build())
+            call.resolve()
+        } catch (ex: Exception) {
+            call.reject(ex.message)
+        }
+    }
+
+    private fun parseColor(colorStr: String): TapToPayUxConfiguration.Color {
+        return if (colorStr == "default") {
+            TapToPayUxConfiguration.Color.Default
+        } else {
+            TapToPayUxConfiguration.Color.Value(Color.parseColor(colorStr))
         }
     }
 
