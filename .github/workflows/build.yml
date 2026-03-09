@@ -1,7 +1,8 @@
 name: Build
 
 on:
-- push
+  push:
+    branches: [main]
 
 jobs:
   verify-demo:
@@ -21,7 +22,7 @@ jobs:
     - name: Use cached node_modules
       uses: actions/cache@v4
       with:
-        path: node_modules
+        path: ~/.npm
         key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v2
 
     - name: Build Payment package

@@ -1,0 +1,39 @@
+name: Release
+on:
+  - push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Use cached node_modules
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-server-v1-${{ hashFiles('**/package-lock.json') }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-northeast-1
+
+      # serverless frameworkのインストール
+      - name: Install Serverless Framework
+        run: npm install -g serverless@3
+
+      # パッケージインストール
+      - run: |
+          npm ci
+          npm run build
+        working-directory: "./demo/server"
+
+      # APIのデプロイ
+      - name: Deploy to AWS
+        run: sls deploy
+        working-directory: "./demo/server"
