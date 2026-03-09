@@ -38,8 +38,8 @@ export class AppController {
       { apiVersion: '2020-08-27' },
     );
     const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: createPaymentIntentDto.amount || 1099,
-      currency: createPaymentIntentDto.currency || 'usd',
+      amount: createPaymentIntentDto.amount ?? 1099,
+      currency: createPaymentIntentDto.currency ?? 'usd',
       customer: customerId,
     });
     return {
@@ -88,8 +88,8 @@ export class AppController {
      * https://stripe.com/docs/payments/accept-a-payment?platform=ios
      */
     const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: createPaymentIntentDto.amount || 1099,
-      currency: createPaymentIntentDto.currency || 'usd',
+      amount: createPaymentIntentDto.amount ?? 1099,
+      currency: createPaymentIntentDto.currency ?? 'usd',
     });
     return {
       paymentIntent: paymentIntent.client_secret,
@@ -160,8 +160,8 @@ export class AppController {
     paymentIntent: string;
   }> {
     const intent = await this.stripe.paymentIntents.create({
-      amount: createPaymentIntentDto.amount || 1000,
-      currency: createPaymentIntentDto.currency || 'usd',
+      amount: createPaymentIntentDto.amount ?? 1000,
+      currency: createPaymentIntentDto.currency ?? 'usd',
       customer: createPaymentIntentDto.customer_id,
       payment_method_types: ['card_present'],
       capture_method: 'automatic',
