@@ -35,7 +35,14 @@ export class EmailPage {
   readonly navCtrl = inject(NavController);
   readonly email = signal<string>('');
   sendEmail() {
-    // TODO: レシート要求
+    /**
+     * Normally, `receipt_email` would be set when creating the PaymentIntent.
+     * However, because this is an open-source project, exposing such an API could be abused to send unsolicited emails.
+     * Therefore, this functionality is intentionally not included.
+     *
+     * If you need to implement this, please refer to:
+     * https://docs.stripe.com/terminal/features/receipts?locale=ja-JP
+     */
     return this.navCtrl.navigateRoot('/home');
   }
 }
