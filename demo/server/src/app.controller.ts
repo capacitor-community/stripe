@@ -1,14 +1,19 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Stripe } from 'stripe';
-import {CreatePaymentIntentDTO, CreateSetupIntentDTO} from './payment-intent.dto';
+import {
+  CreatePaymentIntentDTO,
+  CreateSetupIntentDTO,
+} from './payment-intent.dto';
 
 @Controller()
 export class AppController {
   private stripe: Stripe;
   constructor(private readonly appService: AppService) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this.stripe = require('stripe')('sk_test_51MmARtKzMYim9cy3l0jRblHOagmulcxNgJpXRLB3yDDyObnep8C5Eo70FrT5oDJr60G3CPAqdLVHagSyXizvk0ko00645CTaT5');
+    this.stripe = require('stripe')(
+      'sk_test_51MmARtKzMYim9cy3l0jRblHOagmulcxNgJpXRLB3yDDyObnep8C5Eo70FrT5oDJr60G3CPAqdLVHagSyXizvk0ko00645CTaT5',
+    );
   }
 
   @Post('intent')
@@ -64,7 +69,7 @@ export class AppController {
     );
     const setupIntent = await this.stripe.setupIntents.create({
       customer: customerId,
-      usage: 'on_session'
+      usage: 'on_session',
     });
     return {
       setupIntent: setupIntent.client_secret,
@@ -100,15 +105,16 @@ export class AppController {
     /**
      * https://stripe.com/docs/payments/accept-a-payment?platform=ios
      */
-    const verificationSession = await this.stripe.identity.verificationSessions.create({
-      type: 'document',
-      metadata: {
-        user_id: '1',
-      },
-    });
+    const verificationSession =
+      await this.stripe.identity.verificationSessions.create({
+        type: 'document',
+        metadata: {
+          user_id: '1',
+        },
+      });
     const ephemeralKey = await this.stripe.ephemeralKeys.create(
-      {verification_session: verificationSession.id},
-      {apiVersion: '2022-11-15'}
+      { verification_session: verificationSession.id },
+      { apiVersion: '2022-11-15' },
     );
     return {
       verficationSessionId: verificationSession.id,
@@ -121,7 +127,8 @@ export class AppController {
   async createConnectionToken(): Promise<{
     secret: string;
   }> {
-    const connectionToken = await this.stripe.terminal.connectionTokens.create();
+    const connectionToken =
+      await this.stripe.terminal.connectionTokens.create();
     return {
       secret: connectionToken.secret,
     };
@@ -147,14 +154,17 @@ export class AppController {
   }
 
   @Post('connection/intent')
-  async createConnectionIntent(): Promise<{
+  async createConnectionIntent(
+    @Body() createPaymentIntentDto: CreatePaymentIntentDTO,
+  ): Promise<{
     paymentIntent: string;
   }> {
     const intent = await this.stripe.paymentIntents.create({
-      amount: 1000,
-      currency: 'usd',
+      amount: createPaymentIntentDto.amount || 1000,
+      currency: createPaymentIntentDto.currency || 'usd',
+      customer: createPaymentIntentDto.customer_id,
       payment_method_types: ['card_present'],
-      capture_method: 'manual',
+      capture_method: 'automatic',
     });
     return {
       paymentIntent: intent.client_secret,
