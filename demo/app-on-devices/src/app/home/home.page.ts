@@ -33,8 +33,6 @@ export class HomePage implements ViewWillEnter {
   readonly amountService = inject(AmountService);
 
   ionViewWillEnter() {
-
-
     this.amountService.input.set('0');
   }
 }
