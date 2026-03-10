@@ -22,6 +22,7 @@ import {
   ReaderInterface,
   SimulateReaderUpdate,
   StripeTerminal,
+  TapToPayDarkMode,
   TerminalConnectTypes,
   TerminalEventsEnum,
 } from '@capacitor-community/stripe-terminal';
@@ -93,6 +94,11 @@ export class TerminalPage {
       eventItems = structuredClone(cancelPathItems);
     }
     await this.prepareTerminalEvents(eventItems, readerType);
+
+    await StripeTerminal.setTapToPayUxConfiguration({
+      colors: { primary: '#FF5733' },
+      darkMode: TapToPayDarkMode.Light,
+    }).catch((e) => console.log(e));
 
     const listenerHandler = await StripeTerminal.addListener(
       TerminalEventsEnum.DiscoveredReaders,
