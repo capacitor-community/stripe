@@ -83,8 +83,8 @@ export class InputPage {
     loading.message = 'Collect PaymentMethod';
     await StripeTerminal.collectPaymentMethod({ paymentIntent });
     loading.message = 'Confirm PaymentIntent';
-    await StripeTerminal.confirmPaymentIntent();
     await loading.dismiss();
+    await StripeTerminal.confirmPaymentIntent();
   }
 
   async confirmChallenge() {
