@@ -1,7 +1,10 @@
 # @capacitor-community/stripe-terminal
 
-Stripe SDK bindings for Capacitor Applications. __This plugin is still in the RC (release candidate) phase.__
-We have confirmed that it works well in the demo project. Please refer to https://github.com/capacitor-community/stripe/tree/main/demo/angular for the implementation.
+Stripe SDK bindings for Capacitor Applications.
+We have confirmed that it works well in the demo project. Refer to:
+
+- Tap to Pay / Internet / Bluetooth demo: https://github.com/capacitor-community/stripe/tree/main/demo/angular
+- App on Devices demo: https://github.com/capacitor-community/stripe/tree/main/demo/app-on-devices
 
 ## Install
 
@@ -14,22 +17,9 @@ npx cap sync
 
 No additional steps are necessary.
 
-__Note: Stripe Web SDK is beta version. So this plugin's implement is experimental. Please refer to https://github.com/stripe/terminal-js for more information.__
-
 ### iOS
 
-Stripe Terminal require development target 14.0 or later. Change Podfile( `ios/App/Podfile` ) like below:
-
-```diff
-  require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
-
-- platform :ios, '13.0'
-+ platform :ios, '14.0'
-```
-
-Follow Stripe's documentation for other configuration items.
-
-- [Stripe - iOS Configure your app](https://stripe.com/docs/terminal/payments/setup-integration?terminal-sdk-platform=ios#configure)
+No additional steps are necessary.
 
 ### Android
 
