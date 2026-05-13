@@ -245,6 +245,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     }>;
   }
 
+  updateApplePaySheet(_options: { paymentSummaryItems: { label: string; amount: number }[] }): Promise<void> {
+    throw this.unimplemented('updateApplePaySheet is not supported on web.');
+  }
+
   isGooglePayAvailable(): Promise<void> {
     return this.isAvailable('googlePay');
   }

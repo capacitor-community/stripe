@@ -181,12 +181,14 @@ export interface BasePaymentOption {
   currencyCode?: string;
 }
 
+export interface PaymentSummaryItem {
+  label: string;
+  amount: number;
+}
+
 export interface CreateApplePayOption {
   paymentIntentClientSecret: string;
-  paymentSummaryItems: {
-    label: string;
-    amount: number;
-  }[];
+  paymentSummaryItems: PaymentSummaryItem[];
   merchantIdentifier: string;
   countryCode: string;
   currency: string;

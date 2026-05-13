@@ -1,6 +1,6 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import type {CreateApplePayOption, DidSelectShippingContact} from '../shared';
+import type { CreateApplePayOption, DidSelectShippingContact, PaymentSummaryItem } from '../shared';
 
 import type { ApplePayEventsEnum, ApplePayResultInterface } from './apple-pay-events.enum';
 
@@ -12,6 +12,8 @@ export interface ApplePayDefinitions {
   presentApplePay(): Promise<{
     paymentResult: ApplePayResultInterface;
   }>;
+
+  updateApplePaySheet(options: { paymentSummaryItems: PaymentSummaryItem[] }): Promise<void>;
 
   addListener(
     eventName: ApplePayEventsEnum.Loaded,

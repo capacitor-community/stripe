@@ -24,6 +24,7 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 * [`isApplePayAvailable()`](#isapplepayavailable)
 * [`createApplePay(...)`](#createapplepay)
 * [`presentApplePay()`](#presentapplepay)
+* [`updateApplePaySheet(...)`](#updateapplepaysheet)
 * [`addListener(ApplePayEventsEnum.Loaded, ...)`](#addlistenerapplepayeventsenumloaded-)
 * [`addListener(ApplePayEventsEnum.FailedToLoad, ...)`](#addlistenerapplepayeventsenumfailedtoload-)
 * [`addListener(ApplePayEventsEnum.Completed, ...)`](#addlistenerapplepayeventsenumcompleted-)
@@ -122,6 +123,19 @@ presentApplePay() => Promise<{ paymentResult: ApplePayResultInterface; }>
 ```
 
 **Returns:** <code>Promise&lt;{ paymentResult: <a href="#applepayresultinterface">ApplePayResultInterface</a>; }&gt;</code>
+
+--------------------
+
+
+### updateApplePaySheet(...)
+
+```typescript
+updateApplePaySheet(options: { paymentSummaryItems: PaymentSummaryItem[]; }) => Promise<void>
+```
+
+| Param         | Type                                                        |
+| ------------- | ----------------------------------------------------------- |
+| **`options`** | <code>{ paymentSummaryItems: PaymentSummaryItem[]; }</code> |
 
 --------------------
 
@@ -625,13 +639,21 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 | Prop                                   | Type                                                                          |
 | -------------------------------------- | ----------------------------------------------------------------------------- |
 | **`paymentIntentClientSecret`**        | <code>string</code>                                                           |
-| **`paymentSummaryItems`**              | <code>{ label: string; amount: number; }[]</code>                             |
+| **`paymentSummaryItems`**              | <code>PaymentSummaryItem[]</code>                                             |
 | **`merchantIdentifier`**               | <code>string</code>                                                           |
 | **`countryCode`**                      | <code>string</code>                                                           |
 | **`currency`**                         | <code>string</code>                                                           |
 | **`requiredShippingContactFields`**    | <code>('postalAddress' \| 'phoneNumber' \| 'emailAddress' \| 'name')[]</code> |
 | **`allowedCountries`**                 | <code>string[]</code>                                                         |
 | **`allowedCountriesErrorDescription`** | <code>string</code>                                                           |
+
+
+#### PaymentSummaryItem
+
+| Prop         | Type                |
+| ------------ | ------------------- |
+| **`label`**  | <code>string</code> |
+| **`amount`** | <code>number</code> |
 
 
 #### PluginListenerHandle

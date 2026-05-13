@@ -10,6 +10,8 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
     private var paymentRequest: PKPaymentRequest?
     private var allowedCountries: [String] = []
     private var allowedCountriesErrorDescription: String = ""
+    private var pendingShippingHandler: ((PKPaymentRequestShippingContactUpdate) -> Void)?
+    private var shippingHandlerWorkItem: DispatchWorkItem?
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
         if !StripeAPI.deviceSupportsApplePay() {
@@ -135,21 +137,56 @@ extension ApplePayExecutor {
 
     // For security reasons, Apple does not return the full address until a successful payment has been made.
     func applePayContext(_ context: STPApplePayContext, didSelectShippingContact contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void) {
-        handler(PKPaymentRequestShippingContactUpdate.init(paymentSummaryItems: []))
-        let jsonArray = self.transformPKContactToJSON(contact: contact)
-        self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray])
-
-        // Check allowed countries
+        // Validate allowed countries first — respond immediately if invalid
         if !self.allowedCountries.isEmpty {
-            let addressIsoCountry = (contact.postalAddress?.isoCountryCode as? String ?? "").lowercased()
+            let addressIsoCountry = (contact.postalAddress?.isoCountryCode ?? "").lowercased()
             if !self.allowedCountries.contains(addressIsoCountry) {
-                handler(PKPaymentRequestShippingContactUpdate.init(
+                handler(PKPaymentRequestShippingContactUpdate(
                     errors: [PKPaymentRequest.paymentShippingAddressInvalidError(withKey: CNPostalAddressISOCountryCodeKey, localizedDescription: self.allowedCountriesErrorDescription)],
                     paymentSummaryItems: self.paymentRequest?.paymentSummaryItems ?? [],
                     shippingMethods: self.paymentRequest?.shippingMethods ?? []))
                 return
             }
         }
+
+        // Store handler so JS can call updateApplePaySheet with updated items
+        shippingHandlerWorkItem?.cancel()
+        pendingShippingHandler = handler
+
+        // Fallback: resolve with original items after 25s if JS does not respond
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self = self, let pendingHandler = self.pendingShippingHandler else { return }
+            self.pendingShippingHandler = nil
+            pendingHandler(PKPaymentRequestShippingContactUpdate(paymentSummaryItems: self.paymentRequest?.paymentSummaryItems ?? []))
+        }
+        shippingHandlerWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 25, execute: workItem)
+
+        let jsonArray = self.transformPKContactToJSON(contact: contact)
+        self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray])
+    }
+
+    func updateApplePaySheet(_ call: CAPPluginCall) {
+        shippingHandlerWorkItem?.cancel()
+        shippingHandlerWorkItem = nil
+
+        guard let handler = pendingShippingHandler else {
+            call.reject("No pending shipping handler")
+            return
+        }
+        pendingShippingHandler = nil
+
+        let rawItems = call.getArray("paymentSummaryItems", [String: Any].self) ?? []
+        var updatedItems: [PKPaymentSummaryItem] = []
+        for item in rawItems {
+            let label = item["label"] as? String ?? ""
+            if let amount = item["amount"] as? NSNumber {
+                updatedItems.append(PKPaymentSummaryItem(label: label, amount: NSDecimalNumber(decimal: amount.decimalValue)))
+            }
+        }
+        let itemsToUse = updatedItems.isEmpty ? (self.paymentRequest?.paymentSummaryItems ?? []) : updatedItems
+        handler(PKPaymentRequestShippingContactUpdate(paymentSummaryItems: itemsToUse))
+        call.resolve()
     }
 
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment) async throws -> String {
