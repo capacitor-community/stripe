@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideIonicAngular } from '@ionic/angular/standalone';
 import { Try15secPage } from './try15sec.page';
 
 describe('Try15secPage', () => {
@@ -6,6 +7,9 @@ describe('Try15secPage', () => {
   let fixture: ComponentFixture<Try15secPage>;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideIonicAngular()],
+    });
     fixture = TestBed.createComponent(Try15secPage);
     component = fixture.componentInstance;
     fixture.detectChanges();

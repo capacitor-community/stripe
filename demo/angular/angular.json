@@ -92,34 +92,15 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular/build:karma",
+                    "builder": "@angular/build:unit-test",
                     "options": {
-                        "main": "src/test.ts",
-                        "polyfills": "src/polyfills.ts",
                         "tsConfig": "tsconfig.spec.json",
-                        "karmaConfig": "karma.conf.js",
-                        "inlineStyleLanguage": "scss",
-                        "assets": [
-                            {
-                                "glob": "**/*",
-                                "input": "src/assets",
-                                "output": "assets"
-                            },
-                            {
-                                "glob": "**/*.svg",
-                                "input": "node_modules/ionicons/dist/ionicons/svg",
-                                "output": "./svg"
-                            }
-                        ],
-                        "styles": [
-                            "src/theme/variables.scss",
-                            "src/global.scss"
-                        ],
-                        "scripts": []
+                        "buildTarget": "app:build",
+                        "runner": "vitest",
+                        "runnerConfig": "vitest.config.ts"
                     },
                     "configurations": {
                         "ci": {
-                            "progress": false,
                             "watch": false
                         }
                     }
