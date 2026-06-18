@@ -15,10 +15,12 @@ jobs:
       with:
         java-version: '21'
         distribution: 'zulu'
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@v5
+    - uses: actions/setup-node@v5
       with:
         node-version: 22
+        cache: npm
+        cache-dependency-path: '**/package-lock.json'
     - name: Use cached node_modules
       uses: actions/cache@v4
       with:
@@ -77,10 +79,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
@@ -101,10 +105,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
@@ -126,10 +132,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
@@ -145,10 +153,12 @@ jobs:
   verify-payment-ios:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
@@ -164,10 +174,12 @@ jobs:
   verify-identity-ios:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
@@ -183,10 +195,12 @@ jobs:
   verify-terminal-ios:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
