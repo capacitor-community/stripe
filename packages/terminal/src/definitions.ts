@@ -143,6 +143,17 @@ export interface TapToPayUxConfiguration {
   tapZone?: TapToPayTapZone;
 }
 
+/**
+ * Options for isTapToPayAccountLinked.
+ */
+export interface IsTapToPayAccountLinkedOptions {
+  /**
+   * Connected account ID, for Stripe Connect platforms.
+   * Omit to check the account that owns the API key.
+   */
+  onBehalfOf?: string;
+}
+
 export interface DiscoverReadersOptions {
   type: TerminalConnectTypes;
   locationId?: string;
@@ -211,6 +222,22 @@ export interface StripeTerminalPlugin {
    * Has no effect on iOS or web platforms.
    */
   setTapToPayUxConfiguration(options: TapToPayUxConfiguration): Promise<void>;
+
+  /**
+   * Check whether the merchant has accepted Apple's Tap to Pay on iPhone
+   * Terms and Conditions.
+   *
+   * iOS only, and requires iOS 16.4 or later. `initialize()` must have been
+   * called first because the SDK needs a connection token provider, but no
+   * reader connection is required and the call does not activate the device.
+   *
+   * The answer is read from Apple on every call. Apple's Tap to Pay on iPhone
+   * requirements state that acceptance state must be retrieved from Apple
+   * rather than from a local variable, so do not cache the result.
+   *
+   * [*Stripe docs reference*](https://stripe.dev/stripe-terminal-ios/docs/Classes/SCPTerminal.html#/c:objc(cs)SCPTerminal(im)isTapToPayAccountLinked:completion:)
+   */
+  isTapToPayAccountLinked(options?: IsTapToPayAccountLinkedOptions): Promise<{ isLinked: boolean }>;
 
   addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void): Promise<PluginListenerHandle>;
 

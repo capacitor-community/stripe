@@ -282,6 +282,26 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
         call.resolve([:])
     }
 
+    public func isTapToPayAccountLinked(_ call: CAPPluginCall) {
+        guard #available(iOS 16.4, *) else {
+            call.unavailable("isTapToPayAccountLinked requires iOS 16.4 or later.")
+            return
+        }
+
+        if self.isInitialize == false {
+            call.reject("Stripe Terminal is not initialized. Call initialize() first.")
+            return
+        }
+
+        Terminal.shared.isTapToPayAccountLinked(call.getString("onBehalfOf")) { isLinked, error in
+            if let error = error {
+                call.reject(error.localizedDescription)
+                return
+            }
+            call.resolve(["isLinked": isLinked?.boolValue ?? false])
+        }
+    }
+
     public func installAvailableUpdate(_ call: CAPPluginCall) {
         Terminal.shared.installAvailableUpdate()
         call.resolve([:])
