@@ -154,7 +154,6 @@ class PaymentSheetExecutor(
                     (paymentSheetResult).error.localizedMessage
                 )
             )
-            notifyListenersFunction.accept(PaymentSheetEvents.Failed.webEventName, emptyObject)
             call.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Failed.webEventName))
         } else if (paymentSheetResult is PaymentSheetResult.Completed) {
             notifyListenersFunction.accept(PaymentSheetEvents.Completed.webEventName, emptyObject)
