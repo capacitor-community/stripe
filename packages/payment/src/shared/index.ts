@@ -201,26 +201,22 @@ export interface CreateGooglePayOption {
   paymentIntentClientSecret: string;
 
   /**
-   * Web only
-   * need stripe-pwa-elements > 1.1.0
+   * Web only. Requires stripe-pwa-elements ^3.0.0.
    */
   paymentSummaryItems?: {
     label: string;
     amount: number;
   }[];
   /**
-   * Web only
-   * need stripe-pwa-elements > 1.1.0
+   * Web only. Requires stripe-pwa-elements ^3.0.0.
    */
   merchantIdentifier?: string;
   /**
-   * Web only
-   * need stripe-pwa-elements > 1.1.0
+   * Web only. Requires stripe-pwa-elements ^3.0.0.
    */
   countryCode?: string;
   /**
-   * Web only
-   * need stripe-pwa-elements > 1.1.0
+   * Web only. Requires stripe-pwa-elements ^3.0.0.
    */
   currency?: string;
 }

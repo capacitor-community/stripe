@@ -34,12 +34,12 @@ Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 + <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
 
-And update minSdkVersion to 26 in your `android/app/build.gradle` file:
+And update `minSdkVersion` to 26 in your `android/variables.gradle` file:
 
 ```diff
-  ext {
--    minSdkVersion = 23
-+    minSdkVersion = 26
+ext {
+-   minSdkVersion = 24
++   minSdkVersion = 26
 ```
 
 If you are developing apps for Stripe Android devices (e.g. Stripe Reader S700), follow the Stripe's documentation for the client-side setup.
@@ -64,11 +64,11 @@ const paymentStatusListener = await StripeTerminal.addListener(
 #### Use plugin client
 
 ```typescript
-(async ()=> {
+(async () => {
   /**
    * tokenProviderEndpoint: The URL of your backend to provide a token. Use Post request to get a token.
    */
-  await StripeTerminal.initialize({ tokenProviderEndpoint: 'https://example.com/token', isTest: true })
+  await StripeTerminal.initialize({ tokenProviderEndpoint: 'https://example.com/token', isTest: true });
   const { readers } = await StripeTerminal.discoverReaders({
     type: TerminalConnectTypes.TapToPay,
     locationId: "**************",
@@ -82,21 +82,20 @@ const paymentStatusListener = await StripeTerminal.addListener(
   await StripeTerminal.confirmPaymentIntent();
   // disconnect reader
   await StripeTerminal.disconnectReader();
-});
+})();
 ```
 
 #### set string token
 
 ```typescript
-(async ()=> {
+(async () => {
   // run before StripeTerminal.initialize
-  StripeTerminal.addListener(TerminalEventsEnum.RequestedConnectionToken, async () => {
-    const { token } = (await fetch("https://example.com/token")).json();
-    StripeTerminal.setConnectionToken({ token });
+  await StripeTerminal.addListener(TerminalEventsEnum.RequestedConnectionToken, async () => {
+    const response = await fetch("https://example.com/token", { method: "POST" });
+    const { secret } = await response.json();
+    await StripeTerminal.setConnectionToken({ token: secret });
   });
-});
-(async ()=> {
-  await StripeTerminal.initialize({ isTest: true })
+  await StripeTerminal.initialize({ isTest: true });
   const { readers } = await StripeTerminal.discoverReaders({
     type: TerminalConnectTypes.TapToPay,
     locationId: "**************",
@@ -110,15 +109,15 @@ const paymentStatusListener = await StripeTerminal.addListener(
   await StripeTerminal.confirmPaymentIntent();
   // disconnect reader
   await StripeTerminal.disconnectReader();
-});
-````
+})();
+```
 
 ### Listen device update
 
 The device will **if necessary** automatically start updating itself. It is important to handle them as needed so as not to disrupt business operations.
 
 ```ts
-(async ()=> {
+(async () => {
   StripeTerminal.addListener(TerminalEventsEnum.ReportAvailableUpdate, async ({ update }) => {
     if (window.confirm("Will you update the device?")) {
       await StripeTerminal.installAvailableUpdate();
@@ -136,7 +135,7 @@ The device will **if necessary** automatically start updating itself. It is impo
   StripeTerminal.addListener(TerminalEventsEnum.FinishInstallingUpdate, async ({ update }) => {
     console.log(update);
   });
-});
+})();
 ```
 
 ### Get terminal processing information
