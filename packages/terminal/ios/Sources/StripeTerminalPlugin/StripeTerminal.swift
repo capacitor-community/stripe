@@ -80,6 +80,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
         }
         
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
+            self.discoverCancelable = nil
             if let error = error {
                 print("discoverReaders failed: \(error)")
                 call.reject(error.localizedDescription)
@@ -412,9 +413,11 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
     func cancelDiscoverReaders(_ call: CAPPluginCall) {
         if let cancelable = self.discoverCancelable {
             if cancelable.completed {
+                self.discoverCancelable = nil
                 call.resolve()
                 return
             }
+            self.discoverCancelable = nil
             cancelable.cancel { error in
                 if let error = error {
                     call.reject(error.localizedDescription)

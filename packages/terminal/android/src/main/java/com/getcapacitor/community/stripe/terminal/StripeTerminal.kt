@@ -228,10 +228,12 @@ class StripeTerminal(
                 },
                 object : Callback {
                     override fun onSuccess() {
+                        discoveryCancelable = null
                         Log.d(logTag, "Finished discovering readers")
                     }
 
                     override fun onFailure(e: TerminalException) {
+                        discoveryCancelable = null
                         Log.d(logTag, e.localizedMessage)
                     }
                 }
@@ -484,10 +486,13 @@ class StripeTerminal(
 
     fun cancelDiscoverReaders(call: PluginCall) {
         if (discoveryCancelable == null || discoveryCancelable!!.isCompleted) {
+            discoveryCancelable = null
             call.resolve()
             return
         }
-        discoveryCancelable!!.cancel(
+        val cancelable = discoveryCancelable!!
+        discoveryCancelable = null
+        cancelable.cancel(
             object : Callback {
                 override fun onSuccess() {
                     notifyListeners(
