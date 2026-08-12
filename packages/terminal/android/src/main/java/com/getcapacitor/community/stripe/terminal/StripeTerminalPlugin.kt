@@ -100,7 +100,7 @@ class StripeTerminalPlugin : Plugin() {
         }
     }
 
-    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
+    @PluginMethod
     fun discoverReaders(call: PluginCall) {
         if (call.getString("type") == TerminalConnectTypes.Bluetooth.webEventName || call.getString(
                 "type"
