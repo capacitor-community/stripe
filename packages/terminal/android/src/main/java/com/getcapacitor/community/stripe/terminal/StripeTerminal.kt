@@ -72,7 +72,7 @@ class StripeTerminal(
 ) {
     private var tokenProvider: TokenProvider? = null
     private var discoveryCancelable: Cancelable? = null
-    private var discoveryGeneration = 0
+    private var discoveryToken: Any? = null
     private var collectCancelable: Cancelable? = null
     private var installUpdateCancelable: Cancelable? = null
     private var cancelReaderConnectionCancellable: Cancelable? = null
@@ -207,7 +207,8 @@ class StripeTerminal(
             return
         }
 
-        val generation = ++discoveryGeneration
+        val token = Any()
+        discoveryToken = token
         discoveryCancelable = Terminal.getInstance()
             .discoverReaders(
                 config,
@@ -230,12 +231,18 @@ class StripeTerminal(
                 },
                 object : Callback {
                     override fun onSuccess() {
-                        if (discoveryGeneration == generation) discoveryCancelable = null
+                        if (discoveryToken === token) {
+                            discoveryCancelable = null
+                            discoveryToken = null
+                        }
                         Log.d(logTag, "Finished discovering readers")
                     }
 
                     override fun onFailure(e: TerminalException) {
-                        if (discoveryGeneration == generation) discoveryCancelable = null
+                        if (discoveryToken === token) {
+                            discoveryCancelable = null
+                            discoveryToken = null
+                        }
                         Log.d(logTag, e.localizedMessage)
                     }
                 }
@@ -489,15 +496,19 @@ class StripeTerminal(
     fun cancelDiscoverReaders(call: PluginCall) {
         if (discoveryCancelable == null || discoveryCancelable!!.isCompleted) {
             discoveryCancelable = null
+            discoveryToken = null
             call.resolve()
             return
         }
         val cancelable = discoveryCancelable!!
-        val generation = discoveryGeneration
+        val token = discoveryToken
         cancelable.cancel(
             object : Callback {
                 override fun onSuccess() {
-                    if (discoveryGeneration == generation) discoveryCancelable = null
+                    if (discoveryToken === token) {
+                        discoveryCancelable = null
+                        discoveryToken = null
+                    }
                     notifyListeners(
                         TerminalEnumEvent.CancelDiscoveredReaders.webEventName,
                         emptyObject

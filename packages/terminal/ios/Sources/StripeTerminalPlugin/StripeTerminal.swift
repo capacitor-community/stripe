@@ -4,11 +4,13 @@ import StripeTerminal
 
 public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, ReaderDelegate, MobileReaderDelegate, TapToPayReaderDelegate, InternetReaderDelegate {
 
+    private final class DiscoveryToken {}
+
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
 
     var discoverCancelable: Cancelable?
-    private var discoveryGeneration = 0
+    private var discoveryToken: DiscoveryToken?
     var collectCancelable: Cancelable?
     var installUpdateCancelable: Cancelable?
     var cancelReaderConnectionCancellable: Cancelable?
@@ -80,11 +82,12 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
             self.discoverCall = call
         }
         
-        self.discoveryGeneration += 1
-        let generation = self.discoveryGeneration
+        let token = DiscoveryToken()
+        self.discoveryToken = token
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
-            if self.discoveryGeneration == generation {
+            if self.discoveryToken === token {
                 self.discoverCancelable = nil
+                self.discoveryToken = nil
             }
             if let error = error {
                 print("discoverReaders failed: \(error)")
@@ -419,16 +422,18 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
         if let cancelable = self.discoverCancelable {
             if cancelable.completed {
                 self.discoverCancelable = nil
+                self.discoveryToken = nil
                 call.resolve()
                 return
             }
-            let generation = self.discoveryGeneration
+            let token = self.discoveryToken
             cancelable.cancel { error in
                 if let error = error {
                     call.reject(error.localizedDescription)
                 } else {
-                    if self.discoveryGeneration == generation {
+                    if self.discoveryToken === token {
                         self.discoverCancelable = nil
+                        self.discoveryToken = nil
                     }
                     self.plugin?.notifyListeners(TerminalEvents.CancelDiscoveredReaders.rawValue, data: [:])
                     call.resolve()
