@@ -6,14 +6,14 @@ import androidx.core.util.Supplier
 import com.getcapacitor.Bridge
 import com.getcapacitor.JSObject
 import com.getcapacitor.PluginCall
+import com.getcapacitor.community.stripe.models.EventNotifier
 import com.getcapacitor.community.stripe.models.Executor
-import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.googlepaylauncher.GooglePayLauncher
 
 class GooglePayExecutor(
     contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
-    notifyListenersFunction: BiConsumer<String, JSObject>,
+    notifyListenersFunction: EventNotifier,
     pluginLogTag: String
 ) : Executor(
     contextSupplier,
@@ -67,21 +67,26 @@ class GooglePayExecutor(
         }
     }
 
-    fun onGooglePayResult(bridge: Bridge, callbackId: String?, result: GooglePayLauncher.Result) {
+    fun onGooglePayResult(
+        bridge: Bridge,
+        callbackId: String?,
+        result: GooglePayLauncher.Result
+    ) {
         val call = bridge.getSavedCall(callbackId)
 
         if (result is GooglePayLauncher.Result.Completed) {
-            notifyListenersFunction.accept(GooglePayEvents.Completed.webEventName, emptyObject)
-            call.resolve(JSObject().put("paymentResult", GooglePayEvents.Completed.webEventName))
+            notifyListenersFunction.accept(GooglePayEvents.Completed.webEventName, emptyObject, call == null)
+            call?.resolve(JSObject().put("paymentResult", GooglePayEvents.Completed.webEventName))
         } else if (result is GooglePayLauncher.Result.Canceled) {
-            notifyListenersFunction.accept(GooglePayEvents.Canceled.webEventName, emptyObject)
-            call.resolve(JSObject().put("paymentResult", GooglePayEvents.Canceled.webEventName))
+            notifyListenersFunction.accept(GooglePayEvents.Canceled.webEventName, emptyObject, call == null)
+            call?.resolve(JSObject().put("paymentResult", GooglePayEvents.Canceled.webEventName))
         } else if (result is GooglePayLauncher.Result.Failed) {
             notifyListenersFunction.accept(
                 GooglePayEvents.Failed.webEventName,
-                JSObject().put("error", (result.error.localizedMessage))
+                JSObject().put("error", (result.error.localizedMessage)),
+                call == null
             )
-            call.resolve(JSObject().put("paymentResult", GooglePayEvents.Failed.webEventName))
+            call?.resolve(JSObject().put("paymentResult", GooglePayEvents.Failed.webEventName))
         }
     }
 }

@@ -10,6 +10,7 @@ import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor
 import com.getcapacitor.community.stripe.helper.MetaData
+import com.getcapacitor.community.stripe.models.EventNotifier
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor
 import com.stripe.android.PaymentConfiguration
@@ -33,21 +34,27 @@ class StripePlugin : Plugin() {
     private val paymentSheetExecutor = PaymentSheetExecutor(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 
     private val paymentFlowExecutor = PaymentFlowExecutor(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 
     private val googlePayExecutor = GooglePayExecutor(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 

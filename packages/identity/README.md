@@ -31,11 +31,11 @@ see more details on Stripe's native Android SDK page [here](https://stripe.com/d
 If you want to implement, we recommend to read https://stripe.com/docs/identity .
 
 ```ts
-import { StripeIdentity } from '@capacitor-community/stripe-identity';
+import { IdentityVerificationSheetEventsEnum, StripeIdentity } from '@capacitor-community/stripe-identity';
 
-const listener = await StripeIdentity.addListener(IdentityVerificationSheetEventsEnum.VerificationResult, (result) => {
+// Register once per JavaScript application startup, as early as possible during bootstrap.
+const verificationResultListener = await StripeIdentity.addListener(IdentityVerificationSheetEventsEnum.VerificationResult, (result) => {
   console.log(result);
-  listener.remove();
 });
 
 // initialize is needed only for Web Platform
@@ -49,7 +49,17 @@ await StripeIdentity.create({
   clientSecret
 });
 await StripeIdentity.present();
+
+// Keep verificationResultListener and remove it only when its application-level owner is destroyed.
 ```
+
+### Android activity recreation
+
+Register the `VerificationResult` listener once per JavaScript application startup, as early as possible during bootstrap—for example, from `main.ts`, an application initializer, or a singleton service initialized at startup—and before calling `present()`.
+
+On Android, the Activity and JavaScript runtime can be recreated while Stripe Identity is open. If Stripe delivers the verification result to the recreated Activity before the new JavaScript runtime has registered its listener, the plugin retains the result until the bootstrap listener is available.
+
+This is an in-memory handoff of the native result. It is not persistent storage and does not guarantee recovery after OS process death or when Stripe does not deliver a result to the recreated Activity.
 
 ## API
 

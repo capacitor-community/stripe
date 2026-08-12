@@ -7,19 +7,19 @@ import com.getcapacitor.Bridge
 import com.getcapacitor.JSObject
 import com.getcapacitor.Logger
 import com.getcapacitor.PluginCall
+import com.getcapacitor.community.stripe.identity.models.EventNotifier
 import com.getcapacitor.community.stripe.identity.models.Executor
-import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.identity.IdentityVerificationSheet
 
 class StripeIdentity(
     contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
-    notifyListenersFunction: BiConsumer<String, JSObject>,
+    eventNotifier: EventNotifier,
     pluginLogTag: String
 ) : Executor(
     contextSupplier,
     activitySupplier,
-    notifyListenersFunction,
+    eventNotifier,
     pluginLogTag,
     "StripeIdentityExecutor"
 ) {
@@ -74,7 +74,8 @@ class StripeIdentity(
             JSObject().put(
                 "result",
                 IdentityVerificationSheetEvent.Completed.webEventName
-            )
+            ),
+            true
         )
     }
 
@@ -83,7 +84,8 @@ class StripeIdentity(
             JSObject().put(
                 "result",
                 IdentityVerificationSheetEvent.Canceled.webEventName
-            )
+            ),
+            true
         )
     }
 
@@ -97,7 +99,8 @@ class StripeIdentity(
                 .put(
                     "error",
                     JSObject().put("message", errorMessage)
-                )
+                ),
+            true
         )
     }
 }
