@@ -4,10 +4,10 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.getcapacitor.JSObject
 import com.getcapacitor.Logger
-import com.getcapacitor.NativePlugin
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
+import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor
 import com.getcapacitor.community.stripe.helper.MetaData
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor
@@ -19,7 +19,7 @@ import com.stripe.android.googlepaylauncher.GooglePayLauncher
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 
-@NativePlugin(name = "Stripe", requestCodes = [9972, 50000, 50001, 6000])
+@CapacitorPlugin(name = "Stripe", requestCodes = [9972, 50000, 50001, 6000])
 class StripePlugin : Plugin() {
     private var publishableKey: String? = null
     private var paymentSheetCallbackId: String? = null

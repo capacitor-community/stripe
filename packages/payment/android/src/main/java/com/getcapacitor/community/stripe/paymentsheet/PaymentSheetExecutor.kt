@@ -142,6 +142,7 @@ class PaymentSheetExecutor(
         paymentSheetResult: PaymentSheetResult
     ) {
         val call = bridge.getSavedCall(callbackId)
+        if (call == null) return
 
         if (paymentSheetResult is PaymentSheetResult.Canceled) {
             notifyListenersFunction.accept(PaymentSheetEvents.Canceled.webEventName, emptyObject)
@@ -154,7 +155,6 @@ class PaymentSheetExecutor(
                     (paymentSheetResult).error.localizedMessage
                 )
             )
-            notifyListenersFunction.accept(PaymentSheetEvents.Failed.webEventName, emptyObject)
             call.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Failed.webEventName))
         } else if (paymentSheetResult is PaymentSheetResult.Completed) {
             notifyListenersFunction.accept(PaymentSheetEvents.Completed.webEventName, emptyObject)

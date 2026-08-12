@@ -181,6 +181,8 @@ class PaymentFlowExecutor(
         if (shouldIgnorePaymentOptionResult(paymentOption != null, didCancel)) return
 
         val call = bridge.getSavedCall(callbackId)
+        if (call == null) return
+
         if (paymentOption != null) {
             notifyListenersFunction.accept(
                 PaymentFlowEvents.Created.webEventName,
@@ -199,6 +201,7 @@ class PaymentFlowExecutor(
         paymentSheetResult: PaymentSheetResult
     ) {
         val call = bridge.getSavedCall(callbackId)
+        if (call == null) return
 
         if (paymentSheetResult is PaymentSheetResult.Canceled) {
             notifyListenersFunction.accept(PaymentFlowEvents.Canceled.webEventName, emptyObject)
