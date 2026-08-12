@@ -8,6 +8,7 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
     private let apiClient = APIClient()
 
     var discoverCancelable: Cancelable?
+    private var discoveryGeneration = 0
     var collectCancelable: Cancelable?
     var installUpdateCancelable: Cancelable?
     var cancelReaderConnectionCancellable: Cancelable?
@@ -79,8 +80,12 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
             self.discoverCall = call
         }
         
+        self.discoveryGeneration += 1
+        let generation = self.discoveryGeneration
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
-            self.discoverCancelable = nil
+            if self.discoveryGeneration == generation {
+                self.discoverCancelable = nil
+            }
             if let error = error {
                 print("discoverReaders failed: \(error)")
                 call.reject(error.localizedDescription)
@@ -417,11 +422,14 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
                 call.resolve()
                 return
             }
-            self.discoverCancelable = nil
+            let generation = self.discoveryGeneration
             cancelable.cancel { error in
                 if let error = error {
                     call.reject(error.localizedDescription)
                 } else {
+                    if self.discoveryGeneration == generation {
+                        self.discoverCancelable = nil
+                    }
                     self.plugin?.notifyListeners(TerminalEvents.CancelDiscoveredReaders.rawValue, data: [:])
                     call.resolve()
                 }

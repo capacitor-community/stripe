@@ -72,6 +72,7 @@ class StripeTerminal(
 ) {
     private var tokenProvider: TokenProvider? = null
     private var discoveryCancelable: Cancelable? = null
+    private var discoveryGeneration = 0
     private var collectCancelable: Cancelable? = null
     private var installUpdateCancelable: Cancelable? = null
     private var cancelReaderConnectionCancellable: Cancelable? = null
@@ -206,6 +207,7 @@ class StripeTerminal(
             return
         }
 
+        val generation = ++discoveryGeneration
         discoveryCancelable = Terminal.getInstance()
             .discoverReaders(
                 config,
@@ -228,12 +230,12 @@ class StripeTerminal(
                 },
                 object : Callback {
                     override fun onSuccess() {
-                        discoveryCancelable = null
+                        if (discoveryGeneration == generation) discoveryCancelable = null
                         Log.d(logTag, "Finished discovering readers")
                     }
 
                     override fun onFailure(e: TerminalException) {
-                        discoveryCancelable = null
+                        if (discoveryGeneration == generation) discoveryCancelable = null
                         Log.d(logTag, e.localizedMessage)
                     }
                 }
@@ -491,10 +493,11 @@ class StripeTerminal(
             return
         }
         val cancelable = discoveryCancelable!!
-        discoveryCancelable = null
+        val generation = discoveryGeneration
         cancelable.cancel(
             object : Callback {
                 override fun onSuccess() {
+                    if (discoveryGeneration == generation) discoveryCancelable = null
                     notifyListeners(
                         TerminalEnumEvent.CancelDiscoveredReaders.webEventName,
                         emptyObject
