@@ -15,6 +15,7 @@ import com.getcapacitor.JSArray
 import com.getcapacitor.JSObject
 import com.getcapacitor.PluginCall
 import com.getcapacitor.community.stripe.terminal.helper.TerminalMappers
+import com.getcapacitor.community.stripe.terminal.models.EventNotifier
 import com.getcapacitor.community.stripe.terminal.models.Executor
 import com.google.android.gms.common.util.BiConsumer
 import com.stripe.stripeterminal.Terminal
@@ -61,12 +62,12 @@ import java.util.Objects
 class StripeTerminal(
     contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
-    notifyListenersFunction: BiConsumer<String, JSObject>,
+    eventNotifier: EventNotifier,
     pluginLogTag: String
 ) : Executor(
     contextSupplier,
     activitySupplier,
-    notifyListenersFunction,
+    eventNotifier,
     pluginLogTag,
     "StripeTerminalExecutor"
 ) {
@@ -130,7 +131,9 @@ class StripeTerminal(
         this.tokenProvider = TokenProvider(
             this.contextSupplier,
             call.getString("tokenProviderEndpoint", "")!!,
-            this.notifyListenersFunction
+            BiConsumer { eventName: String, data: JSObject ->
+                notifyListenersFunction.accept(eventName, data)
+            }
         )
         if (!isInitialized()) {
             init(

@@ -7,8 +7,8 @@ import com.getcapacitor.Bridge
 import com.getcapacitor.JSObject
 import com.getcapacitor.PluginCall
 import com.getcapacitor.community.stripe.helper.PaymentSheetHelper
+import com.getcapacitor.community.stripe.models.EventNotifier
 import com.getcapacitor.community.stripe.models.Executor
-import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheet.PaymentMethodLayout
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -20,7 +20,7 @@ internal fun shouldIgnorePaymentOptionResult(hasPaymentOption: Boolean, didCance
 class PaymentFlowExecutor(
     contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
-    notifyListenersFunction: BiConsumer<String, JSObject>,
+    notifyListenersFunction: EventNotifier,
     pluginLogTag: String
 ) : Executor(
     contextSupplier,
@@ -181,15 +181,14 @@ class PaymentFlowExecutor(
         if (shouldIgnorePaymentOptionResult(paymentOption != null, didCancel)) return
 
         val call = bridge.getSavedCall(callbackId)
+
         if (paymentOption != null) {
-            notifyListenersFunction.accept(
-                PaymentFlowEvents.Created.webEventName,
-                JSObject().put("cardNumber", paymentOption.label)
-            )
-            call.resolve(JSObject().put("cardNumber", paymentOption.label))
+            val result = JSObject().put("cardNumber", paymentOption.label)
+            notifyListenersFunction.accept(PaymentFlowEvents.Created.webEventName, result, call == null)
+            call?.resolve(result)
         } else {
-            notifyListenersFunction.accept(PaymentFlowEvents.Canceled.webEventName, emptyObject)
-            call.reject("User close PaymentFlow Sheet")
+            notifyListenersFunction.accept(PaymentFlowEvents.Canceled.webEventName, emptyObject, call == null)
+            call?.reject("User close PaymentFlow Sheet")
         }
     }
 
@@ -201,17 +200,18 @@ class PaymentFlowExecutor(
         val call = bridge.getSavedCall(callbackId)
 
         if (paymentSheetResult is PaymentSheetResult.Canceled) {
-            notifyListenersFunction.accept(PaymentFlowEvents.Canceled.webEventName, emptyObject)
-            call.resolve(JSObject().put("paymentResult", PaymentFlowEvents.Canceled.webEventName))
+            notifyListenersFunction.accept(PaymentFlowEvents.Canceled.webEventName, emptyObject, call == null)
+            call?.resolve(JSObject().put("paymentResult", PaymentFlowEvents.Canceled.webEventName))
         } else if (paymentSheetResult is PaymentSheetResult.Failed) {
             notifyListenersFunction.accept(
                 PaymentFlowEvents.Failed.webEventName,
-                JSObject().put("error", (paymentSheetResult).error.localizedMessage)
+                JSObject().put("error", (paymentSheetResult).error.localizedMessage),
+                call == null
             )
-            call.resolve(JSObject().put("paymentResult", PaymentFlowEvents.Failed.webEventName))
+            call?.resolve(JSObject().put("paymentResult", PaymentFlowEvents.Failed.webEventName))
         } else if (paymentSheetResult is PaymentSheetResult.Completed) {
-            notifyListenersFunction.accept(PaymentFlowEvents.Completed.webEventName, emptyObject)
-            call.resolve(JSObject().put("paymentResult", PaymentFlowEvents.Completed.webEventName))
+            notifyListenersFunction.accept(PaymentFlowEvents.Completed.webEventName, emptyObject, call == null)
+            call?.resolve(JSObject().put("paymentResult", PaymentFlowEvents.Completed.webEventName))
         }
     }
 }
