@@ -1,6 +1,6 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import type { CreateApplePayOption, DidSelectShippingContact, PaymentSummaryItem } from '../shared';
+import type { CreateApplePayOption, DidCreatePaymentMethod, DidSelectShippingContact, PaymentSummaryItem } from '../shared';
 
 import type { ApplePayEventsEnum, ApplePayResultInterface } from './apple-pay-events.enum';
 
@@ -13,7 +13,7 @@ export interface ApplePayDefinitions {
     paymentResult: ApplePayResultInterface;
   }>;
 
-  updateApplePaySheet(options: { paymentSummaryItems: PaymentSummaryItem[] }): Promise<void>;
+  updateApplePaySheet(options: { updateId: string; paymentSummaryItems: PaymentSummaryItem[] }): Promise<void>;
 
   addListener(
     eventName: ApplePayEventsEnum.Loaded,
@@ -47,6 +47,6 @@ export interface ApplePayDefinitions {
 
   addListener(
     eventName: ApplePayEventsEnum.DidCreatePaymentMethod,
-    listenerFunc: (data: DidSelectShippingContact) => void,
+    listenerFunc: (data: DidCreatePaymentMethod) => void,
   ): Promise<PluginListenerHandle>;
 }

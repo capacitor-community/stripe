@@ -130,12 +130,12 @@ presentApplePay() => Promise<{ paymentResult: ApplePayResultInterface; }>
 ### updateApplePaySheet(...)
 
 ```typescript
-updateApplePaySheet(options: { paymentSummaryItems: PaymentSummaryItem[]; }) => Promise<void>
+updateApplePaySheet(options: { updateId: string; paymentSummaryItems: PaymentSummaryItem[]; }) => Promise<void>
 ```
 
-| Param         | Type                                                        |
-| ------------- | ----------------------------------------------------------- |
-| **`options`** | <code>{ paymentSummaryItems: PaymentSummaryItem[]; }</code> |
+| Param         | Type                                                                          |
+| ------------- | ----------------------------------------------------------------------------- |
+| **`options`** | <code>{ updateId: string; paymentSummaryItems: PaymentSummaryItem[]; }</code> |
 
 --------------------
 
@@ -239,13 +239,13 @@ addListener(eventName: ApplePayEventsEnum.DidSelectShippingContact, listenerFunc
 ### addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)
 
 ```typescript
-addListener(eventName: ApplePayEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: DidSelectShippingContact) => void) => Promise<PluginListenerHandle>
+addListener(eventName: ApplePayEventsEnum.DidCreatePaymentMethod, listenerFunc: (data: DidCreatePaymentMethod) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param              | Type                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------ |
-| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code>         |
-| **`listenerFunc`** | <code>(data: <a href="#didselectshippingcontact">DidSelectShippingContact</a>) =&gt; void</code> |
+| Param              | Type                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code>     |
+| **`listenerFunc`** | <code>(data: <a href="#didcreatepaymentmethod">DidCreatePaymentMethod</a>) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -665,9 +665,10 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 
 #### DidSelectShippingContact
 
-| Prop          | Type                                                        |
-| ------------- | ----------------------------------------------------------- |
-| **`contact`** | <code><a href="#shippingcontact">ShippingContact</a></code> |
+| Prop           | Type                                                        |
+| -------------- | ----------------------------------------------------------- |
+| **`contact`**  | <code><a href="#shippingcontact">ShippingContact</a></code> |
+| **`updateId`** | <code>string</code>                                         |
 
 
 #### ShippingContact
@@ -690,6 +691,13 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 | **`isoCountryCode`**        | <code>string</code> | Apple Pay only |
 | **`subAdministrativeArea`** | <code>string</code> | Apple Pay only |
 | **`subLocality`**           | <code>string</code> | Apple Pay only |
+
+
+#### DidCreatePaymentMethod
+
+| Prop          | Type                                                        |
+| ------------- | ----------------------------------------------------------- |
+| **`contact`** | <code><a href="#shippingcontact">ShippingContact</a></code> |
 
 
 #### CreateGooglePayOption

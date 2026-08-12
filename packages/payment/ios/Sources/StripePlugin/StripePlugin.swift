@@ -109,7 +109,9 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func updateApplePaySheet(_ call: CAPPluginCall) {
-        self.applePayExecutor.updateApplePaySheet(call)
+        DispatchQueue.main.async {
+            self.applePayExecutor.updateApplePaySheet(call)
+        }
     }
 
     @objc func isGooglePayAvailable(_ call: CAPPluginCall) {

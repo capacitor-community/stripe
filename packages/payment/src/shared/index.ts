@@ -228,6 +228,10 @@ export interface CreateGooglePayOption {
 // Apple doc: https://developer.apple.com/documentation/passkit/pkcontact
 export interface DidSelectShippingContact {
   contact: ShippingContact;
+  updateId: string;
+}
+export interface DidCreatePaymentMethod {
+  contact: ShippingContact;
 }
 export interface ShippingContact {
   /**

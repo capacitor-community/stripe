@@ -245,7 +245,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     }>;
   }
 
-  updateApplePaySheet(_options: { paymentSummaryItems: { label: string; amount: number }[] }): Promise<void> {
+  updateApplePaySheet(_options: { updateId: string; paymentSummaryItems: { label: string; amount: number }[] }): Promise<void> {
     throw this.unimplemented('updateApplePaySheet is not supported on web.');
   }
 
