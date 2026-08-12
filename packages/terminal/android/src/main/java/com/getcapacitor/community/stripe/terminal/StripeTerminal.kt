@@ -70,8 +70,11 @@ class StripeTerminal(
     pluginLogTag,
     "StripeTerminalExecutor"
 ) {
+    private class DiscoveryToken
+
     private var tokenProvider: TokenProvider? = null
     private var discoveryCancelable: Cancelable? = null
+    private var discoveryToken: DiscoveryToken? = null
     private var collectCancelable: Cancelable? = null
     private var installUpdateCancelable: Cancelable? = null
     private var cancelReaderConnectionCancellable: Cancelable? = null
@@ -206,6 +209,8 @@ class StripeTerminal(
             return
         }
 
+        val token = DiscoveryToken()
+        discoveryToken = token
         discoveryCancelable = Terminal.getInstance()
             .discoverReaders(
                 config,
@@ -228,10 +233,18 @@ class StripeTerminal(
                 },
                 object : Callback {
                     override fun onSuccess() {
+                        if (discoveryToken === token) {
+                            discoveryCancelable = null
+                            discoveryToken = null
+                        }
                         Log.d(logTag, "Finished discovering readers")
                     }
 
                     override fun onFailure(e: TerminalException) {
+                        if (discoveryToken === token) {
+                            discoveryCancelable = null
+                            discoveryToken = null
+                        }
                         Log.d(logTag, e.localizedMessage)
                     }
                 }
@@ -484,12 +497,20 @@ class StripeTerminal(
 
     fun cancelDiscoverReaders(call: PluginCall) {
         if (discoveryCancelable == null || discoveryCancelable!!.isCompleted) {
+            discoveryCancelable = null
+            discoveryToken = null
             call.resolve()
             return
         }
-        discoveryCancelable!!.cancel(
+        val cancelable = discoveryCancelable!!
+        val token = discoveryToken
+        cancelable.cancel(
             object : Callback {
                 override fun onSuccess() {
+                    if (discoveryToken === token) {
+                        discoveryCancelable = null
+                        discoveryToken = null
+                    }
                     notifyListeners(
                         TerminalEnumEvent.CancelDiscoveredReaders.webEventName,
                         emptyObject
