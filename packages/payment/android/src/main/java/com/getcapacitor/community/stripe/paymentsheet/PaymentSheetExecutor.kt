@@ -142,7 +142,6 @@ class PaymentSheetExecutor(
         paymentSheetResult: PaymentSheetResult
     ) {
         val call = bridge.getSavedCall(callbackId)
-        if (call == null) return
 
         if (paymentSheetResult is PaymentSheetResult.Canceled) {
             notifyListenersFunction.accept(PaymentSheetEvents.Canceled.webEventName, emptyObject)

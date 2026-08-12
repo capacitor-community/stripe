@@ -69,7 +69,6 @@ class GooglePayExecutor(
 
     fun onGooglePayResult(bridge: Bridge, callbackId: String?, result: GooglePayLauncher.Result) {
         val call = bridge.getSavedCall(callbackId)
-        if (call == null) return
 
         if (result is GooglePayLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.webEventName, emptyObject)
