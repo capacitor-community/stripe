@@ -167,6 +167,8 @@ jobs:
 
   verify-payment-ios:
     runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -188,6 +190,8 @@ jobs:
 
   verify-identity-ios:
     runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -209,6 +213,8 @@ jobs:
 
   verify-terminal-ios:
     runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
