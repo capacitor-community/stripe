@@ -4,10 +4,13 @@ import StripeTerminal
 
 public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, ReaderDelegate, MobileReaderDelegate, TapToPayReaderDelegate, InternetReaderDelegate {
 
+    private final class DiscoveryToken {}
+
     weak var plugin: StripeTerminalPlugin?
     private let apiClient = APIClient()
 
     var discoverCancelable: Cancelable?
+    private var discoveryToken: DiscoveryToken?
     var collectCancelable: Cancelable?
     var installUpdateCancelable: Cancelable?
     var cancelReaderConnectionCancellable: Cancelable?
@@ -79,7 +82,13 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
             self.discoverCall = call
         }
         
+        let token = DiscoveryToken()
+        self.discoveryToken = token
         self.discoverCancelable = Terminal.shared.discoverReaders(config, delegate: self) { error in
+            if self.discoveryToken === token {
+                self.discoverCancelable = nil
+                self.discoveryToken = nil
+            }
             if let error = error {
                 print("discoverReaders failed: \(error)")
                 call.reject(error.localizedDescription)
@@ -412,13 +421,20 @@ public class StripeTerminal: NSObject, DiscoveryDelegate, TerminalDelegate, Read
     func cancelDiscoverReaders(_ call: CAPPluginCall) {
         if let cancelable = self.discoverCancelable {
             if cancelable.completed {
+                self.discoverCancelable = nil
+                self.discoveryToken = nil
                 call.resolve()
                 return
             }
+            let token = self.discoveryToken
             cancelable.cancel { error in
                 if let error = error {
                     call.reject(error.localizedDescription)
                 } else {
+                    if self.discoveryToken === token {
+                        self.discoverCancelable = nil
+                        self.discoveryToken = nil
+                    }
                     self.plugin?.notifyListeners(TerminalEvents.CancelDiscoveredReaders.rawValue, data: [:])
                     call.resolve()
                 }
