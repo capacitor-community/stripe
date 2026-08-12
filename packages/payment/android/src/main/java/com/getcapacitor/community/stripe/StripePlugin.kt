@@ -19,7 +19,7 @@ import com.stripe.android.googlepaylauncher.GooglePayLauncher
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 
-@CapacitorPlugin(name = "Stripe", requestCodes = [9972, 50000, 50001, 6000])
+@CapacitorPlugin(name = "Stripe")
 class StripePlugin : Plugin() {
     private var publishableKey: String? = null
     private var paymentSheetCallbackId: String? = null
