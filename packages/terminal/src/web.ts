@@ -11,6 +11,7 @@ import type {
   SimulatedCardType,
   Cart,
   TapToPayUxConfiguration,
+  IsTapToPayAccountLinkedOptions,
 } from './definitions';
 import { TerminalEventsEnum } from './events.enum';
 import {
@@ -217,5 +218,9 @@ export class StripeTerminalWeb extends WebPlugin implements StripeTerminalPlugin
 
   async setTapToPayUxConfiguration(_options: TapToPayUxConfiguration): Promise<void> {
     console.log('setTapToPayUxConfiguration is only supported on Android');
+  }
+
+  async isTapToPayAccountLinked(_options?: IsTapToPayAccountLinkedOptions): Promise<{ isLinked: boolean }> {
+    throw this.unavailable('isTapToPayAccountLinked is only supported on iOS.');
   }
 }

@@ -202,4 +202,9 @@ class StripeTerminalPlugin : Plugin() {
     fun setTapToPayUxConfiguration(call: PluginCall) {
         implementation.setTapToPayUxConfiguration(call)
     }
+
+    @PluginMethod
+    fun isTapToPayAccountLinked(call: PluginCall) {
+        call.unimplemented("isTapToPayAccountLinked is only supported on iOS.")
+    }
 }
