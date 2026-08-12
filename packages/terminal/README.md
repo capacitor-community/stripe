@@ -213,6 +213,7 @@ await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.Up
 * [`rebootReader()`](#rebootreader)
 * [`cancelReaderReconnection()`](#cancelreaderreconnection)
 * [`setTapToPayUxConfiguration(...)`](#settaptopayuxconfiguration)
+* [`isTapToPayAccountLinked(...)`](#istaptopayaccountlinked)
 * [`addListener(TerminalEventsEnum.Loaded, ...)`](#addlistenerterminaleventsenumloaded-)
 * [`addListener(TerminalEventsEnum.RequestedConnectionToken, ...)`](#addlistenerterminaleventsenumrequestedconnectiontoken-)
 * [`addListener(TerminalEventsEnum.DiscoveredReaders, ...)`](#addlistenerterminaleventsenumdiscoveredreaders-)
@@ -445,6 +446,34 @@ Has no effect on iOS or web platforms.
 | Param         | Type                                                                        |
 | ------------- | --------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#taptopayuxconfiguration">TapToPayUxConfiguration</a></code> |
+
+--------------------
+
+
+### isTapToPayAccountLinked(...)
+
+```typescript
+isTapToPayAccountLinked(options?: IsTapToPayAccountLinkedOptions | undefined) => Promise<{ isLinked: boolean; }>
+```
+
+Check whether the merchant has accepted Apple's Tap to Pay on iPhone
+Terms and Conditions.
+
+iOS only, and requires iOS 16.4 or later. `initialize()` must have been
+called first because the SDK needs a connection token provider, but no
+reader connection is required and the call does not activate the device.
+
+The answer is read from Apple on every call. Apple's Tap to Pay on iPhone
+requirements state that acceptance state must be retrieved from Apple
+rather than from a local variable, so do not cache the result.
+
+[*Stripe docs reference*](https://stripe.dev/stripe-terminal-ios/docs/Classes/SCPTerminal.html#/c:objc(cs)SCPTerminal(im)isTapToPayAccountLinked:completion:)
+
+| Param         | Type                                                                                      |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#istaptopayaccountlinkedoptions">IsTapToPayAccountLinkedOptions</a></code> |
+
+**Returns:** <code>Promise&lt;{ isLinked: boolean; }&gt;</code>
 
 --------------------
 
@@ -952,6 +981,15 @@ Color scheme for the Tap to Pay screen.
 | **`error`**   | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Error state color. Hex string or 'default'.                  |
 
 
+#### IsTapToPayAccountLinkedOptions
+
+Options for isTapToPayAccountLinked.
+
+| Prop             | Type                | Description                                                                                          |
+| ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------- |
+| **`onBehalfOf`** | <code>string</code> | Connected account ID, for Stripe Connect platforms. Omit to check the account that owns the API key. |
+
+
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
@@ -1062,7 +1100,6 @@ Controls where the tap indicator appears on screen.
 | **`stripeM2`**         | <code>'stripeM2'</code>         |
 | **`stripeS700`**       | <code>'stripeS700'</code>       |
 | **`stripeS700DevKit`** | <code>'stripeS700Devkit'</code> |
-| **`verifoneP400`**     | <code>'verifoneP400'</code>     |
 | **`wiseCube`**         | <code>'wiseCube'</code>         |
 | **`wisePad3`**         | <code>'wisePad3'</code>         |
 | **`wisePosE`**         | <code>'wisePosE'</code>         |

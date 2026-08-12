@@ -25,7 +25,8 @@ public class StripeTerminalPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "clearReaderDisplay", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "rebootReader", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "cancelReaderReconnection", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "setTapToPayUxConfiguration", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "setTapToPayUxConfiguration", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isTapToPayAccountLinked", returnType: CAPPluginReturnPromise)
     ]
     private let implementation = StripeTerminal()
 
@@ -109,5 +110,9 @@ public class StripeTerminalPlugin: CAPPlugin, CAPBridgedPlugin {
     
     @objc func setTapToPayUxConfiguration(_ call: CAPPluginCall) {
         call.unimplemented()
+    }
+
+    @objc func isTapToPayAccountLinked(_ call: CAPPluginCall) {
+        self.implementation.isTapToPayAccountLinked(call)
     }
 }

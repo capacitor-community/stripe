@@ -100,7 +100,7 @@ class StripeTerminalPlugin : Plugin() {
         }
     }
 
-    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
+    @PluginMethod
     fun discoverReaders(call: PluginCall) {
         if (call.getString("type") == TerminalConnectTypes.Bluetooth.webEventName || call.getString(
                 "type"
@@ -201,5 +201,10 @@ class StripeTerminalPlugin : Plugin() {
     @PluginMethod
     fun setTapToPayUxConfiguration(call: PluginCall) {
         implementation.setTapToPayUxConfiguration(call)
+    }
+
+    @PluginMethod
+    fun isTapToPayAccountLinked(call: PluginCall) {
+        call.unimplemented("isTapToPayAccountLinked is only supported on iOS.")
     }
 }

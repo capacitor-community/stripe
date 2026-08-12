@@ -1,14 +1,14 @@
-name: Build
+name: Validation
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
-
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: validation-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   verify-demo:
@@ -52,17 +52,26 @@ jobs:
     #    STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
     #  run: npm test
 
+    - name: Cache Angular
+      uses: actions/cache@v5
+      with:
+        path: demo/angular/.angular/cache
+        key: ${{ runner.os }}-angular-${{ hashFiles('demo/angular/package-lock.json') }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-angular-${{ hashFiles('demo/angular/package-lock.json') }}-
+          ${{ runner.os }}-angular-
+
     - name: Install test app node_modules
       working-directory: ./demo/angular
-      run: npm install && npm run cap && npm run test:ci
+      run: npm ci && npm run cap && npm run test:ci
 
     - name: Install test app app-on-devices node_modules
       working-directory: ./demo/app-on-devices
-      run: npm install && npm run cap && npm run test:ci
+      run: npm ci && npm run cap && npm run test:ci
 
     - name: Build test React app
       working-directory: ./demo/react
-      run: npm install -f && npm run build
+      run: npm ci && npm run build
 
     - name: Update & Sync Capacitor Project
       working-directory: ./demo/angular
