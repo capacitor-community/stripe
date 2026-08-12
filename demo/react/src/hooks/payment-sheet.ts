@@ -1,13 +1,8 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 
+const api = 'https://capacitor-stripe-demo-server.bittersweet-barberry.workers.dev/'
 
 export const usePaymentSheet = () => {
-    const api = useMemo(() => {
-        if (process.env.REACT_APP_API_URL) {
-            return process.env.REACT_APP_API_URL
-        }
-        return 'https://j3x0ln9gj7.execute-api.ap-northeast-1.amazonaws.com/dev/'
-    },[])
     const createPaymentIntent = useCallback(async (): Promise<{
         customer: string;
         paymentIntent: string;
@@ -25,7 +20,7 @@ export const usePaymentSheet = () => {
             paymentIntent,
             ephemeralKey,
         }
-    }, [api])
+    }, [])
     return {
         createPaymentIntent,
     }

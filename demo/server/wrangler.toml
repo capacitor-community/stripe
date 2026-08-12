@@ -1,0 +1,14 @@
+name = "capacitor-stripe-demo-server"
+account_id = "7da92ed622587e918af5cb354c689957"
+main = "src/worker.ts"
+compatibility_date = "2026-08-12"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+STRIPE_SECRET_KEY = "sk_test_51MmARtKzMYim9cy3l0jRblHOagmulcxNgJpXRLB3yDDyObnep8C5Eo70FrT5oDJr60G3CPAqdLVHagSyXizvk0ko00645CTaT5"
+
+[dev]
+port = 3000
+
+[observability]
+enabled = true
