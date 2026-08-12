@@ -64,7 +64,7 @@ jobs:
           done
 
       - name: Build all workspaces
-        run: npm run build -ws --if-present
+        run: npm run build --workspaces --if-present
 
       - name: Commit changes
         run: |
@@ -87,4 +87,3 @@ jobs:
               npm publish --provenance --access public --tag next --workspace "$workspace"
             fi
           done
-

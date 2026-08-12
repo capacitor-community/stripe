@@ -9,7 +9,7 @@
   "description": "Stripe SDK bindings for Capacitor Applications",
   "scripts": {
     "release": "np --no-tests --no-publish --any-branch",
-    "build": "npm run build -ws --if-present"
+    "build": "npm run build --workspaces --if-present"
   },
   "workspaces": [
     "packages/identity",
