@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  api: 'https://j3x0ln9gj7.execute-api.ap-northeast-1.amazonaws.com/dev/',
+  api: 'https://capacitor-stripe-demo-server.bittersweet-barberry.workers.dev/',
 };
 
 /*
