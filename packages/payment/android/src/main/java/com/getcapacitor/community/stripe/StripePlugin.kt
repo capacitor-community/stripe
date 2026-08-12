@@ -18,7 +18,6 @@ import com.stripe.android.core.AppInfo
 import com.stripe.android.googlepaylauncher.GooglePayLauncher
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
-import com.stripe.android.paymentsheet.model.PaymentOption
 
 @NativePlugin(name = "Stripe", requestCodes = [9972, 50000, 50001, 6000])
 class StripePlugin : Plugin() {
@@ -96,15 +95,19 @@ class StripePlugin : Plugin() {
             paymentSheetExecutor.onPaymentSheetResult(bridge, paymentSheetCallbackId, result)
         }
 
-        paymentFlowExecutor.flowController = PaymentSheet.FlowController.create(
-            activity,
-            { paymentOption: PaymentOption? ->
-                paymentFlowExecutor.onPaymentOption(bridge, paymentFlowCallbackId, paymentOption)
-            },
-            { result: PaymentSheetResult ->
+        paymentFlowExecutor.flowController = PaymentSheet.FlowController.Builder(
+            resultCallback = { result: PaymentSheetResult ->
                 paymentFlowExecutor.onPaymentFlowResult(bridge, paymentFlowCallbackId, result)
+            },
+            paymentOptionResultCallback = { result ->
+                paymentFlowExecutor.onPaymentOption(
+                    bridge,
+                    paymentFlowCallbackId,
+                    result.paymentOption,
+                    result.didCancel
+                )
             }
-        )
+        ).build(activity)
 
         if (metaData.enableIdentifier) {
             val resources = activity.applicationContext.resources
