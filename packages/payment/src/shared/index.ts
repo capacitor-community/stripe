@@ -181,12 +181,14 @@ export interface BasePaymentOption {
   currencyCode?: string;
 }
 
+export interface PaymentSummaryItem {
+  label: string;
+  amount: number;
+}
+
 export interface CreateApplePayOption {
   paymentIntentClientSecret: string;
-  paymentSummaryItems: {
-    label: string;
-    amount: number;
-  }[];
+  paymentSummaryItems: PaymentSummaryItem[];
   merchantIdentifier: string;
   countryCode: string;
   currency: string;
@@ -225,6 +227,10 @@ export interface CreateGooglePayOption {
 
 // Apple doc: https://developer.apple.com/documentation/passkit/pkcontact
 export interface DidSelectShippingContact {
+  contact: ShippingContact;
+  updateId: string;
+}
+export interface DidCreatePaymentMethod {
   contact: ShippingContact;
 }
 export interface ShippingContact {

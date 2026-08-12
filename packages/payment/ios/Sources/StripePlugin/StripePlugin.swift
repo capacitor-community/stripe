@@ -18,6 +18,7 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "isApplePayAvailable", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "createApplePay", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "presentApplePay", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "updateApplePaySheet", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "isGooglePayAvailable", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "createGooglePay", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "presentGooglePay", returnType: CAPPluginReturnPromise)
@@ -105,6 +106,12 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func presentApplePay(_ call: CAPPluginCall) {
         self.applePayExecutor.presentApplePay(call)
+    }
+
+    @objc func updateApplePaySheet(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            self.applePayExecutor.updateApplePaySheet(call)
+        }
     }
 
     @objc func isGooglePayAvailable(_ call: CAPPluginCall) {
