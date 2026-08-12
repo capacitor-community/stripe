@@ -14,6 +14,9 @@ import com.stripe.android.paymentsheet.PaymentSheet.PaymentMethodLayout
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import com.stripe.android.paymentsheet.model.PaymentOption
 
+internal fun shouldIgnorePaymentOptionResult(hasPaymentOption: Boolean, didCancel: Boolean): Boolean =
+    !hasPaymentOption && !didCancel
+
 class PaymentFlowExecutor(
     contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
@@ -169,7 +172,14 @@ class PaymentFlowExecutor(
         }
     }
 
-    fun onPaymentOption(bridge: Bridge, callbackId: String?, paymentOption: PaymentOption?) {
+    fun onPaymentOption(
+        bridge: Bridge,
+        callbackId: String?,
+        paymentOption: PaymentOption?,
+        didCancel: Boolean
+    ) {
+        if (shouldIgnorePaymentOptionResult(paymentOption != null, didCancel)) return
+
         val call = bridge.getSavedCall(callbackId)
         if (paymentOption != null) {
             notifyListenersFunction.accept(
