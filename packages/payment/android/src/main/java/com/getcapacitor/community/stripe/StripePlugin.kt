@@ -4,12 +4,13 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.getcapacitor.JSObject
 import com.getcapacitor.Logger
-import com.getcapacitor.NativePlugin
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
+import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor
 import com.getcapacitor.community.stripe.helper.MetaData
+import com.getcapacitor.community.stripe.models.EventNotifier
 import com.getcapacitor.community.stripe.paymentflow.PaymentFlowExecutor
 import com.getcapacitor.community.stripe.paymentsheet.PaymentSheetExecutor
 import com.stripe.android.PaymentConfiguration
@@ -19,7 +20,7 @@ import com.stripe.android.googlepaylauncher.GooglePayLauncher
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 
-@NativePlugin(name = "Stripe", requestCodes = [9972, 50000, 50001, 6000])
+@CapacitorPlugin(name = "Stripe")
 class StripePlugin : Plugin() {
     private var publishableKey: String? = null
     private var paymentSheetCallbackId: String? = null
@@ -33,21 +34,27 @@ class StripePlugin : Plugin() {
     private val paymentSheetExecutor = PaymentSheetExecutor(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 
     private val paymentFlowExecutor = PaymentFlowExecutor(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 
     private val googlePayExecutor = GooglePayExecutor(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 

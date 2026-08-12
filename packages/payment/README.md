@@ -15,6 +15,30 @@ Learn at [the official @capacitor-community/stripe documentation](https://stripe
 
 日本語版をご利用の際は [ja.stripe.capacitorjs.jp](https://ja.stripe.capacitorjs.jp/) をご確認ください。
 
+### Recommended result handling
+
+Use result events as the default result path. Register application-level result listeners once per JavaScript application startup, as early as possible during bootstrap—for example, from `main.ts`, an application initializer, or a singleton service initialized at startup—and before presenting Stripe UI.
+
+```ts
+import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
+
+await Promise.all([
+  Stripe.addListener(PaymentSheetEventsEnum.Completed, () => handleCompleted()),
+  Stripe.addListener(PaymentSheetEventsEnum.Canceled, () => handleCanceled()),
+  Stripe.addListener(PaymentSheetEventsEnum.Failed, (error) => handleFailed(error)),
+]);
+
+await Stripe.presentPaymentSheet();
+```
+
+### Android activity recreation
+
+This is especially important on Android, where the Activity and JavaScript runtime can be recreated while Stripe's UI is open. The new JavaScript runtime must register its listeners during bootstrap.
+
+The original JavaScript Promise and Capacitor `PluginCall` cannot be restored. If Stripe delivers the native result after recreation, the plugin retains the corresponding result event until a listener is available. This applies to the `Completed`, `Canceled`, and `Failed` events for PaymentSheet, PaymentFlow, and Google Pay, and to the `Created` event for PaymentFlow.
+
+If the original call still exists, behavior is unchanged: the Promise is settled normally and the event is delivered without being retained. This fallback is an in-memory handoff of a native result; it is not persistent storage and does not guarantee recovery after OS process death.
+
 ## API
 
 <docgen-index>

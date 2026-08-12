@@ -12,6 +12,7 @@ import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.annotation.Permission
 import com.getcapacitor.annotation.PermissionCallback
+import com.getcapacitor.community.stripe.terminal.models.EventNotifier
 import com.stripe.stripeterminal.external.models.TerminalException
 
 @RequiresApi(api = Build.VERSION_CODES.S)
@@ -32,7 +33,9 @@ class StripeTerminalPlugin : Plugin() {
     private val implementation = StripeTerminal(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 

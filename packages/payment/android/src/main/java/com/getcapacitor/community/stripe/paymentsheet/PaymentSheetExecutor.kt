@@ -7,15 +7,15 @@ import com.getcapacitor.Bridge
 import com.getcapacitor.JSObject
 import com.getcapacitor.PluginCall
 import com.getcapacitor.community.stripe.helper.PaymentSheetHelper
+import com.getcapacitor.community.stripe.models.EventNotifier
 import com.getcapacitor.community.stripe.models.Executor
-import com.google.android.gms.common.util.BiConsumer
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 
 class PaymentSheetExecutor(
     contextSupplier: Supplier<Context>,
     activitySupplier: Supplier<Activity>,
-    notifyListenersFunction: BiConsumer<String, JSObject>,
+    notifyListenersFunction: EventNotifier,
     pluginLogTag: String
 ) : Executor(
     contextSupplier,
@@ -144,21 +144,21 @@ class PaymentSheetExecutor(
         val call = bridge.getSavedCall(callbackId)
 
         if (paymentSheetResult is PaymentSheetResult.Canceled) {
-            notifyListenersFunction.accept(PaymentSheetEvents.Canceled.webEventName, emptyObject)
-            call.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Canceled.webEventName))
+            notifyListenersFunction.accept(PaymentSheetEvents.Canceled.webEventName, emptyObject, call == null)
+            call?.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Canceled.webEventName))
         } else if (paymentSheetResult is PaymentSheetResult.Failed) {
             notifyListenersFunction.accept(
                 PaymentSheetEvents.Failed.webEventName,
                 JSObject().put(
                     "message",
                     (paymentSheetResult).error.localizedMessage
-                )
+                ),
+                call == null
             )
-            notifyListenersFunction.accept(PaymentSheetEvents.Failed.webEventName, emptyObject)
-            call.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Failed.webEventName))
+            call?.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Failed.webEventName))
         } else if (paymentSheetResult is PaymentSheetResult.Completed) {
-            notifyListenersFunction.accept(PaymentSheetEvents.Completed.webEventName, emptyObject)
-            call.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Completed.webEventName))
+            notifyListenersFunction.accept(PaymentSheetEvents.Completed.webEventName, emptyObject, call == null)
+            call?.resolve(JSObject().put("paymentResult", PaymentSheetEvents.Completed.webEventName))
         }
     }
 }

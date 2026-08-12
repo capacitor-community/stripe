@@ -50,6 +50,17 @@ If you are developing apps for Stripe Android devices (e.g. Stripe Reader S700),
 
 ### Simple collect payment
 
+Register application-level Terminal event listeners once per JavaScript application startup, as early as possible during bootstrap—for example, from `main.ts`, an application initializer, or a singleton service initialized at startup—and before initializing or starting an operation. Keep them registered for the lifetime of their application-level owner:
+
+```typescript
+const paymentStatusListener = await StripeTerminal.addListener(
+  TerminalEventsEnum.PaymentStatusChange,
+  ({ status }) => console.log(status),
+);
+
+// Keep paymentStatusListener and remove it only when its application-level owner is destroyed.
+```
+
 #### Use plugin client
 
 ```typescript

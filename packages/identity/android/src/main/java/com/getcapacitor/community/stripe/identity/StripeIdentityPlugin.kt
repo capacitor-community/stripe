@@ -7,6 +7,7 @@ import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
+import com.getcapacitor.community.stripe.identity.models.EventNotifier
 import com.stripe.android.identity.IdentityVerificationSheet
 import com.stripe.android.identity.IdentityVerificationSheet.Companion.create
 import com.stripe.android.identity.IdentityVerificationSheet.VerificationFlowResult
@@ -16,7 +17,9 @@ class StripeIdentityPlugin : Plugin() {
     private val implementation = StripeIdentity(
         { this.context },
         { this.activity },
-        { eventName: String?, data: JSObject? -> this.notifyListeners(eventName, data) },
+        EventNotifier { eventName, data, retainUntilConsumed ->
+            this.notifyListeners(eventName, data, retainUntilConsumed)
+        },
         logTag
     )
 
