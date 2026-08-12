@@ -11,9 +11,7 @@ npx cap sync
 
 ## How to use
 
-Learn at [the official @capacitor-community/stripe documentation](https://stripe.capacitorjs.jp/).
-
-日本語版をご利用の際は [ja.stripe.capacitorjs.jp](https://ja.stripe.capacitorjs.jp/) をご確認ください。
+The API reference below and the repository's [demo applications](https://github.com/capacitor-community/stripe/tree/main/demo) track the current plugin version.
 
 ### Recommended result handling
 
@@ -726,13 +724,13 @@ addListener(eventName: PaymentSheetEventsEnum.Failed, listenerFunc: (error: stri
 
 #### CreateGooglePayOption
 
-| Prop                            | Type                                              | Description                                  |
-| ------------------------------- | ------------------------------------------------- | -------------------------------------------- |
-| **`paymentIntentClientSecret`** | <code>string</code>                               |                                              |
-| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only need stripe-pwa-elements &gt; 1.1.0 |
-| **`merchantIdentifier`**        | <code>string</code>                               | Web only need stripe-pwa-elements &gt; 1.1.0 |
-| **`countryCode`**               | <code>string</code>                               | Web only need stripe-pwa-elements &gt; 1.1.0 |
-| **`currency`**                  | <code>string</code>                               | Web only need stripe-pwa-elements &gt; 1.1.0 |
+| Prop                            | Type                                              | Description                                    |
+| ------------------------------- | ------------------------------------------------- | ---------------------------------------------- |
+| **`paymentIntentClientSecret`** | <code>string</code>                               |                                                |
+| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only. Requires stripe-pwa-elements ^3.0.0. |
+| **`merchantIdentifier`**        | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^3.0.0. |
+| **`countryCode`**               | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^3.0.0. |
+| **`currency`**                  | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^3.0.0. |
 
 
 #### CreatePaymentFlowOption
@@ -917,4 +915,4 @@ Billing details collection options.
 
 ## License
 
-@capacitor-community/stripe is [MIT licensed](./LICENSE).
+@capacitor-community/stripe is [MIT licensed](../../LICENSE).

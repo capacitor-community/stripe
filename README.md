@@ -51,7 +51,7 @@ To use the latest Stripe Android, you need to version these up. To use the lates
 
 ```diff
   ext {
--   minSdkVersio = 24
+-   minSdkVersion = 24
 +   minSdkVersion = 26
     compileSdkVersion = 36
     targetSdkVersion = 36
@@ -122,8 +122,8 @@ Made with [contributors-img](https://contrib.rocks).
 
 ## Demo
 
-- [Demo code is here](https://github.com/capacitor-community/stripe/tree/master/demo). Please check these code before ask at issues.
-- Demo of Web is [hosting here](https://capacitor-community-stripe.netlify.app/).
+- [Demo code is here](https://github.com/capacitor-community/stripe/tree/main/demo). Please check the demo code before opening an issue.
+- The web demo is [hosted here](https://capacitor-community-stripe.netlify.app/).
 
 ### Screenshots
 
@@ -132,7 +132,7 @@ Made with [contributors-img](https://contrib.rocks).
 |              |                     Android                     |                     iOS                     |                     Web                     |
 |:------------:|:-----------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|
 | PaymentSheet | ![](demo/screenshots/payment-sheet-android.png) | ![](demo/screenshots/payment-sheet-ios.png) | ![](demo/screenshots/payment-sheet-web.png) |
-| PaymentFlow  | ![](demo/screenshots/payment-flow-android.png)  | ![](demo/screenshots/payment-flow-ios.png)  | ![](demo/screenshots/payment-sheet-web.png) |
+| PaymentFlow  | ![](demo/screenshots/payment-flow-android.png)  | ![](demo/screenshots/payment-flow-ios.png)  |            Screenshot unavailable           |
 |   ApplePay   |                  Not supported                  |   ![](demo/screenshots/apple-pay-ios.png)   |                    beta.                    |
 |  GooglePay   |  ![](demo/screenshots/google-pay-android.png)   |                Not supported                |  ![](demo/screenshots/google-pay-web.png)   |
 
@@ -147,6 +147,8 @@ Made with [contributors-img](https://contrib.rocks).
 
 ```bash
 % git clone git@github.com:capacitor-community/stripe.git
-% cd npm install && npm run build
-% cd demo && npm install && npm run cap && npx cap update
+% cd stripe
+% npm install && npm run build
+% cd demo/angular
+% npm install && npm run cap && npx cap update
 ```
