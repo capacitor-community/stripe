@@ -1,6 +1,9 @@
 # @capacitor-community/stripe-terminal
 
 Stripe SDK bindings for Capacitor Applications.
+
+Documentation: [https://stripe.capacitorjs.jp/stripe-terminal](https://stripe.capacitorjs.jp/stripe-terminal)
+
 We have confirmed that it works well in the demo project. Refer to:
 
 - Tap to Pay / Internet / Bluetooth demo: https://github.com/capacitor-community/stripe/tree/main/demo/angular

@@ -2,6 +2,8 @@
 
 Stripe Identity SDK bindings for Capacitor Applications.
 
+Documentation: [https://stripe.capacitorjs.jp/stripe-identity](https://stripe.capacitorjs.jp/stripe-identity)
+
 ## Install
 
 ```bash

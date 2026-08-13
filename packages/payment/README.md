@@ -2,6 +2,8 @@
 
 Stripe SDK bindings for Capacitor Applications
 
+Documentation: [https://stripe.capacitorjs.jp/stripe](https://stripe.capacitorjs.jp/stripe)
+
 ## Install
 
 ```bash
