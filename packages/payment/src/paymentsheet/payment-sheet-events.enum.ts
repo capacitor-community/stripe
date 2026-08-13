@@ -6,7 +6,11 @@ export enum PaymentSheetEventsEnum {
   Failed = 'paymentSheetFailed',
 }
 
-/** Final result returned after presenting PaymentSheet. */
+/**
+ * Final result returned after presenting PaymentSheet.
+ *
+ * @since 3.0.0
+ */
 export type PaymentSheetResultInterface =
   | PaymentSheetEventsEnum.Completed
   | PaymentSheetEventsEnum.Canceled

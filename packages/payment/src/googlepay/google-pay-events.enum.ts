@@ -5,7 +5,11 @@ export enum GooglePayEventsEnum {
   Canceled = 'googlePayCanceled',
   Failed = 'googlePayFailed',
 }
-/** Final result returned after presenting Google Pay. */
+/**
+ * Final result returned after presenting Google Pay.
+ *
+ * @since 3.2.0
+ */
 export type GooglePayResultInterface =
   | GooglePayEventsEnum.Completed
   | GooglePayEventsEnum.Canceled

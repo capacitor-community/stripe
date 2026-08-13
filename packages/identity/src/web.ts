@@ -10,6 +10,8 @@ export interface InitializeIdentityVerificationSheetOption {
    * Stripe publishable key used by the web Identity SDK. Native platforms
    * accept this option for API parity but initialize Identity from the
    * verification session credentials supplied to `create()`.
+   *
+   * @since 5.4.0
    */
   publishableKey: string;
 }
@@ -18,17 +20,23 @@ export interface CreateIdentityVerificationSheetOption {
   /**
    * ID of the VerificationSession created by your server. Required on iOS and
    * Android.
+   *
+   * @since 5.0.3
    */
   verificationId: string;
   /**
    * Ephemeral-key secret scoped to the VerificationSession. Required on iOS
    * and Android and must be returned by your server.
+   *
+   * @since 5.0.3
    */
   ephemeralKeySecret: string;
 
   /**
    * Client secret of the VerificationSession. Required on web and ignored by
    * the native Identity SDKs.
+   *
+   * @since 5.4.0
    */
   clientSecret?: string;
 }

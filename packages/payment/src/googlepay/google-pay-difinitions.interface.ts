@@ -8,32 +8,62 @@ export interface GooglePayDefinitions {
   /**
    * Resolves when Google Pay is available and rejects when it is unavailable.
    * Google Pay is supported on Android and compatible web browsers, not iOS.
+   *
+   * @since 3.2.0
    */
   isGooglePayAvailable(): Promise<void>;
 
-  /** Creates a Google Pay request. Call this before `presentGooglePay()`. */
+  /**
+   * Creates a Google Pay request. Call this before `presentGooglePay()`.
+   *
+   * @since 3.2.0
+   */
   createGooglePay(options: CreateGooglePayOption): Promise<void>;
 
-  /** Presents the Google Pay request created by `createGooglePay()`. */
+  /**
+   * Presents the Google Pay request created by `createGooglePay()`.
+   *
+   * @since 3.2.0
+   */
   presentGooglePay(): Promise<{
     paymentResult: GooglePayResultInterface;
   }>;
 
-  /** Emitted when the Google Pay request is ready to present. */
+  /**
+   * Emitted when the Google Pay request is ready to present.
+   *
+   * @since 3.2.0
+   */
   addListener(eventName: GooglePayEventsEnum.Loaded, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
-  /** Emitted when the Google Pay request could not be created. */
+  /**
+   * Emitted when the Google Pay request could not be created.
+   *
+   * @since 3.2.0
+   */
   addListener(
     eventName: GooglePayEventsEnum.FailedToLoad,
     listenerFunc: (error: string) => void,
   ): Promise<PluginListenerHandle>;
 
-  /** Emitted after Google Pay completes successfully. */
+  /**
+   * Emitted after Google Pay completes successfully.
+   *
+   * @since 3.2.0
+   */
   addListener(eventName: GooglePayEventsEnum.Completed, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
-  /** Emitted when the customer cancels Google Pay. */
+  /**
+   * Emitted when the customer cancels Google Pay.
+   *
+   * @since 3.2.0
+   */
   addListener(eventName: GooglePayEventsEnum.Canceled, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
-  /** Emitted when Google Pay fails. */
+  /**
+   * Emitted when Google Pay fails.
+   *
+   * @since 3.2.0
+   */
   addListener(eventName: GooglePayEventsEnum.Failed, listenerFunc: () => void): Promise<PluginListenerHandle>;
 }

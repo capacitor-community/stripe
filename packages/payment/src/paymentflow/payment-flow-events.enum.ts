@@ -7,7 +7,11 @@ export enum PaymentFlowEventsEnum {
   Canceled = 'paymentFlowCanceled',
   Failed = 'paymentFlowFailed',
 }
-/** Final result returned after confirming PaymentFlow. */
+/**
+ * Final result returned after confirming PaymentFlow.
+ *
+ * @since 3.0.2
+ */
 export type PaymentFlowResultInterface =
   | PaymentFlowEventsEnum.Completed
   | PaymentFlowEventsEnum.Canceled

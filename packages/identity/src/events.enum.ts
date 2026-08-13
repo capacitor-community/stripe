@@ -7,7 +7,11 @@ export enum IdentityVerificationSheetEventsEnum {
   VerificationResult = 'identityVerificationResult',
 }
 
-/** Final state reported by the Identity verification flow. */
+/**
+ * Final state reported by the Identity verification flow.
+ *
+ * @since 4.2.0
+ */
 export type IdentityVerificationSheetResultInterface =
   | IdentityVerificationSheetEventsEnum.Completed
   | IdentityVerificationSheetEventsEnum.Canceled

@@ -92,6 +92,8 @@ Initializes Stripe Identity. Call this before `create()` on web.
 | ------------- | --------------------------------------------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#initializeidentityverificationsheetoption">InitializeIdentityVerificationSheetOption</a></code> |
 
+**Since:** 5.4.0
+
 --------------------
 
 
@@ -108,6 +110,8 @@ server. Wait for this Promise or the `Loaded` event before `present()`.
 | ------------- | ------------------------------------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#createidentityverificationsheetoption">CreateIdentityVerificationSheetOption</a></code> |
 
+**Since:** 5.0.3
+
 --------------------
 
 
@@ -119,6 +123,8 @@ present() => Promise<void>
 
 Presents the VerificationSheet created by `create()`. Listen for
 `VerificationResult` to distinguish completed, canceled, and failed flows.
+
+**Since:** 5.0.3
 
 --------------------
 
@@ -138,6 +144,8 @@ Emitted when the VerificationSheet is ready to present.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 4.2.0
+
 --------------------
 
 
@@ -155,6 +163,8 @@ Emitted when the VerificationSheet could not be created.
 | **`listenerFunc`** | <code>(info: <a href="#stripeidentityerror">StripeIdentityError</a>) =&gt; void</code>                           |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -174,6 +184,8 @@ Emitted when the presented verification flow finishes.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 4.2.0
+
 --------------------
 
 
@@ -182,18 +194,18 @@ Emitted when the presented verification flow finishes.
 
 #### InitializeIdentityVerificationSheetOption
 
-| Prop                 | Type                | Description                                                                                                                                                                                       |
-| -------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`publishableKey`** | <code>string</code> | Stripe publishable key used by the web Identity SDK. Native platforms accept this option for API parity but initialize Identity from the verification session credentials supplied to `create()`. |
+| Prop                 | Type                | Description                                                                                                                                                                                       | Since |
+| -------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| **`publishableKey`** | <code>string</code> | Stripe publishable key used by the web Identity SDK. Native platforms accept this option for API parity but initialize Identity from the verification session credentials supplied to `create()`. | 5.4.0 |
 
 
 #### CreateIdentityVerificationSheetOption
 
-| Prop                     | Type                | Description                                                                                                              |
-| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **`verificationId`**     | <code>string</code> | ID of the VerificationSession created by your server. Required on iOS and Android.                                       |
-| **`ephemeralKeySecret`** | <code>string</code> | Ephemeral-key secret scoped to the VerificationSession. Required on iOS and Android and must be returned by your server. |
-| **`clientSecret`**       | <code>string</code> | Client secret of the VerificationSession. Required on web and ignored by the native Identity SDKs.                       |
+| Prop                     | Type                | Description                                                                                                              | Since |
+| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----- |
+| **`verificationId`**     | <code>string</code> | ID of the VerificationSession created by your server. Required on iOS and Android.                                       | 5.0.3 |
+| **`ephemeralKeySecret`** | <code>string</code> | Ephemeral-key secret scoped to the VerificationSession. Required on iOS and Android and must be returned by your server. | 5.0.3 |
+| **`clientSecret`**       | <code>string</code> | Client secret of the VerificationSession. Required on web and ignored by the native Identity SDKs.                       | 5.4.0 |
 
 
 #### PluginListenerHandle
@@ -205,18 +217,18 @@ Emitted when the presented verification flow finishes.
 
 #### StripeIdentityError
 
-| Prop          | Type                | Description                                                   |
-| ------------- | ------------------- | ------------------------------------------------------------- |
-| **`code`**    | <code>string</code> | Stripe error code when one is available.                      |
-| **`message`** | <code>string</code> | Human-readable error message suitable for logging or display. |
+| Prop          | Type                | Description                                                   | Since |
+| ------------- | ------------------- | ------------------------------------------------------------- | ----- |
+| **`code`**    | <code>string</code> | Stripe error code when one is available.                      | 5.1.0 |
+| **`message`** | <code>string</code> | Human-readable error message suitable for logging or display. | 5.1.0 |
 
 
 #### IdentityVerificationResult
 
-| Prop         | Type                                                                                                          | Description                                     |
-| ------------ | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| **`result`** | <code><a href="#identityverificationsheetresultinterface">IdentityVerificationSheetResultInterface</a></code> | Final state of the presented verification flow. |
-| **`error`**  | <code><a href="#stripeidentityerror">StripeIdentityError</a></code>                                           | Error details when `result` is `Failed`.        |
+| Prop         | Type                                                                                                          | Description                                     | Since |
+| ------------ | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ----- |
+| **`result`** | <code><a href="#identityverificationsheetresultinterface">IdentityVerificationSheetResultInterface</a></code> | Final state of the presented verification flow. | 4.2.0 |
+| **`error`**  | <code><a href="#stripeidentityerror">StripeIdentityError</a></code>                                           | Error details when `result` is `Failed`.        | 4.2.0 |
 
 
 ### Type Aliases

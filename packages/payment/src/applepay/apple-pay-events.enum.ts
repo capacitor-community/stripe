@@ -7,7 +7,11 @@ export enum ApplePayEventsEnum {
   DidSelectShippingContact = 'applePayDidSelectShippingContact',
   DidCreatePaymentMethod = 'applePayDidCreatePaymentMethod',
 }
-/** Final result returned after presenting Apple Pay. */
+/**
+ * Final result returned after presenting Apple Pay.
+ *
+ * @since 3.1.0
+ */
 export type ApplePayResultInterface =
   | ApplePayEventsEnum.Completed
   | ApplePayEventsEnum.Canceled
