@@ -259,12 +259,21 @@ await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.Up
 ### initialize(...)
 
 ```typescript
-initialize(options: { tokenProviderEndpoint?: string; isTest: boolean; }) => Promise<void>
+initialize(options: StripeTerminalInitializationOptions) => Promise<void>
 ```
 
-| Param         | Type                                                              |
-| ------------- | ----------------------------------------------------------------- |
-| **`options`** | <code>{ tokenProviderEndpoint?: string; isTest: boolean; }</code> |
+Initializes the Stripe Terminal SDK and its connection-token provider.
+Call this once before discovering readers.
+
+When `tokenProviderEndpoint` is provided, the plugin sends a POST request
+and expects `{ secret: string }`. When it is omitted, handle
+`RequestedConnectionToken` and call `setConnectionToken()` instead.
+
+| Param         | Type                                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#stripeterminalinitializationoptions">StripeTerminalInitializationOptions</a></code> |
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -275,11 +284,17 @@ initialize(options: { tokenProviderEndpoint?: string; isTest: boolean; }) => Pro
 discoverReaders(options: DiscoverReadersOptions) => Promise<{ readers: ReaderInterface[]; }>
 ```
 
+Discovers readers using the requested transport. The returned readers are
+snapshots; listen for `DiscoveredReaders` when continuous discovery can
+produce additional results.
+
 | Param         | Type                                                                      |
 | ------------- | ------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#discoverreadersoptions">DiscoverReadersOptions</a></code> |
 
 **Returns:** <code>Promise&lt;{ readers: ReaderInterface[]; }&gt;</code>
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -287,12 +302,17 @@ discoverReaders(options: DiscoverReadersOptions) => Promise<{ readers: ReaderInt
 ### setConnectionToken(...)
 
 ```typescript
-setConnectionToken(options: { token: string; }) => Promise<void>
+setConnectionToken(options: SetConnectionTokenOptions) => Promise<void>
 ```
 
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ token: string; }</code> |
+Supplies a connection-token secret after `RequestedConnectionToken` is
+emitted. Create each token on your server and use it only once.
+
+| Param         | Type                                                                            |
+| ------------- | ------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#setconnectiontokenoptions">SetConnectionTokenOptions</a></code> |
+
+**Since:** 5.4.5
 
 --------------------
 
@@ -300,14 +320,19 @@ setConnectionToken(options: { token: string; }) => Promise<void>
 ### setSimulatorConfiguration(...)
 
 ```typescript
-setSimulatorConfiguration(options: { update?: SimulateReaderUpdate; simulatedCard?: SimulatedCardType; simulatedTipAmount?: number; }) => Promise<void>
+setSimulatorConfiguration(options: SimulatorConfigurationOptions) => Promise<void>
 ```
+
+Configures the simulated reader used in test mode. Call before the
+operation whose behavior you want to simulate.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.models/-simulator-configuration/index.html)
 
-| Param         | Type                                                                                                                                                                                 |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`options`** | <code>{ update?: <a href="#simulatereaderupdate">SimulateReaderUpdate</a>; simulatedCard?: <a href="#simulatedcardtype">SimulatedCardType</a>; simulatedTipAmount?: number; }</code> |
+| Param         | Type                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#simulatorconfigurationoptions">SimulatorConfigurationOptions</a></code> |
+
+**Since:** 6.1.0
 
 --------------------
 
@@ -315,12 +340,16 @@ setSimulatorConfiguration(options: { update?: SimulateReaderUpdate; simulatedCar
 ### connectReader(...)
 
 ```typescript
-connectReader(options: { reader: ReaderInterface; autoReconnectOnUnexpectedDisconnect?: boolean; merchantDisplayName?: string; onBehalfOf?: string; }) => Promise<void>
+connectReader(options: ConnectReaderOptions) => Promise<void>
 ```
 
-| Param         | Type                                                                                                                                                                       |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ reader: <a href="#readerinterface">ReaderInterface</a>; autoReconnectOnUnexpectedDisconnect?: boolean; merchantDisplayName?: string; onBehalfOf?: string; }</code> |
+Connects to a reader returned by `discoverReaders()`.
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#connectreaderoptions">ConnectReaderOptions</a></code> |
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -331,7 +360,11 @@ connectReader(options: { reader: ReaderInterface; autoReconnectOnUnexpectedDisco
 getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
 ```
 
+Returns the currently connected reader, or `null` when disconnected.
+
 **Returns:** <code>Promise&lt;{ reader: <a href="#readerinterface">ReaderInterface</a> | null; }&gt;</code>
+
+**Since:** 5.1.1
 
 --------------------
 
@@ -342,6 +375,10 @@ getConnectedReader() => Promise<{ reader: ReaderInterface | null; }>
 disconnectReader() => Promise<void>
 ```
 
+Disconnects the active reader. Resolves immediately if none is connected.
+
+**Since:** 5.1.1
+
 --------------------
 
 
@@ -351,18 +388,27 @@ disconnectReader() => Promise<void>
 cancelDiscoverReaders() => Promise<void>
 ```
 
+Cancels the active reader-discovery operation.
+
+**Since:** 5.1.1
+
 --------------------
 
 
 ### collectPaymentMethod(...)
 
 ```typescript
-collectPaymentMethod(options: { paymentIntent: string; }) => Promise<void>
+collectPaymentMethod(options: CollectPaymentMethodOptions) => Promise<void>
 ```
 
-| Param         | Type                                    |
-| ------------- | --------------------------------------- |
-| **`options`** | <code>{ paymentIntent: string; }</code> |
+Collects a payment method for a server-created PaymentIntent. Confirm the
+collected intent with `confirmPaymentIntent()`.
+
+| Param         | Type                                                                                |
+| ------------- | ----------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#collectpaymentmethodoptions">CollectPaymentMethodOptions</a></code> |
+
+**Since:** 5.5.0
 
 --------------------
 
@@ -373,6 +419,10 @@ collectPaymentMethod(options: { paymentIntent: string; }) => Promise<void>
 cancelCollectPaymentMethod() => Promise<void>
 ```
 
+Cancels an in-progress `collectPaymentMethod()` call.
+
+**Since:** 5.5.0
+
 --------------------
 
 
@@ -381,6 +431,10 @@ cancelCollectPaymentMethod() => Promise<void>
 ```typescript
 confirmPaymentIntent() => Promise<void>
 ```
+
+Confirms the PaymentIntent most recently collected by the reader.
+
+**Since:** 5.5.0
 
 --------------------
 
@@ -391,6 +445,10 @@ confirmPaymentIntent() => Promise<void>
 installAvailableUpdate() => Promise<void>
 ```
 
+Installs the software update reported by `ReportAvailableUpdate`.
+
+**Since:** 6.2.0
+
 --------------------
 
 
@@ -399,6 +457,10 @@ installAvailableUpdate() => Promise<void>
 ```typescript
 cancelInstallUpdate() => Promise<void>
 ```
+
+Cancels an in-progress optional reader software update.
+
+**Since:** 6.2.0
 
 --------------------
 
@@ -409,9 +471,13 @@ cancelInstallUpdate() => Promise<void>
 setReaderDisplay(options: Cart) => Promise<void>
 ```
 
+Displays cart details on a reader with a customer-facing display.
+
 | Param         | Type                                  |
 | ------------- | ------------------------------------- |
 | **`options`** | <code><a href="#cart">Cart</a></code> |
+
+**Since:** 6.2.0
 
 --------------------
 
@@ -422,6 +488,10 @@ setReaderDisplay(options: Cart) => Promise<void>
 clearReaderDisplay() => Promise<void>
 ```
 
+Clears cart details from the reader's customer-facing display.
+
+**Since:** 6.2.0
+
 --------------------
 
 
@@ -431,6 +501,10 @@ clearReaderDisplay() => Promise<void>
 rebootReader() => Promise<void>
 ```
 
+Reboots the connected reader. Supported reader types are platform dependent.
+
+**Since:** 6.2.0
+
 --------------------
 
 
@@ -439,6 +513,10 @@ rebootReader() => Promise<void>
 ```typescript
 cancelReaderReconnection() => Promise<void>
 ```
+
+Cancels an automatic reader reconnection attempt.
+
+**Since:** 6.2.0
 
 --------------------
 
@@ -456,6 +534,8 @@ Has no effect on iOS or web platforms.
 | Param         | Type                                                                        |
 | ------------- | --------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#taptopayuxconfiguration">TapToPayUxConfiguration</a></code> |
+
+**Since:** 8.1.0
 
 --------------------
 
@@ -485,6 +565,8 @@ rather than from a local variable, so do not cache the result.
 
 **Returns:** <code>Promise&lt;{ isLinked: boolean; }&gt;</code>
 
+**Since:** 8.2.0
+
 --------------------
 
 
@@ -494,12 +576,16 @@ rather than from a local variable, so do not cache the result.
 addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted after the Terminal SDK has initialized.
+
 | Param              | Type                                                                     |
 | ------------------ | ------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.Loaded</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                               |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -510,12 +596,17 @@ addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void) => P
 addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted when the SDK needs a connection token and no token endpoint was
+configured. Respond by calling `setConnectionToken()`.
+
 | Param              | Type                                                                                       |
 | ------------------ | ------------------------------------------------------------------------------------------ |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.RequestedConnectionToken</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                                 |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -526,7 +617,9 @@ addListener(eventName: TerminalEventsEnum.RequestedConnectionToken, listenerFunc
 addListener(eventName: TerminalEventsEnum.DiscoveredReaders, listenerFunc: ({ readers }: { readers: ReaderInterface[]; }) => void) => Promise<PluginListenerHandle>
 ```
 
-When searching for iOS Bluetooth, this will be executed multiple times.
+Emitted whenever discovery produces an updated reader list. During iOS
+Bluetooth discovery this event can be emitted multiple times.
+
 https://docs.stripe.com/terminal/payments/connect-reader?terminal-sdk-platform=ios&reader-type=bluetooth
 
 | Param              | Type                                                                                |
@@ -535,6 +628,8 @@ https://docs.stripe.com/terminal/payments/connect-reader?terminal-sdk-platform=i
 | **`listenerFunc`** | <code>({ readers }: { readers: ReaderInterface[]; }) =&gt; void</code>              |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -545,12 +640,16 @@ https://docs.stripe.com/terminal/payments/connect-reader?terminal-sdk-platform=i
 addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted after a reader connects successfully.
+
 | Param              | Type                                                                              |
 | ------------------ | --------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConnectedReader</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                        |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 5.1.0
 
 --------------------
 
@@ -580,6 +679,8 @@ finishes disconnecting.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 6.2.0
+
 --------------------
 
 
@@ -605,6 +706,8 @@ the UnexpectedReaderDisconnect event.
 | **`listenerFunc`** | <code>({ status }: { status: <a href="#connectionstatus">ConnectionStatus</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.1.0
 
 --------------------
 
@@ -634,6 +737,8 @@ implementing the DisconnectedReader event.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 6.1.0
+
 --------------------
 
 
@@ -643,12 +748,16 @@ implementing the DisconnectedReader event.
 addListener(eventName: TerminalEventsEnum.ConfirmedPaymentIntent, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted after `confirmPaymentIntent()` succeeds.
+
 | Param              | Type                                                                                     |
 | ------------------ | ---------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ConfirmedPaymentIntent</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                               |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 5.5.0
 
 --------------------
 
@@ -659,12 +768,16 @@ addListener(eventName: TerminalEventsEnum.ConfirmedPaymentIntent, listenerFunc: 
 addListener(eventName: TerminalEventsEnum.CollectedPaymentIntent, listenerFunc: () => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted after `collectPaymentMethod()` succeeds.
+
 | Param              | Type                                                                                     |
 | ------------------ | ---------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.CollectedPaymentIntent</a></code> |
 | **`listenerFunc`** | <code>() =&gt; void</code>                                                               |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 5.5.0
 
 --------------------
 
@@ -685,6 +798,8 @@ The Promise returned by `cancelCollectPaymentMethod()` will also be resolved.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 5.5.0
+
 --------------------
 
 
@@ -704,6 +819,8 @@ fails. The Promise returned by the relevant call will also be rejected.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 5.5.0
+
 --------------------
 
 
@@ -721,6 +838,8 @@ Emitted when a software update is available for the connected reader.
 | **`listenerFunc`** | <code>({ update }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.1.0
 
 --------------------
 
@@ -745,7 +864,7 @@ In this case, you will receive this sequence of events:
 4. ConnectedReader
 5. `connectReader()` Promise resolves
 
-Your app should show UI to the user indiciating that a software update is being installed
+Your app should show UI to the user indicating that a software update is being installed
 to explain why connecting is taking longer than usual.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-start-installing-update.html)
@@ -756,6 +875,8 @@ to explain why connecting is taking longer than usual.
 | **`listenerFunc`** | <code>({ update }: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.1.0
 
 --------------------
 
@@ -780,6 +901,8 @@ Emitted periodically while reader software is updating to inform of the installa
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 6.1.0
+
 --------------------
 
 
@@ -791,6 +914,9 @@ addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: 
 
 **Only applicable to Bluetooth and USB readers.**
 
+Emitted when reader software installation finishes. The callback contains
+either the installed update or an error.
+
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-finish-installing-update.html)
 
 | Param              | Type                                                                                                                                          |
@@ -799,6 +925,8 @@ addListener(eventName: TerminalEventsEnum.FinishInstallingUpdate, listenerFunc: 
 | **`listenerFunc`** | <code>(args: { update: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; } \| { error: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.1.0
 
 --------------------
 
@@ -822,6 +950,8 @@ Emitted upon connection and every 10 minutes.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 6.1.0
+
 --------------------
 
 
@@ -841,6 +971,8 @@ addListener(eventName: TerminalEventsEnum.ReaderEvent, listenerFunc: ({ event }:
 | **`listenerFunc`** | <code>({ event }: { event: <a href="#readerevent">ReaderEvent</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.1.0
 
 --------------------
 
@@ -863,6 +995,8 @@ Emitted when the Terminal requests that a message be displayed in your app.
 | **`listenerFunc`** | <code>({ messageType, message }: { messageType: <a href="#readerdisplaymessage">ReaderDisplayMessage</a>; message: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.1.0
 
 --------------------
 
@@ -888,6 +1022,8 @@ the RequestDisplayMessage event will be emitted.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 6.1.0
+
 --------------------
 
 
@@ -896,6 +1032,8 @@ the RequestDisplayMessage event will be emitted.
 ```typescript
 addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ status }: { status: PaymentStatus; }) => void) => Promise<PluginListenerHandle>
 ```
+
+Emitted when the Terminal SDK's payment collection status changes.
 
 [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-terminal-listener/on-payment-status-change.html)
 
@@ -906,6 +1044,8 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 6.1.0
+
 --------------------
 
 
@@ -915,12 +1055,16 @@ addListener(eventName: TerminalEventsEnum.PaymentStatusChange, listenerFunc: ({ 
 addListener(eventName: TerminalEventsEnum.ReaderReconnectStarted, listenerFunc: ({ reader, reason }: { reader: ReaderInterface; reason: string; }) => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted when automatic reader reconnection begins.
+
 | Param              | Type                                                                                                                      |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectStarted</a></code>                                  |
 | **`listenerFunc`** | <code>({ reader, reason }: { reader: <a href="#readerinterface">ReaderInterface</a>; reason: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.2.0
 
 --------------------
 
@@ -931,12 +1075,16 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectStarted, listenerFunc: 
 addListener(eventName: TerminalEventsEnum.ReaderReconnectSucceeded, listenerFunc: ({ reader }: { reader: ReaderInterface; }) => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted when automatic reader reconnection succeeds.
+
 | Param              | Type                                                                                              |
 | ------------------ | ------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectSucceeded</a></code>        |
 | **`listenerFunc`** | <code>({ reader }: { reader: <a href="#readerinterface">ReaderInterface</a>; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 6.2.0
 
 --------------------
 
@@ -947,6 +1095,8 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectSucceeded, listenerFunc
 addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: ({ reader }: { reader: ReaderInterface; }) => void) => Promise<PluginListenerHandle>
 ```
 
+Emitted when automatic reader reconnection fails.
+
 | Param              | Type                                                                                              |
 | ------------------ | ------------------------------------------------------------------------------------------------- |
 | **`eventName`**    | <code><a href="#terminaleventsenum">TerminalEventsEnum.ReaderReconnectFailed</a></code>           |
@@ -954,50 +1104,187 @@ addListener(eventName: TerminalEventsEnum.ReaderReconnectFailed, listenerFunc: (
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
+**Since:** 6.2.0
+
 --------------------
 
 
 ### Interfaces
 
 
+#### StripeTerminalInitializationOptions
+
+| Prop                        | Type                 | Description                                                         | Since |
+| --------------------------- | -------------------- | ------------------------------------------------------------------- | ----- |
+| **`tokenProviderEndpoint`** | <code>string</code>  | HTTPS endpoint that creates a new Stripe Terminal connection token. | 5.1.0 |
+| **`isTest`**                | <code>boolean</code> | Enables simulated discovery and readers where supported.            | 5.1.0 |
+
+
+#### ReaderInterface
+
+Snapshot of a Stripe Terminal reader returned by discovery or connection.
+
+| Prop                        | Type                                                                                    | Description                                                            | Since |
+| --------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----- |
+| **`serialNumber`**          | <code>string</code>                                                                     | Stable hardware serial number used as the reader's primary identifier. | 6.2.0 |
+| **`label`**                 | <code>string</code>                                                                     | Human-readable reader label.                                           | 6.2.0 |
+| **`batteryLevel`**          | <code>number</code>                                                                     | Reader battery level from `0` to `1`.                                  | 6.2.0 |
+| **`batteryStatus`**         | <code><a href="#batterystatus">BatteryStatus</a></code>                                 | Current reader battery status.                                         | 6.2.0 |
+| **`simulated`**             | <code>boolean</code>                                                                    | Whether this is a simulated reader.                                    | 6.2.0 |
+| **`id`**                    | <code>number</code>                                                                     | Platform-specific numeric reader identifier.                           | 6.2.0 |
+| **`availableUpdate`**       | <code><a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a></code> | Available reader software update, when one has been reported.          | 6.2.0 |
+| **`locationId`**            | <code>string</code>                                                                     | Stripe Terminal Location ID assigned to the reader.                    | 6.2.0 |
+| **`ipAddress`**             | <code>string</code>                                                                     | Reader IP address when available.                                      | 6.2.0 |
+| **`status`**                | <code><a href="#networkstatus">NetworkStatus</a></code>                                 | Current network status of the reader.                                  | 6.2.0 |
+| **`location`**              | <code><a href="#locationinterface">LocationInterface</a></code>                         | Location details returned with the reader, when available.             | 6.2.0 |
+| **`locationStatus`**        | <code><a href="#locationstatus">LocationStatus</a></code>                               | Current location-assignment status.                                    | 6.2.0 |
+| **`deviceType`**            | <code><a href="#devicetype">DeviceType</a></code>                                       | Reader hardware type.                                                  | 6.2.0 |
+| **`deviceSoftwareVersion`** | <code>string \| null</code>                                                             | Installed reader software version, when reported by the SDK.           | 6.2.0 |
+| **`isCharging`**            | <code>number</code>                                                                     | iOS Only properties. These properties are not available on Android.    | 6.2.0 |
+| **`baseUrl`**               | <code>string</code>                                                                     | Android Only properties. These properties are not available on iOS.    | 6.2.0 |
+| **`bootloaderVersion`**     | <code>string</code>                                                                     | Android reader bootloader version.                                     | 6.2.0 |
+| **`configVersion`**         | <code>string</code>                                                                     | Android reader configuration version.                                  | 6.2.0 |
+| **`emvKeyProfileId`**       | <code>string</code>                                                                     | Android reader EMV key-profile identifier.                             | 6.2.0 |
+| **`firmwareVersion`**       | <code>string</code>                                                                     | Android reader firmware version.                                       | 6.2.0 |
+| **`hardwareVersion`**       | <code>string</code>                                                                     | Android reader hardware version.                                       | 6.2.0 |
+| **`macKeyProfileId`**       | <code>string</code>                                                                     | Android reader MAC key-profile identifier.                             | 6.2.0 |
+| **`pinKeyProfileId`**       | <code>string</code>                                                                     | Android reader PIN key-profile identifier.                             | 6.2.0 |
+| **`trackKeyProfileId`**     | <code>string</code>                                                                     | Android reader track key-profile identifier.                           | 6.2.0 |
+| **`settingsVersion`**       | <code>string</code>                                                                     | Android reader settings version.                                       | 6.2.0 |
+| **`pinKeysetId`**           | <code>string</code>                                                                     | Android reader PIN keyset identifier.                                  | 6.2.0 |
+
+
+#### ReaderSoftwareUpdateInterface
+
+Metadata for an available reader software update.
+
+| Prop                        | Type                                                              | Description                                             | Since |
+| --------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------- | ----- |
+| **`deviceSoftwareVersion`** | <code>string</code>                                               | Software version offered by the update.                 | 6.1.0 |
+| **`estimatedUpdateTime`**   | <code><a href="#updatetimeestimate">UpdateTimeEstimate</a></code> | Estimated duration of the update.                       | 6.1.0 |
+| **`requiredAt`**            | <code>number</code>                                               | Unix timestamp after which the update becomes required. | 6.1.0 |
+
+
+#### LocationInterface
+
+Stripe Terminal Location assigned to a reader.
+
+| Prop              | Type                                                        | Description                                   | Since |
+| ----------------- | ----------------------------------------------------------- | --------------------------------------------- | ----- |
+| **`id`**          | <code>string</code>                                         | Stripe Terminal Location ID.                  | 6.2.0 |
+| **`displayName`** | <code>string</code>                                         | Display name configured for the location.     | 6.2.0 |
+| **`address`**     | <code><a href="#locationaddress">LocationAddress</a></code> | Postal address configured for the location.   | 6.2.0 |
+| **`ipAddress`**   | <code>string</code>                                         | Location IP address when provided by the SDK. | 6.2.0 |
+
+
+#### LocationAddress
+
+Postal address configured for a Stripe Terminal Location.
+
+| Prop             | Type                | Description                               | Since |
+| ---------------- | ------------------- | ----------------------------------------- | ----- |
+| **`city`**       | <code>string</code> | City, district, suburb, town, or village. | 6.2.0 |
+| **`country`**    | <code>string</code> | Two-letter ISO 3166-1 country code.       | 6.2.0 |
+| **`postalCode`** | <code>string</code> | ZIP or postal code.                       | 6.2.0 |
+| **`line1`**      | <code>string</code> | Primary address line.                     | 6.2.0 |
+| **`line2`**      | <code>string</code> | Secondary address line.                   | 6.2.0 |
+| **`state`**      | <code>string</code> | State, county, province, or region.       | 6.2.0 |
+
+
 #### DiscoverReadersOptions
 
-| Prop                        | Type                                                                  | Description                                                                                                                                                                                                                                                                                                                                           |
-| --------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`type`**                  | <code><a href="#terminalconnecttypes">TerminalConnectTypes</a></code> |                                                                                                                                                                                                                                                                                                                                                       |
-| **`locationId`**            | <code>string</code>                                                   |                                                                                                                                                                                                                                                                                                                                                       |
-| **`bluetoothScanWaitTime`** | <code>number</code>                                                   | Only applies to Bluetooth scan discovery (iOS only). During discovery, readers are reported via DiscoveryDelegate.didUpdateDiscoveredReaders. This timeout controls how long to wait before resolving the `discoverReaders` method with the current list. If this setting is not specified or is set to 0, the initial scan results will be returned. |
+| Prop                        | Type                                                                  | Description                                                                                                                                                                                                                                                                                                                                           | Since |
+| --------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| **`type`**                  | <code><a href="#terminalconnecttypes">TerminalConnectTypes</a></code> | Discovery method and reader transport to use.                                                                                                                                                                                                                                                                                                         | 5.1.0 |
+| **`locationId`**            | <code>string</code>                                                   | Stripe Terminal Location ID used to scope internet reader discovery and reader registration where required.                                                                                                                                                                                                                                           | 5.1.0 |
+| **`bluetoothScanWaitTime`** | <code>number</code>                                                   | Only applies to Bluetooth scan discovery (iOS only). During discovery, readers are reported via DiscoveryDelegate.didUpdateDiscoveredReaders. This timeout controls how long to wait before resolving the `discoverReaders` method with the current list. If this setting is not specified or is set to 0, the initial scan results will be returned. | 7.2.0 |
+
+
+#### SetConnectionTokenOptions
+
+| Prop        | Type                | Description                                         | Since |
+| ----------- | ------------------- | --------------------------------------------------- | ----- |
+| **`token`** | <code>string</code> | Secret returned by the Stripe Connection Token API. | 5.4.5 |
+
+
+#### SimulatorConfigurationOptions
+
+| Prop                     | Type                                                                  | Description                                                         | Since |
+| ------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------- | ----- |
+| **`update`**             | <code><a href="#simulatereaderupdate">SimulateReaderUpdate</a></code> | Simulated reader-update scenario.                                   | 6.1.0 |
+| **`simulatedCard`**      | <code><a href="#simulatedcardtype">SimulatedCardType</a></code>       | Simulated card presented during collection.                         | 6.1.0 |
+| **`simulatedTipAmount`** | <code>number</code>                                                   | Simulated tip amount in the PaymentIntent currency's smallest unit. | 6.1.0 |
+
+
+#### ConnectReaderOptions
+
+| Prop                                      | Type                                                        | Description                                                                                                                                | Default            | Since |
+| ----------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ | ----- |
+| **`reader`**                              | <code><a href="#readerinterface">ReaderInterface</a></code> | Reader selected from the latest discovery result.                                                                                          |                    | 5.1.0 |
+| **`autoReconnectOnUnexpectedDisconnect`** | <code>boolean</code>                                        | Automatically attempts to reconnect after an unexpected disconnect.                                                                        | <code>false</code> | 6.2.0 |
+| **`merchantDisplayName`**                 | <code>string</code>                                         | Merchant name displayed by local mobile readers. iOS only; on Android configure the merchant name on the PaymentIntent.                    |                    | 6.2.0 |
+| **`onBehalfOf`**                          | <code>string</code>                                         | Stripe connected-account ID for which the funds are intended. iOS local mobile readers only; on Android configure it on the PaymentIntent. |                    | 6.2.0 |
+
+
+#### CollectPaymentMethodOptions
+
+| Prop                | Type                | Description                                                     | Since |
+| ------------------- | ------------------- | --------------------------------------------------------------- | ----- |
+| **`paymentIntent`** | <code>string</code> | Client secret of a PaymentIntent configured for `card_present`. | 5.5.0 |
+
+
+#### Cart
+
+<a href="#cart">Cart</a> totals displayed on a reader's customer-facing screen.
+
+| Prop            | Type                        | Description                                                     | Since |
+| --------------- | --------------------------- | --------------------------------------------------------------- | ----- |
+| **`currency`**  | <code>string</code>         | Three-letter ISO 4217 currency code.                            | 6.2.0 |
+| **`tax`**       | <code>number</code>         | Tax amount in the currency's smallest unit.                     | 6.2.0 |
+| **`total`**     | <code>number</code>         | <a href="#cart">Cart</a> total in the currency's smallest unit. | 6.2.0 |
+| **`lineItems`** | <code>CartLineItem[]</code> | Items displayed in the cart.                                    | 6.2.0 |
+
+
+#### CartLineItem
+
+Line item displayed on a reader's customer-facing screen.
+
+| Prop              | Type                | Description                                       | Since |
+| ----------------- | ------------------- | ------------------------------------------------- | ----- |
+| **`displayName`** | <code>string</code> | Item name shown on the reader.                    | 6.2.0 |
+| **`quantity`**    | <code>number</code> | Number of units in the cart.                      | 6.2.0 |
+| **`amount`**      | <code>number</code> | Line-item amount in the currency's smallest unit. | 6.2.0 |
 
 
 #### TapToPayUxConfiguration
 
 Configuration for the Tap to Pay UX (Android only).
 
-| Prop           | Type                                                                | Description                            |
-| -------------- | ------------------------------------------------------------------- | -------------------------------------- |
-| **`colors`**   | <code><a href="#taptopaycolorscheme">TapToPayColorScheme</a></code> | Color scheme for the Tap to Pay screen |
-| **`darkMode`** | <code><a href="#taptopaydarkmode">TapToPayDarkMode</a></code>       | Dark mode setting                      |
-| **`tapZone`**  | <code><a href="#taptopaytapzone">TapToPayTapZone</a></code>         | Tap zone position configuration        |
+| Prop           | Type                                                                | Description                                  | Since |
+| -------------- | ------------------------------------------------------------------- | -------------------------------------------- | ----- |
+| **`colors`**   | <code><a href="#taptopaycolorscheme">TapToPayColorScheme</a></code> | Color scheme for the Tap to Pay screen.      | 8.1.0 |
+| **`darkMode`** | <code><a href="#taptopaydarkmode">TapToPayDarkMode</a></code>       | Dark-mode setting for the Tap to Pay screen. | 8.1.0 |
+| **`tapZone`**  | <code><a href="#taptopaytapzone">TapToPayTapZone</a></code>         | Position of the tap indicator on screen.     | 8.1.0 |
 
 
 #### TapToPayColorScheme
 
 Color scheme for the Tap to Pay screen.
 
-| Prop          | Type                                                    | Description                                                  |
-| ------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
-| **`primary`** | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Primary color (tap zone indicator). Hex string or 'default'. |
-| **`success`** | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Success state color. Hex string or 'default'.                |
-| **`error`**   | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Error state color. Hex string or 'default'.                  |
+| Prop          | Type                                                    | Description                                                              | Since |
+| ------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ | ----- |
+| **`primary`** | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Primary color for the tap-zone indicator. Use a hex string or `default`. | 8.1.0 |
+| **`success`** | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Success-state color. Use a hex string or `default`.                      | 8.1.0 |
+| **`error`**   | <code><a href="#taptopaycolor">TapToPayColor</a></code> | Error-state color. Use a hex string or `default`.                        | 8.1.0 |
 
 
 #### IsTapToPayAccountLinkedOptions
 
 Options for isTapToPayAccountLinked.
 
-| Prop             | Type                | Description                                                                                          |
-| ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------- |
-| **`onBehalfOf`** | <code>string</code> | Connected account ID, for Stripe Connect platforms. Omit to check the account that owns the API key. |
+| Prop             | Type                | Description                                                                                          | Since |
+| ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------- | ----- |
+| **`onBehalfOf`** | <code>string</code> | Connected account ID, for Stripe Connect platforms. Omit to check the account that owns the API key. | 8.2.0 |
 
 
 #### PluginListenerHandle
@@ -1010,34 +1297,9 @@ Options for isTapToPayAccountLinked.
 ### Type Aliases
 
 
-#### ReaderInterface
-
-<code>{ /** * The unique serial number is primary identifier inner plugin. */ serialNumber: string; label: string; batteryLevel: number; batteryStatus: <a href="#batterystatus">BatteryStatus</a>; simulated: boolean; id: number; availableUpdate: <a href="#readersoftwareupdateinterface">ReaderSoftwareUpdateInterface</a>; locationId: string; ipAddress: string; status: <a href="#networkstatus">NetworkStatus</a>; location: <a href="#locationinterface">LocationInterface</a>; locationStatus: <a href="#locationstatus">LocationStatus</a>; deviceType: <a href="#devicetype">DeviceType</a>; deviceSoftwareVersion: string | null; /** * iOS Only properties. These properties are not available on Android. */ isCharging: number; /** * Android Only properties. These properties are not available on iOS. */ baseUrl: string; bootloaderVersion: string; configVersion: string; emvKeyProfileId: string; firmwareVersion: string; hardwareVersion: string; macKeyProfileId: string; pinKeyProfileId: string; trackKeyProfileId: string; settingsVersion: string; pinKeysetId: string; }</code>
-
-
-#### ReaderSoftwareUpdateInterface
-
-<code>{ deviceSoftwareVersion: string; estimatedUpdateTime: <a href="#updatetimeestimate">UpdateTimeEstimate</a>; requiredAt: number; }</code>
-
-
-#### LocationInterface
-
-<code>{ id: string; displayName: string; address: { city: string; country: string; postalCode: string; line1: string; line2: string; state: string; }; ipAddress: string; }</code>
-
-
 #### DeviceType
 
 <code>Stripe.Terminal.Reader.<a href="#devicetype">DeviceType</a></code>
-
-
-#### Cart
-
-<code>{ currency: string; tax: number; total: number; lineItems: CartLineItem[]; }</code>
-
-
-#### CartLineItem
-
-<code>{ displayName: string; quantity: number; amount: number; }</code>
 
 
 #### TapToPayColor
