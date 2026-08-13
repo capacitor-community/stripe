@@ -18,9 +18,10 @@ import type {
   DeviceType,
 } from './stripe.enum';
 
+/** Snapshot of a Stripe Terminal reader returned by discovery or connection. */
 export type ReaderInterface = {
   /**
-   * The unique serial number is primary identifier inner plugin.
+   * Stable hardware serial number used as the reader's primary identifier.
    */
   serialNumber: string;
 
@@ -58,6 +59,7 @@ export type ReaderInterface = {
   settingsVersion: string;
   pinKeysetId: string;
 };
+/** Stripe Terminal Location assigned to a reader. */
 export type LocationInterface = {
   id: string;
   displayName: string;
@@ -72,18 +74,21 @@ export type LocationInterface = {
   ipAddress: string;
 };
 
+/** Metadata for an available reader software update. */
 export type ReaderSoftwareUpdateInterface = {
   deviceSoftwareVersion: string;
   estimatedUpdateTime: UpdateTimeEstimate;
   requiredAt: number;
 };
 
+/** Line item displayed on a reader's customer-facing screen. */
 export type CartLineItem = {
   displayName: string;
   quantity: number;
   amount: number;
 };
 
+/** Cart totals displayed on a reader's customer-facing screen. */
 export type Cart = {
   currency: string;
   tax: number;
@@ -155,7 +160,12 @@ export interface IsTapToPayAccountLinkedOptions {
 }
 
 export interface DiscoverReadersOptions {
+  /** Discovery method and reader transport to use. */
   type: TerminalConnectTypes;
+  /**
+   * Stripe Terminal Location ID used to scope internet reader discovery and
+   * reader registration where required.
+   */
   locationId?: string;
 
   /**
@@ -168,52 +178,117 @@ export interface DiscoverReadersOptions {
   bluetoothScanWaitTime?: number;
 }
 
+export interface StripeTerminalInitializationOptions {
+  /** HTTPS endpoint that creates a new Stripe Terminal connection token. */
+  tokenProviderEndpoint?: string;
+  /** Enables simulated discovery and readers where supported. */
+  isTest: boolean;
+}
+
+export interface SetConnectionTokenOptions {
+  /** Secret returned by the Stripe Connection Token API. */
+  token: string;
+}
+
+export interface SimulatorConfigurationOptions {
+  /** Simulated reader-update scenario. */
+  update?: SimulateReaderUpdate;
+  /** Simulated card presented during collection. */
+  simulatedCard?: SimulatedCardType;
+  /** Simulated tip amount in the PaymentIntent currency's smallest unit. */
+  simulatedTipAmount?: number;
+}
+
+export interface ConnectReaderOptions {
+  /** Reader selected from the latest discovery result. */
+  reader: ReaderInterface;
+  /**
+   * Automatically attempts to reconnect after an unexpected disconnect.
+   * @default false
+   */
+  autoReconnectOnUnexpectedDisconnect?: boolean;
+
+  /**
+   * Merchant name displayed by local mobile readers. iOS only; on Android
+   * configure the merchant name on the PaymentIntent.
+   */
+  merchantDisplayName?: string;
+
+  /**
+   * Stripe connected-account ID for which the funds are intended. iOS local
+   * mobile readers only; on Android configure it on the PaymentIntent.
+   */
+  onBehalfOf?: string;
+}
+
+export interface CollectPaymentMethodOptions {
+  /** Client secret of a PaymentIntent configured for `card_present`. */
+  paymentIntent: string;
+}
+
 export * from './events.enum';
 export * from './stripe.enum';
 export interface StripeTerminalPlugin {
-  initialize(options: { tokenProviderEndpoint?: string; isTest: boolean }): Promise<void>;
+  /**
+   * Initializes the Stripe Terminal SDK and its connection-token provider.
+   * Call this once before discovering readers.
+   *
+   * When `tokenProviderEndpoint` is provided, the plugin sends a POST request
+   * and expects `{ secret: string }`. When it is omitted, handle
+   * `RequestedConnectionToken` and call `setConnectionToken()` instead.
+   */
+  initialize(options: StripeTerminalInitializationOptions): Promise<void>;
+  /**
+   * Discovers readers using the requested transport. The returned readers are
+   * snapshots; listen for `DiscoveredReaders` when continuous discovery can
+   * produce additional results.
+   */
   discoverReaders(options: DiscoverReadersOptions): Promise<{
     readers: ReaderInterface[];
   }>;
-  setConnectionToken(options: { token: string }): Promise<void>;
   /**
+   * Supplies a connection-token secret after `RequestedConnectionToken` is
+   * emitted. Create each token on your server and use it only once.
+   */
+  setConnectionToken(options: SetConnectionTokenOptions): Promise<void>;
+  /**
+   * Configures the simulated reader used in test mode. Call before the
+   * operation whose behavior you want to simulate.
+   *
    * [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.models/-simulator-configuration/index.html)
    */
-  setSimulatorConfiguration(options: {
-    update?: SimulateReaderUpdate;
-    simulatedCard?: SimulatedCardType;
-    simulatedTipAmount?: number;
-  }): Promise<void>;
+  setSimulatorConfiguration(options: SimulatorConfigurationOptions): Promise<void>;
 
   /**
-   * @param options.autoReconnectOnUnexpectedDisconnect If true, the SDK will automatically attempt to reconnect to the reader. default is false.
+   * Connects to a reader returned by `discoverReaders()`.
    */
-  connectReader(options: {
-    reader: ReaderInterface;
-    autoReconnectOnUnexpectedDisconnect?: boolean;
-
-    /**
-     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
-     */
-    merchantDisplayName?: string;
-
-    /**
-     * iOS and LocalMobileReader only. Android needs to be set to PaymentIntent only.
-     * The Stripe account ID for which these funds are intended.
-     */
-    onBehalfOf?: string;
-  }): Promise<void>;
+  connectReader(options: ConnectReaderOptions): Promise<void>;
+  /** Returns the currently connected reader, or `null` when disconnected. */
   getConnectedReader(): Promise<{ reader: ReaderInterface | null }>;
+  /** Disconnects the active reader. Resolves immediately if none is connected. */
   disconnectReader(): Promise<void>;
+  /** Cancels the active reader-discovery operation. */
   cancelDiscoverReaders(): Promise<void>;
-  collectPaymentMethod(options: { paymentIntent: string }): Promise<void>;
+  /**
+   * Collects a payment method for a server-created PaymentIntent. Confirm the
+   * collected intent with `confirmPaymentIntent()`.
+   */
+  collectPaymentMethod(options: CollectPaymentMethodOptions): Promise<void>;
+  /** Cancels an in-progress `collectPaymentMethod()` call. */
   cancelCollectPaymentMethod(): Promise<void>;
+  /** Confirms the PaymentIntent most recently collected by the reader. */
   confirmPaymentIntent(): Promise<void>;
+  /** Installs the software update reported by `ReportAvailableUpdate`. */
   installAvailableUpdate(): Promise<void>;
+  /** Cancels an in-progress optional reader software update. */
   cancelInstallUpdate(): Promise<void>;
+  /** Displays cart details on a reader with a customer-facing display. */
   setReaderDisplay(options: Cart): Promise<void>;
+  /** Clears cart details from the reader's customer-facing display. */
   clearReaderDisplay(): Promise<void>;
+  /** Reboots the connected reader. Supported reader types are platform dependent. */
   rebootReader(): Promise<void>;
+  /** Cancels an automatic reader reconnection attempt. */
   cancelReaderReconnection(): Promise<void>;
 
   /**
@@ -239,15 +314,22 @@ export interface StripeTerminalPlugin {
    */
   isTapToPayAccountLinked(options?: IsTapToPayAccountLinkedOptions): Promise<{ isLinked: boolean }>;
 
+  /** Emitted after the Terminal SDK has initialized. */
   addListener(eventName: TerminalEventsEnum.Loaded, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
+  /**
+   * Emitted when the SDK needs a connection token and no token endpoint was
+   * configured. Respond by calling `setConnectionToken()`.
+   */
   addListener(
     eventName: TerminalEventsEnum.RequestedConnectionToken,
     listenerFunc: () => void,
   ): Promise<PluginListenerHandle>;
 
   /**
-   * When searching for iOS Bluetooth, this will be executed multiple times.
+   * Emitted whenever discovery produces an updated reader list. During iOS
+   * Bluetooth discovery this event can be emitted multiple times.
+   *
    * https://docs.stripe.com/terminal/payments/connect-reader?terminal-sdk-platform=ios&reader-type=bluetooth
    */
   addListener(
@@ -255,6 +337,7 @@ export interface StripeTerminalPlugin {
     listenerFunc: ({ readers }: { readers: ReaderInterface[] }) => void,
   ): Promise<PluginListenerHandle>;
 
+  /** Emitted after a reader connects successfully. */
   addListener(eventName: TerminalEventsEnum.ConnectedReader, listenerFunc: () => void): Promise<PluginListenerHandle>;
 
   /**
@@ -309,11 +392,13 @@ export interface StripeTerminalPlugin {
     listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
   ): Promise<PluginListenerHandle>;
 
+  /** Emitted after `confirmPaymentIntent()` succeeds. */
   addListener(
     eventName: TerminalEventsEnum.ConfirmedPaymentIntent,
     listenerFunc: () => void,
   ): Promise<PluginListenerHandle>;
 
+  /** Emitted after `collectPaymentMethod()` succeeds. */
   addListener(
     eventName: TerminalEventsEnum.CollectedPaymentIntent,
     listenerFunc: () => void,
@@ -357,7 +442,7 @@ export interface StripeTerminalPlugin {
    * 4. ConnectedReader
    * 5. `connectReader()` Promise resolves
    *
-   * Your app should show UI to the user indiciating that a software update is being installed
+   * Your app should show UI to the user indicating that a software update is being installed
    * to explain why connecting is taking longer than usual.
    *
    * [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-start-installing-update.html)
@@ -382,6 +467,9 @@ export interface StripeTerminalPlugin {
 
   /**
    * **Only applicable to Bluetooth and USB readers.**
+   *
+   * Emitted when reader software installation finishes. The callback contains
+   * either the installed update or an error.
    *
    * [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-reader-listener/on-finish-installing-update.html)
    */
@@ -447,6 +535,8 @@ export interface StripeTerminalPlugin {
   ): Promise<PluginListenerHandle>;
 
   /**
+   * Emitted when the Terminal SDK's payment collection status changes.
+   *
    * [*Stripe docs reference*](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.callable/-terminal-listener/on-payment-status-change.html)
    */
   addListener(
@@ -454,16 +544,19 @@ export interface StripeTerminalPlugin {
     listenerFunc: ({ status }: { status: PaymentStatus }) => void,
   ): Promise<PluginListenerHandle>;
 
+  /** Emitted when automatic reader reconnection begins. */
   addListener(
     eventName: TerminalEventsEnum.ReaderReconnectStarted,
     listenerFunc: ({ reader, reason }: { reader: ReaderInterface; reason: string }) => void,
   ): Promise<PluginListenerHandle>;
 
+  /** Emitted when automatic reader reconnection succeeds. */
   addListener(
     eventName: TerminalEventsEnum.ReaderReconnectSucceeded,
     listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
   ): Promise<PluginListenerHandle>;
 
+  /** Emitted when automatic reader reconnection fails. */
   addListener(
     eventName: TerminalEventsEnum.ReaderReconnectFailed,
     listenerFunc: ({ reader }: { reader: ReaderInterface }) => void,
