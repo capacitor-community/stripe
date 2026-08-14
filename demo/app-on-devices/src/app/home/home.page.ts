@@ -2,7 +2,6 @@ import { Component, inject} from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonContent,
   IonButtons,
   IonIcon,
@@ -20,7 +19,6 @@ import {AmountService} from "../amount.service";
   imports: [
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonContent,
     IonButtons,
     IonIcon,
