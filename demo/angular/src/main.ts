@@ -1,7 +1,7 @@
 import {
   enableProdMode,
-  importProvidersFrom,
-  provideZoneChangeDetection,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 
 import { environment } from './environments/environment';
@@ -13,7 +13,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { routes } from './app/app.routes';
-import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
+import { bootstrapApplication } from '@angular/platform-browser';
 import {
   IonicRouteStrategy,
   provideIonicAngular,
@@ -27,9 +27,9 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection(),
+    provideBrowserGlobalErrorListeners(),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
-    importProvidersFrom(BrowserModule),
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideHttpClient(withInterceptorsFromDi()),
     provideIonicAngular({}),
