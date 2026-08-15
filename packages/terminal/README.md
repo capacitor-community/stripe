@@ -2,7 +2,7 @@
 
 Stripe SDK bindings for Capacitor Applications.
 
-Documentation: [https://stripe.capacitorjs.jp/stripe-terminal](https://stripe.capacitorjs.jp/stripe-terminal)
+**Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)
 
 We have confirmed that it works well in the demo project. Refer to:
 

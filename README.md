@@ -5,7 +5,7 @@
   Capacitor community plugin for native Stripe.
 </p>
 
-Documentation: [https://stripe.capacitorjs.jp/](https://stripe.capacitorjs.jp/)
+Documentation: [Payments](https://docs.rdlabo.dev/projects/capacitor-stripe) · [Identity](https://docs.rdlabo.dev/projects/capacitor-stripe-identity) · [Terminal](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)
 
 <p align="center">
   <img src="https://img.shields.io/maintenance/yes/2026?style=flat-square" />
@@ -14,11 +14,11 @@ Documentation: [https://stripe.capacitorjs.jp/](https://stripe.capacitorjs.jp/)
 
 ## packages
 
-| package name                         | description | path                                                                                                   |
-|--------------------------------------|-------------|--------------------------------------------------------------------------------------------------------|
-| @capacitor-community/stripe          | Support for non-personal payments using Stripe | [/packages/payment](https://github.com/capacitor-community/stripe/tree/main/packages/payment#readme)   |
-| @capacitor-community/stripe-identity | Supports identity verification using Stripe | [/packages/identity](https://github.com/capacitor-community/stripe/tree/main/packages/identity#readme) |
-| @capacitor-community/stripe-terminal | Support for in-person payments using Stripe  | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) |
+| package name                         | description                                   | source                                                                                                 | documentation                                                                        |
+| ------------------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| @capacitor-community/stripe          | Support for non-personal payments using Stripe | [/packages/payment](https://github.com/capacitor-community/stripe/tree/main/packages/payment#readme)   | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe)                   |
+| @capacitor-community/stripe-identity | Supports identity verification using Stripe  | [/packages/identity](https://github.com/capacitor-community/stripe/tree/main/packages/identity#readme) | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-identity)          |
+| @capacitor-community/stripe-terminal | Support for in-person payments using Stripe   | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)          |
 
 
 ## Hint

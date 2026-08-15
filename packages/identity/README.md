@@ -2,7 +2,7 @@
 
 Stripe Identity SDK bindings for Capacitor Applications.
 
-Documentation: [https://stripe.capacitorjs.jp/stripe-identity](https://stripe.capacitorjs.jp/stripe-identity)
+**Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-identity)
 
 ## Install
 
