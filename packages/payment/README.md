@@ -2,7 +2,7 @@
 
 Stripe SDK bindings for Capacitor Applications
 
-Documentation: [https://stripe.capacitorjs.jp/stripe](https://stripe.capacitorjs.jp/stripe)
+**Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe)
 
 ## Install
 
