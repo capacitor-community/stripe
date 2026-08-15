@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -8,7 +8,6 @@ import {
   IonContent,
   IonHeader,
   IonInput,
-  IonTitle,
   IonToolbar,
   NavController,
 } from '@ionic/angular/standalone';
@@ -21,7 +20,6 @@ import {
   imports: [
     IonContent,
     IonHeader,
-    IonTitle,
     IonToolbar,
     CommonModule,
     FormsModule,
