@@ -2,7 +2,9 @@
 
 Stripe Identity SDK bindings for Capacitor Applications.
 
+<!-- rdlabo-docs-omit -->
 **Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-identity)
+<!-- /rdlabo-docs-omit -->
 
 ## Install
 
@@ -30,6 +32,9 @@ see more details on Stripe's native Android SDK page [here](https://stripe.com/d
 
 ## Usage
 
+See [Configuration](./docs/configuration.md) and [Identity Verification Sheet](./docs/identity-verification-sheet.md).
+
+<!-- rdlabo-docs-omit -->
 If you want to implement, we recommend to read https://stripe.com/docs/identity .
 
 ```ts
@@ -258,3 +263,4 @@ Final state reported by the Identity verification flow.
 | **`VerificationResult`** | <code>'identityVerificationResult'</code>            |
 
 </docgen-api>
+<!-- /rdlabo-docs-omit -->
