@@ -28,7 +28,7 @@ Register Terminal event listeners once per JavaScript application startup, as ea
 
 !::TerminalEventsEnum::
 
-Typed `addListener` overloads cover most of these members. `DiscoveringReaders` and `CancelDiscoveredReaders` are emitted by native discovery start and cancel but do not have dedicated overloads; see the [API](./api.md) page.
+Typed `addListener` overloads cover most of these members. `DiscoveringReaders` and `CancelDiscoveredReaders` are emitted by native discovery start and cancel but do not have dedicated overloads; see the [API](../README.md#api) page.
 
 ## Initialize
 
