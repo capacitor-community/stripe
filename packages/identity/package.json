@@ -16,7 +16,8 @@
     "ios/Sources",
     "ios/Tests",
     "Package.swift",
-    "CapacitorCommunityStripeIdentity.podspec"
+    "CapacitorCommunityStripeIdentity.podspec",
+    "docs/"
   ],
   "author": "Masahiko Sakakibara",
   "license": "MIT",

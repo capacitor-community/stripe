@@ -2,7 +2,9 @@
 
 Stripe SDK bindings for Capacitor Applications
 
+<!-- rdlabo-docs-omit -->
 **Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe)
+<!-- /rdlabo-docs-omit -->
 
 ## Install
 
@@ -11,6 +13,11 @@ npm install @capacitor-community/stripe
 npx cap sync
 ```
 
+## Usage
+
+See [Configuration](./docs/configuration.md) to install the plugin, then [PaymentSheet](./docs/payment-sheet.md), [PaymentFlow](./docs/payment-flow.md), [Apple Pay](./docs/apple-pay.md), and [Google Pay](./docs/google-pay.md).
+
+<!-- rdlabo-docs-omit -->
 ## How to use
 
 The API reference below and the repository's [demo applications](https://github.com/capacitor-community/stripe/tree/main/demo) track the current plugin version.
@@ -1101,3 +1108,4 @@ Final result returned after presenting PaymentSheet.
 ## License
 
 @capacitor-community/stripe is [MIT licensed](../../LICENSE).
+<!-- /rdlabo-docs-omit -->
