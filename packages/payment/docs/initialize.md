@@ -37,7 +37,7 @@ On Android, Google Pay can also read `com.getcapacitor.community.stripe.stripe_a
 
 ## Redirect-based payment methods on iOS
 
-Payment methods that leave your app for authentication, such as PayPal and some bank payment methods, need a return URL. On iOS, Stripe may omit these payment methods from PaymentSheet or PaymentFlow when `returnURL` is not configured.
+Payment methods that leave your app for authentication, such as PayPal and some bank payment methods, require a return URL. On iOS, Stripe does not offer otherwise eligible redirect-based payment methods in PaymentSheet or PaymentFlow when `returnURL` is not configured. See Stripe's [iOS return URL guide](https://docs.stripe.com/payments/mobile/accept-payment?platform=ios#ios-set-up-return-url).
 
 Register a custom URL scheme for your app in `ios/App/App/Info.plist`. Replace `your-app` with a scheme unique to your application:
 

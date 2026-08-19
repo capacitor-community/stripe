@@ -54,7 +54,7 @@ await Stripe.createPaymentFlow({
 
 <!-- !::CreatePaymentFlowOption:: -->
 
-On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe may omit those methods when no return URL is available. See [Redirect-based payment methods on iOS](./initialize.md#redirect-based-payment-methods-on-ios).
+On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe does not offer otherwise eligible redirect-based methods when no return URL is available. See [Redirect-based payment methods on iOS](./initialize.md#redirect-based-payment-methods-on-ios).
 
 ## 2. presentPaymentFlow
 

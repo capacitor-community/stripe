@@ -280,9 +280,9 @@ export interface BasePaymentOption {
 
   /**
    * Custom URL scheme used to return to the app after redirect-based
-   * authentication. iOS only. Stripe may omit redirect-based payment methods
-   * when this is not configured. Forward the returned URL to
-   * `handleURLCallback` from the app URL handler.
+   * authentication. iOS only. Stripe does not offer otherwise eligible
+   * redirect-based payment methods when this is not configured. Forward the
+   * returned URL to `handleURLCallback` from the app URL handler.
    *
    * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet#ios-set-up-return-url
    * @default ""

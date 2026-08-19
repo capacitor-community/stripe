@@ -42,7 +42,7 @@ Add `NSCameraUsageDescription` so PaymentSheet can scan cards:
 
 The plugin loads automatically on iOS. Apple Pay also needs an Apple Merchant ID and certificate. Follow [Apple Pay](./apple-pay.md).
 
-For PayPal, 3D Secure, and other redirect-based payment methods, register a custom URL scheme, set `returnURL` when you create PaymentSheet or PaymentFlow, and call `handleURLCallback` from your app URL handler. Without a return URL, Stripe may omit redirect-based payment methods on iOS. See [Initialize](./initialize.md#redirect-based-payment-methods-on-ios).
+For PayPal, 3D Secure, and other redirect-based payment methods, register a custom URL scheme, set `returnURL` when you create PaymentSheet or PaymentFlow, and call `handleURLCallback` from your app URL handler. Without a return URL, Stripe does not offer otherwise eligible redirect-based payment methods on iOS. See [Initialize](./initialize.md#redirect-based-payment-methods-on-ios).
 
 ## Web configuration
 
