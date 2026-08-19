@@ -50,7 +50,7 @@ try {
 }
 ```
 
-!::isApplePayAvailable::
+<!-- !::isApplePayAvailable:: -->
 
 ## 2. createApplePay
 
@@ -77,9 +77,9 @@ await Stripe.createApplePay({
 });
 ```
 
-!::createApplePay::
+<!-- !::createApplePay:: -->
 
-!::CreateApplePayOption::
+<!-- !::CreateApplePayOption:: -->
 
 `requiredShippingContactFields` asks Apple Pay for postal address, phone, email, or name. `allowedCountries` rejects shipping countries that are not in the list.
 
@@ -92,9 +92,9 @@ if (result.paymentResult === ApplePayEventsEnum.Completed) {
 }
 ```
 
-!::presentApplePay::
+<!-- !::presentApplePay:: -->
 
-!::ApplePayResultInterface::
+<!-- !::ApplePayResultInterface:: -->
 
 Treat `Canceled` as cancellation and `Failed` as an error.
 
@@ -108,7 +108,7 @@ Stripe.addListener(ApplePayEventsEnum.Completed, () => {
 });
 ```
 
-!::ApplePayEventsEnum::
+<!-- !::ApplePayEventsEnum:: -->
 
 ## 5. updateApplePaySheet
 
@@ -127,17 +127,17 @@ Stripe.addListener(ApplePayEventsEnum.DidSelectShippingContact, async (data) => 
 });
 ```
 
-!::updateApplePaySheet::
+<!-- !::updateApplePaySheet:: -->
 
-!::DidSelectShippingContact::
+<!-- !::DidSelectShippingContact:: -->
 
-!::PaymentSummaryItem::
+<!-- !::PaymentSummaryItem:: -->
 
 `DidCreatePaymentMethod` includes the shipping contact after Apple creates the payment method. Apple does not return the full address until a successful payment.
 
-!::DidCreatePaymentMethod::
+<!-- !::DidCreatePaymentMethod:: -->
 
-!::ShippingContact::
+<!-- !::ShippingContact:: -->
 
 ## Reference
 

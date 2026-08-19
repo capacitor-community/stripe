@@ -26,7 +26,7 @@ Collect an in-person payment with Stripe Terminal by registering listeners early
 
 Register Terminal event listeners once per JavaScript application startup, as early as possible during bootstrap—for example from `main.ts`, an application initializer, or a singleton service initialized at startup—and before initializing or starting an operation. Keep them registered for the lifetime of their application-level owner.
 
-!::TerminalEventsEnum::
+<!-- !::TerminalEventsEnum:: -->
 
 Typed `addListener` overloads cover most of these members. `DiscoveringReaders` and `CancelDiscoveredReaders` are emitted by native discovery start and cancel but do not have dedicated overloads; see the [API](../README.md#api) page.
 
@@ -34,7 +34,7 @@ Typed `addListener` overloads cover most of these members. `DiscoveringReaders` 
 
 Prefer an authenticated app-side request through `RequestedConnectionToken` and `setConnectionToken`. This lets your app attach its normal authorization credentials and validate failures. Register the listener before `initialize`; the Terminal SDK asks for a new, single-use connection token whenever it needs one. Set `isTest` while developing.
 
-!::initialize::
+<!-- !::initialize:: -->
 
 ### `tokenProviderEndpoint` compatibility mode
 
@@ -62,7 +62,7 @@ Omit `tokenProviderEndpoint` and register `RequestedConnectionToken` **before** 
 
 Fetch with your normal authorization mechanism, require a successful response, validate `secret`, and pass it as `token`. Call `setConnectionToken` only while a fetch is pending; Android and iOS reject extra calls with `Stripe Terminal do not pending fetchConnectionToken`. Never log the response or token.
 
-!::setConnectionToken::
+<!-- !::setConnectionToken:: -->
 
 ## Create a PaymentIntent on your backend
 
@@ -102,11 +102,11 @@ Nuances:
 
 Listen for `DiscoveredReaders` in addition to awaiting the promise. On iOS Bluetooth the listener is the live list; the promise may resolve earlier than the last event.
 
-!::discoverReaders::
+<!-- !::discoverReaders:: -->
 
-!::DiscoverReadersOptions::
+<!-- !::DiscoverReadersOptions:: -->
 
-!::TerminalConnectTypes::
+<!-- !::TerminalConnectTypes:: -->
 
 ## Connect a reader
 
@@ -116,19 +116,19 @@ Connect to one of the discovered readers before collecting payment details. The 
 
 `merchantDisplayName` and `onBehalfOf` apply to iOS Tap to Pay (`LocalMobileReader`). On Android, set connected-account and display values on the PaymentIntent instead.
 
-!::connectReader::
+<!-- !::connectReader:: -->
 
 ## Collect a payment method
 
 Pass the PaymentIntent **client secret** from your backend to `collectPaymentMethod`. The plugin retrieves that PaymentIntent, then collects on the connected reader.
 
-!::collectPaymentMethod::
+<!-- !::collectPaymentMethod:: -->
 
 ## Confirm the payment intent
 
 Process and confirm the collected PaymentIntent. `confirmPaymentIntent` rejects if you have not successfully collected first (`PaymentIntent not found for confirmPaymentIntent`).
 
-!::confirmPaymentIntent::
+<!-- !::confirmPaymentIntent:: -->
 
 `ConfirmedPaymentIntent` is a client UI signal, not fulfillment authority. Fulfill the order only after your backend verifies a Stripe webhook such as `payment_intent.succeeded`.
 
@@ -138,10 +138,10 @@ Process and confirm the collected PaymentIntent. `confirmPaymentIntent` rejects 
 - `Failed` is emitted when `collectPaymentMethod` or `confirmPaymentIntent` fails. The same call's promise also rejects. The payload may include `message`, `code`, and `declineCode`.
 - Do not use `ConnectionStatusChange` to detect unexpected disconnects. Use `UnexpectedReaderDisconnect`, and for Bluetooth/USB also `DisconnectedReader`. See [Reader Lifecycle](./reader-lifecycle.md).
 
-!::cancelCollectPaymentMethod::
+<!-- !::cancelCollectPaymentMethod:: -->
 
 ## Disconnect the reader
 
 Disconnect when the payment flow is finished or the reader is no longer needed.
 
-!::disconnectReader::
+<!-- !::disconnectReader:: -->

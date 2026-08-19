@@ -153,7 +153,7 @@ try {
 }
 ```
 
-!::isGooglePayAvailable::
+<!-- !::isGooglePayAvailable:: -->
 
 ## 2. createGooglePay
 
@@ -182,9 +182,9 @@ await Stripe.createGooglePay({
 });
 ```
 
-!::createGooglePay::
+<!-- !::createGooglePay:: -->
 
-!::CreateGooglePayOption::
+<!-- !::CreateGooglePayOption:: -->
 
 :::message
 `paymentSummaryItems`, `merchantIdentifier`, `countryCode`, and `currency` are required on web. Android uses the metadata country and merchant name instead.
@@ -201,9 +201,9 @@ if (result.paymentResult === GooglePayEventsEnum.Completed) {
 }
 ```
 
-!::presentGooglePay::
+<!-- !::presentGooglePay:: -->
 
-!::GooglePayResultInterface::
+<!-- !::GooglePayResultInterface:: -->
 
 Treat `Canceled` as cancellation and `Failed` as an error. Prefer result listeners after Android Activity recreation. See [Event Listeners](./learn/event-listeners.md).
 
@@ -215,7 +215,7 @@ Stripe.addListener(GooglePayEventsEnum.Completed, () => {
 });
 ```
 
-!::GooglePayEventsEnum::
+<!-- !::GooglePayEventsEnum:: -->
 
 ## Reference
 

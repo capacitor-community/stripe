@@ -22,9 +22,9 @@ await Promise.all([
 ]);
 ```
 
-!::addListener::
+<!-- !::addListener:: -->
 
-!::PluginListenerHandle::
+<!-- !::PluginListenerHandle:: -->
 
 ## Android activity recreation
 
@@ -38,7 +38,7 @@ Keep application-level result listeners registered for the lifetime of the JavaS
 
 ## PaymentSheet events
 
-!::PaymentSheetEventsEnum::
+<!-- !::PaymentSheetEventsEnum:: -->
 
 Typical PaymentSheet flow:
 
@@ -52,7 +52,7 @@ Typical PaymentSheet flow:
 
 ## PaymentFlow events
 
-!::PaymentFlowEventsEnum::
+<!-- !::PaymentFlowEventsEnum:: -->
 
 Typical PaymentFlow flow:
 
@@ -66,7 +66,7 @@ Typical PaymentFlow flow:
 
 ## Apple Pay events
 
-!::ApplePayEventsEnum::
+<!-- !::ApplePayEventsEnum:: -->
 
 `DidSelectShippingContact` includes `contact` and `updateId`. On iOS, call `updateApplePaySheet` with that `updateId` and updated `paymentSummaryItems`. If JavaScript does not respond, the native sheet falls back to the original items after 25 seconds. `updateApplePaySheet` is not implemented on Android or web.
 
@@ -74,6 +74,6 @@ Typical PaymentFlow flow:
 
 ## Google Pay events
 
-!::GooglePayEventsEnum::
+<!-- !::GooglePayEventsEnum:: -->
 
 Google Pay is available on Android and web. It is not implemented on iOS.

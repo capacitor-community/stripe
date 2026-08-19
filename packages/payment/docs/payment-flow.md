@@ -50,9 +50,9 @@ await Stripe.createPaymentFlow({
 });
 ```
 
-!::createPaymentFlow::
+<!-- !::createPaymentFlow:: -->
 
-!::CreatePaymentFlowOption::
+<!-- !::CreatePaymentFlowOption:: -->
 
 ## 2. presentPaymentFlow
 
@@ -63,7 +63,7 @@ const presentResult = await Stripe.presentPaymentFlow();
 console.log(presentResult); // { cardNumber: "●●●● ●●●● ●●●● ****" }
 ```
 
-!::presentPaymentFlow::
+<!-- !::presentPaymentFlow:: -->
 
 If the customer cancels, the promise rejects or the `Canceled` event fires. Do not call `confirmPaymentFlow` until `Created` or a successful `presentPaymentFlow` result.
 
@@ -76,9 +76,9 @@ if (confirmResult.paymentResult === PaymentFlowEventsEnum.Completed) {
 }
 ```
 
-!::confirmPaymentFlow::
+<!-- !::confirmPaymentFlow:: -->
 
-!::PaymentFlowResultInterface::
+<!-- !::PaymentFlowResultInterface:: -->
 
 Treat `Canceled` as cancellation and `Failed` as an error. Neither result authorizes fulfillment by itself.
 
@@ -103,7 +103,7 @@ await Promise.all([
 ]);
 ```
 
-!::PaymentFlowEventsEnum::
+<!-- !::PaymentFlowEventsEnum:: -->
 
 ## Reference
 

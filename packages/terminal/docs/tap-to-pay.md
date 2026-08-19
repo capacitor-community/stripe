@@ -39,7 +39,7 @@ Android `initialize` requests the location permission listed in [Configuration](
 6. `connectReader` with the discovered reader.
 7. Collect and confirm a `card_present` PaymentIntent as in [Collect a Payment](./collect-a-payment.md).
 
-!::initialize::
+<!-- !::initialize:: -->
 
 ## Account-link check
 
@@ -49,9 +49,9 @@ The answer is read from Apple on every call. Do not cache `isLinked`. For Stripe
 
 Android and web reject the call (`unimplemented` / `unavailable`). Guard with a platform check or `.catch()` like the official demo does for Android-only UX configuration.
 
-!::isTapToPayAccountLinked::
+<!-- !::isTapToPayAccountLinked:: -->
 
-!::IsTapToPayAccountLinkedOptions::
+<!-- !::IsTapToPayAccountLinkedOptions:: -->
 
 ## UX configuration
 
@@ -59,17 +59,17 @@ Android and web reject the call (`unimplemented` / `unavailable`). Guard with a 
 
 The installed Android implementation applies `colors` (`primary`, `success`, `error` as `'default'` or a hex string such as `'#FF5733'`) and `darkMode` (`SYSTEM`, `DARK`, `LIGHT`). The TypeScript `tapZone` field is declared but not applied on the current Android Terminal SDK used by v8.2.1.
 
-!::setTapToPayUxConfiguration::
+<!-- !::setTapToPayUxConfiguration:: -->
 
-!::TapToPayUxConfiguration::
+<!-- !::TapToPayUxConfiguration:: -->
 
-!::TapToPayColorScheme::
+<!-- !::TapToPayColorScheme:: -->
 
-!::TapToPayColor::
+<!-- !::TapToPayColor:: -->
 
-!::TapToPayTapZone::
+<!-- !::TapToPayTapZone:: -->
 
-!::TapToPayDarkMode::
+<!-- !::TapToPayDarkMode:: -->
 
 ## Discover and connect
 
@@ -77,9 +77,9 @@ Discover with `TerminalConnectTypes.TapToPay` and a `locationId`. Simulated Tap 
 
 Connect the reader from the discovery result. `autoReconnectOnUnexpectedDisconnect` defaults to `false` and is supported for Tap to Pay. On iOS, `merchantDisplayName` and `onBehalfOf` are passed into the Tap to Pay connection configuration. On Android, set those values on the PaymentIntent instead.
 
-!::discoverReaders::
+<!-- !::discoverReaders:: -->
 
-!::connectReader::
+<!-- !::connectReader:: -->
 
 After connect, use `collectPaymentMethod` and `confirmPaymentIntent` with a server-created `card_present` PaymentIntent.
 

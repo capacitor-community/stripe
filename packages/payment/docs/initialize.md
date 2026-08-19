@@ -16,9 +16,9 @@ export async function initialize(): Promise<void> {
 }
 ```
 
-!::initialize::
+<!-- !::initialize:: -->
 
-!::StripeInitializationOptions::
+<!-- !::StripeInitializationOptions:: -->
 
 Create a publishable key in the [Stripe Dashboard](https://dashboard.stripe.com/register). Never ship the secret key to the client.
 
@@ -49,9 +49,9 @@ await Stripe.createPaymentSheet({
 await Stripe.handleURLCallback({ url });
 ```
 
-!::handleURLCallback::
+<!-- !::handleURLCallback:: -->
 
-!::StripeURLHandlingOptions::
+<!-- !::StripeURLHandlingOptions:: -->
 
 The method is not implemented on Android or web. If Stripe did not handle the URL, the promise rejects and you should continue with your normal deep-link handling.
 

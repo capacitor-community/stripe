@@ -26,7 +26,7 @@ Keep the listener for the lifetime of its application-level owner—for example 
 
 `Completed`, `Canceled`, and `Failed` are result values delivered on `IdentityVerificationResult.result`. They are not separately supported `addListener` overloads. Register `IdentityVerificationSheetEventsEnum.VerificationResult` and inspect `result`.
 
-!::IdentityVerificationSheetEventsEnum::
+<!-- !::IdentityVerificationSheetEventsEnum:: -->
 
 The native result handoff is kept in memory. It does not guarantee recovery after operating-system process termination.
 
@@ -66,7 +66,7 @@ Keep the Stripe secret key on the server. The Capacitor app should receive only 
 
 `initialize` is required only when running on the web. It loads Stripe.js with the publishable key. Native `initialize` resolves without using that key.
 
-!::initialize::
+<!-- !::initialize:: -->
 
 ## Create and present the sheet
 
@@ -76,11 +76,11 @@ Pass the backend fields into `create`, then call `present()`.
 - **Web** uses `clientSecret` only. Native platforms ignore `clientSecret`. Omit it on native builds if you want; include it when the same code runs on web.
 - Do not import `CreateIdentityVerificationSheetOption` or `InitializeIdentityVerificationSheetOption` from `@capacitor-community/stripe-identity`. Those option types are not re-exported from the package index.
 
-!::create::
+<!-- !::create:: -->
 
-!::CreateIdentityVerificationSheetOption::
+<!-- !::CreateIdentityVerificationSheetOption:: -->
 
-!::present::
+<!-- !::present:: -->
 
 `present()` returns `Promise<void>`. It does not return `IdentityVerificationResult`. Read the outcome from the `VerificationResult` listener.
 
@@ -94,7 +94,7 @@ The listener type is `StripeIdentityError`. iOS delivers `{ message }`. Android 
 
 Web `create` always emits `Loaded` and does not validate `clientSecret`. Web `present` throws `Stripe is not initialized.` or `clientSecret is not set.` instead of `FailedToLoad`.
 
-!::StripeIdentityError::
+<!-- !::StripeIdentityError:: -->
 
 ## Handle VerificationResult
 
@@ -108,9 +108,9 @@ Web `create` always emits `Loaded` and does not validate `clientSecret`. Web `pr
 
 `error` is present on `Failed`. Do not register `addListener(IdentityVerificationSheetEventsEnum.Completed)`, `Canceled`, or `Failed`. Those enum members are result values, not supported listener names.
 
-!::IdentityVerificationResult::
+<!-- !::IdentityVerificationResult:: -->
 
-!::IdentityVerificationSheetResultInterface::
+<!-- !::IdentityVerificationSheetResultInterface:: -->
 
 ## Errors and cancellation
 

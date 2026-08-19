@@ -28,11 +28,11 @@ Constraints:
 - `cancelInstallUpdate` cancels an in-flight install when the SDK allows it. Web install/cancel methods are no-ops.
 - iOS Tap to Pay also reports install start/progress/finish through the Tap to Pay reader delegate. Android Tap to Pay UX is separate; see [Tap to Pay](./tap-to-pay.md).
 
-!::installAvailableUpdate::
+<!-- !::installAvailableUpdate:: -->
 
-!::cancelInstallUpdate::
+<!-- !::cancelInstallUpdate:: -->
 
-!::setSimulatorConfiguration::
+<!-- !::setSimulatorConfiguration:: -->
 
 ## Listen for status and input
 
@@ -44,13 +44,13 @@ For readers without a leader screen, retrieve battery level, reader events, disp
 
 On devices with a leader screen, show cart contents before `collectPaymentMethod`. Clear the display when you are done. Internet readers on web support these calls.
 
-!::setReaderDisplay::
+<!-- !::setReaderDisplay:: -->
 
-!::clearReaderDisplay::
+<!-- !::clearReaderDisplay:: -->
 
-!::Cart::
+<!-- !::Cart:: -->
 
-!::CartLineItem::
+<!-- !::CartLineItem:: -->
 
 ## Cancel discovery
 
@@ -58,7 +58,7 @@ Call `cancelDiscoverReaders` when the user leaves the scan screen or after a tim
 
 iOS Bluetooth discovery can run for a long time and will keep emitting `DiscoveredReaders`. Pair cancel with `bluetoothScanWaitTime` or your own timeout. Web `cancelDiscoverReaders` is a no-op.
 
-!::cancelDiscoverReaders::
+<!-- !::cancelDiscoverReaders:: -->
 
 ## Disconnect and reconnection
 
@@ -79,11 +79,11 @@ Set `autoReconnectOnUnexpectedDisconnect: true` on `connectReader` for Tap to Pa
 
 `cancelReaderReconnection` cancels an in-flight reconnect. Web `rebootReader` and `cancelReaderReconnection` are no-ops.
 
-!::getConnectedReader::
+<!-- !::getConnectedReader:: -->
 
-!::rebootReader::
+<!-- !::rebootReader:: -->
 
-!::cancelReaderReconnection::
+<!-- !::cancelReaderReconnection:: -->
 
 ## Error handling
 

@@ -51,9 +51,9 @@ await Stripe.createPaymentSheet({
 });
 ```
 
-!::createPaymentSheet::
+<!-- !::createPaymentSheet:: -->
 
-!::CreatePaymentSheetOption::
+<!-- !::CreatePaymentSheetOption:: -->
 
 Optional native settings include `style` (`alwaysLight` or `alwaysDark`, iOS only), `enableApplePay` with `applePayMerchantId`, `enableGooglePay`, `returnURL` for 3D Secure on iOS, and billing collection options. `withZipCode` is web only. `currencyCode` is required when `enableGooglePay` is true for a SetupIntent.
 
@@ -70,9 +70,9 @@ if (result.paymentResult === PaymentSheetEventsEnum.Completed) {
 
 Treat `Canceled` as the customer dismissing the sheet. Treat `Failed` as an error. Neither result authorizes fulfillment by itself.
 
-!::presentPaymentSheet::
+<!-- !::presentPaymentSheet:: -->
 
-!::PaymentSheetResultInterface::
+<!-- !::PaymentSheetResultInterface:: -->
 
 ## 3. addListener
 
@@ -92,7 +92,7 @@ await Promise.all([
 ]);
 ```
 
-!::PaymentSheetEventsEnum::
+<!-- !::PaymentSheetEventsEnum:: -->
 
 ## Reference
 
