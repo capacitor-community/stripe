@@ -23,7 +23,8 @@ export interface StripePlugin extends StripeDefinitions {
    * authentication.
    *
    * iOS only. Call this from your app URL handler when Stripe redirects back
-   * to the application.
+   * to the application. Configure the same custom URL scheme as `returnURL`
+   * when creating PaymentSheet or PaymentFlow.
    *
    * @since 4.0.0
    * @url https://stripe.com/docs/payments/3d-secure#return-url

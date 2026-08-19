@@ -55,7 +55,7 @@ await Stripe.createPaymentSheet({
 
 <!-- !::CreatePaymentSheetOption:: -->
 
-Optional native settings include `style` (`alwaysLight` or `alwaysDark`, iOS only), `enableApplePay` with `applePayMerchantId`, `enableGooglePay`, `returnURL` for 3D Secure on iOS, and billing collection options. `withZipCode` is web only. `currencyCode` is required when `enableGooglePay` is true for a SetupIntent.
+Optional native settings include `style` (`alwaysLight` or `alwaysDark`, iOS only), `enableApplePay` with `applePayMerchantId`, `enableGooglePay`, and billing collection options. On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe may omit those methods when no return URL is available. See [Redirect-based payment methods on iOS](./initialize.md#redirect-based-payment-methods-on-ios). `withZipCode` is web only. `currencyCode` is required when `enableGooglePay` is true for a SetupIntent.
 
 ## 2. presentPaymentSheet
 
