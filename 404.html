@@ -13,11 +13,15 @@
     />
     <title>Capacitor Community Stripe documentation moved</title>
     <script>
-      location.replace(
-        "https://docs.rdlabo.dev/projects/capacitor-stripe" +
-          location.search +
-          location.hash,
-      );
+      const legacyPath = location.pathname.replace(/^\/stripe\/?/, "/");
+      const docsMatch = legacyPath.match(/^\/docs\/(.+?)\/?$/);
+      const target = docsMatch
+        ? "https://docs.rdlabo.dev/projects/capacitor-stripe/docs/" +
+          docsMatch[1]
+        : legacyPath === "/installation" || legacyPath === "/installation/"
+          ? "https://docs.rdlabo.dev/projects/capacitor-stripe/docs/configuration"
+          : "https://docs.rdlabo.dev/projects/capacitor-stripe";
+      location.replace(target + location.search + location.hash);
     </script>
   </head>
   <body>
