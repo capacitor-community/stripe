@@ -39,6 +39,7 @@
   "bugs": {
     "url": "https://github.com/capacitor-community/stripe/issues"
   },
+  "homepage": "https://docs.rdlabo.dev/projects/capacitor-stripe",
   "keywords": [
     "capacitor",
     "plugin",
