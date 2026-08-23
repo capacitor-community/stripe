@@ -15,12 +15,15 @@
     <script>
       const legacyPath = location.pathname.replace(/^\/stripe\/?/, "/");
       const docsMatch = legacyPath.match(/^\/docs\/(.+?)\/?$/);
-      const target = docsMatch
-        ? "https://docs.rdlabo.dev/projects/capacitor-stripe/docs/" +
-          docsMatch[1]
-        : legacyPath === "/installation" || legacyPath === "/installation/"
-          ? "https://docs.rdlabo.dev/projects/capacitor-stripe/docs/configuration"
-          : "https://docs.rdlabo.dev/projects/capacitor-stripe";
+      const target =
+        legacyPath === "/docs/identity" || legacyPath === "/docs/identity/"
+          ? "https://docs.rdlabo.dev/projects/capacitor-stripe-identity/docs/identity-verification-sheet"
+          : docsMatch
+            ? "https://docs.rdlabo.dev/projects/capacitor-stripe/docs/" +
+              docsMatch[1]
+            : legacyPath === "/installation" || legacyPath === "/installation/"
+              ? "https://docs.rdlabo.dev/projects/capacitor-stripe/docs/configuration"
+              : "https://docs.rdlabo.dev/projects/capacitor-stripe";
       location.replace(target + location.search + location.hash);
     </script>
   </head>
