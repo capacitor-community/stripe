@@ -110,10 +110,10 @@ or
 
 ## Maintainers
 
-| Maintainer          | GitHub                              | Social                                |
-| ------------------- | ----------------------------------- | ------------------------------------- |
-| Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) |
-| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) |
+| Maintainer          | GitHub                              | Social                                | Website                               |
+| ------------------- | ----------------------------------- | ------------------------------------- | ------------------------------------- |
+| Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) | [hidetaka.dev](https://hidetaka.dev/) |
+| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | [rdlabo.dev](https://rdlabo.dev/) |
 
 ## Contributors ✨
 <a href="https://github.com/capacitor-community/stripe/graphs/contributors">
