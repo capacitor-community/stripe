@@ -52,7 +52,7 @@ If you are developing apps for Stripe Android devices (e.g. Stripe Reader S700),
 
 ## Usage
 
-See [Configuration](./docs/configuration.md), [Collect a Payment](./docs/collect-a-payment.md), [Reader Lifecycle](./docs/reader-lifecycle.md), and [Tap to Pay](./docs/tap-to-pay.md).
+See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/configuration), [Collect a Payment](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/collect-a-payment), [Reader Lifecycle](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/reader-lifecycle), and [Tap to Pay](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/tap-to-pay).
 
 <!-- rdlabo-docs-omit -->
 ### Simple collect payment

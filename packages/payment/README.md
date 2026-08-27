@@ -15,7 +15,7 @@ npx cap sync
 
 ## Usage
 
-See [Configuration](./docs/configuration.md) to install the plugin, then [PaymentSheet](./docs/payment-sheet.md), [PaymentFlow](./docs/payment-flow.md), [Apple Pay](./docs/apple-pay.md), and [Google Pay](./docs/google-pay.md).
+See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/configuration) to install the plugin, then [PaymentSheet](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-sheet), [PaymentFlow](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-flow), [Apple Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/apple-pay), and [Google Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/google-pay).
 
 <!-- rdlabo-docs-omit -->
 ## How to use
