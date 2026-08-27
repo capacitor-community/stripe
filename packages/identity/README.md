@@ -32,7 +32,7 @@ see more details on Stripe's native Android SDK page [here](https://stripe.com/d
 
 ## Usage
 
-See [Configuration](./docs/configuration.md) and [Identity Verification Sheet](./docs/identity-verification-sheet.md).
+See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe-identity/docs/configuration) and [Identity Verification Sheet](https://docs.rdlabo.dev/projects/capacitor-stripe-identity/docs/identity-verification-sheet).
 
 <!-- rdlabo-docs-omit -->
 If you want to implement, we recommend to read https://stripe.com/docs/identity .
