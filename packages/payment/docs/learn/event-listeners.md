@@ -1,5 +1,5 @@
 ---
-title: "Event Listeners"
+title: 'Event Listeners'
 code: []
 scrollActiveLine: []
 ---
@@ -22,8 +22,6 @@ await Promise.all([
 ]);
 ```
 
-<!-- !::addListener:: -->
-
 <!-- !::PluginListenerHandle:: -->
 
 ## Android activity recreation
@@ -37,6 +35,8 @@ If the original call still exists, behavior is unchanged: the Promise is settled
 Keep application-level result listeners registered for the lifetime of the JavaScript runtime. Do not add them in a button handler and remove them when a page unmounts if you still need the payment result after Android recreation.
 
 ## PaymentSheet events
+
+<!-- !::addListener.PaymentSheetEventsEnum:: -->
 
 <!-- !::PaymentSheetEventsEnum:: -->
 
@@ -52,6 +52,8 @@ Typical PaymentSheet flow:
 
 ## PaymentFlow events
 
+<!-- !::addListener.PaymentFlowEventsEnum:: -->
+
 <!-- !::PaymentFlowEventsEnum:: -->
 
 Typical PaymentFlow flow:
@@ -66,6 +68,8 @@ Typical PaymentFlow flow:
 
 ## Apple Pay events
 
+<!-- !::addListener.ApplePayEventsEnum:: -->
+
 <!-- !::ApplePayEventsEnum:: -->
 
 `DidSelectShippingContact` includes `contact` and `updateId`. On iOS, call `updateApplePaySheet` with that `updateId` and updated `paymentSummaryItems`. If JavaScript does not respond, the native sheet falls back to the original items after 25 seconds. `updateApplePaySheet` is not implemented on Android or web.
@@ -73,6 +77,8 @@ Typical PaymentFlow flow:
 `DidCreatePaymentMethod` includes the shipping `contact`. Apple does not return the full address until a successful payment.
 
 ## Google Pay events
+
+<!-- !::addListener.GooglePayEventsEnum:: -->
 
 <!-- !::GooglePayEventsEnum:: -->
 
