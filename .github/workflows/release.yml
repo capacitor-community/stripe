@@ -3,7 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+  pull_request:
+    types: [synchronize]
+  pull_request_review:
+    types: [submitted]
 
 permissions:
   id-token: write
@@ -11,6 +15,7 @@ permissions:
 
 jobs:
   release:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +28,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 22
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - name: Update npm
         run: npm install -g npm@latest
@@ -78,7 +83,7 @@ jobs:
         run: |
           VERSION="${{ steps.tag_version.outputs.version }}"
           IS_STABLE=$(echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' && echo true || echo false)
-          
+
           for workspace in ${{ steps.workspaces.outputs.list }}; do
             echo "Publishing $workspace..."
             if [ "$IS_STABLE" = "true" ]; then
@@ -87,3 +92,224 @@ jobs:
               npm publish --provenance --access public --tag next --workspace "$workspace"
             fi
           done
+
+  build-pr-beta:
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      ((github.event_name == 'pull_request_review' &&
+      github.event.review.state == 'approved' &&
+      github.event.review.commit_id == github.event.pull_request.head.sha) ||
+      (github.event_name == 'pull_request' && github.event.action == 'synchronize'))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pr-beta-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+      cancel-in-progress: false
+    outputs:
+      allowed: ${{ steps.authorize.outputs.allowed }}
+      artifact: ${{ steps.pack.outputs.artifact }}
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+
+    steps:
+      - name: Authorize beta publishing
+        id: authorize
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const marker = '<!-- npm-pr-beta-enabled -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            if (context.eventName === 'pull_request_review') {
+              const reviewer = context.payload.review.user.login;
+              const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner,
+                repo,
+                username: reviewer,
+              });
+              if (data.permission !== 'admin') {
+                core.notice(`@${reviewer} is not a repository administrator; beta publishing remains disabled.`);
+                core.setOutput('allowed', 'false');
+                return;
+              }
+
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number,
+                per_page: 100,
+              });
+              const enabledComment = comments.find(
+                (comment) => comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker),
+              );
+              const body = `${marker}\n🔐 npm beta auto-publishing was enabled by repository administrator @${reviewer}. Every new commit on this PR will be published until this comment is deleted.`;
+              if (enabledComment) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: enabledComment.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number, body });
+              }
+              core.setOutput('allowed', 'true');
+              return;
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const enabled = comments.some(
+              (comment) => comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker),
+            );
+            core.setOutput('allowed', String(enabled));
+
+      - name: Checkout approved PR commit
+        if: steps.authorize.outputs.allowed == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Setup Node.js
+        if: steps.authorize.outputs.allowed == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Update npm
+        if: steps.authorize.outputs.allowed == 'true'
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        if: steps.authorize.outputs.allowed == 'true'
+        run: npm ci
+
+      - name: Read workspaces
+        if: steps.authorize.outputs.allowed == 'true'
+        id: workspaces
+        run: |
+          WORKSPACES=$(node -e "const fs=require('fs'); const ws=JSON.parse(fs.readFileSync('package.json','utf8')).workspaces||[]; console.log(ws.join(' '));")
+          echo "list=$WORKSPACES" >> "$GITHUB_OUTPUT"
+
+      - name: Set PR beta versions
+        if: steps.authorize.outputs.allowed == 'true'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          WORKSPACES: ${{ steps.workspaces.outputs.list }}
+        run: |
+          for workspace in $WORKSPACES; do
+            BASE_VERSION=$(node -p "require('./$workspace/package.json').version.split('-')[0]")
+            VERSION="${BASE_VERSION}-beta.pr${PR_NUMBER}.${HEAD_SHA:0:12}"
+            npm version "$VERSION" --no-git-tag-version --ignore-scripts --workspace "$workspace"
+          done
+
+      - name: Build all workspaces
+        if: steps.authorize.outputs.allowed == 'true'
+        run: npm run build --workspaces --if-present
+
+      - name: Pack PR betas
+        if: steps.authorize.outputs.allowed == 'true'
+        id: pack
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          WORKSPACES: ${{ steps.workspaces.outputs.list }}
+        run: |
+          ARTIFACT_NAME="npm-pr-beta-${PR_NUMBER}-${HEAD_SHA}"
+          PACK_DIR="$RUNNER_TEMP/npm-pr-beta"
+          mkdir -p "$PACK_DIR"
+          : > "$PACK_DIR/packages.tsv"
+          {
+            echo "<!-- npm-pr-beta:${HEAD_SHA} -->"
+            echo "### npm betas published"
+            echo
+            echo "Commit \`${HEAD_SHA:0:12}\` is available as:"
+            echo
+          } > "$PACK_DIR/comment.md"
+
+          for workspace in $WORKSPACES; do
+            PACKAGE_NAME=$(node -p "require('./$workspace/package.json').name")
+            VERSION=$(node -p "require('./$workspace/package.json').version")
+            TARBALL=$(npm pack --workspace "$workspace" --ignore-scripts --pack-destination "$PACK_DIR" | tail -1)
+            printf '%s\t%s\t%s\n' "$PACKAGE_NAME" "$VERSION" "$TARBALL" >> "$PACK_DIR/packages.tsv"
+            echo "- \`npm install ${PACKAGE_NAME}@${VERSION}\`" >> "$PACK_DIR/comment.md"
+          done
+          echo "artifact=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Upload packed packages
+        if: steps.authorize.outputs.allowed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.pack.outputs.artifact }}
+          path: ${{ runner.temp }}/npm-pr-beta/
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-pr-beta:
+    needs: build-pr-beta
+    if: needs.build-pr-beta.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Download packed packages
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.build-pr-beta.outputs.artifact }}
+          path: ${{ runner.temp }}/npm-pr-beta
+
+      - name: Publish PR betas
+        run: |
+          while IFS=$'\t' read -r PACKAGE_NAME VERSION TARBALL; do
+            if npm view "${PACKAGE_NAME}@${VERSION}" version >/dev/null 2>&1; then
+              echo "${PACKAGE_NAME}@${VERSION} already exists; skipping publish."
+            else
+              npm publish "$RUNNER_TEMP/npm-pr-beta/$TARBALL" --ignore-scripts --provenance --access public --tag beta
+            fi
+          done < "$RUNNER_TEMP/npm-pr-beta/packages.tsv"
+
+      - name: Comment exact install commands
+        uses: actions/github-script@v8
+        env:
+          COMMENT_FILE: ${{ runner.temp }}/npm-pr-beta/comment.md
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = `<!-- npm-pr-beta:${process.env.HEAD_SHA} -->`;
+            const body = fs.readFileSync(process.env.COMMENT_FILE, 'utf8');
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const existing = comments.find(
+              (comment) => comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
