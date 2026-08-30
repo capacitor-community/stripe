@@ -47,7 +47,8 @@ ext {
 To use the latest Stripe Android, you need to version these up. To use the latest features, follow these steps.
 
 1. Open `android/variables.gradle` and change sdkVersion version, if need.
-2. Add `stripeAndroidVersion`, `identityVersion` or `stripeterminalCoreVersion` and set required version. Release information is here: 
+2. Add `stripeAndroidVersion`, `identityVersion` or `stripeterminalCoreVersion` and set required version. Release information is here:
+
 - https://github.com/stripe/stripe-android/releases
 - https://github.com/stripe/stripe-terminal-android/releases
 
@@ -102,11 +103,31 @@ You will see this error often when using Capacitor iOS. The solution is simple: 
 % cd ios/App && pod install --repo-update
 ```
 
-or 
+or
 
 ```bash
 % cd ios/App && pod update
 ```
+
+<!-- rdlabo-docs-omit -->
+
+## Prerelease channels
+
+This repository publishes the payment, identity, and terminal workspaces as one npm candidate set. An open, non-draft pull request can publish all three packages to the npm `beta` dist-tag after its `Validation` and `Package Candidate` workflows pass. A repository administrator must add a comment whose entire body is:
+
+```text
+/beta
+```
+
+The request authorizes only the pull request head SHA that existed when the comment was added. Any new commit requires CI to pass again and a fresh administrator `/beta` comment. Fork pull requests are supported. A pull request that changes a release-gating workflow cannot be beta-published until those workflow changes land on `main`.
+
+Beta versions use `<base>-beta.pr<PR number>.sha<12-character SHA>`. Before publishing begins, the release workflow verifies that the immutable artifact contains exactly `@capacitor-community/stripe`, `@capacitor-community/stripe-identity`, and `@capacitor-community/stripe-terminal`, all at that version. A successful run comments on the pull request with one exact install command for the complete package set. Notification failures cannot invalidate a successful npm publish.
+
+When a pull request is merged into `main`, the same package set is automatically published to `beta` only after `Validation` and `Package Candidate` succeed for that exact merge commit. Direct pushes to `main` do not publish a candidate.
+
+Only `npm run release` creates a release tag. Stable `vX.Y.Z` tags publish every workspace to npm `latest`; revision/prerelease tags publish every workspace to `next`. Neither `beta` nor `next` publishing changes the npm `latest` dist-tag.
+
+<!-- /rdlabo-docs-omit -->
 
 ## Maintainers
 
