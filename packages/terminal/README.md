@@ -2,7 +2,9 @@
 
 Stripe SDK bindings for Capacitor Applications.
 
+<!-- rdlabo-docs-omit -->
 **Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)
+<!-- /rdlabo-docs-omit -->
 
 We have confirmed that it works well in the demo project. Refer to:
 
@@ -48,9 +50,11 @@ ext {
 If you are developing apps for Stripe Android devices (e.g. Stripe Reader S700), follow the Stripe's documentation for the client-side setup.
 - [Stripe - Android configure your app](https://docs.stripe.com/terminal/features/apps-on-devices/build?terminal-sdk-platform=android&lang-android=java#setup-app)
 
-
 ## Usage
 
+See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/configuration), [Collect a Payment](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/collect-a-payment), [Reader Lifecycle](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/reader-lifecycle), and [Tap to Pay](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/tap-to-pay).
+
+<!-- rdlabo-docs-omit -->
 ### Simple collect payment
 
 Register application-level Terminal event listeners once per JavaScript application startup, as early as possible during bootstrap—for example, from `main.ts`, an application initializer, or a singleton service initialized at startup—and before initializing or starting an operation. Keep them registered for the lifetime of their application-level owner:
@@ -1550,3 +1554,4 @@ Controls where the tap indicator appears on screen.
 | **`Processing`**      | <code>'PROCESSING'</code>        |
 
 </docgen-api>
+<!-- /rdlabo-docs-omit -->
