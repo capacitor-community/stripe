@@ -26,7 +26,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Check administrator permission
+      - name: Check owner or maintainer permission
         id: permission
         uses: actions/github-script@v8
         with:
@@ -37,13 +37,13 @@ jobs:
                 repo: context.repo.repo,
                 username: context.payload.comment.user.login,
               });
-              return { authorized: data.permission === 'admin' };
+              return { authorized: ['admin', 'maintain'].includes(data.permission) };
             } catch (error) {
               core.warning(`Could not verify beta comment permission: ${error.message}`);
               return { authorized: false };
             }
 
-      - name: Add reaction to administrator beta comment
+      - name: Add reaction to authorized beta comment
         if: fromJson(steps.permission.outputs.result).authorized
         uses: peter-evans/create-or-update-comment@v5
         continue-on-error: true
@@ -284,8 +284,8 @@ jobs:
                 repo,
                 username: requester,
               });
-              if (permission.permission !== 'admin') {
-                core.notice(`@${requester} is not a repository administrator; /beta was ignored.`);
+              if (!['admin', 'maintain'].includes(permission.permission)) {
+                core.notice(`@${requester} is not a repository owner or maintainer; /beta was ignored.`);
                 core.setOutput('allowed', 'false');
                 return;
               }
@@ -485,7 +485,7 @@ jobs:
               const pull_number = Number(process.env.PR_NUMBER);
               const { data: pullRequest } = await github.rest.pulls.get({ owner, repo, pull_number });
               if (pullRequest.state !== 'open' || pullRequest.head.sha !== process.env.HEAD_SHA) {
-                core.setFailed('The PR head changed after /beta; a fresh administrator /beta is required.');
+                core.setFailed('The PR head changed after /beta; a fresh owner or maintainer /beta is required.');
                 return;
               }
               const requester = context.payload.comment.user.login;
@@ -494,8 +494,8 @@ jobs:
                 repo,
                 username: requester,
               });
-              if (permission.permission !== 'admin') {
-                core.setFailed(`@${requester} is no longer a repository administrator.`);
+              if (!['admin', 'maintain'].includes(permission.permission)) {
+                core.setFailed(`@${requester} is no longer a repository owner or maintainer.`);
                 return;
               }
             } else if (process.env.SOURCE_KIND === 'merge') {
@@ -688,7 +688,7 @@ jobs:
             const packages = JSON.parse(process.env.PACKAGES);
             const marker = `<!-- npm-${process.env.DIST_TAG}:${process.env.HEAD_SHA} -->`;
             const authorization = process.env.SOURCE_KIND === 'comment'
-              ? `CI passed and a repository administrator requested \`/beta\` for commit \`${shortSha}\``
+              ? `CI passed and a repository owner or maintainer requested \`/beta\` for commit \`${shortSha}\``
               : `CI passed for the merge commit \`${shortSha}\``;
             const install = `npm install ${packages.map((name) => `${name}@${process.env.VERSION}`).join(' ')}`;
             const body = `${marker}\n### npm beta packages published\n\n${authorization}. Install the immutable package set with:\n\n\`\`\`sh\n${install}\n\`\`\``;
