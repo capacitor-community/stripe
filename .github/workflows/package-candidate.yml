@@ -1,0 +1,121 @@
+name: Package Candidate
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: package-candidate-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  pack:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve merged pull request
+        id: merge
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            if (context.eventName === 'pull_request') {
+              core.setOutput('pr-number', String(context.payload.pull_request.number));
+              return;
+            }
+            const { owner, repo } = context.repo;
+            const { data: pullRequests } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner,
+              repo,
+              commit_sha: process.env.HEAD_SHA,
+            });
+            const merged = pullRequests.find(
+              (pullRequest) => pullRequest.merged_at &&
+                pullRequest.base.ref === context.payload.repository.default_branch &&
+                pullRequest.merge_commit_sha === process.env.HEAD_SHA,
+            );
+            core.setOutput('pr-number', merged ? String(merged.number) : '');
+
+      - name: Set immutable candidate version
+        id: candidate
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PR_NUMBER: ${{ steps.merge.outputs.pr-number }}
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version.split('-')[0]")
+          if [ -n "$PR_NUMBER" ]; then
+            VERSION="${BASE_VERSION}-beta.pr${PR_NUMBER}.sha${HEAD_SHA:0:12}"
+          else
+            VERSION="${BASE_VERSION}-candidate.sha${HEAD_SHA:0:12}"
+          fi
+          export VERSION
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+
+          const root = JSON.parse(readFileSync('package.json', 'utf8'));
+          if (!Array.isArray(root.workspaces) || root.workspaces.length === 0) {
+            throw new Error('No npm workspaces are configured.');
+          }
+          for (const workspace of root.workspaces) {
+            execFileSync(
+              'npm',
+              ['version', process.env.VERSION, '--no-git-tag-version', '--ignore-scripts', '--workspace', workspace],
+              { stdio: 'inherit' },
+            );
+          }
+          NODE
+          echo "artifact=npm-candidate-${HEAD_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Build all workspace packages
+        run: npm run build --workspaces --if-present
+
+      - name: Pack all workspace candidates
+        run: |
+          mkdir -p "$RUNNER_TEMP/npm-candidate"
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+
+          const root = JSON.parse(readFileSync('package.json', 'utf8'));
+          for (const workspace of root.workspaces) {
+            execFileSync(
+              'npm',
+              ['pack', '--workspace', workspace, '--ignore-scripts', '--pack-destination', process.env.RUNNER_TEMP + '/npm-candidate'],
+              { stdio: 'inherit' },
+            );
+          }
+          NODE
+
+      - name: Upload immutable package set
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.candidate.outputs.artifact }}
+          path: ${{ runner.temp }}/npm-candidate/*.tgz
+          if-no-files-found: error
+          retention-days: 7

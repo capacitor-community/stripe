@@ -3,19 +3,64 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+  issue_comment:
+    types: [created]
+  workflow_run:
+    workflows:
+      - Validation
+      - Package Candidate
+    types: [completed]
 
 permissions:
-  id-token: write
-  contents: write
+  contents: read
 
 jobs:
-  release:
+  beta-reaction:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.action == 'created' &&
+      github.event.issue.pull_request &&
+      github.event.comment.body == '/beta'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Check administrator permission
+        id: permission
+        uses: actions/github-script@v8
+        with:
+          script: |
+            try {
+              const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: context.payload.comment.user.login,
+              });
+              return { authorized: data.permission === 'admin' };
+            } catch (error) {
+              core.warning(`Could not verify beta comment permission: ${error.message}`);
+              return { authorized: false };
+            }
+
+      - name: Add reaction to administrator beta comment
+        if: fromJson(steps.permission.outputs.result).authorized
+        uses: peter-evans/create-or-update-comment@v5
+        continue-on-error: true
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: eyes
+
+  release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout release tag
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -23,67 +68,650 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 22
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - name: Update npm
         run: npm install -g npm@latest
 
-      - name: Extract version from tag
-        id: tag_version
+      - name: Validate release tag
+        id: release
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
           VERSION=${TAG_NAME#v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
-          echo "Extracted version: $VERSION from tag: $TAG_NAME"
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          if [ "$PACKAGE_VERSION" != "$VERSION" ]; then
+            echo "::error::Root package version $PACKAGE_VERSION does not match release tag $VERSION"
+            exit 1
+          fi
+          if echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            DIST_TAG=latest
+          elif echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-[0-9A-Za-z.-]+$'; then
+            DIST_TAG=next
+          else
+            echo "::error::Refusing to publish an invalid release version: $VERSION"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "dist-tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Read workspaces
-        id: workspaces
+      - name: Align the default branch with the release tag
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          WORKSPACES=$(node -e "const fs=require('fs'); const ws=JSON.parse(fs.readFileSync('package.json','utf8')).workspaces||[]; console.log(ws.join(' '));")
-          echo "list=$WORKSPACES" >> $GITHUB_OUTPUT
-          echo "Workspaces: $WORKSPACES"
-
-      - name: Switch to default branch and align with tag commit
-        run: |
-          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
           git fetch origin "$DEFAULT_BRANCH"
           git checkout "$DEFAULT_BRANCH"
           git merge --ff-only "$GITHUB_SHA"
 
-      - name: Update workspace package.json versions
+      - name: Update all workspace versions
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
         run: |
-          VERSION="${{ steps.tag_version.outputs.version }}"
-          echo "Setting workspace versions to $VERSION"
-          for workspace in ${{ steps.workspaces.outputs.list }}; do
-            echo "Updating $workspace/package.json..."
-            npm version "$VERSION" --no-git-tag-version --workspace "$workspace"
-          done
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
 
-      - name: Build all workspaces
+          const root = JSON.parse(readFileSync('package.json', 'utf8'));
+          if (!Array.isArray(root.workspaces) || root.workspaces.length === 0) {
+            throw new Error('No npm workspaces are configured.');
+          }
+          for (const workspace of root.workspaces) {
+            execFileSync(
+              'npm',
+              ['version', process.env.VERSION, '--no-git-tag-version', '--ignore-scripts', '--workspace', workspace],
+              { stdio: 'inherit' },
+            );
+          }
+          NODE
+
+      - name: Build all workspace packages
         run: npm run build --workspaces --if-present
 
-      - name: Commit changes
+      - name: Commit workspace versions
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          VERSION: ${{ steps.release.outputs.version }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add packages/*/package.json
-          git commit -m "chore: update workspace versions to ${{ steps.tag_version.outputs.version }}" || exit 0
-          git push origin HEAD
+          git add package-lock.json packages/*/package.json
+          if git diff --cached --quiet; then
+            echo "Workspace versions are already current."
+          else
+            git commit -m "chore: update workspace versions to $VERSION"
+          fi
+          git push origin "HEAD:$DEFAULT_BRANCH"
 
-      - name: Publish packages
+      - name: Publish all workspace packages
+        env:
+          DIST_TAG: ${{ steps.release.outputs.dist-tag }}
+          VERSION: ${{ steps.release.outputs.version }}
         run: |
-          VERSION="${{ steps.tag_version.outputs.version }}"
-          IS_STABLE=$(echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' && echo true || echo false)
-          
-          for workspace in ${{ steps.workspaces.outputs.list }}; do
-            echo "Publishing $workspace..."
-            if [ "$IS_STABLE" = "true" ]; then
-              npm publish --provenance --access public --workspace "$workspace"
-            else
-              npm publish --provenance --access public --tag next --workspace "$workspace"
-            fi
-          done
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+
+          const root = JSON.parse(readFileSync('package.json', 'utf8'));
+          for (const workspace of root.workspaces) {
+            const packageJson = JSON.parse(readFileSync(`${workspace}/package.json`, 'utf8'));
+            if (packageJson.version !== process.env.VERSION) {
+              throw new Error(`${packageJson.name} has version ${packageJson.version}; expected ${process.env.VERSION}`);
+            }
+          }
+          for (const workspace of root.workspaces) {
+            execFileSync(
+              'npm',
+              ['publish', '--provenance', '--access', 'public', '--tag', process.env.DIST_TAG, '--workspace', workspace],
+              { stdio: 'inherit' },
+            );
+          }
+          NODE
+
+  authorize-candidate:
+    if: >-
+      (github.event_name == 'issue_comment' &&
+      github.event.action == 'created' &&
+      github.event.issue.pull_request &&
+      github.event.comment.body == '/beta') ||
+      (github.event_name == 'workflow_run' &&
+      github.event.action == 'completed')
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.gate.outputs.allowed }}
+      artifact: ${{ steps.gate.outputs.artifact }}
+      dist-tag: ${{ steps.gate.outputs.dist-tag }}
+      head-sha: ${{ steps.gate.outputs.head-sha }}
+      packages: ${{ steps.gate.outputs.packages }}
+      pr-number: ${{ steps.gate.outputs.pr-number }}
+      run-id: ${{ steps.gate.outputs.run-id }}
+      source-kind: ${{ steps.gate.outputs.source-kind }}
+      version: ${{ steps.gate.outputs.version }}
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Authorize immutable package set
+        id: gate
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const defaultBranch = context.payload.repository.default_branch;
+            const isComment = context.eventName === 'issue_comment';
+            const protectedWorkflows = [
+              '.github/workflows/package-candidate.yml',
+              '.github/workflows/release.yml',
+              '.github/workflows/validation.yml',
+            ];
+            const tryCreateComment = async (body) => {
+              try {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: Number(context.issue.number),
+                  body,
+                });
+              } catch (error) {
+                core.warning(`Could not post the beta gate comment: ${error.message}`);
+              }
+            };
+            const readJson = async (path, ref, targetOwner = owner, targetRepo = repo) => {
+              const { data } = await github.rest.repos.getContent({
+                owner: targetOwner,
+                repo: targetRepo,
+                path,
+                ref,
+              });
+              if (Array.isArray(data) || data.type !== 'file' || !data.content) {
+                throw new Error(`${path} is not a file at ${ref}`);
+              }
+              return JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
+            };
+            const getTrustedPackages = async (ref) => {
+              const root = await readJson('package.json', ref);
+              if (!Array.isArray(root.workspaces) || root.workspaces.length === 0) {
+                throw new Error('No npm workspaces are configured on the default branch.');
+              }
+              const packages = [];
+              for (const workspace of root.workspaces) {
+                if (typeof workspace !== 'string' || workspace.includes('*') || workspace.startsWith('/')) {
+                  throw new Error(`Unsupported workspace path: ${workspace}`);
+                }
+                const packageJson = await readJson(`${workspace}/package.json`, ref);
+                packages.push(packageJson.name);
+              }
+              if (new Set(packages).size !== packages.length) {
+                throw new Error('Workspace package names must be unique.');
+              }
+              return {
+                baseVersion: root.version.split('-')[0],
+                packages: packages.sort(),
+              };
+            };
+            const getRequiredRuns = async (headSha, event, required) => {
+              const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+                owner,
+                repo,
+                head_sha: headSha,
+                event,
+                per_page: 100,
+              });
+              const latest = new Map();
+              for (const [name, path] of required) {
+                const run = runs
+                  .filter((candidate) => candidate.name === name && candidate.path === path)
+                  .sort((left, right) => right.run_number - left.run_number)[0];
+                latest.set(name, run);
+              }
+              return latest;
+            };
+
+            let headSha;
+            let prNumber = '';
+            let event;
+            let sourceKind;
+            let required;
+
+            if (isComment) {
+              const requester = context.payload.comment.user.login;
+              const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner,
+                repo,
+                username: requester,
+              });
+              if (permission.permission !== 'admin') {
+                core.notice(`@${requester} is not a repository administrator; /beta was ignored.`);
+                core.setOutput('allowed', 'false');
+                return;
+              }
+
+              prNumber = String(context.payload.issue.number);
+              const { data: pullRequest } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: Number(prNumber),
+              });
+              if (pullRequest.state !== 'open' || pullRequest.draft) {
+                core.notice('The PR must be open and ready for review.');
+                core.setOutput('allowed', 'false');
+                return;
+              }
+              if (!pullRequest.head.repo) {
+                core.setFailed('The pull request head repository is no longer available.');
+                return;
+              }
+              const changedWorkflows = [];
+              for (const path of protectedWorkflows) {
+                const [{ data: trusted }, { data: candidate }] = await Promise.all([
+                  github.rest.repos.getContent({ owner, repo, path, ref: defaultBranch }),
+                  github.rest.repos.getContent({
+                    owner: pullRequest.head.repo.owner.login,
+                    repo: pullRequest.head.repo.name,
+                    path,
+                    ref: pullRequest.head.sha,
+                  }),
+                ]);
+                if (Array.isArray(trusted) || Array.isArray(candidate) || trusted.sha !== candidate.sha) {
+                  changedWorkflows.push(path);
+                }
+              }
+              if (changedWorkflows.length > 0) {
+                await tryCreateComment(`🚫 \`/beta\` cannot publish a pull request that changes a release-gating workflow: ${changedWorkflows.join(', ')}.`);
+                core.setOutput('allowed', 'false');
+                return;
+              }
+              headSha = pullRequest.head.sha;
+              event = 'pull_request';
+              sourceKind = 'comment';
+              required = new Map([
+                ['Validation', '.github/workflows/validation.yml'],
+                ['Package Candidate', '.github/workflows/package-candidate.yml'],
+              ]);
+            } else {
+              const source = context.payload.workflow_run;
+              if (
+                source.event !== 'push' ||
+                source.head_branch !== defaultBranch ||
+                source.conclusion !== 'success'
+              ) {
+                core.notice('This workflow run is not a successful default-branch push.');
+                core.setOutput('allowed', 'false');
+                return;
+              }
+              headSha = source.head_sha;
+              const { data: branch } = await github.rest.repos.getBranch({
+                owner,
+                repo,
+                branch: defaultBranch,
+              });
+              if (branch.commit.sha !== headSha) {
+                core.notice('A newer default-branch commit exists; the stale candidate was skipped.');
+                core.setOutput('allowed', 'false');
+                return;
+              }
+              const { data: pullRequests } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner,
+                repo,
+                commit_sha: headSha,
+              });
+              const mergedPullRequest = pullRequests.find(
+                (pullRequest) => pullRequest.merged_at &&
+                  pullRequest.base.ref === defaultBranch &&
+                  pullRequest.merge_commit_sha === headSha,
+              );
+              if (!mergedPullRequest) {
+                core.notice('The default-branch push is not a merged pull request; no beta release was requested.');
+                core.setOutput('allowed', 'false');
+                return;
+              }
+              prNumber = String(mergedPullRequest.number);
+              const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+                owner,
+                repo,
+                pull_number: mergedPullRequest.number,
+                per_page: 100,
+              });
+              const changedWorkflows = changedFiles
+                .map((file) => file.filename)
+                .filter((filename) => protectedWorkflows.includes(filename));
+              if (changedWorkflows.length > 0) {
+                core.notice(`The merged pull request changed a release-gating workflow; beta was skipped: ${changedWorkflows.join(', ')}`);
+                core.setOutput('allowed', 'false');
+                return;
+              }
+              event = 'push';
+              sourceKind = 'merge';
+              required = new Map([
+                ['Validation', '.github/workflows/validation.yml'],
+                ['Package Candidate', '.github/workflows/package-candidate.yml'],
+              ]);
+            }
+
+            const runs = await getRequiredRuns(headSha, event, required);
+            const incomplete = [...required.keys()].filter((name) => {
+              const run = runs.get(name);
+              return !run || run.status !== 'completed' || run.conclusion !== 'success';
+            });
+            if (incomplete.length > 0) {
+              if (isComment) {
+                await tryCreateComment(`🚫 \`/beta\` did not publish commit \`${headSha.slice(0, 12)}\`. Required CI has not passed: ${incomplete.join(', ')}. Run \`/beta\` again after CI succeeds.`);
+              }
+              core.notice(`Required CI has not passed: ${incomplete.join(', ')}`);
+              core.setOutput('allowed', 'false');
+              return;
+            }
+
+            const candidateRun = runs.get('Package Candidate');
+            const artifactName = `npm-candidate-${headSha}`;
+            const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
+              owner,
+              repo,
+              run_id: candidateRun.id,
+              per_page: 100,
+            });
+            const artifact = artifacts.find(
+              (candidate) => candidate.name === artifactName && !candidate.expired,
+            );
+            if (!artifact) {
+              core.setFailed(`The immutable package artifact ${artifactName} is missing or expired.`);
+              return;
+            }
+
+            const trusted = await getTrustedPackages(defaultBranch);
+            const version = `${trusted.baseVersion}-beta.pr${prNumber}.sha${headSha.slice(0, 12)}`;
+            core.setOutput('allowed', 'true');
+            core.setOutput('artifact', artifactName);
+            core.setOutput('dist-tag', 'beta');
+            core.setOutput('head-sha', headSha);
+            core.setOutput('packages', JSON.stringify(trusted.packages));
+            core.setOutput('pr-number', prNumber);
+            core.setOutput('run-id', String(candidateRun.id));
+            core.setOutput('source-kind', sourceKind);
+            core.setOutput('version', version);
+
+  publish-candidate:
+    needs: authorize-candidate
+    if: needs.authorize-candidate.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: npm-${{ needs.authorize-candidate.outputs.dist-tag }}-${{ needs.authorize-candidate.outputs.head-sha }}
+      cancel-in-progress: false
+    env:
+      NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      pull-requests: read
+
+    steps:
+      - name: Revalidate authorization and package set
+        uses: actions/github-script@v8
+        env:
+          HEAD_SHA: ${{ needs.authorize-candidate.outputs.head-sha }}
+          PACKAGES: ${{ needs.authorize-candidate.outputs.packages }}
+          PR_NUMBER: ${{ needs.authorize-candidate.outputs.pr-number }}
+          RUN_ID: ${{ needs.authorize-candidate.outputs.run-id }}
+          SOURCE_KIND: ${{ needs.authorize-candidate.outputs.source-kind }}
+          VERSION: ${{ needs.authorize-candidate.outputs.version }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const defaultBranch = context.payload.repository.default_branch;
+            const { data: run } = await github.rest.actions.getWorkflowRun({
+              owner,
+              repo,
+              run_id: Number(process.env.RUN_ID),
+            });
+            const expectedEvent = process.env.SOURCE_KIND === 'comment' ? 'pull_request' : 'push';
+            if (
+              run.name !== 'Package Candidate' ||
+              run.path !== '.github/workflows/package-candidate.yml' ||
+              run.event !== expectedEvent ||
+              run.head_sha !== process.env.HEAD_SHA ||
+              run.status !== 'completed' ||
+              run.conclusion !== 'success'
+            ) {
+              core.setFailed('The package set no longer has an authorized successful source run.');
+              return;
+            }
+
+            if (process.env.SOURCE_KIND === 'comment') {
+              const pull_number = Number(process.env.PR_NUMBER);
+              const { data: pullRequest } = await github.rest.pulls.get({ owner, repo, pull_number });
+              if (pullRequest.state !== 'open' || pullRequest.head.sha !== process.env.HEAD_SHA) {
+                core.setFailed('The PR head changed after /beta; a fresh administrator /beta is required.');
+                return;
+              }
+              const requester = context.payload.comment.user.login;
+              const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner,
+                repo,
+                username: requester,
+              });
+              if (permission.permission !== 'admin') {
+                core.setFailed(`@${requester} is no longer a repository administrator.`);
+                return;
+              }
+            } else if (process.env.SOURCE_KIND === 'merge') {
+              const { data: branch } = await github.rest.repos.getBranch({
+                owner,
+                repo,
+                branch: defaultBranch,
+              });
+              if (branch.commit.sha !== process.env.HEAD_SHA) {
+                core.setFailed('A newer default-branch commit exists; refusing to publish a stale merge candidate.');
+                return;
+              }
+              const { data: pullRequests } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner,
+                repo,
+                commit_sha: process.env.HEAD_SHA,
+              });
+              const mergedPullRequest = pullRequests.find(
+                (pullRequest) => pullRequest.number === Number(process.env.PR_NUMBER) &&
+                  pullRequest.merged_at &&
+                  pullRequest.base.ref === defaultBranch &&
+                  pullRequest.merge_commit_sha === process.env.HEAD_SHA,
+              );
+              if (!mergedPullRequest) {
+                core.setFailed('The candidate is not the merge commit of the authorized pull request.');
+                return;
+              }
+            } else {
+              core.setFailed(`Unsupported candidate source: ${process.env.SOURCE_KIND}`);
+              return;
+            }
+
+            const readJson = async (path) => {
+              const { data } = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path,
+                ref: defaultBranch,
+              });
+              if (Array.isArray(data) || data.type !== 'file' || !data.content) {
+                throw new Error(`${path} could not be read from the default branch.`);
+              }
+              return JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
+            };
+            const root = await readJson('package.json');
+            const trustedPackages = [];
+            for (const workspace of root.workspaces) {
+              const packageJson = await readJson(`${workspace}/package.json`);
+              trustedPackages.push(packageJson.name);
+            }
+            trustedPackages.sort();
+            const expectedPackages = JSON.parse(process.env.PACKAGES);
+            const expectedVersion = `${root.version.split('-')[0]}-beta.pr${process.env.PR_NUMBER}.sha${process.env.HEAD_SHA.slice(0, 12)}`;
+            if (
+              JSON.stringify(trustedPackages) !== JSON.stringify(expectedPackages) ||
+              expectedVersion !== process.env.VERSION
+            ) {
+              core.setFailed('Trusted package identity changed after authorization; rerun the release request.');
+            }
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Download immutable package set
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.authorize-candidate.outputs.artifact }}
+          path: ${{ runner.temp }}/npm-candidate
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ needs.authorize-candidate.outputs.run-id }}
+
+      - name: Validate complete package set
+        env:
+          DIST_TAG: ${{ needs.authorize-candidate.outputs.dist-tag }}
+          EXPECTED_PACKAGES: ${{ needs.authorize-candidate.outputs.packages }}
+          EXPECTED_VERSION: ${{ needs.authorize-candidate.outputs.version }}
+        run: |
+          if [ "$DIST_TAG" != "beta" ]; then
+            echo "::error::Refusing unsupported dist-tag: $DIST_TAG"
+            exit 1
+          fi
+          node --input-type=module <<'NODE'
+          import { readdirSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+
+          const directory = process.env.RUNNER_TEMP + '/npm-candidate';
+          const archives = readdirSync(directory).filter((file) => file.endsWith('.tgz')).sort();
+          const expected = JSON.parse(process.env.EXPECTED_PACKAGES).sort();
+          if (archives.length !== expected.length) {
+            throw new Error(`Expected ${expected.length} package archives, found ${archives.length}.`);
+          }
+          const actual = [];
+          for (const archive of archives) {
+            const packageJson = JSON.parse(execFileSync(
+              'tar',
+              ['-xOf', `${directory}/${archive}`, 'package/package.json'],
+              { encoding: 'utf8' },
+            ));
+            const registry = packageJson.publishConfig?.registry || '';
+            if (
+              registry &&
+              registry !== 'https://registry.npmjs.org' &&
+              registry !== 'https://registry.npmjs.org/'
+            ) {
+              throw new Error(`Refusing ${packageJson.name} with unexpected registry ${registry}.`);
+            }
+            if (packageJson.version !== process.env.EXPECTED_VERSION) {
+              throw new Error(`${packageJson.name} has version ${packageJson.version}; expected ${process.env.EXPECTED_VERSION}.`);
+            }
+            actual.push(packageJson.name);
+          }
+          actual.sort();
+          if (new Set(actual).size !== actual.length || JSON.stringify(actual) !== JSON.stringify(expected)) {
+            throw new Error(`Artifact package set mismatch: ${JSON.stringify(actual)}`);
+          }
+          NODE
+
+      - name: Publish all candidates
+        env:
+          DIST_TAG: ${{ needs.authorize-candidate.outputs.dist-tag }}
+          EXPECTED_VERSION: ${{ needs.authorize-candidate.outputs.version }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readdirSync } from 'node:fs';
+          import { execFileSync, spawnSync } from 'node:child_process';
+
+          const directory = process.env.RUNNER_TEMP + '/npm-candidate';
+          const archives = readdirSync(directory).filter((file) => file.endsWith('.tgz')).sort();
+          for (const archive of archives) {
+            const path = `${directory}/${archive}`;
+            const packageJson = JSON.parse(execFileSync(
+              'tar',
+              ['-xOf', path, 'package/package.json'],
+              { encoding: 'utf8' },
+            ));
+            const existing = spawnSync(
+              'npm',
+              ['view', `${packageJson.name}@${process.env.EXPECTED_VERSION}`, 'version', '--registry', process.env.NPM_CONFIG_REGISTRY],
+              { stdio: 'ignore' },
+            );
+            if (existing.status === 0) {
+              console.log(`${packageJson.name}@${process.env.EXPECTED_VERSION} already exists; skipping publish.`);
+              continue;
+            }
+            execFileSync(
+              'npm',
+              ['publish', path, '--ignore-scripts', '--provenance', '--access', 'public', '--registry', process.env.NPM_CONFIG_REGISTRY, '--tag', process.env.DIST_TAG],
+              { stdio: 'inherit' },
+            );
+          }
+          NODE
+
+  comment-candidate:
+    needs: [authorize-candidate, publish-candidate]
+    if: >-
+      always() &&
+      needs.authorize-candidate.outputs.allowed == 'true' &&
+      needs.publish-candidate.result == 'success'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: npm-comment-${{ needs.authorize-candidate.outputs.head-sha }}
+      cancel-in-progress: false
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Comment exact install command
+        uses: actions/github-script@v8
+        env:
+          DIST_TAG: ${{ needs.authorize-candidate.outputs.dist-tag }}
+          HEAD_SHA: ${{ needs.authorize-candidate.outputs.head-sha }}
+          PACKAGES: ${{ needs.authorize-candidate.outputs.packages }}
+          PR_NUMBER: ${{ needs.authorize-candidate.outputs.pr-number }}
+          SOURCE_KIND: ${{ needs.authorize-candidate.outputs.source-kind }}
+          VERSION: ${{ needs.authorize-candidate.outputs.version }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const shortSha = process.env.HEAD_SHA.slice(0, 12);
+            const issueNumber = Number(process.env.PR_NUMBER);
+            const packages = JSON.parse(process.env.PACKAGES);
+            const marker = `<!-- npm-${process.env.DIST_TAG}:${process.env.HEAD_SHA} -->`;
+            const authorization = process.env.SOURCE_KIND === 'comment'
+              ? `CI passed and a repository administrator requested \`/beta\` for commit \`${shortSha}\``
+              : `CI passed for the merge commit \`${shortSha}\``;
+            const install = `npm install ${packages.map((name) => `${name}@${process.env.VERSION}`).join(' ')}`;
+            const body = `${marker}\n### npm beta packages published\n\n${authorization}. Install the immutable package set with:\n\n\`\`\`sh\n${install}\n\`\`\``;
+            await core.summary.addRaw(body).write();
+            if (!issueNumber) {
+              core.notice('No associated merged pull request was found; wrote the install command to the job summary only.');
+              return;
+            }
+            try {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issueNumber,
+                per_page: 100,
+              });
+              const existing = comments.find(
+                (comment) => comment.user?.login === 'github-actions[bot]' && comment.body?.includes(marker),
+              );
+              if (existing) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number: issueNumber, body });
+              }
+            } catch (error) {
+              core.warning(`Could not post the beta install comment: ${error.message}`);
+            }
