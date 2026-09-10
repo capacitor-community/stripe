@@ -75,6 +75,7 @@ class TerminalMappers {
             DeviceType.TAP_TO_PAY_DEVICE -> "tapToPayDevice"
             DeviceType.ETNA -> "etna"
             DeviceType.STRIPE_M2 -> "stripeM2"
+            DeviceType.STRIPE_U200 -> "stripeU200"
             DeviceType.STRIPE_S700 -> "stripeS700"
             DeviceType.STRIPE_S700_DEVKIT -> "stripeS700Devkit"
             DeviceType.UNKNOWN -> "unknown"
