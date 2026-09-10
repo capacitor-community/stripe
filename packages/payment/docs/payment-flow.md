@@ -14,7 +14,7 @@ PaymentFlow splits collection and confirmation. `presentPaymentFlow` collects th
 
 [![Image from Gyazo](https://i.gyazo.com/736450bb2e267eab0bba578e366fcba5.gif)](https://gyazo.com/736450bb2e267eab0bba578e366fcba5)
 
-Use a [PaymentIntent](https://stripe.com/docs/payments/payment-intents) or a [SetupIntent](https://stripe.com/docs/payments/save-and-reuse?platform=web). Create those objects on your server. See [Server Integration](./server-integration.md).
+Use a [PaymentIntent](https://stripe.com/docs/payments/payment-intents) or a [SetupIntent](https://stripe.com/docs/payments/save-and-reuse?platform=web). Create those objects on your server. See [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration).
 
 ## Platform support
 
@@ -54,7 +54,7 @@ await Stripe.createPaymentFlow({
 
 <!-- !::CreatePaymentFlowOption:: -->
 
-On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe does not offer otherwise eligible redirect-based methods when no return URL is available. See [Redirect-based payment methods on iOS](./initialize.md#redirect-based-payment-methods-on-ios).
+On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe does not offer otherwise eligible redirect-based methods when no return URL is available. See [Redirect-based payment methods on iOS](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/initialize#redirect-based-payment-methods-on-ios).
 
 ## 2. presentPaymentFlow
 
@@ -86,7 +86,7 @@ Treat `Canceled` as cancellation and `Failed` as an error. Neither result author
 
 ## 4. addListener
 
-Register result listeners once at application startup. Prefer events over the Promise after Android Activity recreation, including the `Created` event. See [Event Listeners](./learn/event-listeners.md).
+Register result listeners once at application startup. Prefer events over the Promise after Android Activity recreation, including the `Created` event. See [Event Listeners](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/learn/event-listeners).
 
 ```ts
 await Promise.all([

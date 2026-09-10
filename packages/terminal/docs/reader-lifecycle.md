@@ -26,7 +26,7 @@ Constraints:
 - `ReportAvailableUpdate` means an optional update is ready; call `installAvailableUpdate` when the merchant can wait. Do not start an optional install during checkout.
 - `progress` is a float between `0` and `1`.
 - `cancelInstallUpdate` cancels an in-flight install when the SDK allows it. Web install/cancel methods are no-ops.
-- iOS Tap to Pay also reports install start/progress/finish through the Tap to Pay reader delegate. Android Tap to Pay UX is separate; see [Tap to Pay](./tap-to-pay.md).
+- iOS Tap to Pay also reports install start/progress/finish through the Tap to Pay reader delegate. Android Tap to Pay UX is separate; see [Tap to Pay](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/tap-to-pay).
 
 <!-- !::installAvailableUpdate:: -->
 

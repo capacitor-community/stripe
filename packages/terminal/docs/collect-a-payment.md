@@ -28,7 +28,7 @@ Register Terminal event listeners once per JavaScript application startup, as ea
 
 <!-- !::TerminalEventsEnum:: -->
 
-Typed `addListener` overloads cover most of these members. `DiscoveringReaders` and `CancelDiscoveredReaders` are emitted by native discovery start and cancel but do not have dedicated overloads; see the [API](../README.md#api) page.
+Typed `addListener` overloads cover most of these members. `DiscoveringReaders` and `CancelDiscoveredReaders` are emitted by native discovery start and cancel but do not have dedicated overloads; see the [API](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/api) page.
 
 ## Initialize
 
@@ -136,7 +136,7 @@ Process and confirm the collected PaymentIntent. `confirmPaymentIntent` rejects 
 
 - `cancelCollectPaymentMethod` cancels an in-flight collect. On success the promise resolves and `Canceled` is emitted.
 - `Failed` is emitted when `collectPaymentMethod` or `confirmPaymentIntent` fails. The same call's promise also rejects. The payload may include `message`, `code`, and `declineCode`.
-- Do not use `ConnectionStatusChange` to detect unexpected disconnects. Use `UnexpectedReaderDisconnect`, and for Bluetooth/USB also `DisconnectedReader`. See [Reader Lifecycle](./reader-lifecycle.md).
+- Do not use `ConnectionStatusChange` to detect unexpected disconnects. Use `UnexpectedReaderDisconnect`, and for Bluetooth/USB also `DisconnectedReader`. See [Reader Lifecycle](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/reader-lifecycle).
 
 <!-- !::cancelCollectPaymentMethod:: -->
 

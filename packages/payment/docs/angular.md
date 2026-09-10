@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-Register result listeners in the same startup path. See [Event Listeners](./learn/event-listeners.md).
+Register result listeners in the same startup path. See [Event Listeners](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/learn/event-listeners).
 
 ## Web
 

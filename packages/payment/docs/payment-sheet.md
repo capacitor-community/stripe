@@ -9,11 +9,11 @@ scrollActiveLine: [
 ]
 ---
 
-PaymentSheet collects payment details and confirms the Intent in one presentation. If you need a pending card plus a later confirmation step, use [PaymentFlow](./payment-flow.md).
+PaymentSheet collects payment details and confirms the Intent in one presentation. If you need a pending card plus a later confirmation step, use [PaymentFlow](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-flow).
 
 [![Image from Gyazo](https://i.gyazo.com/4356878ec43a90178ec3d831d6b47b10.gif)](https://gyazo.com/4356878ec43a90178ec3d831d6b47b10)
 
-Use a [PaymentIntent](https://stripe.com/docs/payments/payment-intents) to charge now, or a [SetupIntent](https://stripe.com/docs/payments/save-and-reuse?platform=web) to save a method for later. Create those objects on your server. See [Server Integration](./server-integration.md).
+Use a [PaymentIntent](https://stripe.com/docs/payments/payment-intents) to charge now, or a [SetupIntent](https://stripe.com/docs/payments/save-and-reuse?platform=web) to save a method for later. Create those objects on your server. See [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration).
 
 ## Platform support
 
@@ -29,7 +29,7 @@ Web does not render the native PaymentSheet. On web, `createPaymentSheet` uses `
 
 Fetch client-safe secrets from your backend, then call `createPaymentSheet`. The plugin does not talk to Stripe's secret API. Use `HttpClient`, `fetch`, or any HTTP client.
 
-On iOS and Android, provide **either** `paymentIntentClientSecret` **or** `setupIntentClientSecret`. On web, provide `paymentIntentClientSecret`. `customerId` and `customerEphemeralKeySecret` are optional together. If you set `customerId`, you must also set `customerEphemeralKeySecret`. A PaymentIntent without a Customer is valid; see the demo `intent/without-customer` shape in [Server Integration](./server-integration.md).
+On iOS and Android, provide **either** `paymentIntentClientSecret` **or** `setupIntentClientSecret`. On web, provide `paymentIntentClientSecret`. `customerId` and `customerEphemeralKeySecret` are optional together. If you set `customerId`, you must also set `customerEphemeralKeySecret`. A PaymentIntent without a Customer is valid; see the demo `intent/without-customer` shape in [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration).
 
 ```ts
 import { firstValueFrom } from 'rxjs';
@@ -55,7 +55,7 @@ await Stripe.createPaymentSheet({
 
 <!-- !::CreatePaymentSheetOption:: -->
 
-Optional native settings include `style` (`alwaysLight` or `alwaysDark`, iOS only), `enableApplePay` with `applePayMerchantId`, `enableGooglePay`, and billing collection options. On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe does not offer otherwise eligible redirect-based methods when no return URL is available. See [Redirect-based payment methods on iOS](./initialize.md#redirect-based-payment-methods-on-ios). `withZipCode` is web only. `currencyCode` is required when `enableGooglePay` is true for a SetupIntent.
+Optional native settings include `style` (`alwaysLight` or `alwaysDark`, iOS only), `enableApplePay` with `applePayMerchantId`, `enableGooglePay`, and billing collection options. On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe does not offer otherwise eligible redirect-based methods when no return URL is available. See [Redirect-based payment methods on iOS](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/initialize#redirect-based-payment-methods-on-ios). `withZipCode` is web only. `currencyCode` is required when `enableGooglePay` is true for a SetupIntent.
 
 ## 2. presentPaymentSheet
 
@@ -76,7 +76,7 @@ Treat `Canceled` as the customer dismissing the sheet. Treat `Failed` as an erro
 
 ## 3. addListener
 
-Register result listeners once at application startup, before you present the sheet. Prefer events over the Promise after Android Activity recreation. See [Event Listeners](./learn/event-listeners.md).
+Register result listeners once at application startup, before you present the sheet. Prefer events over the Promise after Android Activity recreation. See [Event Listeners](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/learn/event-listeners).
 
 ```ts
 await Promise.all([

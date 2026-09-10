@@ -157,7 +157,7 @@ try {
 
 ## 2. createGooglePay
 
-Fetch a PaymentIntent client secret from your backend. On Android, you may instead pass a SetupIntent client secret. See [Server Integration](./server-integration.md). The option is named `paymentIntentClientSecret` for both Intent types. Web also needs `paymentSummaryItems`, `merchantIdentifier`, `countryCode`, and `currency`.
+Fetch a PaymentIntent client secret from your backend. On Android, you may instead pass a SetupIntent client secret. See [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration). The option is named `paymentIntentClientSecret` for both Intent types. Web also needs `paymentSummaryItems`, `merchantIdentifier`, `countryCode`, and `currency`.
 
 ```ts
 import { firstValueFrom } from 'rxjs';
@@ -205,7 +205,7 @@ if (result.paymentResult === GooglePayEventsEnum.Completed) {
 
 <!-- !::GooglePayResultInterface:: -->
 
-Treat `Canceled` as cancellation and `Failed` as an error. Prefer result listeners after Android Activity recreation. See [Event Listeners](./learn/event-listeners.md).
+Treat `Canceled` as cancellation and `Failed` as an error. Prefer result listeners after Android Activity recreation. See [Event Listeners](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/learn/event-listeners).
 
 ## 4. addListener
 

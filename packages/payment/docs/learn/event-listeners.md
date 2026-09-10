@@ -48,7 +48,7 @@ Typical PaymentSheet flow:
 4. Call `presentPaymentSheet()`.
 5. Receive one of `Completed`, `Canceled`, or `Failed`.
 
-`Canceled` means the customer dismissed the sheet. Treat it as cancellation, not as a thrown error. `Failed` and `FailedToLoad` include an error string. Do not fulfill an order from the client event alone; confirm the PaymentIntent or SetupIntent with a [webhook](./server-integration.md).
+`Canceled` means the customer dismissed the sheet. Treat it as cancellation, not as a thrown error. `Failed` and `FailedToLoad` include an error string. Do not fulfill an order from the client event alone; confirm the PaymentIntent or SetupIntent with a [webhook](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration).
 
 ## PaymentFlow events
 

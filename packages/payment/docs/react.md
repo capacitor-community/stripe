@@ -55,6 +55,6 @@ export const PaymentSheet: React.FC = () => {
 };
 ```
 
-Register result listeners once during application startup, not inside a payment button handler. See [Event Listeners](./learn/event-listeners.md).
+Register result listeners once during application startup, not inside a payment button handler. See [Event Listeners](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/learn/event-listeners).
 
 The official React demo is at [capacitor-community/stripe/demo/react](https://github.com/capacitor-community/stripe/tree/main/demo/react).

@@ -33,7 +33,7 @@ await Stripe.initialize({
 });
 ```
 
-On Android, Google Pay can also read `com.getcapacitor.community.stripe.stripe_account` from application metadata. See [Google Pay](./google-pay.md).
+On Android, Google Pay can also read `com.getcapacitor.community.stripe.stripe_account` from application metadata. See [Google Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/google-pay).
 
 ## Redirect-based payment methods on iOS
 
@@ -93,7 +93,7 @@ The method is not implemented on Android or web. Only pass matching Stripe retur
 
 ### Angular
 
-Initialize from the root component. See [Angular](./angular.md).
+Initialize from the root component. See [Angular](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/angular).
 
 ```ts:src/app/app.component.ts
 import { Component } from '@angular/core';
@@ -115,4 +115,4 @@ export class AppComponent {
 
 ### React
 
-`CapacitorStripeProvider` initializes the plugin for you. See [React](./react.md).
+`CapacitorStripeProvider` initializes the plugin for you. See [React](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/react).

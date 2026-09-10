@@ -46,7 +46,7 @@ Web `discoverReaders` rejects with an unavailable error for any type other than 
 | `setTapToPayUxConfiguration` | No-op (logs only)    | Unimplemented                       | Yes — call after `initialize`, before `connectReader` |
 | `isTapToPayAccountLinked`    | Unavailable (throws) | Yes — iOS 16.4+, after `initialize` | Unimplemented                                         |
 
-See [Tap to Pay](./tap-to-pay.md) for the setup sequence and limitations.
+See [Tap to Pay](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/tap-to-pay) for the setup sequence and limitations.
 
 ### Web no-op and unsupported lifecycle methods
 

@@ -13,7 +13,7 @@ scrollActiveLine:
   ]
 ---
 
-Tap to Pay collects contactless payments on a compatible phone or tablet without a separate card reader. Use `TerminalConnectTypes.TapToPay` after [configuration](./configuration.md) and a working [connection token](./collect-a-payment.md).
+Tap to Pay collects contactless payments on a compatible phone or tablet without a separate card reader. Use `TerminalConnectTypes.TapToPay` after [configuration](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/configuration) and a working [connection token](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/collect-a-payment).
 
 The official demo exercises Tap to Pay, Internet, and Bluetooth in [demo/angular](https://github.com/capacitor-community/stripe/tree/main/demo/angular).
 
@@ -27,7 +27,7 @@ The official demo exercises Tap to Pay, Internet, and Bluetooth in [demo/angular
 
 Complete Stripe Dashboard Terminal setup and create a [Location](https://docs.stripe.com/terminal/fleet/locations). Pass that `locationId` into `discoverReaders`; the plugin uses it when connecting the Tap to Pay reader.
 
-Android `initialize` requests the location permission listed in [Configuration](./configuration.md). Bluetooth permissions are requested only when discovering `Bluetooth` or `Simulated` readers; Tap to Pay discovery itself does not request them.
+Android `initialize` requests the location permission listed in [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/configuration). Bluetooth permissions are requested only when discovering `Bluetooth` or `Simulated` readers; Tap to Pay discovery itself does not request them.
 
 ## Setup sequence
 
@@ -37,7 +37,7 @@ Android `initialize` requests the location permission listed in [Configuration](
 4. On Android, optionally call `setTapToPayUxConfiguration`.
 5. `discoverReaders` with `type: TerminalConnectTypes.TapToPay` and `locationId`.
 6. `connectReader` with the discovered reader.
-7. Collect and confirm a `card_present` PaymentIntent as in [Collect a Payment](./collect-a-payment.md).
+7. Collect and confirm a `card_present` PaymentIntent as in [Collect a Payment](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/collect-a-payment).
 
 <!-- !::initialize:: -->
 
@@ -89,5 +89,5 @@ After connect, use `collectPaymentMethod` and `confirmPaymentIntent` with a serv
 - UX colors and dark mode are Android-only; iOS uses the system Tap to Pay on iPhone UI.
 - Account-link status is iOS-only and must be re-fetched from Apple each time.
 - `tapZone` is part of the TypeScript API but is not wired through on the installed Android SDK.
-- Optional reader software updates still follow [Reader Lifecycle](./reader-lifecycle.md) rules: do not install during checkout.
+- Optional reader software updates still follow [Reader Lifecycle](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/reader-lifecycle) rules: do not install during checkout.
 - Keep Stripe secret keys and connection-token creation on the backend.

@@ -54,7 +54,7 @@ try {
 
 ## 2. createApplePay
 
-Fetch a PaymentIntent client secret from your backend. See [Server Integration](./server-integration.md). Then pass `paymentIntentClientSecret`, `paymentSummaryItems`, `merchantIdentifier`, `countryCode`, and `currency`.
+Fetch a PaymentIntent client secret from your backend. See [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration). Then pass `paymentIntentClientSecret`, `paymentSummaryItems`, `merchantIdentifier`, `countryCode`, and `currency`.
 
 ```ts
 import { firstValueFrom } from 'rxjs';
@@ -100,7 +100,7 @@ Treat `Canceled` as cancellation and `Failed` as an error.
 
 ## 4. addListener
 
-Register listeners at application startup. See [Event Listeners](./learn/event-listeners.md).
+Register listeners at application startup. See [Event Listeners](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/learn/event-listeners).
 
 ```ts
 Stripe.addListener(ApplePayEventsEnum.Completed, () => {

@@ -11,7 +11,7 @@ npm install @capacitor-community/stripe
 npx cap sync
 ```
 
-The plugin depends on Capacitor 8 or later. Web also needs the `stripe-pwa-elements` peer dependency. Keep the Stripe secret key on your server only. See [Server Integration](./server-integration.md).
+The plugin depends on Capacitor 8 or later. Web also needs the `stripe-pwa-elements` peer dependency. Keep the Stripe secret key on your server only. See [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration).
 
 | Requirement | Minimum |
 | --- | --- |
@@ -23,7 +23,7 @@ The plugin depends on Capacitor 8 or later. Web also needs the `stripe-pwa-eleme
 
 No extra Gradle or `MainActivity` registration is required for the plugin itself.
 
-Google Pay on Android must be configured with application metadata before the plugin loads. Follow [Google Pay](./google-pay.md).
+Google Pay on Android must be configured with application metadata before the plugin loads. Follow [Google Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/google-pay).
 
 Optional Stripe Connect: if Android Google Pay should run against a connected account, add `com.getcapacitor.community.stripe.stripe_account` metadata. Native and web PaymentSheet, PaymentFlow, Apple Pay, and Google Pay also accept `stripeAccount` on `initialize`.
 
@@ -40,14 +40,14 @@ Add `NSCameraUsageDescription` so PaymentSheet can scan cards:
   </dict>
 ```
 
-The plugin loads automatically on iOS. Apple Pay also needs an Apple Merchant ID and certificate. Follow [Apple Pay](./apple-pay.md).
+The plugin loads automatically on iOS. Apple Pay also needs an Apple Merchant ID and certificate. Follow [Apple Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/apple-pay).
 
-For PayPal, 3D Secure, and other redirect-based payment methods, register a custom URL scheme, set `returnURL` when you create PaymentSheet or PaymentFlow, and call `handleURLCallback` from your app URL handler. Without a return URL, Stripe does not offer otherwise eligible redirect-based payment methods on iOS. See [Initialize](./initialize.md#redirect-based-payment-methods-on-ios).
+For PayPal, 3D Secure, and other redirect-based payment methods, register a custom URL scheme, set `returnURL` when you create PaymentSheet or PaymentFlow, and call `handleURLCallback` from your app URL handler. Without a return URL, Stripe does not offer otherwise eligible redirect-based payment methods on iOS. See [Initialize](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/initialize#redirect-based-payment-methods-on-ios).
 
 ## Web configuration
 
 Install `stripe-pwa-elements` and call `defineCustomElements()` once during bootstrap. Serve the app over HTTPS in development and production.
 
-- [Vanilla JS Quick start](./vanilla-js.md)
-- [Angular Quick start](./angular.md)
-- [React Quick start](./react.md)
+- [Vanilla JS Quick start](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/vanilla-js)
+- [Angular Quick start](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/angular)
+- [React Quick start](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/react)
