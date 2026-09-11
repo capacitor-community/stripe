@@ -5,7 +5,6 @@
 	"bundledWebRuntime": false,
 	"packageClassList": [
 		"StripePlugin",
-		"StripePlugin",
 		"AppPlugin",
 		"HapticsPlugin",
 		"KeyboardPlugin",
