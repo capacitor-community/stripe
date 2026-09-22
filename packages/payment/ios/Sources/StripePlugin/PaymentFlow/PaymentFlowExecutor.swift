@@ -56,6 +56,10 @@ class PaymentFlowExecutor: NSObject {
             configuration.style = .alwaysDark
         }
 
+        // Opt in to delayed payment methods (US bank account, SEPA, and similar), which
+        // PaymentSheet hides by default. https://docs.stripe.com/payments/mobile/accept-payment?platform=ios&type=setup
+        configuration.allowsDelayedPaymentMethods = call.getBool("allowsDelayedPaymentMethods", false)
+
         let applePayMerchantId = call.getString("applePayMerchantId") ?? ""
 
         if call.getBool("enableApplePay", false) && applePayMerchantId != "" {

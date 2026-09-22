@@ -96,6 +96,9 @@ class PaymentSheetExecutor(
             .shippingDetails(shippingDetailsConfiguration)
             .billingDetailsCollectionConfiguration(billingDetailsCollectionConfiguration)
             .paymentMethodLayout(paymentMethodLayout)
+            // Opt in to delayed payment methods (US bank account, SEPA, and similar), which
+            // PaymentSheet hides by default. https://docs.stripe.com/payments/mobile/accept-payment?platform=android&type=setup
+            .allowsDelayedPaymentMethods(call.getBoolean("allowsDelayedPaymentMethods", false)!!)
 
         if (enableGooglePay!!) {
             val googlePayEnvironment = call.getBoolean("GooglePayIsTesting", false)!!
