@@ -188,8 +188,14 @@ extension ApplePayExecutor {
         }
 
         // Validate the entire payload before consuming the pending callback.
-        guard let rawItems = call.options["paymentSummaryItems"] as? [[String: Any]], !rawItems.isEmpty else {
-            call.reject("Invalid Params. paymentSummaryItems must be a non-empty array of items")
+        guard let rawItems = call.options["paymentSummaryItems"] as? [[String: Any]] else {
+            call.reject("Invalid Params. paymentSummaryItems must be an array of items")
+            return
+        }
+        // An empty update acknowledges the selection without changing the current items.
+        if rawItems.isEmpty {
+            completeShippingUpdate()
+            call.resolve()
             return
         }
         var updatedItems: [PKPaymentSummaryItem] = []
