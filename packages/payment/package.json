@@ -52,7 +52,7 @@
     "verify:web": "npm run build",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
     "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix",
-    "eslint": "eslint src",
+    "eslint": "eslint src/. --ext ts",
     "prettier": "prettier \"{src/*.ts,**/*.java}\" --plugin=prettier-plugin-java",
     "swiftlint": "node-swiftlint",
     "docgen": "docgen --api StripePlugin --output-readme README.md --output-json dist/docs.json",
@@ -66,29 +66,35 @@
     "@capacitor/android": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/ios": "^8.0.0",
-    "@ionic/eslint-config": "^0.5.0",
+    "@ionic/eslint-config": "^0.4.0",
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/swiftlint-config": "^2.0.0",
     "@rdlabo/capacitor-docgen": "^0.4.1",
     "@types/node": "^24.10.1",
-    "@types/react": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.71.0",
-    "eslint": "^10.12.0",
+    "@types/react": "^16.14.3",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "eslint": "^8.57.1",
     "prettier": "^3.6.2",
     "prettier-plugin-java": "^2.7.7",
     "rimraf": "^6.1.0",
     "rollup": "^4.53.2",
     "swiftlint": "^2.0.0",
-    "typescript": "~6.0.3"
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "@capacitor/core": ">=8.0.0",
-    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react": "^17.0.0 || ^18.0.0",
     "stripe-pwa-elements": "^3.0.0",
     "@stripe/stripe-js": "^8.4.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
+  "eslintConfig": {
+    "extends": "@ionic/eslint-config/recommended",
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "error"
+    }
+  },
   "capacitor": {
     "ios": {
       "src": "ios"
