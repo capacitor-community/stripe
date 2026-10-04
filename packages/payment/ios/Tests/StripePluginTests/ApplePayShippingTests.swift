@@ -20,7 +20,7 @@ final class ApplePayShippingTests: XCTestCase {
     private var executor: ApplePayExecutor!
     private var plugin: RecordingPlugin!
 
-    private func prepare(timeout: TimeInterval = 25, allowedCountries: [String] = []) {
+    private func prepare(timeout: TimeInterval = 30, allowedCountries: [String] = []) {
         executor = ApplePayExecutor(shippingUpdateTimeout: timeout)
         plugin = RecordingPlugin()
         executor.plugin = plugin

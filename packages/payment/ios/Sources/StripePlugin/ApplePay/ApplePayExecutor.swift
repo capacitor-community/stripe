@@ -16,7 +16,7 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
     private var shippingHandlerWorkItem: DispatchWorkItem?
     private let shippingUpdateTimeout: TimeInterval
 
-    init(shippingUpdateTimeout: TimeInterval = 25) {
+    init(shippingUpdateTimeout: TimeInterval = 30) {
         self.shippingUpdateTimeout = shippingUpdateTimeout
         super.init()
     }
