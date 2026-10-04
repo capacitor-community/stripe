@@ -14,7 +14,7 @@ import {
   IonTitle,
   IonToolbar,
   Platform,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { HelperService } from '../shared/helper.service';
 import {

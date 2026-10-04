@@ -17,7 +17,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import {
   IonicRouteStrategy,
   provideIonicAngular,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { provideRouter, RouteReuseStrategy } from '@angular/router';
 
 if (environment.production) {

@@ -35,7 +35,7 @@ export const createStripeClient = (secretKey: string): StripeClient => {
         amount: input.amount,
         currency: input.currency,
         customer: input.customer,
-        payment_method_types: input.payment_method_types,
+        allowed_payment_method_types: input.payment_method_types,
         capture_method: input.capture_method,
       });
       return {

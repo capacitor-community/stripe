@@ -8,7 +8,7 @@ import {
   IonButton,
   IonFooter,
   ViewWillEnter,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { RouterLink } from '@angular/router';
 import {AmountService} from "../amount.service";
 

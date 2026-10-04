@@ -26,7 +26,7 @@ import {
   IonTitle,
   IonToolbar,
   Platform,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 
 const happyPathItems: ITestItems[] = [
   {

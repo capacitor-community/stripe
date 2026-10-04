@@ -17,19 +17,19 @@
     "build:check": "wrangler deploy --dry-run --outdir dist"
   },
   "dependencies": {
-    "hono": "^4.13.1",
-    "stripe": "^20.4.1",
+    "hono": "^4.13.13",
+    "stripe": "^23.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260812.1",
-    "@eslint/js": "^9.39.1",
-    "eslint": "^9.39.1",
-    "globals": "^16.4.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.9.3",
+    "typescript": "~6.0.3",
     "typescript-eslint": "^8.46.2",
-    "vitest": "^4.1.10",
+    "vitest": "^5.0.3",
     "wrangler": "^4.121.0"
   }
 }

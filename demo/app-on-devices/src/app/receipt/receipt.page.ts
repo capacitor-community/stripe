@@ -8,7 +8,7 @@ import {
   IonHeader,
   IonToolbar,
   NavController,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { AmountService } from '../amount.service';
 import { RouterLink } from '@angular/router';
 

@@ -18,7 +18,7 @@ import {
   AlertController,
   ModalController,
   LoadingController,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { AmountService } from '../amount.service';
 import { Try15secPage } from '../game/try15sec/try15sec.page';
 import { StripeTerminal } from '@capacitor-community/stripe-terminal';
