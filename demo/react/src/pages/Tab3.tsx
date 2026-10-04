@@ -1,4 +1,4 @@
-import { PaymentSheetEventsEnum } from '@capacitor-community/stripe';
+import { PaymentFlowEventsEnum } from '@capacitor-community/stripe';
 import {
   IonContent,
   IonHeader,
@@ -28,9 +28,9 @@ const Tab3: React.FC = () => {
   const [confirmPaymentFlowResult, setConfirmPaymentFlowResult] = useState<TaskResult>('')
   useEffect(() => {
     if (!stripe) return;
-    Object.keys(PaymentSheetEventsEnum).forEach((key) => {
+    Object.keys(PaymentFlowEventsEnum).forEach((key) => {
       // @ts-expect-error
-      const eventName = PaymentSheetEventsEnum[key]
+      const eventName = PaymentFlowEventsEnum[key]
       stripe.addListener(eventName, (value: any) => {
         console.log(`[Event:${eventName}] ${value}`)
       })
@@ -68,7 +68,9 @@ const Tab3: React.FC = () => {
     })
 
     await stripe.confirmPaymentFlow()
-    .then(() => setConfirmPaymentFlowResult('success'))
+    .then(({ paymentResult }) => setConfirmPaymentFlowResult(
+      paymentResult === PaymentFlowEventsEnum.Completed ? 'success' : 'error'
+    ))
     .catch(e => {
       setConfirmPaymentFlowResult('error')
       throw e

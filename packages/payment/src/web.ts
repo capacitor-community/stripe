@@ -82,7 +82,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       throw new Error();
     }
 
-    const props = await this.cardElementModal.present();
+    const props = await this.presentCardElementModal();
     if (props === undefined) {
       this.notifyListeners(PaymentSheetEventsEnum.Canceled, null);
       return {
@@ -134,6 +134,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     }
 
     this.cardElementModal.applicationName = '@capacitor-community/stripe';
+    this.cardElementModal.shouldUseDefaultFormSubmitAction = false;
 
     // eslint-disable-next-line no-prototype-builtins
     if (options.hasOwnProperty('paymentIntentClientSecret')) {
@@ -165,7 +166,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     }
 
     this.notifyListeners(PaymentFlowEventsEnum.Opened, null);
-    const props = await this.cardElementModal.present().catch(() => undefined);
+    const props = await this.presentCardElementModal();
     if (props === undefined) {
       this.notifyListeners(PaymentFlowEventsEnum.Canceled, null);
       throw new Error();
@@ -184,6 +185,8 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
 
     this.flowStripe = stripe as Stripe;
     this.flowCardNumberElement = cardNumberElement;
+    await this.cardElementModal.updateProgress('');
+    await this.cardElementModal.querySelector('stripe-modal')?.closeModal();
 
     this.notifyListeners(PaymentFlowEventsEnum.Created, {
       cardNumber: token.card.last4,
@@ -200,13 +203,19 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
       throw new Error();
     }
 
-    const result = await this.flowStripe.createPaymentMethod({
-      type: 'card',
-      card: this.flowCardNumberElement,
-    });
+    const clientSecret = this.cardElementModal.intentClientSecret;
+    if (!clientSecret) {
+      throw new Error('PaymentFlow requires an intent client secret');
+    }
+    const data = { payment_method: { card: this.flowCardNumberElement } };
+    const result =
+      this.cardElementModal.intentType === 'setup'
+        ? await this.flowStripe.confirmCardSetup(clientSecret, data)
+        : await this.flowStripe.confirmCardPayment(clientSecret, data);
 
     if (result.error !== undefined) {
       this.notifyListeners(PaymentFlowEventsEnum.Failed, null);
+      return { paymentResult: PaymentFlowEventsEnum.Failed };
     }
 
     this.cardElementModal.updateProgress('success');
@@ -216,6 +225,17 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     return {
       paymentResult: PaymentFlowEventsEnum.Completed,
     };
+  }
+
+  private async presentCardElementModal(): Promise<unknown> {
+    const modal = this.cardElementModal!;
+    await modal.componentOnReady();
+    const result = modal.present().catch(() => undefined);
+    // stripe-pwa-elements 3.2 does not animate the inner modal when its open prop changes.
+    const sheet = modal.querySelector('stripe-modal');
+    await sheet?.componentOnReady();
+    await sheet?.openModal();
+    return result;
   }
 
   isApplePayAvailable(): Promise<void> {
