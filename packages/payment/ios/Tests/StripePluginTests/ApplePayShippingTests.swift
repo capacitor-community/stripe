@@ -74,17 +74,22 @@ final class ApplePayShippingTests: XCTestCase {
         XCTAssertEqual(update.paymentSummaryItems.last?.amount, NSDecimalNumber(value: amount), file: file, line: line)
     }
 
-    func testSuccessfulUpdateRejectsDuplicateCalls() {
+    func testUpdatesPreserveItemsWhenEmptyAndRejectDuplicateCalls() {
         prepare()
-        var calls = 0
-        let id = select { update in
-            calls += 1
-            self.assertUpdate(update, amount: 12)
+        let updates: [(items: [[String: Any]], amount: Int)] = [
+            ([], 10), ([["label": "Total", "amount": 12]], 12), ([], 12)
+        ]
+        for (items, amount) in updates {
+            var calls = 0
+            let id = select { update in
+                calls += 1
+                self.assertUpdate(update, amount: amount)
+            }
+            XCTAssertNil(update(id, items: items))
+            XCTAssertEqual(update(id), "No pending shipping update")
+            executor.applePayContext(context, didCompleteWith: .success, error: nil)
+            XCTAssertEqual(calls, 1)
         }
-        XCTAssertNil(update(id))
-        XCTAssertEqual(update(id), "No pending shipping update")
-        executor.applePayContext(context, didCompleteWith: .success, error: nil)
-        XCTAssertEqual(calls, 1)
     }
 
     func testTimeoutUsesLatestAcceptedItems() async {
@@ -147,7 +152,7 @@ final class ApplePayShippingTests: XCTestCase {
         var calls = 0
         let id = select { _ in calls += 1 }
         let invalid: [Any?] = [
-            nil, [], "invalid", ["invalid"], [["label": "Total"]], [["amount": 12]],
+            nil, "invalid", ["invalid"], [["label": "Total"]], [["amount": 12]],
             [["label": " ", "amount": 12]], [["label": "Total", "amount": "12"]],
             [["label": "Total", "amount": true]], [["label": "Total", "amount": Double.nan]],
             [["label": "Total", "amount": Double.infinity]], [["label": "Total", "amount": -1]],
