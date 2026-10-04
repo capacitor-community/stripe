@@ -24,5 +24,14 @@
   "devDependencies": {
     "np": "^10.2.0",
     "write-pkg": "^6.0.0"
+  },
+  "overrides": {
+    "external-editor": {
+      "tmp": "^0.2.7"
+    },
+    "write-pkg": {
+      "deepmerge-ts": "^8.0.2"
+    },
+    "ws@6": "^6.2.6"
   }
 }

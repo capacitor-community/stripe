@@ -71,7 +71,7 @@ jobs:
 
     - name: Build test React app
       working-directory: ./demo/react
-      run: npm ci && npm run build
+      run: npm ci && npm run build && npm run test:ci && npm run lint
 
     - name: Update & Sync Capacitor Project
       working-directory: ./demo/angular
