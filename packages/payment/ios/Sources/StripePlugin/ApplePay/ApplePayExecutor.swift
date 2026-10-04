@@ -8,18 +8,12 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
     weak var plugin: StripePlugin?
     var appleClientSecret: String = ""
     private var payCallId: String?
-    private(set) var paymentRequest: PKPaymentRequest?
+    private var paymentRequest: PKPaymentRequest?
     private var allowedCountries: [String] = []
     private var allowedCountriesErrorDescription: String = ""
     private var pendingShippingHandler: ((PKPaymentRequestShippingContactUpdate) -> Void)?
     private var pendingShippingUpdateId: String?
     private var shippingHandlerWorkItem: DispatchWorkItem?
-    private let shippingUpdateTimeout: TimeInterval
-
-    init(shippingUpdateTimeout: TimeInterval = 30) {
-        self.shippingUpdateTimeout = shippingUpdateTimeout
-        super.init()
-    }
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
         if !StripeAPI.deviceSupportsApplePay() {
@@ -145,12 +139,6 @@ extension ApplePayExecutor {
 
     // For security reasons, Apple does not return the full address until a successful payment has been made.
     func applePayContext(_ context: STPApplePayContext, didSelectShippingContact contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void) {
-        handleShippingContact(contact, handler: handler)
-    }
-
-    func handleShippingContact(
-        _ contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void
-    ) {
         // Complete the old selection before accepting or rejecting the next one.
         completeShippingUpdate()
 
@@ -178,7 +166,7 @@ extension ApplePayExecutor {
             self.completeShippingUpdate()
         }
         shippingHandlerWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + shippingUpdateTimeout, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30, execute: workItem)
 
         let jsonArray = self.transformPKContactToJSON(contact: contact)
         self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray, "updateId": updateId])
@@ -251,10 +239,6 @@ extension ApplePayExecutor {
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPApplePayContext.PaymentStatus, error: Error?) {
-        completeApplePay(status: status, error: error)
-    }
-
-    func completeApplePay(status: STPApplePayContext.PaymentStatus, error: Error?) {
         completeShippingUpdate()
 
         if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {

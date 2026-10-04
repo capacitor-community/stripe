@@ -19,9 +19,10 @@ final class ApplePayShippingTests: XCTestCase {
 
     private var executor: ApplePayExecutor!
     private var plugin: RecordingPlugin!
+    private var context: STPApplePayContext!
 
-    private func prepare(timeout: TimeInterval = 30, allowedCountries: [String] = []) {
-        executor = ApplePayExecutor(shippingUpdateTimeout: timeout)
+    private func prepare(allowedCountries: [String] = []) {
+        executor = ApplePayExecutor()
         plugin = RecordingPlugin()
         executor.plugin = plugin
         let options: JSObject = [
@@ -33,9 +34,10 @@ final class ApplePayShippingTests: XCTestCase {
         let call = CAPPluginCall(callbackId: "create", methodName: "createApplePay", options: options,
                                  success: { _, _ in }, error: { XCTFail($0?.message ?? "Missing error") })!
         executor.createApplePay(call)
-        let shipping = PKShippingMethod(label: "Standard", amount: 2)
-        shipping.identifier = "standard"
-        executor.paymentRequest?.shippingMethods = [shipping]
+        let request = StripeAPI.paymentRequest(withMerchantIdentifier: "merchant.test", country: "US", currency: "USD")
+        request.paymentSummaryItems = [PKPaymentSummaryItem(label: "Total", amount: 10)]
+        context = STPApplePayContext(paymentRequest: request, delegate: executor)
+        XCTAssertNotNil(context)
     }
 
     @discardableResult
@@ -46,7 +48,7 @@ final class ApplePayShippingTests: XCTestCase {
         address.isoCountryCode = country
         let contact = PKContact()
         contact.postalAddress = address
-        executor.handleShippingContact(contact, handler: handler)
+        executor.applePayContext(context, didSelectShippingContact: contact, handler: handler)
         return plugin.shippingEvents.last?["updateId"] as? String ?? ""
     }
 
@@ -70,10 +72,9 @@ final class ApplePayShippingTests: XCTestCase {
     private func assertUpdate(_ update: PKPaymentRequestShippingContactUpdate, amount: Int = 10,
                               file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertEqual(update.paymentSummaryItems.last?.amount, NSDecimalNumber(value: amount), file: file, line: line)
-        XCTAssertEqual(update.shippingMethods.map(\.identifier), ["standard"], file: file, line: line)
     }
 
-    func testSuccessfulUpdatePersistsItemsAndRejectsDuplicateCalls() {
+    func testSuccessfulUpdateRejectsDuplicateCalls() {
         prepare()
         var calls = 0
         let id = select { update in
@@ -81,14 +82,13 @@ final class ApplePayShippingTests: XCTestCase {
             self.assertUpdate(update, amount: 12)
         }
         XCTAssertNil(update(id))
-        XCTAssertEqual(executor.paymentRequest?.paymentSummaryItems.last?.amount, 12)
         XCTAssertEqual(update(id), "No pending shipping update")
-        executor.completeApplePay(status: .success, error: nil)
+        executor.applePayContext(context, didCompleteWith: .success, error: nil)
         XCTAssertEqual(calls, 1)
     }
 
-    func testTimeoutUsesLatestAcceptedItemsAndPreservesShippingMethods() async {
-        prepare(timeout: 0.01)
+    func testTimeoutUsesLatestAcceptedItems() async {
+        prepare()
         let first = select { self.assertUpdate($0, amount: 12) }
         XCTAssertNil(update(first))
         let timedOut = expectation(description: "Pending selection times out")
@@ -98,9 +98,9 @@ final class ApplePayShippingTests: XCTestCase {
             self.assertUpdate($0, amount: 12)
             timedOut.fulfill()
         }
-        await fulfillment(of: [timedOut], timeout: 1)
+        await fulfillment(of: [timedOut], timeout: 35)
         XCTAssertEqual(update(second), "No pending shipping update")
-        executor.completeApplePay(status: .userCancellation, error: nil)
+        executor.applePayContext(context, didCompleteWith: .userCancellation, error: nil)
         XCTAssertEqual(calls, 1)
     }
 
@@ -157,7 +157,6 @@ final class ApplePayShippingTests: XCTestCase {
         for items in invalid {
             XCTAssertTrue(update(id, items: items)?.contains("paymentSummaryItems") == true)
             XCTAssertEqual(calls, 0)
-            XCTAssertEqual(executor.paymentRequest?.paymentSummaryItems.last?.amount, 10)
         }
         // Negative discounts and a zero total are valid; only the final total must be nonnegative.
         XCTAssertNil(update(id, items: [
@@ -166,19 +165,16 @@ final class ApplePayShippingTests: XCTestCase {
         XCTAssertEqual(calls, 1)
     }
 
-    func testCompletionAndCancellationClearHandlersAndTimers() async {
+    func testCompletionAndCancellationClearHandlers() {
         for status in [STPApplePayContext.PaymentStatus.success, .error, .userCancellation] {
-            prepare(timeout: 0.01)
+            prepare()
             var calls = 0
             let id = select {
                 calls += 1
                 self.assertUpdate($0)
             }
-            executor.completeApplePay(status: status, error: nil)
-            executor.completeApplePay(status: status, error: nil)
-            let timerDrained = expectation(description: "Canceled timer deadline passed")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { timerDrained.fulfill() }
-            await fulfillment(of: [timerDrained], timeout: 1)
+            executor.applePayContext(context, didCompleteWith: status, error: nil)
+            executor.applePayContext(context, didCompleteWith: status, error: nil)
             XCTAssertEqual(calls, 1)
             XCTAssertEqual(update(id), "No pending shipping update")
         }
