@@ -112,7 +112,9 @@ Stripe.addListener(ApplePayEventsEnum.Completed, () => {
 
 ## 5. updateApplePaySheet
 
-On iOS, `DidSelectShippingContact` includes `contact` and `updateId`. Recalculate totals and call `updateApplePaySheet` with that `updateId`. If JavaScript does not respond, the native sheet falls back to the original summary items after 25 seconds.
+On iOS, `DidSelectShippingContact` includes `contact` and `updateId`. Recalculate totals and call `updateApplePaySheet` with that `updateId`. If JavaScript does not respond, the native sheet falls back to the latest accepted summary items after 25 seconds. Updates preserve the current shipping methods.
+
+`paymentSummaryItems` must be a non-empty array with a non-empty string label and a finite numeric amount for every item. Negative discounts are allowed, but the final total must be nonnegative. Invalid input is rejected without consuming the pending update, so it can be corrected and retried before timeout. Only the latest contact selection's `updateId` is accepted; duplicate or stale updates are rejected.
 
 ```ts
 Stripe.addListener(ApplePayEventsEnum.DidSelectShippingContact, async (data) => {
