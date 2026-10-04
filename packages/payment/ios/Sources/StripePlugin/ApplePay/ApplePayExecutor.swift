@@ -166,7 +166,7 @@ extension ApplePayExecutor {
             self.completeShippingUpdate()
         }
         shippingHandlerWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 25, execute: workItem)
 
         let jsonArray = self.transformPKContactToJSON(contact: contact)
         self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray, "updateId": updateId])

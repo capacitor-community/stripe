@@ -98,7 +98,7 @@ final class ApplePayShippingTests: XCTestCase {
             self.assertUpdate($0, amount: 12)
             timedOut.fulfill()
         }
-        await fulfillment(of: [timedOut], timeout: 35)
+        await fulfillment(of: [timedOut], timeout: 30)
         XCTAssertEqual(update(second), "No pending shipping update")
         executor.applePayContext(context, didCompleteWith: .userCancellation, error: nil)
         XCTAssertEqual(calls, 1)
