@@ -1,4 +1,5 @@
 import Foundation
+import CoreFoundation
 import Capacitor
 import PassKit
 import StripeApplePay
@@ -7,12 +8,18 @@ class ApplePayExecutor: NSObject, ApplePayContextDelegate {
     weak var plugin: StripePlugin?
     var appleClientSecret: String = ""
     private var payCallId: String?
-    private var paymentRequest: PKPaymentRequest?
+    private(set) var paymentRequest: PKPaymentRequest?
     private var allowedCountries: [String] = []
     private var allowedCountriesErrorDescription: String = ""
     private var pendingShippingHandler: ((PKPaymentRequestShippingContactUpdate) -> Void)?
     private var pendingShippingUpdateId: String?
     private var shippingHandlerWorkItem: DispatchWorkItem?
+    private let shippingUpdateTimeout: TimeInterval
+
+    init(shippingUpdateTimeout: TimeInterval = 25) {
+        self.shippingUpdateTimeout = shippingUpdateTimeout
+        super.init()
+    }
 
     func isApplePayAvailable(_ call: CAPPluginCall) {
         if !StripeAPI.deviceSupportsApplePay() {
@@ -138,6 +145,15 @@ extension ApplePayExecutor {
 
     // For security reasons, Apple does not return the full address until a successful payment has been made.
     func applePayContext(_ context: STPApplePayContext, didSelectShippingContact contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void) {
+        handleShippingContact(contact, handler: handler)
+    }
+
+    func handleShippingContact(
+        _ contact: PKContact, handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void
+    ) {
+        // Complete the old selection before accepting or rejecting the next one.
+        completeShippingUpdate()
+
         // Validate allowed countries first — respond immediately if invalid
         if !self.allowedCountries.isEmpty {
             let addressIsoCountry = (contact.postalAddress?.isoCountryCode ?? "").lowercased()
@@ -151,23 +167,18 @@ extension ApplePayExecutor {
         }
 
         // Store handler so JS can call updateApplePaySheet with updated items
-        shippingHandlerWorkItem?.cancel()
         let updateId = UUID().uuidString
         pendingShippingUpdateId = updateId
         pendingShippingHandler = handler
 
-        // Fallback: resolve with original items after 25s if JS does not respond
+        // Fallback to the latest accepted items if JS does not respond.
         let workItem = DispatchWorkItem { [weak self] in
             guard let self = self,
-                  self.pendingShippingUpdateId == updateId,
-                  let pendingHandler = self.pendingShippingHandler else { return }
-            self.pendingShippingHandler = nil
-            self.pendingShippingUpdateId = nil
-            self.shippingHandlerWorkItem = nil
-            pendingHandler(PKPaymentRequestShippingContactUpdate(paymentSummaryItems: self.paymentRequest?.paymentSummaryItems ?? []))
+                  self.pendingShippingUpdateId == updateId else { return }
+            self.completeShippingUpdate()
         }
         shippingHandlerWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 25, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + shippingUpdateTimeout, execute: workItem)
 
         let jsonArray = self.transformPKContactToJSON(contact: contact)
         self.plugin?.notifyListeners(ApplePayEvents.DidSelectShippingContact.rawValue, data: ["contact": jsonArray, "updateId": updateId])
@@ -179,7 +190,7 @@ extension ApplePayExecutor {
             return
         }
 
-        guard let handler = pendingShippingHandler else {
+        guard pendingShippingHandler != nil else {
             call.reject("No pending shipping update")
             return
         }
@@ -188,23 +199,47 @@ extension ApplePayExecutor {
             return
         }
 
+        // Validate the entire payload before consuming the pending callback.
+        guard let rawItems = call.options["paymentSummaryItems"] as? [[String: Any]], !rawItems.isEmpty else {
+            call.reject("Invalid Params. paymentSummaryItems must be a non-empty array of items")
+            return
+        }
+        var updatedItems: [PKPaymentSummaryItem] = []
+        for (index, item) in rawItems.enumerated() {
+            guard let label = item["label"] as? String, !label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                  let amount = item["amount"] as? NSNumber,
+                  CFGetTypeID(amount) != CFBooleanGetTypeID(), amount.doubleValue.isFinite else {
+                call.reject(
+                    "Invalid paymentSummaryItems[\(index)]: expected a non-empty label and finite numeric amount")
+                return
+            }
+            let decimalAmount = NSDecimalNumber(decimal: amount.decimalValue)
+            guard decimalAmount != .notANumber else {
+                call.reject("Invalid Params. paymentSummaryItems[\(index)].amount is not a valid decimal")
+                return
+            }
+            updatedItems.append(PKPaymentSummaryItem(label: label, amount: decimalAmount))
+        }
+        guard let total = updatedItems.last, total.amount.compare(NSDecimalNumber.zero) != .orderedAscending else {
+            call.reject("Invalid Params. the final paymentSummaryItems amount must be greater than or equal to zero")
+            return
+        }
+        self.paymentRequest?.paymentSummaryItems = updatedItems
+        completeShippingUpdate()
+        call.resolve()
+    }
+
+    private func completeShippingUpdate() {
         shippingHandlerWorkItem?.cancel()
         shippingHandlerWorkItem = nil
+        let handler = pendingShippingHandler
         pendingShippingHandler = nil
         pendingShippingUpdateId = nil
-
-        let rawItems = call.getArray("paymentSummaryItems", [String: Any].self) ?? []
-        var updatedItems: [PKPaymentSummaryItem] = []
-        for item in rawItems {
-            let label = item["label"] as? String ?? ""
-            if let amount = item["amount"] as? NSNumber {
-                updatedItems.append(PKPaymentSummaryItem(label: label, amount: NSDecimalNumber(decimal: amount.decimalValue)))
-            }
-        }
-        let itemsToUse = updatedItems.isEmpty ? (self.paymentRequest?.paymentSummaryItems ?? []) : updatedItems
-        self.paymentRequest?.paymentSummaryItems = itemsToUse
-        handler(PKPaymentRequestShippingContactUpdate(paymentSummaryItems: itemsToUse))
-        call.resolve()
+        // Clear state before invoking the handler so it can only be consumed once.
+        handler?(PKPaymentRequestShippingContactUpdate(
+            errors: nil,
+            paymentSummaryItems: paymentRequest?.paymentSummaryItems ?? [],
+            shippingMethods: paymentRequest?.shippingMethods ?? []))
     }
 
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment) async throws -> String {
@@ -216,12 +251,11 @@ extension ApplePayExecutor {
     }
 
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPApplePayContext.PaymentStatus, error: Error?) {
-        shippingHandlerWorkItem?.cancel()
-        shippingHandlerWorkItem = nil
-        let shippingHandler = pendingShippingHandler
-        pendingShippingHandler = nil
-        pendingShippingUpdateId = nil
-        shippingHandler?(PKPaymentRequestShippingContactUpdate(paymentSummaryItems: self.paymentRequest?.paymentSummaryItems ?? []))
+        completeApplePay(status: status, error: error)
+    }
+
+    func completeApplePay(status: STPApplePayContext.PaymentStatus, error: Error?) {
+        completeShippingUpdate()
 
         if let callId = self.payCallId, let call = self.plugin?.bridge?.savedCall(withID: callId) {
             switch status {

@@ -72,7 +72,7 @@ Typical PaymentFlow flow:
 
 <!-- !::ApplePayEventsEnum:: -->
 
-`DidSelectShippingContact` includes `contact` and `updateId`. On iOS, call `updateApplePaySheet` with that `updateId` and updated `paymentSummaryItems`. If JavaScript does not respond, the native sheet falls back to the original items after 25 seconds. `updateApplePaySheet` is not implemented on Android or web.
+`DidSelectShippingContact` includes `contact` and `updateId`. On iOS, call `updateApplePaySheet` with that `updateId` and updated `paymentSummaryItems`. If JavaScript does not respond, the native sheet falls back to the latest accepted items after 25 seconds, preserving the current shipping methods. `updateApplePaySheet` is not implemented on Android or web.
 
 `DidCreatePaymentMethod` includes the shipping `contact`. Apple does not return the full address until a successful payment.
 
