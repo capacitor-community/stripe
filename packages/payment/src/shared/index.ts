@@ -300,6 +300,16 @@ export interface BasePaymentOption {
   paymentMethodLayout?: 'horizontal' | 'vertical' | 'automatic' | undefined;
 
   /**
+   * Show delayed payment methods such as US bank accounts (ACH) and SEPA Debit in PaymentSheet on iOS and Android.
+   * PaymentSheet hides these by default because funds take time to settle.
+   *
+   * @url https://docs.stripe.com/payments/mobile/accept-payment?platform=ios&type=setup#allow-delayed-payment-methods
+   * @default false
+   * @since 8.3.0
+   */
+  allowsDelayedPaymentMethods?: boolean;
+
+  /**
    * Appearance override for native PaymentSheet. iOS only.
    *
    * @url https://stripe.com/docs/payments/accept-a-payment?platform=ios&ui=payment-sheet#userinterfacestyle
