@@ -25,65 +25,27 @@ Documentation: [Payments](https://docs.rdlabo.dev/projects/capacitor-stripe) · 
 
 ### Versions
 
-Users of Capacitor v7 should use version v7 of the Plugin.
+Use plugin v8 with Capacitor v8. Install only the packages your app needs:
 
 ```bash
-% npm install @capacitor-community/stripe@7
-% npm install @capacitor-community/stripe-identity@7
-% npm install @capacitor-community/stripe-terminal@7
+npm install @capacitor-community/stripe@8
+npm install @capacitor-community/stripe-identity@8
+npm install @capacitor-community/stripe-terminal@8
+npx cap sync
 ```
 
-### How to use Stripe Android currently package
+For Capacitor v7, use plugin v7 instead.
 
-Capacitor Android 7's default settings is here:
+### Android requirements
 
-```gradle
-ext {
-    minSdkVersion = 24
-    compileSdkVersion = 36
-    targetSdkVersion = 36
-```
+Payment and Identity require `minSdkVersion = 24`. Terminal requires `minSdkVersion = 26`; set it in `android/variables.gradle` if you use Terminal. The plugins use `compileSdkVersion = 36` and `targetSdkVersion = 36` by default.
 
-To use the latest Stripe Android, you need to version these up. To use the latest features, follow these steps.
+v8.3.0 updates the Stripe SDKs without requiring a Gradle, Android Gradle Plugin, or Kotlin upgrade from the existing Capacitor 8 setup.
 
-1. Open `android/variables.gradle` and change sdkVersion version, if need.
-2. Add `stripeAndroidVersion`, `identityVersion` or `stripeterminalCoreVersion` and set required version. Release information is here:
+The plugins provide default Stripe SDK versions. Optional overrides in `android/variables.gradle` are `stripeAndroidVersion` (Payment), `identityVersion` (Identity), and `stripeterminalCoreVersion`, `stripeterminalTapToPayVersion`, and `stripeterminalAppOnDevicesVersion` (Terminal). Keep the three Terminal versions aligned, and check upstream compatibility before overriding them:
 
-- https://github.com/stripe/stripe-android/releases
-- https://github.com/stripe/stripe-terminal-android/releases
-
-```diff
-  ext {
--   minSdkVersion = 24
-+   minSdkVersion = 26
-    compileSdkVersion = 36
-    targetSdkVersion = 36
-    androidxActivityVersion = '1.11.0'
-    androidxAppCompatVersion = '1.7.1'
-    androidxCoordinatorLayoutVersion = '1.3.0'
-    androidxCoreVersion = '1.17.0'
-    androidxFragmentVersion = '1.8.9'
-    coreSplashScreenVersion = '1.2.0'
-    androidxWebkitVersion = '1.14.0'
-    junitVersion = '4.13.2'
-    androidxJunitVersion = '1.3.0'
-    androidxEspressoCoreVersion = '3.7.0'
-    cordovaAndroidVersion = '14.0.1'
-
-    // If you will set @capacitor-community/stripe:
-+   stripeAndroidVersion = 【Your version】
-
-    // If you will set @capacitor-community/stripe-identity:
-+   identityVersion = 【Your version】
-
-    // If you will set @capacitor-community/stripe-terminal:
-+   stripeterminalCoreVersion =【Your version】
-+   stripeterminalTapToPayVersion =【Your version】
-+   stripeterminalAppOnDevicesVersion  =【Your version】
-  }
-```
-
-Note: `@capacitor-community/stripe-terminal` does not work with the default sdkVersion, so these updates are mandatory. See [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) for more information.
+- [Stripe Android releases](https://github.com/stripe/stripe-android/releases)
+- [Stripe Terminal Android releases](https://github.com/stripe/stripe-terminal-android/releases)
 
 ### Error when running `cap update ios`
 

@@ -38,7 +38,7 @@ Prefer an authenticated app-side request through `RequestedConnectionToken` and 
 
 ### `tokenProviderEndpoint` compatibility mode
 
-`tokenProviderEndpoint` is available for simple deployments, but the v8.2.1 native clients send a bare HTTP **POST**: callers cannot add an authorization header or request body. Use it only when your server can authenticate and protect that request by other means. Never expose an unrestricted public token-creation endpoint.
+`tokenProviderEndpoint` is available for simple deployments, but the v8.3.0 native clients send a bare HTTP **POST**: callers cannot add an authorization header or request body. Use it only when your server can authenticate and protect that request by other means. Never expose an unrestricted public token-creation endpoint.
 
 When `tokenProviderEndpoint` is set, the plugin sends an HTTP **POST** with an empty body. The response **must** be JSON with a `secret` string:
 
@@ -51,7 +51,7 @@ That value is a Stripe Terminal [connection token](https://docs.stripe.com/termi
 The official demo exposes `POST /connection/token` and returns `{ secret }`; adapt its authentication and authorization to your application.
 
 :::message
-In v8.2.1, Android logs the `secret` returned through `tokenProviderEndpoint`, and web logs the options passed to `setConnectionToken`. Avoid endpoint mode on Android until the upstream logging is removed, avoid production web console retention, and update to a fixed plugin release when available.
+In v8.3.0, Android logs the `secret` returned through `tokenProviderEndpoint`, and web logs the options passed to `setConnectionToken`. Avoid endpoint mode on Android until the upstream logging is removed, avoid production web console retention, and update to a fixed plugin release when available.
 :::
 
 Web `initialize` requires a fresh plugin instance: calling it again after a successful init throws `Stripe Terminal has already been initialized`.

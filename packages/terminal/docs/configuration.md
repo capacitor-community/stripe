@@ -11,7 +11,7 @@ npm install @capacitor-community/stripe-terminal
 npx cap sync
 ```
 
-The plugin is `@capacitor-community/stripe-terminal` **v8.2.1**. Official demos:
+The plugin is `@capacitor-community/stripe-terminal` **v8.3.0**. Official demos:
 
 - [Tap to Pay / Internet / Bluetooth](https://github.com/capacitor-community/stripe/tree/main/demo/angular)
 - [Apps on Devices](https://github.com/capacitor-community/stripe/tree/main/demo/app-on-devices)
@@ -93,6 +93,7 @@ And update `minSdkVersion` to `26` in your `android/variables.gradle` file:
   ext {
 -    minSdkVersion = 24
 +    minSdkVersion = 26
+  }
 ```
 
 If you are developing apps for Stripe Android devices (for example Stripe Reader S700) and using `TerminalConnectTypes.HandOff`, follow [Stripe's client-side setup guide](https://docs.stripe.com/terminal/features/apps-on-devices/build?terminal-sdk-platform=android&lang-android=java#setup-app).

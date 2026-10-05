@@ -59,7 +59,7 @@ Apple Pay uses a PaymentIntent client secret. Google Pay uses a PaymentIntent cl
 
 ## Webhook authority
 
-`Completed` on the device is a UI signal. It is not proof that Stripe captured funds. Fulfill orders from verified [Stripe webhooks](https://docs.stripe.com/webhooks) such as `payment_intent.succeeded` or `setup_intent.succeeded`.
+`Completed` on the device is a UI signal. It is not proof that Stripe captured funds. Fulfill orders only after verifying payment success on your server, for example through a verified `payment_intent.succeeded` [Stripe webhook](https://docs.stripe.com/webhooks). `setup_intent.succeeded` means a payment method was saved for future use; it does not mean a payment was made.
 
 Treat `Canceled` as the customer dismissing the sheet. Treat `Failed` and `FailedToLoad` as errors. Retry only after you create a new Intent when the previous one can no longer be confirmed.
 
