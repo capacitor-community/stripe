@@ -1,6 +1,7 @@
 name = "capacitor-stripe-demo-server"
-account_id = "7da92ed622587e918af5cb354c689957"
+account_id = "09b7a8355cbc8a838af7de40ed9ec7f8"
 main = "src/worker.ts"
+routes = [{ pattern = "capacitor-stripe-demo-server.rdlabo.dev", custom_domain = true }]
 compatibility_date = "2026-08-12"
 compatibility_flags = ["nodejs_compat"]
 
