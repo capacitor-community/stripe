@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  api: 'https://capacitor-stripe-demo-server.bittersweet-barberry.workers.dev/',
+  api: 'https://capacitor-stripe-demo-server.rdlabo.dev/',
 };
 
 /*

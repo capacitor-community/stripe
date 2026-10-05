@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-const api = 'https://capacitor-stripe-demo-server.bittersweet-barberry.workers.dev/'
+const api = 'https://capacitor-stripe-demo-server.rdlabo.dev/'
 
 export const usePaymentSheet = () => {
     const createPaymentIntent = useCallback(async (): Promise<{

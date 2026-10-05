@@ -4,7 +4,7 @@ This Hono API supplies the PaymentIntent, SetupIntent, Identity, and Terminal
 resources used by the demo applications. It runs on Cloudflare Workers.
 
 The deployed demo is available at
-`https://capacitor-stripe-demo-server.bittersweet-barberry.workers.dev/`.
+`https://capacitor-stripe-demo-server.rdlabo.dev/`.
 
 ## Local development
 
