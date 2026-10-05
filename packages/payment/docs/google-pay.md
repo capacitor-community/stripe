@@ -197,7 +197,7 @@ A SetupIntent client secret starts with `seti_`. Android detects that prefix and
 ```ts
 const result = await Stripe.presentGooglePay();
 if (result.paymentResult === GooglePayEventsEnum.Completed) {
-  // Update UI only. Confirm the Intent with a webhook before fulfilling.
+  // Update UI only. Verify payment success on your server via webhooks before fulfilling.
 }
 ```
 

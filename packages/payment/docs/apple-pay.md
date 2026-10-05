@@ -88,7 +88,7 @@ await Stripe.createApplePay({
 ```ts
 const result = await Stripe.presentApplePay();
 if (result.paymentResult === ApplePayEventsEnum.Completed) {
-  // Update UI only. Confirm the Intent with a webhook before fulfilling.
+  // Update UI only. Verify payment success on your server via webhooks before fulfilling.
 }
 ```
 
@@ -114,7 +114,7 @@ Stripe.addListener(ApplePayEventsEnum.Completed, () => {
 
 On iOS, `DidSelectShippingContact` includes `contact` and `updateId`. Recalculate totals and call `updateApplePaySheet` with that `updateId`. If JavaScript does not respond, the native sheet falls back to the latest accepted summary items after 25 seconds. Updates preserve the current shipping methods.
 
-`paymentSummaryItems` must be a non-empty array with a non-empty string label and a finite numeric amount for every item. Negative discounts are allowed, but the final total must be nonnegative. Invalid input is rejected without consuming the pending update, so it can be corrected and retried before timeout. Only the latest contact selection's `updateId` is accepted; duplicate or stale updates are rejected.
+`paymentSummaryItems` must be an array. An empty array (`[]`) acknowledges the current selection without changing the existing summary items. For a non-empty array, every item must have a non-empty string label and a finite numeric amount. Negative discounts are allowed, but the final total must be nonnegative. Invalid input is rejected without consuming the pending update, so it can be corrected and retried before timeout. Only the latest contact selection's `updateId` is accepted; duplicate or stale updates are rejected.
 
 ```ts
 Stripe.addListener(ApplePayEventsEnum.DidSelectShippingContact, async (data) => {

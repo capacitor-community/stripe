@@ -57,6 +57,8 @@ await Stripe.createPaymentSheet({
 
 Optional native settings include `style` (`alwaysLight` or `alwaysDark`, iOS only), `enableApplePay` with `applePayMerchantId`, `enableGooglePay`, and billing collection options. On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe does not offer otherwise eligible redirect-based methods when no return URL is available. See [Redirect-based payment methods on iOS](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/initialize#redirect-based-payment-methods-on-ios). `withZipCode` is web only. `currencyCode` is required when `enableGooglePay` is true for a SetupIntent.
 
+Since v8.3.0, set `allowsDelayedPaymentMethods: true` in the creation options to allow eligible delayed payment methods such as ACH and SEPA Debit on iOS and Android. The default is `false`; this option does not affect web. Enable the methods in Stripe and configure the Intent accordingly. A `Completed` result can mean the payment is still processing: wait for a successful payment webhook before fulfilling the order. See [Stripe's delayed payment method guidance](https://docs.stripe.com/payments/mobile/accept-payment?platform=ios&type=payment#handle-post-payment-events).
+
 ## 2. presentPaymentSheet
 
 Call `presentPaymentSheet` only after `createPaymentSheet` succeeds.
@@ -64,11 +66,11 @@ Call `presentPaymentSheet` only after `createPaymentSheet` succeeds.
 ```ts
 const result = await Stripe.presentPaymentSheet();
 if (result.paymentResult === PaymentSheetEventsEnum.Completed) {
-  // Update UI only. Confirm the Intent with a webhook before fulfilling.
+  // Update UI only. Verify payment success on your server via webhooks before fulfilling.
 }
 ```
 
-Treat `Canceled` as the customer dismissing the sheet. Treat `Failed` as an error. Neither result authorizes fulfillment by itself.
+On web, cancellation resolves with `paymentResult: PaymentSheetEventsEnum.Canceled`; handle this result rather than relying only on `catch`. Treat `Canceled` as the customer dismissing the sheet. Treat `Failed` as an error. Neither result authorizes fulfillment by itself.
 
 <!-- !::presentPaymentSheet:: -->
 

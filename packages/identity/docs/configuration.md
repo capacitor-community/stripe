@@ -11,7 +11,7 @@ npm install @capacitor-community/stripe-identity
 npx cap sync
 ```
 
-`@capacitor-community/stripe-identity` v8.2.1 presents Stripe Identity Verification Sheet on iOS, Android, and Web.
+`@capacitor-community/stripe-identity` v8.3.0 presents Stripe Identity Verification Sheet on iOS, Android, and Web.
 
 | Requirement | Minimum |
 | --- | --- |

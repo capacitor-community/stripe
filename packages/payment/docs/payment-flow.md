@@ -56,6 +56,8 @@ await Stripe.createPaymentFlow({
 
 On iOS, configure `returnURL` and `handleURLCallback` for PayPal, 3D Secure, and other redirect-based payment methods; Stripe does not offer otherwise eligible redirect-based methods when no return URL is available. See [Redirect-based payment methods on iOS](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/initialize#redirect-based-payment-methods-on-ios).
 
+Since v8.3.0, set `allowsDelayedPaymentMethods: true` in the creation options to allow eligible delayed payment methods such as ACH and SEPA Debit on iOS and Android. The default is `false`; this option does not affect web. Enable the methods in Stripe and configure the Intent accordingly. A `Completed` result can mean the payment is still processing: wait for a successful payment webhook before fulfilling the order. See [Stripe's delayed payment method guidance](https://docs.stripe.com/payments/mobile/accept-payment?platform=ios&type=payment#handle-post-payment-events).
+
 ## 2. presentPaymentFlow
 
 Call `presentPaymentFlow` only after `createPaymentFlow` succeeds. The returned `cardNumber` is a masked value. The Intent is not confirmed yet.
@@ -74,7 +76,7 @@ If the customer cancels, the promise rejects or the `Canceled` event fires. Do n
 ```ts
 const confirmResult = await Stripe.confirmPaymentFlow();
 if (confirmResult.paymentResult === PaymentFlowEventsEnum.Completed) {
-  // Update UI only. Confirm the Intent with a webhook before fulfilling.
+  // Update UI only. Verify payment success on your server via webhooks before fulfilling.
 }
 ```
 

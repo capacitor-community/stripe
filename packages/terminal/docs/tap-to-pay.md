@@ -57,7 +57,7 @@ Android and web reject the call (`unimplemented` / `unavailable`). Guard with a 
 
 `setTapToPayUxConfiguration` is **Android only**. Call it after `initialize()` and before `connectReader()`. iOS returns unimplemented; web logs and returns.
 
-The installed Android implementation applies `colors` (`primary`, `success`, `error` as `'default'` or a hex string such as `'#FF5733'`) and `darkMode` (`SYSTEM`, `DARK`, `LIGHT`). The TypeScript `tapZone` field is declared but not applied on the current Android Terminal SDK used by v8.2.1.
+The installed Android implementation applies `colors` (`primary`, `success`, `error` as `'default'` or a hex string such as `'#FF5733'`) and `darkMode` (`SYSTEM`, `DARK`, `LIGHT`). The TypeScript `tapZone` field is declared but not applied on the current Android Terminal SDK used by v8.3.0.
 
 <!-- !::setTapToPayUxConfiguration:: -->
 
