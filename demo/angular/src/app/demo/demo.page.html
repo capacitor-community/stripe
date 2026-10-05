@@ -11,14 +11,14 @@
       button="true"
       detail="true"
       (click)="createPaymentSheet()"
-      [disabled]="processSheet !== 'willReady'"
+      [disabled]="processSheet() !== 'willReady'"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentPaymentSheet()"
-      [disabled]="processSheet !== 'Ready'"
+      [disabled]="processSheet() !== 'Ready'"
       ><ion-label>present</ion-label></ion-item
     >
   </ion-list>
@@ -30,14 +30,14 @@
       button="true"
       detail="true"
       (click)="createPaymentSheet(false)"
-      [disabled]="processSheet !== 'willReady'"
+      [disabled]="processSheet() !== 'willReady'"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentPaymentSheet()"
-      [disabled]="processSheet !== 'Ready'"
+      [disabled]="processSheet() !== 'Ready'"
       ><ion-label>present</ion-label></ion-item
     >
   </ion-list>
@@ -49,14 +49,14 @@
       button="true"
       detail="true"
       (click)="createPaymentSheet(false, true)"
-      [disabled]="processSheet !== 'willReady'"
+      [disabled]="processSheet() !== 'willReady'"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentPaymentSheet()"
-      [disabled]="processSheet !== 'Ready'"
+      [disabled]="processSheet() !== 'Ready'"
       ><ion-label>present</ion-label></ion-item
     >
   </ion-list>
@@ -68,14 +68,14 @@
       button="true"
       detail="true"
       (click)="createPaymentSheetWithSetupIntent()"
-      [disabled]="processSheet !== 'willReady'"
+      [disabled]="processSheet() !== 'willReady'"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentPaymentSheet()"
-      [disabled]="processSheet !== 'Ready'"
+      [disabled]="processSheet() !== 'Ready'"
       ><ion-label>present</ion-label></ion-item
     >
   </ion-list>
@@ -85,21 +85,21 @@
       button="true"
       detail="true"
       (click)="createPaymentFlow()"
-      [disabled]="processFlow !== 'willReady'"
+      [disabled]="processFlow() !== 'willReady'"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentPaymentFlow()"
-      [disabled]="processFlow !== 'Ready'"
+      [disabled]="processFlow() !== 'Ready'"
       ><ion-label>present</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="confirmPaymentFlow()"
-      [disabled]="processFlow !== 'canConfirm'"
+      [disabled]="processFlow() !== 'canConfirm'"
       ><ion-label>confirm</ion-label></ion-item
     >
   </ion-list>
@@ -111,21 +111,21 @@
       button="true"
       detail="true"
       (click)="createPaymentFlow()"
-      [disabled]="processFlow !== 'willReady'"
+      [disabled]="processFlow() !== 'willReady'"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentPaymentFlow()"
-      [disabled]="processFlow !== 'Ready'"
+      [disabled]="processFlow() !== 'Ready'"
       ><ion-label>present</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="confirmPaymentFlow()"
-      [disabled]="processFlow !== 'canConfirm'"
+      [disabled]="processFlow() !== 'canConfirm'"
       ><ion-label>confirm</ion-label></ion-item
     >
   </ion-list>
@@ -135,14 +135,14 @@
       button="true"
       detail="true"
       (click)="createApplePay()"
-      [disabled]="processApplePay !== 'willReady' || !isApplePayAvailable"
+      [disabled]="processApplePay() !== 'willReady' || !isApplePayAvailable()"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentApplePay()"
-      [disabled]="processApplePay !== 'Ready' || !isApplePayAvailable"
+      [disabled]="processApplePay() !== 'Ready' || !isApplePayAvailable()"
       ><ion-label>present</ion-label></ion-item
     >
   </ion-list>
@@ -152,14 +152,14 @@
       button="true"
       detail="true"
       (click)="createGooglePay()"
-      [disabled]="processGooglePay !== 'willReady' || !isGooglePayAvailable"
+      [disabled]="processGooglePay() !== 'willReady' || !isGooglePayAvailable()"
       ><ion-label>create</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
       (click)="presentGooglePay()"
-      [disabled]="processGooglePay !== 'Ready' || !isGooglePayAvailable"
+      [disabled]="processGooglePay() !== 'Ready' || !isGooglePayAvailable()"
       ><ion-label>present</ion-label></ion-item
     >
   </ion-list>

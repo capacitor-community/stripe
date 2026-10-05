@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PaymentSheetEventsEnum, Stripe } from '@capacitor-community/stripe';
 import { ITestItems } from '../shared/interfaces';
 import { environment } from '../../environments/environment';
@@ -92,7 +92,7 @@ export class SheetPage {
   private http = inject(HttpClient);
   private helper = inject(HelperService);
 
-  public eventItems: ITestItems[] = [];
+  public readonly eventItems = signal<ITestItems[]>([]);
   private readonly listenerHandlers: PluginListenerHandle[] = [];
 
   constructor() {
@@ -117,9 +117,9 @@ export class SheetPage {
     }
 
     if (type === 'happyPath') {
-      this.eventItems = JSON.parse(JSON.stringify(happyPathItems));
+      this.eventItems.set(JSON.parse(JSON.stringify(happyPathItems)));
     } else {
-      this.eventItems = JSON.parse(JSON.stringify(cancelPathItems));
+      this.eventItems.set(JSON.parse(JSON.stringify(cancelPathItems)));
     }
 
     const { paymentIntent, ephemeralKey, customer } = await firstValueFrom(

@@ -1,47 +1,38 @@
-import { Injectable, NgZone, inject } from '@angular/core';
+import { Injectable, WritableSignal } from '@angular/core';
 import { ITestItems } from './interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HelperService {
-  private zone = inject(NgZone);
-
   constructor() {}
 
-  /**
-   * items is not Deep Copy, this is substitution
-   */
   public async updateItem(
-    items: ITestItems[],
+    items: WritableSignal<ITestItems[]>,
     name: string,
     result: boolean,
     value: unknown = undefined,
   ) {
-    await new Promise<void>((resolve) => {
-      this.zone.run(() => {
-        let isChanged = false;
-        items = items.map((item) => {
-          if (item.name === name && item.result === undefined && !isChanged) {
-            isChanged = true;
-            if (item.expect === undefined) {
-              item.result = result;
-            } else if (Array.isArray(item.expect) && value) {
-              // @ts-expect-error: valueがanyであるため
-              item.result = item.expect.includes(value.toString());
-            } else if (value && typeof value === 'object') {
-              item.result = JSON.stringify(value).includes(
-                item.expect.toString(),
-              );
-            } else {
-              if (item.expect === 'error') {
-                item.result = this.receiveErrorValue(value);
-              }
+    items.update((current) => {
+      let isChanged = false;
+      return current.map((item) => {
+        if (item.name === name && item.result === undefined && !isChanged) {
+          isChanged = true;
+          item = { ...item };
+          if (item.expect === undefined) {
+            item.result = result;
+          } else if (Array.isArray(item.expect) && value) {
+            // @ts-expect-error: valueがanyであるため
+            item.result = item.expect.includes(value.toString());
+          } else if (value && typeof value === 'object') {
+            item.result = JSON.stringify(value).includes(item.expect.toString());
+          } else {
+            if (item.expect === 'error') {
+              item.result = this.receiveErrorValue(value);
             }
           }
-          return item;
-        });
-        resolve();
+        }
+        return item;
       });
     });
   }
