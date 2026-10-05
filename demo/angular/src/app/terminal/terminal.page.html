@@ -77,11 +77,11 @@
     >
   </ion-list>
 
-  @if (eventItems.length > 0) {
+  @if (eventItems().length > 0) {
     <ion-list>
       <ion-list-header><ion-label>EXPECT</ion-label></ion-list-header>
-      @for (item of eventItems; track item; let i = $index) {
-        <ion-item [lines]="eventItems.length - 1 === i ? 'full' : undefined">
+      @for (item of eventItems(); track item; let i = $index) {
+        <ion-item [lines]="eventItems().length - 1 === i ? 'full' : undefined">
           <ion-icon
             slot="start"
             [name]="

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -64,7 +64,7 @@ export class TerminalPage {
   private http = inject(HttpClient);
   private helper = inject(HelperService);
 
-  public eventItems: ITestItems[] = [];
+  public readonly eventItems = signal<ITestItems[]>([]);
   public terminalConnectTypes = TerminalConnectTypes;
   public simulateReaderUpdate = SimulateReaderUpdate;
   private readonly listenerHandlers: PluginListenerHandle[] = [];
@@ -636,7 +636,7 @@ export class TerminalPage {
         );
       }
     }
-    this.eventItems = eventItems;
+    this.eventItems.set(eventItems);
     await StripeTerminal.initialize({
       // tokenProviderEndpoint: environment.api + 'connection/token',
       isTest: !readerType || readerType === TerminalConnectTypes.TapToPay,

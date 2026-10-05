@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import {
   Address,
   ApplePayEventsEnum,
@@ -41,18 +41,18 @@ import {
 export class DemoPage implements OnInit {
   private http = inject(HttpClient);
 
-  processSheet: 'willReady' | 'Ready' = 'willReady';
-  processFlow: 'willReady' | 'Ready' | 'canConfirm' = 'willReady';
-  processApplePay: 'willReady' | 'Ready' = 'willReady';
-  processGooglePay: 'willReady' | 'Ready' = 'willReady';
-  isApplePayAvailable = false;
-  isGooglePayAvailable = false;
+  readonly processSheet = signal<'willReady' | 'Ready'>('willReady');
+  readonly processFlow = signal<'willReady' | 'Ready' | 'canConfirm'>('willReady');
+  readonly processApplePay = signal<'willReady' | 'Ready'>('willReady');
+  readonly processGooglePay = signal<'willReady' | 'Ready'>('willReady');
+  readonly isApplePayAvailable = signal(false);
+  readonly isGooglePayAvailable = signal(false);
 
   constructor() {}
 
   async ngOnInit() {
     Stripe.addListener(PaymentSheetEventsEnum.Loaded, () => {
-      this.processSheet = 'Ready';
+      this.processSheet.set('Ready');
       console.log('PaymentSheetEventsEnum.Loaded');
     });
 
@@ -61,24 +61,24 @@ export class DemoPage implements OnInit {
     });
 
     Stripe.addListener(PaymentSheetEventsEnum.Completed, () => {
-      this.processSheet = 'willReady';
+      this.processSheet.set('willReady');
       console.log('PaymentSheetEventsEnum.Completed');
     });
 
     Stripe.addListener(PaymentSheetEventsEnum.Canceled, () => {
-      this.processSheet = 'willReady';
+      this.processSheet.set('willReady');
       console.log('PaymentSheetEventsEnum.Canceled');
     });
 
     Stripe.addListener(PaymentSheetEventsEnum.Failed, () => {
-      this.processSheet = 'willReady';
+      this.processSheet.set('willReady');
       console.log('PaymentSheetEventsEnum.Failed');
     });
 
     /** ------------------------------------------------------------------- **/
 
     Stripe.addListener(PaymentFlowEventsEnum.Loaded, () => {
-      this.processFlow = 'Ready';
+      this.processFlow.set('Ready');
       console.log('PaymentFlowEventsEnum.Loaded');
     });
 
@@ -87,29 +87,29 @@ export class DemoPage implements OnInit {
     });
 
     Stripe.addListener(PaymentFlowEventsEnum.Completed, () => {
-      this.processFlow = 'willReady';
+      this.processFlow.set('willReady');
       console.log('PaymentFlowEventsEnum.Completed');
     });
 
     Stripe.addListener(PaymentFlowEventsEnum.Canceled, () => {
-      this.processFlow = 'willReady';
+      this.processFlow.set('willReady');
       console.log('PaymentFlowEventsEnum.Canceled');
     });
 
     Stripe.addListener(PaymentFlowEventsEnum.Failed, () => {
-      this.processFlow = 'willReady';
+      this.processFlow.set('willReady');
       console.log('PaymentFlowEventsEnum.Failed');
     });
 
     Stripe.addListener(PaymentFlowEventsEnum.Created, (info) => {
       console.log(info);
-      this.processFlow = 'canConfirm';
+      this.processFlow.set('canConfirm');
     });
 
     /** ------------------------------------------------------------------- **/
 
     Stripe.addListener(ApplePayEventsEnum.Loaded, () => {
-      this.processApplePay = 'Ready';
+      this.processApplePay.set('Ready');
       console.log('ApplePayEventsEnum.Loaded');
     });
 
@@ -118,17 +118,17 @@ export class DemoPage implements OnInit {
     });
 
     Stripe.addListener(ApplePayEventsEnum.Completed, () => {
-      this.processApplePay = 'willReady';
+      this.processApplePay.set('willReady');
       console.log('ApplePayEventsEnum.Completed');
     });
 
     Stripe.addListener(ApplePayEventsEnum.Canceled, () => {
-      this.processApplePay = 'willReady';
+      this.processApplePay.set('willReady');
       console.log('ApplePayEventsEnum.Canceled');
     });
 
     Stripe.addListener(ApplePayEventsEnum.Failed, () => {
-      this.processApplePay = 'willReady';
+      this.processApplePay.set('willReady');
       console.log('ApplePayEventsEnum.Failed');
     });
 
@@ -149,7 +149,7 @@ export class DemoPage implements OnInit {
     /** ------------------------------------------------------------------- **/
 
     Stripe.addListener(GooglePayEventsEnum.Loaded, () => {
-      this.processGooglePay = 'Ready';
+      this.processGooglePay.set('Ready');
       console.log('GooglePayEventsEnum.Loaded');
     });
 
@@ -158,25 +158,25 @@ export class DemoPage implements OnInit {
     });
 
     Stripe.addListener(GooglePayEventsEnum.Completed, () => {
-      this.processGooglePay = 'willReady';
+      this.processGooglePay.set('willReady');
       console.log('GooglePayEventsEnum.Completed');
     });
 
     Stripe.addListener(GooglePayEventsEnum.Canceled, () => {
-      this.processGooglePay = 'willReady';
+      this.processGooglePay.set('willReady');
       console.log('GooglePayEventsEnum.Canceled');
     });
 
     Stripe.addListener(GooglePayEventsEnum.Failed, () => {
-      this.processGooglePay = 'willReady';
+      this.processGooglePay.set('willReady');
       console.log('GooglePayEventsEnum.Failed');
     });
 
     Stripe.isApplePayAvailable()
-      .then(() => (this.isApplePayAvailable = true))
+      .then(() => this.isApplePayAvailable.set(true))
       .catch(() => undefined);
     Stripe.isGooglePayAvailable()
-      .then(() => (this.isGooglePayAvailable = true))
+      .then(() => this.isGooglePayAvailable.set(true))
       .catch(() => undefined);
   }
 
