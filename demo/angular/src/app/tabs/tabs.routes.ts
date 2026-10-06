@@ -32,6 +32,10 @@ export const routes: Routes = [
         component: TerminalPage,
       },
       {
+        path: 'billing',
+        loadComponent: () => import('../billing/billing.page').then(m => m.BillingPage),
+      },
+      {
         path: '',
         redirectTo: '/tabs/tab1',
         pathMatch: 'full',

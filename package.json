@@ -14,7 +14,8 @@
   "workspaces": [
     "packages/identity",
     "packages/payment",
-    "packages/terminal"
+    "packages/terminal",
+    "packages/billing"
   ],
   "repository": {
     "type": "git",

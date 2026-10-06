@@ -1,0 +1,11 @@
+[build]
+  command = "npm ci && npm run build && npm ci --prefix demo/angular && npm run build --prefix demo/angular -- --configuration production"
+  publish = "demo/angular/www/browser"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

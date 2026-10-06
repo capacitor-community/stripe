@@ -45,6 +45,9 @@ jobs:
       run: npm install && npm run build
       working-directory: ./packages/terminal
 
+    - name: Build Billing package
+      run: npm run build --workspace packages/billing
+
     #- name: Test web implementation
     #  working-directory: ./packages/plugin
     #  env:
@@ -236,3 +239,19 @@ jobs:
       - name: verify
         run: npm run verify:ios
         working-directory: ./packages/terminal
+
+  verify-billing-ios:
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build --workspace packages/billing
+      - name: Test Billing session lifecycle
+        working-directory: ./packages/billing
+        run: xcodebuild -scheme CapacitorCommunityStripeBilling -destination 'platform=iOS Simulator,name=iPhone 17 Pro' CODE_SIGNING_ALLOWED=NO test
