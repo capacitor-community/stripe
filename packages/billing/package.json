@@ -1,0 +1,77 @@
+{
+  "name": "@capacitor-community/stripe-billing",
+  "version": "8.3.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "description": "Experimental Stripe BillingSDK bindings for Capacitor iOS",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "unpkg": "dist/plugin.js",
+  "files": [
+    "dist/",
+    "ios/Sources",
+    "ios/Tests",
+    "Package.swift",
+    "docs/"
+  ],
+  "author": "Masahiko Sakakibara",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/capacitor-community/stripe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/capacitor-community/stripe/issues"
+  },
+  "homepage": "https://github.com/capacitor-community/stripe/tree/main/packages/billing",
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native"
+  ],
+  "scripts": {
+    "verify": "npm run verify:web && npm run verify:ios",
+    "verify:ios": "xcodebuild -scheme CapacitorCommunityStripeBilling -destination generic/platform=iOS CODE_SIGNING_ALLOWED=NO build",
+    "verify:web": "npm run build",
+    "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
+    "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix --format",
+    "eslint": "eslint src --ext ts",
+    "prettier": "prettier \"src/**/*.ts\"",
+    "swiftlint": "node-swiftlint",
+    "docgen": "docgen --api StripeBillingPlugin --output-readme README.md --output-json dist/docs.json",
+    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.mjs",
+    "clean": "rimraf ./dist",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@ionic/eslint-config": "^0.4.0",
+    "@ionic/prettier-config": "^4.0.0",
+    "@ionic/swiftlint-config": "^2.0.0",
+    "@rdlabo/capacitor-docgen": "^0.4.1",
+    "@types/node": "^24.10.1",
+    "eslint": "^8.57.1",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.1.0",
+    "rollup": "^4.53.2",
+    "swiftlint": "^2.0.0",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@capacitor/core": ">=8.0.0"
+  },
+  "prettier": "@ionic/prettier-config",
+  "swiftlint": "@ionic/swiftlint-config",
+  "eslintConfig": {
+    "extends": "@ionic/eslint-config/recommended"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  }
+}
