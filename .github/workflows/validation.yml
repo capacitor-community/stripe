@@ -187,6 +187,9 @@ jobs:
       - name: verify
         run: npm run verify:ios
         working-directory: ./packages/payment
+      - name: Test Apple Pay shipping updates
+        working-directory: ./packages/payment
+        run: xcodebuild -scheme CapacitorCommunityStripe -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:StripePluginTests/ApplePayShippingTests CODE_SIGNING_ALLOWED=NO test
 
   verify-identity-ios:
     runs-on: macos-15
