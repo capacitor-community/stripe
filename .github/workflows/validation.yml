@@ -45,6 +45,9 @@ jobs:
       run: npm install && npm run build
       working-directory: ./packages/terminal
 
+    - name: Build Billing package
+      run: npm run build --workspace packages/billing
+
     #- name: Test web implementation
     #  working-directory: ./packages/plugin
     #  env:

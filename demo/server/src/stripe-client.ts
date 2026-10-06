@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { z } from 'zod';
 import type { StripeClient } from './types';
 
 const requireSecret = (
@@ -17,6 +18,34 @@ export const createStripeClient = (secretKey: string): StripeClient => {
   });
 
   return {
+    async createBillingCustomerSession(customerId, apiVersion) {
+      // These preview components are not included in the stable stripe-node types.
+      const response = await stripe.rawRequest(
+        'POST',
+        '/v1/customer_sessions',
+        {
+          customer: customerId,
+          components: {
+            buy_button: { enabled: true },
+            active_entitlements: { enabled: true },
+            customer_portal: { enabled: true },
+          },
+        },
+        { apiVersion },
+      );
+      const session = z
+        .object({
+          customer: z.literal(customerId),
+          client_secret: z.string().min(1),
+          expires_at: z.number().int().positive(),
+        })
+        .parse(response);
+      return {
+        customer: session.customer,
+        clientSecret: session.client_secret,
+        expiresAt: session.expires_at,
+      };
+    },
     async createCustomer() {
       const customer = await stripe.customers.create();
       return { id: customer.id };

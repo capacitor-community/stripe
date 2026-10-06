@@ -5,6 +5,7 @@
 	"packageClassList": [
 		"StripePlugin",
 		"StripeIdentityPlugin",
-		"StripeTerminalPlugin"
+		"StripeTerminalPlugin",
+		"StripeBillingPlugin"
 	]
 }
