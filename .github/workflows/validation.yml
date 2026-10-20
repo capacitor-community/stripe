@@ -1,186 +1,216 @@
 name: Validation
-
-on:
+"on":
   pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
   push:
-    branches: [main]
+    branches:
+      - main
 concurrency:
   group: validation-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
 jobs:
   verify-demo:
     name: Build & Test
     runs-on: ubuntu-latest
-
     steps:
-    - name: set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'zulu'
-    - uses: actions/checkout@v5
-    - uses: actions/setup-node@v5
-      with:
-        node-version: 24
-        cache: npm
-        cache-dependency-path: '**/package-lock.json'
-    - name: Use cached node_modules
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v2
-
-    - name: Build Payment package
-      run: npm install && npm run build
-      working-directory: ./packages/payment
-
-    - name: Build Identity package
-      run: npm install && npm run build
-      working-directory: ./packages/identity
-
-    - name: Build Terminal package
-      run: npm install && npm run build
-      working-directory: ./packages/terminal
-
-    #- name: Test web implementation
-    #  working-directory: ./packages/plugin
-    #  env:
-    #    STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
-    #    STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-    #  run: npm test
-
-    - name: Cache Angular
-      uses: actions/cache@v5
-      with:
-        path: demo/angular/.angular/cache
-        key: ${{ runner.os }}-angular-${{ hashFiles('demo/angular/package-lock.json') }}-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-angular-${{ hashFiles('demo/angular/package-lock.json') }}-
-          ${{ runner.os }}-angular-
-
-    - name: Install test app node_modules
-      working-directory: ./demo/angular
-      run: npm ci && npm run cap && npm run test:ci
-
-    - name: Install test app app-on-devices node_modules
-      working-directory: ./demo/app-on-devices
-      run: npm ci && npm run cap && npm run test:ci
-
-    - name: Build test React app
-      working-directory: ./demo/react
-      run: npm ci && npm run build && npm run test:ci && npm run lint
-
-    - name: Update & Sync Capacitor Project
-      working-directory: ./demo/angular
-      run: npx cap update android
-
-    - name: Build Android Debug APK
-      working-directory: ./demo/angular/android
-      run: ./gradlew assembleDebug --stacktrace
-
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        path: ./demo/angular/android/app/build/outputs/apk/debug/app-debug.apk
-
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
+      - name: set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: zulu
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: "**/package-lock.json"
+        id: setup_node
+      - name: Use cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key:
+            ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json')
+            }}-v2
+      - name: Build Payment package
+        run: npm install && npm run build
+        working-directory: ./packages/payment
+      - name: Build Identity package
+        run: npm install && npm run build
+        working-directory: ./packages/identity
+      - name: Build Terminal package
+        run: npm install && npm run build
+        working-directory: ./packages/terminal
+      - name: Cache Angular
+        uses: actions/cache@v5
+        with:
+          path: demo/angular/.angular/cache
+          key: ${{ runner.os }}-angular-${{ hashFiles('demo/angular/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-angular-${{ hashFiles('demo/angular/package-lock.json') }}-
+            ${{ runner.os }}-angular-
+      - name: Install test app node_modules
+        working-directory: ./demo/angular
+        run: npm ci && npm run cap && npm run test:ci
+      - name: Install test app app-on-devices node_modules
+        working-directory: ./demo/app-on-devices
+        run: npm ci && npm run cap && npm run test:ci
+      - name: Build test React app
+        working-directory: ./demo/react
+        run: npm ci && npm run build && npm run test:ci && npm run lint
+      - name: Update & Sync Capacitor Project
+        working-directory: ./demo/angular
+        run: npx cap update android
+      - name: Build Android Debug APK
+        working-directory: ./demo/angular/android
+        run: ./gradlew assembleDebug --stacktrace
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./demo/angular/android/app/build/outputs/apk/debug/app-debug.apk
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
   verify-payment-android:
     runs-on: ubuntu-latest
     steps:
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
       - name: set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'zulu'
+          java-version: "21"
+          distribution: zulu
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: "**/package-lock.json"
+        id: setup_node
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+          key:
+            ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json')
+            }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/payment
       - name: verify
         run: npm run verify:android
         working-directory: ./packages/payment
-
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
   verify-identity-android:
     runs-on: ubuntu-latest
     steps:
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
       - name: set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'zulu'
+          java-version: "21"
+          distribution: zulu
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: "**/package-lock.json"
+        id: setup_node
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+          key:
+            ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json')
+            }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/identity
       - name: verify
         run: npm run verify:android
         working-directory: ./packages/identity
-
-
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
   verify-terminal-android:
     runs-on: ubuntu-latest
     steps:
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
       - name: set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'zulu'
+          java-version: "21"
+          distribution: zulu
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: "**/package-lock.json"
+        id: setup_node
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+          key:
+            ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json')
+            }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/terminal
       - name: verify
         run: npm run verify:android
         working-directory: ./packages/terminal
-
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
   verify-payment-ios:
     runs-on: macos-15
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: "**/package-lock.json"
+        id: setup_node
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+          key:
+            ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json')
+            }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/payment
@@ -189,50 +219,175 @@ jobs:
         working-directory: ./packages/payment
       - name: Test Apple Pay shipping updates
         working-directory: ./packages/payment
-        run: xcodebuild -scheme CapacitorCommunityStripe -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:StripePluginTests/ApplePayShippingTests CODE_SIGNING_ALLOWED=NO test
-
+        run:
+          xcodebuild -scheme CapacitorCommunityStripe -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:StripePluginTests/ApplePayShippingTests
+          CODE_SIGNING_ALLOWED=NO test
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
   verify-identity-ios:
     runs-on: macos-15
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: "**/package-lock.json"
+        id: setup_node
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+          key:
+            ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json')
+            }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/identity
       - name: verify
         run: npm run verify:ios
         working-directory: ./packages/identity
-
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
   verify-terminal-ios:
     runs-on: macos-15
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: "**/package-lock.json"
+        id: setup_node
       - name: Use cached node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json') }}-v1
+          key:
+            ${{ runner.os }}-node-${{ steps.setup_node.outputs.node-version }}-npm-${{ hashFiles('**/package-lock.json')
+            }}-v1
       - name: npm install
         run: npm install
         working-directory: ./packages/terminal
       - name: verify
         run: npm run verify:ios
         working-directory: ./packages/terminal
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
+  ci-reuse:
+    name: Verify tested tree
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    outputs:
+      reuse: ${{ steps.lookup.outputs.reuse }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Test CI reuse guards
+        run: node --test .github/scripts/ci-tree-reuse.test.mjs
+      - name: Record the actual complete checkout
+        id: tree
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        with:
+          script: |
+            const { execFileSync } = await import('node:child_process');
+            const { writeFileSync } = await import('node:fs');
+            const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+            const tree = git('rev-parse', 'HEAD^{tree}');
+            const commit = git('rev-parse', 'HEAD');
+            core.setOutput('tree', tree);
+            core.setOutput('commit', commit);
+            writeFileSync(`${process.env.RUNNER_TEMP}/ci-tree.txt`, `${commit}\n${tree}\n`);
+      - name: Reuse only the latest successful PR CI for this tree
+        id: lookup
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        env:
+          TREE: ${{ steps.tree.outputs.tree }}
+        with:
+          script: |
+            const { resolveReuse } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/ci-tree-reuse.mjs`);
+            const result = await resolveReuse(github, context, process.env.TREE, 'validation.yml');
+            core.setOutput('reuse', String(result.reuse));
+            if (result.reuse) {
+              await core.summary.addHeading('Reused PR validation').addLink('Latest successful PR CI', result.url)
+                .addRaw(`\n\nComplete repository tree: ${result.tree}\n`).write();
+            } else {
+              core.info(result.reason);
+            }
+  ci-result:
+    name: CI result
+    if: ${{ always() }}
+    needs:
+      - ci-reuse
+      - verify-demo
+      - verify-payment-android
+      - verify-identity-android
+      - verify-terminal-android
+      - verify-payment-ios
+      - verify-identity-ios
+      - verify-terminal-ios
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Require executed tests or verified reuse
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          REUSE: ${{ needs.ci-reuse.outputs.reuse }}
+        with:
+          script: |
+            const { requireResults } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/ci-tree-reuse.mjs`);
+            requireResults(process.env.REUSE === 'true', JSON.parse(process.env.NEEDS), ["verify-demo", "verify-payment-android", "verify-identity-android", "verify-terminal-android", "verify-payment-ios", "verify-identity-ios", "verify-terminal-ios"], []);
+      - name: Record the actual complete checkout
+        id: tree
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        with:
+          script: |
+            const { execFileSync } = await import('node:child_process');
+            const { writeFileSync } = await import('node:fs');
+            const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+            const tree = git('rev-parse', 'HEAD^{tree}');
+            const commit = git('rev-parse', 'HEAD');
+            core.setOutput('tree', tree);
+            core.setOutput('commit', commit);
+            writeFileSync(`${process.env.RUNNER_TEMP}/ci-tree.txt`, `${commit}\n${tree}\n`);
+        if: github.event_name == 'pull_request' && github.event.action != 'closed' && !contains(needs.*.result, 'skipped')
+      - name: Record PR checkout evidence
+        if: github.event_name == 'pull_request' && github.event.action != 'closed' && !contains(needs.*.result, 'skipped')
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name:
+            ci-tree-pr-${{ github.event.pull_request.number }}-${{ steps.tree.outputs.tree }}-${{ steps.tree.outputs.commit
+            }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-tree.txt
+          if-no-files-found: error
+          retention-days: 30
