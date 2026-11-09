@@ -6,6 +6,7 @@ ext {
 
     playServicesWalletVersion = project.hasProperty('playServicesWalletVersion') ? rootProject.ext.playServicesWalletVersion : '19.2.+'
     identityVersion = project.hasProperty('identityVersion') ? rootProject.ext.identityVersion : '23.21.+'
+    litertSupportApiVersion = project.hasProperty('litertSupportApiVersion') ? rootProject.ext.litertSupportApiVersion : '1.4.1'
 }
 
 buildscript {
@@ -69,7 +70,11 @@ dependencies {
 
     implementation("com.stripe:identity:$identityVersion") {
         exclude group: 'androidx.emoji2', module: 'emoji2'
+        // litert-support is an empty wrapper that shares its namespace with litert-support-api,
+        // which AGP 9 rejects. https://github.com/stripe/stripe-android/issues/15336
+        exclude group: 'com.google.ai.edge.litert', module: 'litert-support'
     }
+    implementation "com.google.ai.edge.litert:litert-support-api:$litertSupportApiVersion"
 
     implementation "com.google.android.gms:play-services-wallet:$playServicesWalletVersion"
 }
