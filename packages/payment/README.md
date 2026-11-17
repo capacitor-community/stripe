@@ -910,10 +910,10 @@ Apple Pay shipping-contact data.
 | Prop                            | Type                                              | Description                                                    | Since |
 | ------------------------------- | ------------------------------------------------- | -------------------------------------------------------------- | ----- |
 | **`paymentIntentClientSecret`** | <code>string</code>                               | Client secret of the PaymentIntent to confirm with Google Pay. | 3.2.0 |
-| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only. Requires stripe-pwa-elements ^3.0.0.                 | 3.2.0 |
-| **`merchantIdentifier`**        | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^3.0.0.                 | 3.2.0 |
-| **`countryCode`**               | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^3.0.0.                 | 3.2.0 |
-| **`currency`**                  | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^3.0.0.                 | 3.2.0 |
+| **`paymentSummaryItems`**       | <code>{ label: string; amount: number; }[]</code> | Web only. Requires stripe-pwa-elements ^4.1.0.                 | 3.2.0 |
+| **`merchantIdentifier`**        | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^4.1.0.                 | 3.2.0 |
+| **`countryCode`**               | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^4.1.0.                 | 3.2.0 |
+| **`currency`**                  | <code>string</code>                               | Web only. Requires stripe-pwa-elements ^4.1.0.                 | 3.2.0 |
 
 
 #### CreatePaymentFlowOption
