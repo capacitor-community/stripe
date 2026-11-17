@@ -3,22 +3,22 @@ import { StripeWeb } from '@capacitor-community/stripe/dist/esm/web.js';
 import { PaymentFlowEventsEnum } from '@capacitor-community/stripe';
 
 // Stub only the external Stencil UI and Stripe SDK; exercise the public plugin methods.
-class Sheet extends HTMLElement {
-  openModal = vi.fn();
-  closeModal = vi.fn();
-  async componentOnReady() { return this; }
-}
-
 class CardModal extends HTMLElement {
+  open = false;
   shouldUseDefaultFormSubmitAction = true;
   updateProgress = vi.fn();
   submit!: (event: CustomEvent) => void;
-  connectedCallback() { this.appendChild(document.createElement('stripe-modal')); }
+  cancel!: () => void;
   async componentOnReady() { return this; }
-  present() { return new Promise<CustomEvent>((resolve) => { this.submit = resolve; }); }
+  present = vi.fn(() => {
+    this.open = true;
+    return new Promise<CustomEvent>((resolve, reject) => {
+      this.submit = resolve;
+      this.cancel = () => reject();
+    });
+  });
 }
 
-customElements.define('stripe-modal', Sheet);
 customElements.define('stripe-card-element-modal', CardModal);
 beforeEach(() => vi.stubGlobal('matchMedia', () => ({ matches: false })));
 afterEach(() => {
@@ -47,15 +47,19 @@ test.each(['payment', 'setup', 'declined'] as const)(
       ...(scenario === 'setup' ? { setupIntentClientSecret: 'seti_test_secret' } : { paymentIntentClientSecret: 'pi_test_secret' }),
     });
     const modal = document.querySelector('stripe-card-element-modal') as CardModal;
-    const sheet = modal.querySelector('stripe-modal') as Sheet;
     expect(modal.shouldUseDefaultFormSubmitAction).toBe(false);
+    const canceledPresentation = plugin.presentPaymentFlow();
+    await vi.waitFor(() => expect(modal.present).toHaveBeenCalledOnce());
+    modal.cancel();
+    await expect(canceledPresentation).rejects.toThrow();
+    expect(modal.open).toBe(false);
     const presentation = plugin.presentPaymentFlow();
-    await vi.waitFor(() => expect(sheet.openModal).toHaveBeenCalledOnce());
+    await vi.waitFor(() => expect(modal.present).toHaveBeenCalledTimes(2));
     const cardNumberElement = {};
     modal.submit(new CustomEvent('formSubmit', { detail: { stripe, cardNumberElement } }));
     await expect(presentation).resolves.toEqual({ cardNumber: '4242' });
     expect(modal.updateProgress).toHaveBeenCalledWith('');
-    expect(sheet.closeModal).toHaveBeenCalledOnce();
+    expect(modal.open).toBe(false);
     expect(stripe.confirmCardPayment).not.toHaveBeenCalled();
     expect(stripe.confirmCardSetup).not.toHaveBeenCalled();
 
