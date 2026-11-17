@@ -27,17 +27,38 @@ if (!runtime)
     `No available iOS ${sdk} Simulator runtime for the selected Xcode.`,
   );
 
-const deviceType = "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro";
+const [major, minor, patch = 0] = runtime.version.split(".").map(Number);
+const runtimeVersion = major * 65536 + minor * 256 + patch;
+const deviceTypes =
+  runtime.supportedDeviceTypes ??
+  JSON.parse(run("simctl", "list", "devicetypes", "--json")).devicetypes.filter(
+    (type) =>
+      type.minRuntimeVersion <= runtimeVersion &&
+      type.maxRuntimeVersion >= runtimeVersion,
+  );
+const phoneTypes = deviceTypes.filter(
+  (type) => type.productFamily === "iPhone",
+);
+if (!phoneTypes.length)
+  throw new Error(
+    `No supported iPhone device type for iOS ${runtime.version}.`,
+  );
 const devices =
   JSON.parse(run("simctl", "list", "devices", "available", "--json")).devices[
     runtime.identifier
   ] ?? [];
-const device = devices.find(
-  (candidate) => candidate.deviceTypeIdentifier === deviceType,
+const device = devices.find((candidate) =>
+  phoneTypes.some((type) => type.identifier === candidate.deviceTypeIdentifier),
 );
 const id =
   device?.udid ??
-  run("simctl", "create", "Stripe CI iPhone", deviceType, runtime.identifier);
+  run(
+    "simctl",
+    "create",
+    "Stripe CI iPhone",
+    phoneTypes[0].identifier,
+    runtime.identifier,
+  );
 const destination = `platform=iOS Simulator,id=${id}`;
 if (process.env.GITHUB_ENV)
   appendFileSync(
