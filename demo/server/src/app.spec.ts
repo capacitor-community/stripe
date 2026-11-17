@@ -3,6 +3,11 @@ import { createApp } from './app';
 import type { StripeClient } from './types';
 
 const stripe = {
+  createBillingCustomerSession: vi.fn(async (customer: string) => ({
+    customer,
+    clientSecret: 'cuss_test',
+    expiresAt: 4102444800,
+  })),
   createCustomer: vi.fn(async () => ({ id: 'cus_new' })),
   createCustomerEphemeralKey: vi.fn(async () => ({ secret: 'eph_secret' })),
   createPaymentIntent: vi.fn(async () => ({ clientSecret: 'pi_secret' })),
@@ -28,6 +33,86 @@ const postJson = (path: string, body: unknown = {}) =>
   });
 
 describe('demo Worker', () => {
+  const billingEnv = {
+    STRIPE_SECRET_KEY: 'sk_test_placeholder',
+    BILLING_DEMO_TOKEN: 'local-demo-token',
+    BILLING_CUSTOMER_ID: 'cus_billing_demo',
+    BILLING_PUBLISHABLE_KEY: 'pk_test_placeholder',
+    BILLING_BUY_BUTTON_ID: 'buy_btn_demo',
+    BILLING_ENTITLEMENT_LOOKUP_KEY: 'premium',
+  };
+
+  it('keeps Billing disabled without test configuration and rejects unauthenticated access', async () => {
+    for (const [path, method] of [
+      ['/billing/config', 'GET'],
+      ['/billing/customer-session', 'POST'],
+    ]) {
+      expect((await app.request(path, { method }, {})).status).toBe(503);
+      expect(
+        (
+          await app.request(
+            path,
+            { method },
+            { ...billingEnv, STRIPE_SECRET_KEY: 'sk_live_placeholder' },
+          )
+        ).status,
+      ).toBe(503);
+      expect((await app.request(path, { method }, billingEnv)).status).toBe(
+        401,
+      );
+      expect(
+        (
+          await app.request(
+            path,
+            { method, headers: { Authorization: 'Bearer wrong' } },
+            billingEnv,
+          )
+        ).status,
+      ).toBe(401);
+    }
+    expect(stripe.createBillingCustomerSession).not.toHaveBeenCalled();
+  });
+
+  it('issues fresh sessions only for the server-selected Billing customer without caching secrets', async () => {
+    const headers = {
+      Authorization: 'Bearer local-demo-token',
+      'Content-Type': 'application/json',
+    };
+    const config = await app.request(
+      '/billing/config',
+      { headers },
+      billingEnv,
+    );
+    expect(await config.json()).toEqual({
+      publishableKey: 'pk_test_placeholder',
+      buyButtonId: 'buy_btn_demo',
+      entitlementLookupKey: 'premium',
+    });
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await app.request(
+        '/billing/customer-session',
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ customer_id: 'cus_someone_else' }),
+        },
+        billingEnv,
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Cache-Control')).toBe('no-store');
+      expect(await response.json()).toEqual({
+        customer: 'cus_billing_demo',
+        clientSecret: 'cuss_test',
+        expiresAt: 4102444800,
+      });
+    }
+    expect(stripe.createBillingCustomerSession).toHaveBeenCalledTimes(2);
+    expect(stripe.createBillingCustomerSession).toHaveBeenCalledWith(
+      'cus_billing_demo',
+      '2026-08-26.dahlia',
+    );
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });

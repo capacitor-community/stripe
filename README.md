@@ -19,6 +19,7 @@ Documentation: [Payments](https://docs.rdlabo.dev/projects/capacitor-stripe) · 
 | @capacitor-community/stripe          | Support for non-personal payments using Stripe | [/packages/payment](https://github.com/capacitor-community/stripe/tree/main/packages/payment#readme)   | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe)                   |
 | @capacitor-community/stripe-identity | Supports identity verification using Stripe  | [/packages/identity](https://github.com/capacitor-community/stripe/tree/main/packages/identity#readme) | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-identity)          |
 | @capacitor-community/stripe-terminal | Support for in-person payments using Stripe   | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)          |
+| @capacitor-community/stripe-billing | Experimental iOS subscriptions and entitlements | [/packages/billing](packages/billing#readme) | [Integration guide](packages/billing/docs/integration.md) |
 
 
 ## Hint

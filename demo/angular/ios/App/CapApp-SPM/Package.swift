@@ -14,7 +14,8 @@ let package = Package(
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.5.1"),
         .package(name: "CapacitorCommunityStripe", path: "../../../../../packages/payment"),
         .package(name: "CapacitorCommunityStripeIdentity", path: "../../../../../packages/identity"),
-        .package(name: "CapacitorCommunityStripeTerminal", path: "../../../../../packages/terminal")
+        .package(name: "CapacitorCommunityStripeTerminal", path: "../../../../../packages/terminal"),
+        .package(name: "CapacitorCommunityStripeBilling", path: "../../../../../packages/billing")
     ],
     targets: [
         .target(
@@ -24,7 +25,8 @@ let package = Package(
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
                 .product(name: "CapacitorCommunityStripe", package: "CapacitorCommunityStripe"),
                 .product(name: "CapacitorCommunityStripeIdentity", package: "CapacitorCommunityStripeIdentity"),
-                .product(name: "CapacitorCommunityStripeTerminal", package: "CapacitorCommunityStripeTerminal")
+                .product(name: "CapacitorCommunityStripeTerminal", package: "CapacitorCommunityStripeTerminal"),
+                .product(name: "CapacitorCommunityStripeBilling", package: "CapacitorCommunityStripeBilling")
             ]
         )
     ]

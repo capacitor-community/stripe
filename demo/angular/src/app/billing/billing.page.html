@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar><ion-title>BILLING</ion-title></ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <p>Experimental iOS subscriptions · Stripe test mode</p>
+  @if (!billing.supported) {
+  <p role="status">
+    Run this demo in the iOS app. Billing is not available on web or Android.
+  </p>
+  }
+  <form novalidate (submit)="vm.disableHandler($event, vm.connect())">
+    <ion-input
+      type="password"
+      label="Demo token"
+      labelPlacement="stacked"
+      autocomplete="off"
+      [formField]="credentials.token"
+      [class.ion-invalid]="credentials.token().invalid()"
+      [class.ion-touched]="credentials.token().touched()"
+      [errorText]="credentials.token().errors()[0]?.message ?? ''"
+    ></ion-input>
+    <ion-button
+      type="submit"
+      [disabled]="!billing.supported || billing.connected() || billing.busy() || credentials().invalid()"
+      >Connect</ion-button
+    >
+  </form>
+  <p role="status">{{ billing.status() }}</p>
+  @if (billing.error()) {
+  <p role="alert">{{ billing.error() }}</p>
+  } @if (billing.connected()) {
+  <ion-list>
+    <ion-item
+      ><ion-label
+        >Customer Session requests: {{ billing.sessionRequests() }}</ion-label
+      ></ion-item
+    >
+    <ion-item
+      ><ion-label
+        >Buy button: {{ billing.config()?.buyButtonId }}</ion-label
+      ></ion-item
+    >
+    <ion-item
+      ><ion-label
+        >Feature: {{ billing.config()?.entitlementLookupKey }}</ion-label
+      ></ion-item
+    >
+  </ion-list>
+  <ion-button
+    type="button"
+    [disabled]="billing.busy()"
+    (click)="vm.disableHandler($event, billing.loadButton())"
+    >Load buy button</ion-button
+  >
+  <ion-button
+    type="button"
+    [disabled]="billing.busy()"
+    (click)="vm.disableHandler($event, billing.presentButton())"
+    >Present buy button</ion-button
+  >
+  <ion-button
+    type="button"
+    [disabled]="billing.busy()"
+    (click)="vm.disableHandler($event, billing.refresh())"
+    >Refresh entitlements</ion-button
+  >
+  <ion-button
+    type="button"
+    [disabled]="billing.busy()"
+    (click)="vm.disableHandler($event, billing.checkAccess())"
+    >Check feature access</ion-button
+  >
+  <ion-button
+    type="button"
+    [disabled]="billing.busy()"
+    (click)="vm.disableHandler($event, billing.portal())"
+    >Customer Portal</ion-button
+  >
+  <ion-button
+    type="button"
+    [disabled]="billing.busy()"
+    (click)="vm.disableHandler($event, billing.portal(true))"
+    >External portal</ion-button
+  >
+  <ion-button
+    type="button"
+    color="medium"
+    [disabled]="billing.busy()"
+    (click)="vm.disableHandler($event, billing.reset())"
+    >Reset / sign out</ion-button
+  >
+  @if (billing.button()) {
+  <h2>Buy button</h2>
+  <pre>{{ billing.button() | json }}</pre>
+  }
+  <h2>Active entitlements</h2>
+  <pre>{{ billing.entitlements() | json }}</pre>
+  @if (billing.access() !== null) {
+  <p>Feature access: {{ billing.access() ? 'Active' : 'Inactive' }}</p>
+  } }
+</ion-content>

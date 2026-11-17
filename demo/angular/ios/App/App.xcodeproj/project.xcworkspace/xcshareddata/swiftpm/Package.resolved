@@ -2,6 +2,14 @@
   "originHash" : "87e181fb6509eb87942a59402a640ac1f01172d601c922de34a8cea6131575d5",
   "pins" : [
     {
+      "identity" : "billing-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stripe-samples/billing-ios-sdk.git",
+      "state" : {
+        "revision" : "02416cf6bb57fa9ede1786ea8ac127ea05fa9b87"
+      }
+    },
+    {
       "identity" : "capacitor-swift-pm",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ionic-team/capacitor-swift-pm.git",

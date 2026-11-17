@@ -49,6 +49,8 @@ jobs:
       - name: Build Terminal package
         run: npm install && npm run build
         working-directory: ./packages/terminal
+      - name: Build Billing package
+        run: npm run build --workspace packages/billing
       - name: Cache Angular
         uses: actions/cache@v5
         with:
@@ -293,6 +295,29 @@ jobs:
       }}
     needs:
       - ci-reuse
+  verify-billing-ios:
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - name: Fail if tree verification failed
+        if: needs.ci-reuse.result != 'success'
+        run: exit 1
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build --workspace packages/billing
+      - name: Test Billing session lifecycle
+        working-directory: ./packages/billing
+        run: xcodebuild -scheme CapacitorCommunityStripeBilling -destination 'platform=iOS Simulator,name=iPhone 17 Pro' CODE_SIGNING_ALLOWED=NO test
+    if:
+      ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
+      }}
+    needs:
+      - ci-reuse
   ci-reuse:
     name: Verify tested tree
     runs-on: ubuntu-latest
@@ -350,6 +375,7 @@ jobs:
       - verify-payment-ios
       - verify-identity-ios
       - verify-terminal-ios
+      - verify-billing-ios
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -366,7 +392,7 @@ jobs:
         with:
           script: |
             const { requireResults } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/ci-tree-reuse.mjs`);
-            requireResults(process.env.REUSE === 'true', JSON.parse(process.env.NEEDS), ["verify-demo", "verify-payment-android", "verify-identity-android", "verify-terminal-android", "verify-payment-ios", "verify-identity-ios", "verify-terminal-ios"], []);
+            requireResults(process.env.REUSE === 'true', JSON.parse(process.env.NEEDS), ["verify-demo", "verify-payment-android", "verify-identity-android", "verify-terminal-android", "verify-payment-ios", "verify-identity-ios", "verify-terminal-ios", "verify-billing-ios"], []);
       - name: Record the actual complete checkout
         id: tree
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd

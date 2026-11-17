@@ -1,0 +1,8 @@
+# Copy to .dev.vars and fill in credentials for ONE preview-enabled TEST account.
+STRIPE_SECRET_KEY="sk_test_..."
+BILLING_DEMO_TOKEN="replace-with-a-long-random-token"
+BILLING_CUSTOMER_ID="cus_..."
+BILLING_PUBLISHABLE_KEY="pk_test_..."
+BILLING_BUY_BUTTON_ID="buy_btn_..."
+BILLING_ENTITLEMENT_LOOKUP_KEY="premium"
+BILLING_API_VERSION="2026-08-26.dahlia"
