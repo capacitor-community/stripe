@@ -37,6 +37,22 @@ npx cap sync
 
 For Capacitor v7, use plugin v7 instead.
 
+### Stripe SDK versions
+
+The default SDK versions preserve the existing Android, iOS, and Swift toolchain requirements:
+
+| Package | Android | iOS (SPM) | iOS (CocoaPods) | Web |
+| --- | --- | --- | --- | --- |
+| Payment | 23.26.x | 26.15.1 | 26.15.0 | Stripe.js 9.17.x / stripe-pwa-elements 4.1.x |
+| Identity | 23.26.x | 26.15.1 | 26.15.0 | Stripe.js 10.3.x |
+| Terminal | 5.8.x (currently 5.8.2) | 5.8.x (currently 5.8.0) | 5.8.x (currently 5.8.0) | terminal-js 0.26.x |
+
+Payment and Identity stay below Stripe iOS 26.16, whose [SPM manifest requires Swift tools 6.1](https://github.com/stripe/stripe-ios-spm/blob/26.16.1/Package.swift). Their CocoaPods dependencies stay on 26.15.0 because [26.15.1 removed CocoaPods distribution](https://github.com/stripe/stripe-ios/blob/26.15.1/CHANGELOG.md). Terminal stays below 6.0: [iOS 6.0 requires iOS 16](https://github.com/stripe/stripe-terminal-ios/releases/tag/6.0.0), and [Android 6.0 updates Kotlin to 2.3.21](https://github.com/stripe/stripe-terminal-android/blob/6.0.0/CHANGELOG.md).
+
+Web Payment retains Stripe.js 9 because [Stripe.js 10 removed Payment Request Button](https://github.com/stripe/stripe-js/releases/tag/v10.0.0). Install the matching `@stripe/stripe-js@^9.17.0` and `stripe-pwa-elements@^4.1.0` peers. Identity can use Stripe.js 10 independently. Billing remains pinned to the current upstream revision documented in its [integration guide](packages/billing/docs/integration.md).
+
+Stripe Android 23.26 also includes the upstream LiteRT dependency fix, so Identity no longer needs the temporary `litert-support` exclusion or a separate `litert-support-api` dependency. Apps overriding `identityVersion` to an older SDK must account for that SDK's AGP compatibility.
+
 ### Android requirements
 
 Payment and Identity require `minSdkVersion = 24`. Terminal requires `minSdkVersion = 26`; set it in `android/variables.gradle` if you use Terminal. The plugins use `compileSdkVersion = 36` and `targetSdkVersion = 36` by default.

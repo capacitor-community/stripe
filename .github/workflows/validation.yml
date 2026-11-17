@@ -219,10 +219,12 @@ jobs:
       - name: verify
         run: npm run verify:ios
         working-directory: ./packages/payment
+      - name: Prepare iOS Simulator
+        run: node .github/scripts/prepare-ios-simulator.mjs
       - name: Test Apple Pay shipping updates
         working-directory: ./packages/payment
         run:
-          xcodebuild -scheme CapacitorCommunityStripe -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:StripePluginTests/ApplePayShippingTests
+          xcodebuild -scheme CapacitorCommunityStripe -destination "$IOS_TEST_DESTINATION" -only-testing:StripePluginTests/ApplePayShippingTests
           CODE_SIGNING_ALLOWED=NO test
     if:
       ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
@@ -310,9 +312,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build --workspace packages/billing
+      - name: Prepare iOS Simulator
+        run: node .github/scripts/prepare-ios-simulator.mjs
       - name: Test Billing session lifecycle
         working-directory: ./packages/billing
-        run: xcodebuild -scheme CapacitorCommunityStripeBilling -destination 'platform=iOS Simulator,name=iPhone 17 Pro' CODE_SIGNING_ALLOWED=NO test
+        run: xcodebuild -scheme CapacitorCommunityStripeBilling -destination "$IOS_TEST_DESTINATION" CODE_SIGNING_ALLOWED=NO test
     if:
       ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')
       }}

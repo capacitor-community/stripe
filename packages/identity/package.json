@@ -84,6 +84,6 @@
     }
   },
   "dependencies": {
-    "@stripe/stripe-js": "^8.4.0"
+    "@stripe/stripe-js": "^10.3.0"
   }
 }

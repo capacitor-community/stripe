@@ -186,7 +186,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     this.flowStripe = stripe as Stripe;
     this.flowCardNumberElement = cardNumberElement;
     await this.cardElementModal.updateProgress('');
-    await this.cardElementModal.querySelector('stripe-modal')?.closeModal();
+    this.cardElementModal.open = false;
 
     this.notifyListeners(PaymentFlowEventsEnum.Created, {
       cardNumber: token.card.last4,
@@ -230,12 +230,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   private async presentCardElementModal(): Promise<unknown> {
     const modal = this.cardElementModal!;
     await modal.componentOnReady();
-    const result = modal.present().catch(() => undefined);
-    // stripe-pwa-elements 3.2 does not animate the inner modal when its open prop changes.
-    const sheet = modal.querySelector('stripe-modal');
-    await sheet?.componentOnReady();
-    await sheet?.openModal();
-    return result;
+    return modal.present().catch(() => {
+      modal.open = false;
+      return undefined;
+    });
   }
 
   isApplePayAvailable(): Promise<void> {
@@ -265,7 +263,10 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     }>;
   }
 
-  updateApplePaySheet(_options: { updateId: string; paymentSummaryItems: { label: string; amount: number }[] }): Promise<void> {
+  updateApplePaySheet(_options: {
+    updateId: string;
+    paymentSummaryItems: { label: string; amount: number }[];
+  }): Promise<void> {
     throw this.unimplemented('updateApplePaySheet is not supported on web.');
   }
 
