@@ -40,30 +40,33 @@ The target account is configured in `wrangler.toml`.
 
 ## Billing demo (private preview, test mode only)
 
-The Angular **BILLING** tab uses `GET /billing/config` and
-`POST /billing/customer-session`. Both require `Authorization: Bearer <demo-token>`.
-They remain disabled (503) until configured and reject live-mode credentials.
+The Angular **BILLING** tab starts each scenario with one tap, without credentials
+or customer IDs entered by the user. `POST /billing/demo` creates a new test
+Customer and issues a signed credential valid for one hour, together with public
+Billing configuration. `POST /billing/customer-session` uses that credential to
+issue fresh SDK Customer Sessions for that customer only. Client-supplied Customer
+IDs are ignored. Signing uses a separate `BILLING_SESSION_SECRET` held only on the server; the
+Stripe API key cannot sign demo credentials. These anonymous test sessions are a demo harness, not production auth.
+
+One-time maintainer setup:
 
 1. Copy `.dev.vars.example` to `.dev.vars` (gitignored).
-2. Set the test secret/publishable keys for the same Stripe account enabled for
-   the BillingSDK preview. Create a test Customer, subscription Buy Button,
-   product entitlement, and Customer Portal configuration in that account.
-3. Set `BILLING_CUSTOMER_ID`, `BILLING_BUY_BUTTON_ID`, and
-   `BILLING_ENTITLEMENT_LOOKUP_KEY`. Set `BILLING_DEMO_TOKEN` to a long random
-   value (for example `openssl rand -hex 32`). Do not put it in Angular source.
-4. Run `npm run dev`. Point `demo/angular/src/environments/environment.ts`
-   at this Worker (`http://localhost:3000/` in the iOS simulator). For a physical
-   iPhone, use a reachable HTTPS development endpoint. Angular production builds
-   use `environment.prod.ts`, so configure that URL too if building production.
-5. Build/sync the Angular iOS app as described in
-   [the Angular demo guide](../angular/README.md), then enter the demo token in
-   the BILLING tab.
+2. Set test secret/publishable keys for the same BillingSDK preview-enabled Stripe
+   account. Create a test subscription Buy Button, product entitlement and Customer
+   Portal configuration in that account.
+3. Generate `BILLING_SESSION_SECRET` with `openssl rand -hex 32`. Set `BILLING_BUY_BUTTON_ID` and `BILLING_ENTITLEMENT_LOOKUP_KEY`. No shared demo
+   token or fixed Customer ID is needed.
+4. Run `npm run dev`. Point the Angular environment URL at this Worker. An iPhone
+   needs a reachable HTTPS development endpoint; production builds use
+   `environment.prod.ts`.
+5. Run the app and tap a scenario in **BILLING**. Purchase, portal and entitlement
+   checks share one demo customer until sign out. Sign out and restart for a fresh
+   customer. For existing production users, use verified user-to-Customer mapping
+   instead of this public test-only bootstrap.
 
-The configured token represents **one fixed demo user**. The server never uses a
-client-supplied Customer ID and creates a fresh Customer Session for every request.
-This is a manual test harness, not application authentication: use your verified
-user-to-Customer mapping in production. All Billing responses use `no-store`;
-never log session secrets. Existing non-Billing demo endpoints are unchanged.
+Billing remains disabled (503) without complete test configuration or with live
+credentials. All Billing responses use `no-store`. Do not log session credentials.
+Existing non-Billing endpoints are unchanged.
 
 `BILLING_API_VERSION` defaults to `2026-08-26.dahlia`. The pinned native preview
 SDK itself uses `2025-07-30.basil`; verify that Stripe has enabled the required
@@ -72,5 +75,5 @@ preview access. The server uses Stripe's raw request API for components missing
 from the installed stable SDK types, and validates the response before returning it.
 
 For a deployed Worker, use Wrangler secrets for `STRIPE_SECRET_KEY` and
-`BILLING_DEMO_TOKEN`, and configure the remaining Billing variables for the target
+`BILLING_SESSION_SECRET`, and configure the remaining Billing variables for the target
 environment. Do not commit credentials to `wrangler.toml` or `.dev.vars`.

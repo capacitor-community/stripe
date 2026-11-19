@@ -8,6 +8,10 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 STRIPE_SECRET_KEY = "sk_test_51MmARtKzMYim9cy3l0jRblHOagmulcxNgJpXRLB3yDDyObnep8C5Eo70FrT5oDJr60G3CPAqdLVHagSyXizvk0ko00645CTaT5"
 
+BILLING_PUBLISHABLE_KEY = "pk_test_51MmARtKzMYim9cy3tOI5vOdHbai4G26V1AiDJmiE4aiAXc8BaSzh9Z0b0f8Novn0Jyyi8JqNdzLzcI2rUGT4g8ct00gfUVdLuM"
+BILLING_BUY_BUTTON_ID = "buy_btn_1UdQj6KzMYim9cy3r6yHRaNQ"
+BILLING_ENTITLEMENT_LOOKUP_KEY = "capacitor_stripe_billing_demo_premium"
+
 [dev]
 port = 3000
 
