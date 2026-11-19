@@ -8,17 +8,21 @@ on:
     types: [created]
   workflow_dispatch:
     inputs:
+      release-version:
+        description: Resume an existing release tag (for example 8.4.0)
+        required: false
+        type: string
       comment-id:
         description: ID of the authorized /beta comment
-        required: true
+        required: false
         type: string
       head-sha:
         description: PR head authorized by the comment workflow
-        required: true
+        required: false
         type: string
       target-branch:
         description: PR base authorized by the comment workflow
-        required: true
+        required: false
         type: string
   workflow_run:
     workflows:
@@ -66,16 +70,38 @@ jobs:
           reactions: eyes
 
   release:
-    if: github.event_name == 'push'
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && inputs.release-version != '' &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
 
     steps:
-      - name: Checkout release tag
+      - name: Checkout release workflow
         uses: actions/checkout@v5
         with:
+          fetch-depth: 0
+
+      - name: Verify and preserve release verification policy
+        run: |
+          node --test .github/scripts/release-package-state.test.mjs
+          cp .github/scripts/release-package-state.mjs "$RUNNER_TEMP/release-package-state.mjs"
+
+      - name: Validate requested recovery version
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          VERSION: ${{ inputs.release-version }}
+        run: |
+          node --input-type=module -e 'if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(process.env.VERSION)) process.exit(1)'
+
+      - name: Checkout existing release tag
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v5
+        with:
+          ref: refs/tags/v${{ inputs.release-version }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -89,8 +115,14 @@ jobs:
 
       - name: Validate release tag
         id: release
+        env:
+          REQUESTED_VERSION: ${{ inputs.release-version }}
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            TAG_NAME="v$REQUESTED_VERSION"
+          else
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+          fi
           VERSION=${TAG_NAME#v}
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           if [ "$PACKAGE_VERSION" != "$VERSION" ]; then
@@ -112,6 +144,7 @@ jobs:
         run: npm ci
 
       - name: Align the default branch with the release tag
+        if: github.event_name == 'push'
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
@@ -134,7 +167,7 @@ jobs:
           for (const workspace of root.workspaces) {
             execFileSync(
               'npm',
-              ['version', process.env.VERSION, '--no-git-tag-version', '--ignore-scripts', '--workspace', workspace],
+              ['version', process.env.VERSION, '--allow-same-version', '--no-git-tag-version', '--ignore-scripts', '--workspace', workspace],
               { stdio: 'inherit' },
             );
           }
@@ -144,6 +177,7 @@ jobs:
         run: npm run build --workspaces --if-present
 
       - name: Commit workspace versions
+        if: github.event_name == 'push'
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           VERSION: ${{ steps.release.outputs.version }}
@@ -174,12 +208,32 @@ jobs:
               throw new Error(`${packageJson.name} has version ${packageJson.version}; expected ${process.env.VERSION}`);
             }
           }
-          for (const workspace of root.workspaces) {
-            execFileSync(
-              'npm',
-              ['publish', '--provenance', '--access', 'public', '--tag', process.env.DIST_TAG, '--workspace', workspace],
-              { stdio: 'inherit' },
-            );
+          const { publishedWithSameContents } = await import(`file://${process.env.RUNNER_TEMP}/release-package-state.mjs`);
+          const { spawnSync } = await import('node:child_process');
+          const registry = '--registry=https://registry.npmjs.org';
+          const archives = root.workspaces.map(workspace => {
+            const pkg = JSON.parse(readFileSync(`${workspace}/package.json`, 'utf8'));
+            const packed = JSON.parse(execFileSync('npm', ['pack', '--ignore-scripts', '--json',
+              '--workspace', workspace, '--pack-destination', process.env.RUNNER_TEMP], { encoding: 'utf8' }));
+            const archive = Array.isArray(packed) ? packed[0] : packed[pkg.name];
+            if (archive.name !== pkg.name || archive.version !== process.env.VERSION) {
+              throw new Error('Packed package identity mismatch');
+            }
+            const filename = `${process.env.RUNNER_TEMP}/${archive.filename}`;
+            return { spec: `${pkg.name}@${pkg.version}`, filename };
+          });
+          const isPublished = archive => publishedWithSameContents(spawnSync('npm',
+            ['view', archive.spec, '--json', '--prefer-online', registry], { encoding: 'utf8' }),
+            archive.spec, readFileSync(archive.filename), process.env.DIST_TAG);
+          // Validate every existing package before publishing any missing member.
+          const pending = [];
+          for (const archive of archives) {
+            if (!await isPublished(archive)) pending.push(archive);
+          }
+          for (const archive of pending) {
+            execFileSync('npm', ['publish', archive.filename, '--ignore-scripts', '--provenance',
+              '--access', 'public', '--tag', process.env.DIST_TAG, registry], { stdio: 'inherit' });
+            if (!await isPublished(archive)) throw new Error(`${archive.spec} is not visible after publishing`);
           }
           NODE
 
@@ -190,7 +244,7 @@ jobs:
       github.event.issue.pull_request &&
       github.event.comment.body == '/beta' &&
       github.run_attempt == '1') ||
-      (github.event_name == 'workflow_dispatch' &&
+      (github.event_name == 'workflow_dispatch' && inputs.release-version == '' &&
       github.ref == format('refs/heads/{0}', github.event.repository.default_branch) &&
       github.actor == 'github-actions[bot]') ||
       (github.event_name == 'workflow_run' &&
