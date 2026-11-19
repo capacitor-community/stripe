@@ -1,8 +1,9 @@
 # @capacitor-community/stripe
 
-Stripe SDK bindings for Capacitor Applications
+In-app payments with PaymentSheet, PaymentFlow, Apple Pay, and Google Pay for Capacitor 8 applications.
 
 <!-- rdlabo-docs-omit -->
+
 **Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe)
 <!-- /rdlabo-docs-omit -->
 
@@ -13,11 +14,16 @@ npm install @capacitor-community/stripe
 npx cap sync
 ```
 
+Requires iOS 15+ or Android API 24+. Web needs compatible `@stripe/stripe-js@^9.17.0` and `stripe-pwa-elements@^4.1.0` peers; web card modals differ from the native Stripe UI. Wallet availability depends on the platform and device.
+
 ## Usage
 
 See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/configuration) to install the plugin, then [PaymentSheet](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-sheet), [PaymentFlow](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-flow), [Apple Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/apple-pay), and [Google Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/google-pay).
 
+Your backend creates the PaymentIntent or SetupIntent, chooses the Customer, and verifies webhooks before fulfillment. Your app receives client-safe credentials, initializes Payment, creates its selected UI, and presents it. See [Server Integration](docs/server-integration.md) and [Initialize](docs/initialize.md). Installing Payment does not initialize Identity, Terminal, or Billing.
+
 <!-- rdlabo-docs-omit -->
+
 ## How to use
 
 The API reference below and the repository's [demo applications](https://github.com/capacitor-community/stripe/tree/main/demo) track the current plugin version.
@@ -35,6 +41,7 @@ await Promise.all([
   Stripe.addListener(PaymentSheetEventsEnum.Failed, (error) => handleFailed(error)),
 ]);
 
+// After initialization and createPaymentSheet, invoke this from your payment action:
 await Stripe.presentPaymentSheet();
 ```
 

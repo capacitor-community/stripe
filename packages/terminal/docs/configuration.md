@@ -11,7 +11,7 @@ npm install @capacitor-community/stripe-terminal
 npx cap sync
 ```
 
-The plugin is `@capacitor-community/stripe-terminal` **v8.3.0**. Official demos:
+This guide targets plugin v8 with Capacitor 8. Official demos:
 
 - [Tap to Pay / Internet / Bluetooth](https://github.com/capacitor-community/stripe/tree/main/demo/angular)
 - [Apps on Devices](https://github.com/capacitor-community/stripe/tree/main/demo/app-on-devices)
@@ -70,30 +70,37 @@ No additional steps are necessary. Only Internet readers are available.
 
 ## iOS configuration
 
-No additional steps are necessary for the plugin. USB, HandOff, and `setTapToPayUxConfiguration` are unimplemented on iOS.
+Configure the host app as required by the [Stripe Terminal iOS SDK](https://github.com/stripe/stripe-terminal-ios/tree/5.8.0#configure-your-app):
+
+- Add `NSLocationWhenInUseUsageDescription` to `Info.plist` and enable location access so payments can be processed.
+- Add `NSBluetoothAlwaysUsageDescription` with an explanation of reader connectivity.
+- If the app must keep a Bluetooth reader connected in the background, include `bluetooth-central` in the `UIBackgroundModes` array.
+
+Tap to Pay additionally requires Apple's entitlement and a supported physical device, OS, country, and Stripe account. The package's iOS 15 minimum does not imply Tap to Pay availability. Follow the [Tap to Pay guide](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/tap-to-pay) before using a real device.
+
+USB, HandOff, and `setTapToPayUxConfiguration` are unimplemented on iOS.
 
 ## Android configuration
 
 Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
 
-```diff
-+ <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-+ <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
 
 `discoverReaders` rejects when `ACCESS_FINE_LOCATION` has not been granted at runtime.
 
 And update `minSdkVersion` to `26` in your `android/variables.gradle` file:
 
-```diff
-  ext {
--    minSdkVersion = 24
-+    minSdkVersion = 26
-  }
+```groovy
+ext {
+    minSdkVersion = 26
+}
 ```
 
 If you are developing apps for Stripe Android devices (for example Stripe Reader S700) and using `TerminalConnectTypes.HandOff`, follow [Stripe's client-side setup guide](https://docs.stripe.com/terminal/features/apps-on-devices/build?terminal-sdk-platform=android&lang-android=java#setup-app).

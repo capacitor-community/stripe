@@ -16,7 +16,7 @@ Enable `buy_button`, `active_entitlements`, and `customer_portal` on the Custome
 }
 ```
 
-`expiresAt` is Unix time in **seconds**, not milliseconds. Return HTTP 401 only for a signed-out user; surface other failures as errors.
+`expiresAt` is Unix time in **seconds**, not milliseconds. Reject unauthenticated requests with HTTP 401. The signed-in app must treat a rejected or expired login as a failure and ask the user to authenticate again. It must not silently switch to anonymous checkout.
 
 The pinned native SDK sends Stripe API version `2025-07-30.basil` and uses private preview endpoints. Stripe's current online guide uses `2026-08-26.dahlia` or later for the backend. Confirm that your enabled preview supports both the pinned SDK and your backend API version; a newer server API version alone does not grant preview access.
 
@@ -62,10 +62,8 @@ const sessionListener = await StripeBilling.addListener('customerSessionRequeste
       method: 'POST',
       headers: { Authorization: `Bearer ${await getAuthToken()}` },
     });
-    if (response.status !== 401) {
-      if (!response.ok) throw new Error('Customer Session request failed');
-      session = await response.json() as CustomerSession;
-    }
+    if (!response.ok) throw new Error('Customer Session request failed');
+    session = (await response.json()) as CustomerSession;
   } catch {
     failed = true;
   }
@@ -78,7 +76,7 @@ const sessionListener = await StripeBilling.addListener('customerSessionRequeste
 });
 
 const entitlementListener = await StripeBilling.addListener('entitlementsChanged', ({ entitlements }) => {
-  updatePremiumUI(entitlements.some(item => item.lookupKey === 'premium'));
+  updatePremiumUI(entitlements.some((item) => item.lookupKey === 'premium'));
 });
 const errorListener = await StripeBilling.addListener('billingError', ({ message }) => {
   showError(message);
@@ -89,29 +87,48 @@ await StripeBilling.initialize({
   maximumStaleEntitlementsDuration: 300,
 });
 
-// In your subscription button handler:
-await StripeBilling.presentBuyButton({ id: 'buy_btn_...' });
-
-// In your subscription management handler:
-await StripeBilling.presentCustomerPortal();
-// Use { external: true } to open the portal in the default browser.
-
-// On returning to the app after checkout/external portal, refresh explicitly:
-const { active } = await StripeBilling.hasEntitlement({ lookupKey: 'premium', forceRefresh: true });
-updatePremiumUI(active);
-
-// On sign-out or before changing accounts, first disable subscription actions:
-await StripeBilling.reset();
-await sessionListener.remove();
-await entitlementListener.remove();
-await errorListener.remove();
-// Register listeners and initialize again for the next login.
+// Enable subscription actions only after initialization completes.
 ```
 
-`getAuthToken`, `updatePremiumUI`, and `showError` are application-specific functions. Keep each UI action separate; the calls above illustrate their respective handlers, not an automatic checkout sequence. Serialize calls: concurrent SDK operations reject instead of racing the SDK's caches. Session responses and `reset` can run while an operation is pending.
+`getAuthToken`, `updatePremiumUI`, and `showError` are application-specific functions. The example assumes a signed-in user. If your app intentionally supports anonymous checkout, return `session: null, failed: false` only after your app has confirmed that anonymous state. Network errors and HTTP 401 responses are failures.
+
+### Separate UI actions
+
+Connect these functions to separate actions in your app. Do not call them sequentially as a checkout flow. Serialize SDK operations; concurrent operations reject instead of racing the SDK's caches. Session responses and `reset` can run while an operation is pending.
+
+```ts
+async function purchaseSubscription(): Promise<void> {
+  await StripeBilling.presentBuyButton({ id: 'buy_btn_...' });
+}
+
+async function manageSubscription(): Promise<void> {
+  await StripeBilling.presentCustomerPortal();
+  // Use { external: true } to open the portal in the default browser.
+}
+
+async function refreshAccess(): Promise<void> {
+  const { active } = await StripeBilling.hasEntitlement({ lookupKey: 'premium', forceRefresh: true });
+  updatePremiumUI(active);
+}
+
+async function signOutBilling(): Promise<void> {
+  // First disable subscription actions in your application UI.
+  await StripeBilling.reset();
+  await sessionListener.remove();
+  await entitlementListener.remove();
+  await errorListener.remove();
+  // Register listeners and initialize again for the next login.
+}
+```
+
+Call `refreshAccess` when the app returns from external checkout or the external portal. Keep subscription actions disabled during initialization, another SDK operation, and account changes.
 
 `getBuyButton({ id })` loads button metadata. `presentBuyButton` loads and presents the SDK's native button in a dismissible sheet; tapping it opens Stripe checkout in the default browser. Its Promise resolving means **presented**, not paid. A `null` session allows intentional anonymous checkout; backend failures must set `failed: true` so they never silently become anonymous purchases.
 
 `getActiveEntitlements({ forceRefresh: true })` returns `{ entitlements }`, and `hasEntitlement` returns `{ active }`. The SDK can use cached entitlements when a network refresh fails; even `forceRefresh` is not proof of payment. `entitlementsChanged` is an SDK refresh notification, not a live webhook subscription. The in-app portal refreshes entitlements on dismissal; refresh explicitly after external checkout/portal returns.
 
 Always await `reset` before switching users. It cancels pending session requests and operations, dismisses plugin UI, clears SDK caches, emits empty entitlements, and requires reinitialization. Initialization also clears the upstream cache because the pinned SDK does not scope its persisted entitlements by customer. Removing event listeners alone does not sign out.
+
+## Try the repository demo
+
+The [Angular Billing demo](../../../demo/angular/README.md#billing-demo-on-ios) creates temporary test customers and credentials automatically. Its [demo backend](../../../demo/server/README.md#billing-demo-private-preview-test-mode-only) is an anonymous, test-only harness. Production applications must implement the authenticated user-to-Customer mapping described above; the public demo credential is not a production login mechanism.

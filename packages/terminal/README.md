@@ -1,212 +1,41 @@
 # @capacitor-community/stripe-terminal
 
-Stripe SDK bindings for Capacitor Applications.
+In-person payments with Stripe Terminal for Capacitor 8 applications.
 
 <!-- rdlabo-docs-omit -->
+
 **Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)
 <!-- /rdlabo-docs-omit -->
 
-We have confirmed that it works well in the demo project. Refer to:
-
-- Tap to Pay / Internet / Bluetooth demo: https://github.com/capacitor-community/stripe/tree/main/demo/angular
-- App on Devices demo: https://github.com/capacitor-community/stripe/tree/main/demo/app-on-devices
-
 ## Install
 
-```bash
+```sh
 npm install @capacitor-community/stripe-terminal
 npx cap sync
 ```
 
-### Web
+Requires iOS 15+ or Android API 26+. Web supports Internet readers only. Tap to Pay has additional device, OS, entitlement, country, and account requirements.
 
-No additional steps are necessary.
+Follow [Configuration](docs/configuration.md) for iOS location/Bluetooth usage descriptions, Android permissions, runtime location access, and supported connection types. Installing the plugin alone does not configure your host app or register a reader.
 
-### iOS
+## Integration order
 
-No additional steps are necessary.
+1. On your backend, authenticate the user, authorize their Terminal location, and create fresh connection tokens and card-present PaymentIntents.
+2. At app startup, register application-level listeners, including `RequestedConnectionToken`, before `initialize`. Use your authenticated app-side request and pass the returned secret to `setConnectionToken`.
+3. Discover readers using a supported connection type, then connect a reader from the current discovery result.
+4. Collect the PaymentIntent's payment method, then confirm the Intent. Use verified server webhooks to fulfill the order.
+5. Handle cancellation, reader disconnection, updates, and reconnection. Keep listeners for their application-level owner's lifetime.
 
-### Android
+The [Collect a Payment guide](docs/collect-a-payment.md) explains each step and the limitations of the optional `tokenProviderEndpoint` mode. Never embed a Stripe secret key or a reusable connection token in the app.
 
-Add permissions to your `android/app/src/main/AndroidManifest.xml` file:
+For a complete integration, also read [Reader Lifecycle](docs/reader-lifecycle.md) and [Tap to Pay](docs/tap-to-pay.md). Use `RequestDisplayMessage` and `RequestReaderInput` to display instructions on the phone when the reader has no display. `setReaderDisplay` and `clearReaderDisplay` apply to readers that have a display; Terminal cart amounts use the smallest currency unit.
 
-```diff
-+ <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-+ <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-+ <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-```
+## Demos
 
-And update `minSdkVersion` to 26 in your `android/variables.gradle` file:
+- [Angular: Tap to Pay, Internet, and Bluetooth](../../demo/angular/README.md)
+- [Apps on Devices](../../demo/app-on-devices/README.md)
 
-```diff
-ext {
--   minSdkVersion = 24
-+   minSdkVersion = 26
-```
-
-If you are developing apps for Stripe Android devices (e.g. Stripe Reader S700), follow the Stripe's documentation for the client-side setup.
-- [Stripe - Android configure your app](https://docs.stripe.com/terminal/features/apps-on-devices/build?terminal-sdk-platform=android&lang-android=java#setup-app)
-
-## Usage
-
-See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/configuration), [Collect a Payment](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/collect-a-payment), [Reader Lifecycle](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/reader-lifecycle), and [Tap to Pay](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal/docs/tap-to-pay).
-
-<!-- rdlabo-docs-omit -->
-### Simple collect payment
-
-Register application-level Terminal event listeners once per JavaScript application startup, as early as possible during bootstrap—for example, from `main.ts`, an application initializer, or a singleton service initialized at startup—and before initializing or starting an operation. Keep them registered for the lifetime of their application-level owner:
-
-```typescript
-const paymentStatusListener = await StripeTerminal.addListener(
-  TerminalEventsEnum.PaymentStatusChange,
-  ({ status }) => console.log(status),
-);
-
-// Keep paymentStatusListener and remove it only when its application-level owner is destroyed.
-```
-
-#### Use plugin client
-
-```typescript
-(async () => {
-  /**
-   * tokenProviderEndpoint: The URL of your backend to provide a token. Use Post request to get a token.
-   */
-  await StripeTerminal.initialize({ tokenProviderEndpoint: 'https://example.com/token', isTest: true });
-  const { readers } = await StripeTerminal.discoverReaders({
-    type: TerminalConnectTypes.TapToPay,
-    locationId: "**************",
-  });
-  await StripeTerminal.connectReader({
-    reader: readers[0],
-  });
-  // Collect payment intent
-  await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
-  // Process and confirm payment intent
-  await StripeTerminal.confirmPaymentIntent();
-  // disconnect reader
-  await StripeTerminal.disconnectReader();
-})();
-```
-
-#### set string token
-
-```typescript
-(async () => {
-  // run before StripeTerminal.initialize
-  await StripeTerminal.addListener(TerminalEventsEnum.RequestedConnectionToken, async () => {
-    const response = await fetch("https://example.com/token", { method: "POST" });
-    const { secret } = await response.json();
-    await StripeTerminal.setConnectionToken({ token: secret });
-  });
-  await StripeTerminal.initialize({ isTest: true });
-  const { readers } = await StripeTerminal.discoverReaders({
-    type: TerminalConnectTypes.TapToPay,
-    locationId: "**************",
-  });
-  await StripeTerminal.connectReader({
-    reader: readers[0],
-  });
-  // Collect payment intent
-  await StripeTerminal.collectPaymentMethod({ paymentIntent: "**************" });
-  // Process and confirm payment intent
-  await StripeTerminal.confirmPaymentIntent();
-  // disconnect reader
-  await StripeTerminal.disconnectReader();
-})();
-```
-
-### Listen device update
-
-The device will **if necessary** automatically start updating itself. It is important to handle them as needed so as not to disrupt business operations.
-
-```ts
-(async () => {
-  StripeTerminal.addListener(TerminalEventsEnum.ReportAvailableUpdate, async ({ update }) => {
-    if (window.confirm("Will you update the device?")) {
-      await StripeTerminal.installAvailableUpdate();
-    }
-  });
-  StripeTerminal.addListener(TerminalEventsEnum.StartInstallingUpdate, async ({ update }) => {
-    console.log(update);
-    if (window.confirm("Will you interrupt the update?")) {
-      StripeTerminal.cancelInstallUpdate();
-    }
-  });
-  StripeTerminal.addListener(TerminalEventsEnum.ReaderSoftwareUpdateProgress, async ({ progress }) => {
-    // be able to use this value to create a progress bar.
-  });
-  StripeTerminal.addListener(TerminalEventsEnum.FinishInstallingUpdate, async ({ update }) => {
-    console.log(update);
-  });
-})();
-```
-
-### Get terminal processing information
-
-For devices without leader screen, processing information must be retrieved and displayed on the mobile device. Get it with a listener.
-
-```ts
-/**
- * Listen battery level. If the battery level is low, you can notify the user to charge the device.
- */
-StripeTerminal.addListener(TerminalEventsEnum.BatteryLevel, async ({ level, charging, status }) => {
-  console.log(level, charging, status);
-});
-
-/**
- * Listen reader event. You can get the reader's status and display it on the mobile device.
- */
-StripeTerminal.addListener(TerminalEventsEnum.ReaderEvent, async ({ event }) => {
-  console.log(event);
-});
-
-/**
- * Listen display message. You can get the message to be displayed on the mobile device.
- */
-StripeTerminal.addListener(TerminalEventsEnum.RequestDisplayMessage, async ({ messageType, message }) => {
-  console.log(messageType, message);
-});
-
-/**
- * Listen reader input. You can get the message what can be used for payment.
- */
-StripeTerminal.addListener(TerminalEventsEnum.RequestReaderInput, async ({ options, message }) => {
-  console.log(options, message);
-});
-```
-
-### More details on the leader screen
-
-The contents of the payment can be shown on the display. This requires a leader screen on the device.
-This should be run before `collectPaymentMethod`.
-
-```ts
-await StripeTerminal.setReaderDisplay({
-  currency: 'usd',
-  tax: 0,
-  total: 1000,
-  lineItems: [{
-    displayName: 'winecode',
-    quantity: 2,
-    amount: 500
-  }] as CartLineItem[],
-})
-
-// Of course, erasure is also possible.
-await StripeTerminal.clearReaderDisplay();
-```
-
-### Simulate reader status changes for testing
-
-To implement updates, etc., we are facilitating an API to change the state of the simulator. This should be done before discoverReaders.
-
-```ts
-await StripeTerminal.setSimulatorConfiguration({ update: SimulateReaderUpdate.UpdateAvailable })
-```
+Demos use test resources and simulated readers where configured. Production applications must provide their own authentication, location authorization, and fulfillment logic.
 
 ## API
 

@@ -36,13 +36,13 @@ Constraints:
 
 ## Listen for status and input
 
-For readers without a leader screen, retrieve battery level, reader events, display messages, and input prompts with listeners and show them on the mobile device.
+For readers without a reader display, retrieve battery level, reader events, display messages, and input prompts with listeners and show them on the mobile device.
 
 `BatteryLevel`, `ReaderEvent`, `RequestDisplayMessage`, and `RequestReaderInput` apply to Bluetooth and USB readers. Battery updates are emitted on connection and about every 10 minutes.
 
 ## Set reader display
 
-On devices with a leader screen, show cart contents before `collectPaymentMethod`. Clear the display when you are done. Internet readers on web support these calls.
+On devices with a reader display, show cart contents before `collectPaymentMethod`. Clear the display when you are done. Internet readers on web support these calls.
 
 <!-- !::setReaderDisplay:: -->
 

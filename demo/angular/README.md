@@ -1,5 +1,39 @@
 # Angular Stripe demo
 
+Use this app to exercise Payment, Identity, Terminal, and experimental Billing. The DEMO page exposes individual operations; the scenario pages group setup and SDK calls under **PROCESS** and show results under **EXPECT**. A passing SDK call is not a verified server payment, identity outcome, or entitlement authorization.
+
+## Build and run
+
+From the repository root, build the local packages before installing the demo, which references them through `file:` dependencies:
+
+```sh
+npm ci
+npm run build
+cd demo/angular
+npm ci
+npm run cap
+npx cap sync ios
+npx cap open ios
+```
+
+For Android, replace the last two commands with `npx cap sync android` and `npx cap open android`. Billing requires an SPM-based iOS project; it has no Android or web implementation. Terminal reader types and wallets also vary by platform; see the [package support table](../../README.md#choose-a-package).
+
+For browser development, run `npm start` from this directory after installing dependencies. Card flows use web custom elements; wallet flows require HTTPS and eligible browser/device settings.
+
+## Backend and environments
+
+The checked-in environments point to the hosted [demo Worker](../server/README.md). App users do not enter Stripe secret keys, Billing tokens, or Customer IDs. A developer using a different Stripe account must configure the Worker and matching publishable keys/catalog first.
+
+`npm run cap` builds the production Angular configuration and uses `src/environments/environment.prod.ts`. `npm start` uses `environment.ts`. For a local backend, change the appropriate `api` URL, retaining its trailing slash. A phone needs a reachable endpoint; its `localhost` is not your development computer. Use a reachable HTTPS development endpoint for native/browser flows that require it.
+
+To run the demo's checks:
+
+```sh
+npm run test:ci
+npm run lint
+npm run build:ci
+```
+
 ## Billing demo on iOS
 
 The **BILLING** tab follows the other demos: tap a scenario under **PROCESS**;

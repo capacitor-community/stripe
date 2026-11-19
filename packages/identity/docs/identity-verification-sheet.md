@@ -34,13 +34,15 @@ The native result handoff is kept in memory. It does not guarantee recovery afte
 
 Create a VerificationSession on your backend with the Stripe secret key. Then create an ephemeral key for that session and return only client-safe fields.
 
-The official demo server (`POST /identify`) creates a `document` VerificationSession, creates an ephemeral key with `{ verification_session: session.id }` and Stripe API version `2022-11-15`, and responds with:
+The official demo server (`POST /identify`) creates a `document` VerificationSession, creates an ephemeral key with `{ verification_session: session.id }` and Stripe API version `2022-11-15`, and responds with the following fields. The demo preserves the legacy misspelling `verficationSessionId`; map it to the plugin option `verificationId`:
 
 | Response field         | Source                              | Plugin `create` option |
 | ---------------------- | ----------------------------------- | ---------------------- |
-| `verificationId`      | `VerificationSession.id`            | `verificationId`       |
+| `verficationSessionId` | `VerificationSession.id`            | `verificationId`       |
 | `ephemeralKeySecret`   | `EphemeralKey.secret`               | `ephemeralKeySecret`   |
 | `clientSecret`         | `VerificationSession.client_secret` | `clientSecret`         |
+
+For your own backend, use a clearly named `verificationId` response field, for example:
 
 ```ts
 const session = await stripe.identity.verificationSessions.create({
