@@ -7,10 +7,10 @@ This guide provides instructions for contributing to this Capacitor plugin.
 ### Local Setup
 
 1. Fork and clone the repo.
-1. Install the dependencies.
+1. Use Node.js 22 or later and install the dependencies.
 
 ```shell
-npm install
+npm ci
 ```
 
 1. Install SwiftLint if you're on macOS.
@@ -39,7 +39,13 @@ This is useful to run in CI to verify that the plugin builds for all platforms.
 
 Run these from a package directory, or append `--workspaces` when running them from the repository root. They check formatting and code quality, and `fmt` applies automatic fixes where possible.
 
-This template is integrated with ESLint, Prettier, and SwiftLint. Using these tools is completely optional, but the [Capacitor Community](https://github.com/capacitor-community/) strives to have consistent code style and structure for easier cooperation.
+This template is integrated with ESLint, Prettier, and SwiftLint. Run the relevant checks before submitting code changes so local results match CI.
 
-# Note
-`docgen --api DocGenType` is for Document. 
+## Documentation ownership
+
+- The root README routes users to the appropriate package and summarizes support and shared responsibilities.
+- Each package README covers installation and links to its focused guides in `packages/<package>/docs`. Those guides explain setup order, backend contracts, platform differences, and result handling.
+- Demo READMEs explain how to run the examples and which preparation belongs to the maintainer. Demo-only authentication must not be presented as production authentication.
+- API sections between `<docgen-index>` / `<docgen-api>` markers are generated. Change the source API JSDoc, then run `npm run docgen --workspace=<package-name>`; do not edit the generated sections directly. Preserve documentation-site frontmatter and `<!-- !::...:: -->` API inclusion markers.
+
+For prose-only changes, check links, example contracts against the implementation, and `git diff --check`. For code changes, run the relevant workspace checks above. The Angular demo and demo Worker have their own dependency installations and check commands documented in their READMEs.

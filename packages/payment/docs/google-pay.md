@@ -26,11 +26,11 @@ https://stripe.com/docs/stripe-js/elements/payment-request-button?platform=html-
 
 ## Platform support
 
-| Platform | Google Pay |
-| --- | --- |
-| Android | Native `GooglePayLauncher` (requires app metadata) |
-| iOS | Not implemented |
-| Web | Payment Request Button (`stripe-pwa-elements`) |
+| Platform | Google Pay                                         |
+| -------- | -------------------------------------------------- |
+| Android  | Native `GooglePayLauncher` (requires app metadata) |
+| iOS      | Not implemented                                    |
+| Web      | Payment Request Button (`stripe-pwa-elements`)     |
 
 iOS rejects `isGooglePayAvailable`, `createGooglePay`, and `presentGooglePay`. Android reads Google Pay configuration from metadata when the plugin loads, so `initialize` alone is not enough on Android.
 
@@ -157,6 +157,8 @@ try {
 
 ## 2. createGooglePay
 
+`paymentSummaryItems.amount` uses major currency units: `10.99` means USD $10.99. Stripe server-side PaymentIntent amounts use the smallest currency unit (`1099` for the same USD amount). Keep the displayed total and the backend Intent amount consistent.
+
 Fetch a PaymentIntent client secret from your backend. On Android, you may instead pass a SetupIntent client secret. See [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration). The option is named `paymentIntentClientSecret` for both Intent types. Web also needs `paymentSummaryItems`, `merchantIdentifier`, `countryCode`, and `currency`.
 
 ```ts
@@ -172,10 +174,12 @@ await Stripe.createGooglePay({
   paymentIntentClientSecret: paymentIntent,
 
   // Web only. Google Pay on Android App doesn't need
-  paymentSummaryItems: [{
-    label: 'Product Name',
-    amount: 1099.00
-  }],
+  paymentSummaryItems: [
+    {
+      label: 'Product Name',
+      amount: 10.99,
+    },
+  ],
   merchantIdentifier: 'merchant.com.getcapacitor.stripe',
   countryCode: 'US',
   currency: 'USD',

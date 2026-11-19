@@ -5,152 +5,134 @@
   Capacitor community plugin for native Stripe.
 </p>
 
-Documentation: [Payments](https://docs.rdlabo.dev/projects/capacitor-stripe) · [Identity](https://docs.rdlabo.dev/projects/capacitor-stripe-identity) · [Terminal](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)
+Documentation: [Payments](https://docs.rdlabo.dev/projects/capacitor-stripe) · [Identity](https://docs.rdlabo.dev/projects/capacitor-stripe-identity) · [Terminal](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal) · [Billing](packages/billing/docs/integration.md)
 
 <p align="center">
   <img src="https://img.shields.io/maintenance/yes/2026?style=flat-square" />
   <a href="https://www.npmjs.com/package/@capacitor-community/stripe"><img src="https://img.shields.io/npm/l/@capacitor-community/stripe?style=flat-square" /></a>
 </p>
 
-## packages
+## Choose a package
 
-| package name                         | description                                   | source                                                                                                 | documentation                                                                        |
-| ------------------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| @capacitor-community/stripe          | Support for non-personal payments using Stripe | [/packages/payment](https://github.com/capacitor-community/stripe/tree/main/packages/payment#readme)   | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe)                   |
-| @capacitor-community/stripe-identity | Supports identity verification using Stripe  | [/packages/identity](https://github.com/capacitor-community/stripe/tree/main/packages/identity#readme) | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-identity)          |
-| @capacitor-community/stripe-terminal | Support for in-person payments using Stripe   | [/packages/terminal](https://github.com/capacitor-community/stripe/tree/main/packages/terminal#readme) | [Documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-terminal)          |
-| @capacitor-community/stripe-billing | Experimental iOS subscriptions and entitlements | [/packages/billing](packages/billing#readme) | [Integration guide](packages/billing/docs/integration.md) |
+Each package is independent. Install the integrations your app uses; installing Payment does not install Identity, Terminal, or Billing.
 
+| Package                                                     | Use it for                                                               | Platforms                                         | Start here                                                  |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------- | ----------------------------------------------------------- |
+| [`@capacitor-community/stripe`](packages/payment)           | In-app payments with PaymentSheet, PaymentFlow, Apple Pay, or Google Pay | iOS, Android, web; wallet support varies          | [Payment setup](packages/payment/docs/configuration.md)     |
+| [`@capacitor-community/stripe-identity`](packages/identity) | Identity document collection and verification UI                         | iOS, Android, web                                 | [Identity setup](packages/identity/docs/configuration.md)   |
+| [`@capacitor-community/stripe-terminal`](packages/terminal) | In-person payments with readers or Tap to Pay                            | iOS, Android; Internet readers only on web        | [Terminal setup](packages/terminal/docs/configuration.md)   |
+| [`@capacitor-community/stripe-billing`](packages/billing)   | Subscription buy buttons, Customer Portal, and entitlements              | Experimental: iOS with Swift Package Manager only | [Billing integration](packages/billing/docs/integration.md) |
 
-## Hint
+Payment can confirm a PaymentIntent created by your subscription backend. Billing is the separate integration for Stripe's subscription buy buttons, portal, and entitlement APIs; it is not required just to use PaymentSheet.
 
-### Versions
+## App and backend responsibilities
 
-Use plugin v8 with Capacitor v8. Install only the packages your app needs:
+| Owner         | Responsibilities                                                                                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Your backend  | Authenticate users, choose their Stripe Customer, create Intents and short-lived SDK credentials, verify Stripe webhooks, and authorize fulfillment or feature access. |
+| Your app      | Initialize the selected plugin, register listeners before opening Stripe UI, request credentials from your backend, present UI, and handle results.                    |
+| These plugins | Bridge the supported Stripe SDK operations to Capacitor. They do not supply your production authentication, server, webhook handler, or subscription catalog.          |
 
-```bash
+Keep Stripe secret keys on the backend. A device's completed/presented result updates the UI; your server remains responsible for the authoritative payment or verification outcome. See [Payment backend integration](packages/payment/docs/server-integration.md), [Identity sessions and outcomes](packages/identity/docs/identity-verification-sheet.md), [Terminal connection tokens](packages/terminal/docs/collect-a-payment.md), and [Billing Customer Sessions](packages/billing/docs/integration.md).
+
+## Install and configure
+
+Use plugin v8 with Capacitor v8. For example, to add Payment:
+
+```sh
 npm install @capacitor-community/stripe@8
-npm install @capacitor-community/stripe-identity@8
-npm install @capacitor-community/stripe-terminal@8
 npx cap sync
 ```
 
-For Capacitor v7, use plugin v7 instead.
+Follow the selected package's setup guide for its native permissions, wallet settings, or web dependencies. Web Payment requires `@stripe/stripe-js@^9.17.0` and `stripe-pwa-elements@^4.1.0`; the [web quick start](packages/payment/docs/vanilla-js.md) covers registration. The React provider is optional and initializes **Payment only**. Billing requires a Stripe account enabled for the upstream private preview and has no CocoaPods, Android, or web implementation.
 
-### Stripe SDK versions
+For Capacitor v7, use plugin v7. The v8 guides describe the code in this repository; use the matching release/tag when working with an older version.
 
-The default SDK versions preserve the existing Android, iOS, and Swift toolchain requirements:
+## Platform and SDK requirements
 
-| Package | Android | iOS (SPM) | iOS (CocoaPods) | Web |
-| --- | --- | --- | --- | --- |
-| Payment | 23.26.x | 26.15.1 | 26.15.0 | Stripe.js 9.17.x / stripe-pwa-elements 4.1.x |
-| Identity | 23.26.x | 26.15.1 | 26.15.0 | Stripe.js 10.3.x |
-| Terminal | 5.8.x (currently 5.8.2) | 5.8.x (currently 5.8.0) | 5.8.x (currently 5.8.0) | terminal-js 0.26.x |
+| Package  | Android minimum | iOS minimum                                  | Default Stripe Android SDK | Default Stripe iOS SDK                                                                      | Web SDK                                      |
+| -------- | --------------- | -------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Payment  | API 24          | 15.0                                         | 23.26.x                    | SPM 26.15.1 / CocoaPods 26.15.0                                                             | Stripe.js 9.17.x / stripe-pwa-elements 4.1.x |
+| Identity | API 24          | 15.0                                         | 23.26.x                    | SPM 26.15.1 / CocoaPods 26.15.0                                                             | Stripe.js 10.3.x                             |
+| Terminal | API 26          | 15.0; Tap to Pay has additional requirements | 5.8.x                      | 5.8.x                                                                                       | terminal-js 0.26.x                           |
+| Billing  | Unsupported     | 15.0, SPM only                               | —                          | Pinned experimental revision; see [integration guide](packages/billing/docs/integration.md) | Unsupported                                  |
+
+The Android plugins default to `compileSdkVersion = 36` and `targetSdkVersion = 36`. If you install more than one plugin, your app must satisfy the highest minimum (API 26 when using Terminal).
+
+Optional Android SDK overrides are `stripeAndroidVersion` (Payment), `identityVersion` (Identity), and `stripeterminalCoreVersion`, `stripeterminalTapToPayVersion`, and `stripeterminalAppOnDevicesVersion` (Terminal). Keep Terminal versions aligned and check upstream compatibility before overriding them.
 
 Payment and Identity stay below Stripe iOS 26.16, whose [SPM manifest requires Swift tools 6.1](https://github.com/stripe/stripe-ios-spm/blob/26.16.1/Package.swift). Their CocoaPods dependencies stay on 26.15.0 because [26.15.1 removed CocoaPods distribution](https://github.com/stripe/stripe-ios/blob/26.15.1/CHANGELOG.md). Terminal stays below 6.0: [iOS 6.0 requires iOS 16](https://github.com/stripe/stripe-terminal-ios/releases/tag/6.0.0), and [Android 6.0 updates Kotlin to 2.3.21](https://github.com/stripe/stripe-terminal-android/blob/6.0.0/CHANGELOG.md).
 
-Web Payment retains Stripe.js 9 because [Stripe.js 10 removed Payment Request Button](https://github.com/stripe/stripe-js/releases/tag/v10.0.0). Install the matching `@stripe/stripe-js@^9.17.0` and `stripe-pwa-elements@^4.1.0` peers. Identity can use Stripe.js 10 independently. Billing remains pinned to the current upstream revision documented in its [integration guide](packages/billing/docs/integration.md).
+Web Payment stays on Stripe.js 9 because [Stripe.js 10 removed Payment Request Button](https://github.com/stripe/stripe-js/releases/tag/v10.0.0). Identity's Stripe.js dependency is independent. When overriding Identity to an older Android SDK, check that SDK's AGP compatibility.
 
-Stripe Android 23.26 also includes the upstream LiteRT dependency fix, so Identity no longer needs the temporary `litert-support` exclusion or a separate `litert-support-api` dependency. Apps overriding `identityVersion` to an older SDK must account for that SDK's AGP compatibility.
+### Existing CocoaPods projects
 
-### Android requirements
+If `npx cap sync ios` reports an outdated pod specification, run `pod install --repo-update` from `ios/App`. If the lockfile pins an older Stripe SDK, update the affected pod, for example `pod update StripePaymentSheet`, rather than updating every pod. This applies to Payment, Identity, and Terminal; Billing uses SPM only.
 
-Payment and Identity require `minSdkVersion = 24`. Terminal requires `minSdkVersion = 26`; set it in `android/variables.gradle` if you use Terminal. The plugins use `compileSdkVersion = 36` and `targetSdkVersion = 36` by default.
+## Try the demos
 
-v8.3.0 updates the Stripe SDKs without requiring a Gradle, Android Gradle Plugin, or Kotlin upgrade from the existing Capacitor 8 setup.
+The [hosted Angular demo](https://capacitor-community-stripe.netlify.app/) exercises supported web flows. It cannot demonstrate native-only Billing, native wallet UI, or phone-based Tap to Pay.
 
-The plugins provide default Stripe SDK versions. Optional overrides in `android/variables.gradle` are `stripeAndroidVersion` (Payment), `identityVersion` (Identity), and `stripeterminalCoreVersion`, `stripeterminalTapToPayVersion`, and `stripeterminalAppOnDevicesVersion` (Terminal). Keep the three Terminal versions aligned, and check upstream compatibility before overriding them:
+For native flows, build [demo/angular](demo/angular/README.md). Its scenario pages prepare test resources automatically and display method results under EXPECT. Green checks report the listed SDK/API calls, not fulfillment or a completed subscription purchase. Billing scenarios require iOS; its backend is configured once by the maintainer, with no credentials entered by app users.
 
-- [Stripe Android releases](https://github.com/stripe/stripe-android/releases)
-- [Stripe Terminal Android releases](https://github.com/stripe/stripe-terminal-android/releases)
+From a fresh checkout:
 
-### Error when running `cap update ios`
-
-```
-[!] CocoaPods could not find compatible versions for pod "StripePaymentSheet":
-  In snapshot (Podfile.lock):
-..
-You have either:
- * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.
- * changed the constraints of dependency `StripePaymentSheet` inside your development pod `CapacitorCommunityStripe`.
-   You should run `pod update StripePaymentSheet` to apply changes you've made.
+```sh
+npm ci
+npm run build
+cd demo/angular
+npm ci
+npm run cap
+npx cap sync ios
+npx cap open ios
 ```
 
-You will see this error often when using Capacitor iOS. The solution is simple: do the following:
+For Android, replace the last two commands with `npx cap sync android` and `npx cap open android`. Demo builds use `environment.prod.ts`; local development setup and backend responsibilities are explained in the [Angular demo guide](demo/angular/README.md) and [demo server guide](demo/server/README.md).
 
-```bash
-% cd ios/App && pod install --repo-update
-```
-
-or
-
-```bash
-% cd ios/App && pod update
-```
-
-<!-- rdlabo-docs-omit -->
-
-## Prerelease channels
-
-This repository publishes the payment, identity, and terminal workspaces as one npm candidate set. An open, non-draft pull request can publish all three packages to the npm `beta` dist-tag after its `Validation` and `Package Candidate` workflows pass. A repository owner or maintainer must add a comment whose entire body is:
-
-```text
-/beta
-```
-
-The request authorizes only the pull request head SHA that existed when the comment was added. Any new commit requires CI to pass again and a fresh owner or maintainer `/beta` comment. Fork pull requests are supported. A pull request that changes a release-gating workflow cannot be beta-published until those workflow changes land on `main`.
-
-Beta versions use `<base>-beta.pr<PR number>.sha<12-character SHA>`. Before publishing begins, the release workflow verifies that the immutable artifact contains exactly `@capacitor-community/stripe`, `@capacitor-community/stripe-identity`, and `@capacitor-community/stripe-terminal`, all at that version. A successful run comments on the pull request with one exact install command for the complete package set. Notification failures cannot invalidate a successful npm publish.
-
-When a pull request is merged into `main`, the same package set is automatically published to `beta` only after `Validation` and `Package Candidate` succeed for that exact merge commit. Direct pushes to `main` do not publish a candidate.
-
-Only `npm run release` creates a release tag. Stable `vX.Y.Z` tags publish every workspace to npm `latest`; revision/prerelease tags publish every workspace to `next`. Neither `beta` nor `next` publishing changes the npm `latest` dist-tag.
-
-<!-- /rdlabo-docs-omit -->
-
-## Maintainers
-
-| Maintainer          | GitHub                              | Social                                | Website                               |
-| ------------------- | ----------------------------------- | ------------------------------------- | ------------------------------------- |
-| Hidetaka Okamoto | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) | [hidetaka.dev](https://hidetaka.dev/) |
-| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo) | [@rdlabo](https://twitter.com/rdlabo) | [rdlabo.dev](https://rdlabo.dev/) |
-
-## Contributors ✨
-<a href="https://github.com/capacitor-community/stripe/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=capacitor-community/stripe" />
-</a>
-
-Made with [contributors-img](https://contrib.rocks).
-
-## Demo
-
-- [Demo code is here](https://github.com/capacitor-community/stripe/tree/main/demo). Please check the demo code before opening an issue.
-- The web demo is [hosted here](https://capacitor-community-stripe.netlify.app/).
+Other examples: [React](demo/react) · [Apps on Devices](demo/app-on-devices).
 
 ### Screenshots
 
 #### @capacitor-community/stripe
 
 |              |                     Android                     |                     iOS                     |                     Web                     |
-|:------------:|:-----------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|
+| :----------: | :---------------------------------------------: | :-----------------------------------------: | :-----------------------------------------: |
 | PaymentSheet | ![](demo/screenshots/payment-sheet-android.png) | ![](demo/screenshots/payment-sheet-ios.png) | ![](demo/screenshots/payment-sheet-web.png) |
-| PaymentFlow  | ![](demo/screenshots/payment-flow-android.png)  | ![](demo/screenshots/payment-flow-ios.png)  |            Screenshot unavailable           |
+| PaymentFlow  | ![](demo/screenshots/payment-flow-android.png)  | ![](demo/screenshots/payment-flow-ios.png)  |           Screenshot unavailable            |
 |   ApplePay   |                  Not supported                  |   ![](demo/screenshots/apple-pay-ios.png)   |                    beta.                    |
 |  GooglePay   |  ![](demo/screenshots/google-pay-android.png)   |                Not supported                |  ![](demo/screenshots/google-pay-web.png)   |
 
-
 #### @capacitor-community/stripe-identity
 
-|              |                     Android                     |                     iOS                     |                  Web                   |
-|:------------:|:-----------------------------------------------:|:-------------------------------------------:|:--------------------------------------:|
-|   Identity   |   ![](demo/screenshots/identity-android.png)    |    ![](demo/screenshots/identity-ios.png)     | ![](demo/screenshots/identity-web.png) |
+|          |                  Android                   |                  iOS                   |                  Web                   |
+| :------: | :----------------------------------------: | :------------------------------------: | :------------------------------------: |
+| Identity | ![](demo/screenshots/identity-android.png) | ![](demo/screenshots/identity-ios.png) | ![](demo/screenshots/identity-web.png) |
 
-## How to use Demo
+<!-- rdlabo-docs-omit -->
 
-```bash
-% git clone git@github.com:capacitor-community/stripe.git
-% cd stripe
-% npm install && npm run build
-% cd demo/angular
-% npm install && npm run cap && npx cap update
-```
+## Maintainer release channels
+
+The repository's npm workspaces are Payment, Identity, Terminal, and Billing. Candidate publishing builds and validates all four as one set.
+
+For an open, non-draft PR, an owner or maintainer may comment `/beta` after Validation and Package Candidate pass. This authorizes only that head SHA; a new commit requires another successful CI run and a new `/beta` request. PRs changing release-gating workflows must first land on `main`.
+
+Candidate versions use `<base>-beta.pr<PR number>.sha<12-character SHA>`. The workflow verifies the package names and versions, then posts an exact install command for the complete set. A merged PR automatically publishes that set to `beta` after CI succeeds for the merge commit. Direct pushes to `main` do not publish a candidate.
+
+Use the root `npm run release` script for coordinated tagged releases. Stable `vX.Y.Z` tags publish every workspace to `latest`; prerelease tags publish every workspace to `next`. Candidate publishing does not change `latest`. Each package must have npm publishing configured, including its Trusted Publisher for GitHub Actions. See [Contributing](CONTRIBUTING.md) for generated documentation and local checks.
+
+<!-- /rdlabo-docs-omit -->
+
+## Maintainers
+
+| Maintainer          | GitHub                                        | Social                                      | Website                               |
+| ------------------- | --------------------------------------------- | ------------------------------------------- | ------------------------------------- |
+| Hidetaka Okamoto    | [hideokamoto](https://github.com/hideokamoto) | [@hide__dev](https://twitter.com/hide__dev) | [hidetaka.dev](https://hidetaka.dev/) |
+| Masahiko Sakakibara | [rdlabo](https://github.com/rdlabo)           | [@rdlabo](https://twitter.com/rdlabo)       | [rdlabo.dev](https://rdlabo.dev/)     |
+
+## Contributors ✨
+
+<a href="https://github.com/capacitor-community/stripe/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=capacitor-community/stripe" />
+</a>
+
+Made with [contributors-img](https://contrib.rocks).

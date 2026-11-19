@@ -18,11 +18,11 @@ https://stripe.com/docs/apple-pay
 
 ## Platform support
 
-| Platform | Apple Pay |
-| --- | --- |
-| iOS | Native `STPApplePayContext` |
-| Android | Not implemented |
-| Web | Payment Request Button (`stripe-pwa-elements`) |
+| Platform | Apple Pay                                      |
+| -------- | ---------------------------------------------- |
+| iOS      | Native `STPApplePayContext`                    |
+| Android  | Not implemented                                |
+| Web      | Payment Request Button (`stripe-pwa-elements`) |
 
 `updateApplePaySheet` and shipping contact updates run on iOS only. Web throws unimplemented for `updateApplePaySheet`. Android rejects `isApplePayAvailable`, `createApplePay`, and `presentApplePay`.
 
@@ -54,6 +54,8 @@ try {
 
 ## 2. createApplePay
 
+`paymentSummaryItems.amount` uses major currency units: `10.99` means USD $10.99. Stripe server-side PaymentIntent amounts use the smallest currency unit (`1099` for the same USD amount). Keep the displayed total and the backend Intent amount consistent.
+
 Fetch a PaymentIntent client secret from your backend. See [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration). Then pass `paymentIntentClientSecret`, `paymentSummaryItems`, `merchantIdentifier`, `countryCode`, and `currency`.
 
 ```ts
@@ -67,10 +69,12 @@ const { paymentIntent } = await firstValueFrom(
 
 await Stripe.createApplePay({
   paymentIntentClientSecret: paymentIntent,
-  paymentSummaryItems: [{
-    label: 'Product Name',
-    amount: 1099.00
-  }],
+  paymentSummaryItems: [
+    {
+      label: 'Product Name',
+      amount: 10.99,
+    },
+  ],
   merchantIdentifier: 'merchant.com.getcapacitor.stripe',
   countryCode: 'US',
   currency: 'USD',
@@ -114,6 +118,8 @@ Stripe.addListener(ApplePayEventsEnum.Completed, () => {
 
 On iOS, `DidSelectShippingContact` includes `contact` and `updateId`. Recalculate totals and call `updateApplePaySheet` with that `updateId`. If JavaScript does not respond, the native sheet falls back to the latest accepted summary items after 25 seconds. Updates preserve the current shipping methods.
 
+The shipping example assumes the backend also updates the Intent total to USD $15.99. `updateApplePaySheet` changes the displayed summary only; it does not update your backend PaymentIntent.
+
 `paymentSummaryItems` must be an array. An empty array (`[]`) acknowledges the current selection without changing the existing summary items. For a non-empty array, every item must have a non-empty string label and a finite numeric amount. Negative discounts are allowed, but the final total must be nonnegative. Invalid input is rejected without consuming the pending update, so it can be corrected and retried before timeout. Only the latest contact selection's `updateId` is accepted; duplicate or stale updates are rejected.
 
 ```ts
@@ -121,9 +127,9 @@ Stripe.addListener(ApplePayEventsEnum.DidSelectShippingContact, async (data) => 
   await Stripe.updateApplePaySheet({
     updateId: data.updateId,
     paymentSummaryItems: [
-      { label: 'Product Name', amount: 1099.00 },
-      { label: 'Shipping', amount: 500.00 },
-      { label: 'Total', amount: 1599.00 },
+      { label: 'Product Name', amount: 10.99 },
+      { label: 'Shipping', amount: 5.0 },
+      { label: 'Total', amount: 15.99 },
     ],
   });
 });

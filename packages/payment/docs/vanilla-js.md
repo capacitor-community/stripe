@@ -4,10 +4,10 @@ code: []
 scrollActiveLine: []
 ---
 
-Web uses `stripe-pwa-elements` custom elements. Install the peer dependency and register the elements once during bootstrap, before you present Stripe UI.
+Web uses `stripe-pwa-elements` custom elements. Install the compatible peer dependencies and register the elements once during bootstrap, before you present Stripe UI.
 
 ```bash
-npm install stripe-pwa-elements
+npm install @stripe/stripe-js@^9.17.0 stripe-pwa-elements@^4.1.0
 ```
 
 ```ts

@@ -11,13 +11,13 @@ npm install @capacitor-community/stripe-identity
 npx cap sync
 ```
 
-`@capacitor-community/stripe-identity` v8.3.0 presents Stripe Identity Verification Sheet on iOS, Android, and Web.
+`@capacitor-community/stripe-identity` v8 presents Stripe Identity Verification Sheet on iOS, Android, and Web.
 
-| Requirement | Minimum |
-| --- | --- |
-| Capacitor | 8 |
-| iOS | 15.0 |
-| Android `minSdkVersion` | 24 |
+| Requirement             | Minimum |
+| ----------------------- | ------- |
+| Capacitor               | 8       |
+| iOS                     | 15.0    |
+| Android `minSdkVersion` | 24      |
 
 ## Web configuration
 
@@ -35,9 +35,10 @@ Keep a primary App Icon in the iOS asset catalog so Xcode writes `CFBundleIconFi
 
 Use a Material Components theme in `android/app/src/main/res/values/styles.xml`:
 
-```diff xml:android/app/src/main/res/values/styles.xml
-- <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-+ <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+```xml:android/app/src/main/res/values/styles.xml
+<style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+  <!-- Your existing theme items -->
+</style>
 ```
 
 Any Material Components parent theme can be used. See [Material Components theming](https://m2.material.io/develop/android/theming/dark/) and [Stripe's Android Material theme guide](https://stripe.com/docs/identity/verify-identity-documents?platform=android&type=new-integration#set-up-material-theme).

@@ -7,6 +7,7 @@ scrollActiveLine: []
 Wrap the application with `CapacitorStripeProvider`. The provider calls `Stripe.initialize`, checks Apple Pay and Google Pay availability, and registers `stripe-pwa-elements` on web.
 
 ```tsx:App.tsx
+import { IonApp } from '@ionic/react';
 import { CapacitorStripeProvider } from '@capacitor-community/stripe/react';
 
 const App: React.FC = () => (
@@ -23,20 +24,19 @@ export default App;
 
 `CapacitorStripeProvider` also accepts optional `stripeAccount` for [Stripe Connect](https://stripe.com/docs/connect/authentication).
 
+The provider initializes Payment only. Initialize Identity, Terminal, or Billing separately if your application uses them. For web builds, install the compatible peers:
+
+```sh
+npm install @stripe/stripe-js@^9.17.0 stripe-pwa-elements@^4.1.0
+```
+
 ## Use the Stripe client
 
 Read the initialized client with `useCapacitorStripe`. The returned `stripe` object is the same plugin instance as `Stripe` from `@capacitor-community/stripe`.
 
-```ts
+```tsx
 import { useCapacitorStripe } from '@capacitor-community/stripe/react';
 
-export const PaymentSheet: React.FC = () => {
-  const { stripe, isApplePayAvailable, isGooglePayAvailable } = useCapacitorStripe();
-  // ...
-};
-```
-
-```tsx
 export const PaymentSheet: React.FC = () => {
   const { stripe } = useCapacitorStripe();
   return (
@@ -54,6 +54,8 @@ export const PaymentSheet: React.FC = () => {
   );
 };
 ```
+
+`paymentIntentClientSecret` comes from your authenticated backend; see [Server Integration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/server-integration). Handle cancellation and failures in your UI, and use verified server webhooks for fulfillment.
 
 Register result listeners once during application startup, not inside a payment button handler. See [Event Listeners](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/learn/event-listeners).
 

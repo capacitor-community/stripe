@@ -13,6 +13,10 @@ Use **Swift Package Manager**. The upstream SDK does not ship a CocoaPods specif
 
 The upstream [BillingSDK](https://github.com/stripe-samples/billing-ios-sdk) is experimental and requires access to Stripe's private preview APIs. Its dependency is pinned to revision `02416cf6bb57fa9ede1786ea8ac127ea05fa9b87` because upstream has no release tags. This API may change with the preview. See [integration and backend example](docs/integration.md).
 
+The backend owns authentication, user-to-Customer mapping, fresh Customer Sessions, catalog configuration, and access authorization. The app owns listeners, native UI actions, entitlement display, and `reset` on account changes. Presentation is not payment confirmation.
+
+For a one-tap test experience, use the [Angular Billing demo](../../demo/angular/README.md#billing-demo-on-ios); its anonymous test credentials are separate from production authentication.
+
 ## API
 
 <docgen-index>

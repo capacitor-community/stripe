@@ -1,10 +1,29 @@
 # Capacitor Stripe demo Worker
 
-This Hono API supplies the PaymentIntent, SetupIntent, Identity, and Terminal
-resources used by the demo applications. It runs on Cloudflare Workers.
+This Hono API supplies PaymentIntent, SetupIntent, Identity, Terminal,
+and Billing resources used by the demo applications. It runs on Cloudflare Workers.
 
 The deployed demo is available at
 `https://capacitor-stripe-demo-server.rdlabo.dev/`.
+
+## Responsibility and endpoint contracts
+
+This is a test demo backend. Its public bootstrap and payment routes do not supply production user authentication, order authorization, webhook processing, or fulfillment. Build those responsibilities into your own backend before adapting the demo for real users. Keep Stripe secret keys and Customer Session credentials on their intended side of the app/server boundary.
+
+| Endpoint                         | Client-safe response used by the demos                                                        |
+| -------------------------------- | --------------------------------------------------------------------------------------------- |
+| `POST /intent`                   | PaymentIntent client secret as `paymentIntent`, Customer ID as `customer`, and `ephemeralKey` |
+| `POST /intent/setup`             | SetupIntent client secret as `setupIntent`, `customer`, and `ephemeralKey`                    |
+| `POST /intent/without-customer`  | PaymentIntent client secret as `paymentIntent`                                                |
+| `POST /identify`                 | `verficationSessionId` (legacy spelling), `ephemeralKeySecret`, and `clientSecret`            |
+| `POST /connection/token`         | Fresh Terminal connection token as `secret`                                                   |
+| `POST /connection/location`      | Demo Terminal location ID as `locationId`                                                     |
+| `POST /connection/intent`        | Card-present PaymentIntent client secret as `paymentIntent`                                   |
+| `POST /billing/demo`             | One-hour demo credential and public Billing configuration                                     |
+| `GET /billing/config`            | Public Billing configuration; does not create a demo credential                               |
+| `POST /billing/customer-session` | Fresh Customer Session for the credential's Customer                                          |
+
+Map Identity's legacy `verficationSessionId` to the plugin's `verificationId` option. PaymentIntent amounts in request bodies use Stripe's smallest currency unit; wallet `paymentSummaryItems.amount` instead uses major currency units.
 
 ## Local development
 

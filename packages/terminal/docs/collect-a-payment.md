@@ -38,7 +38,7 @@ Prefer an authenticated app-side request through `RequestedConnectionToken` and 
 
 ### `tokenProviderEndpoint` compatibility mode
 
-`tokenProviderEndpoint` is available for simple deployments, but the v8.3.0 native clients send a bare HTTP **POST**: callers cannot add an authorization header or request body. Use it only when your server can authenticate and protect that request by other means. Never expose an unrestricted public token-creation endpoint.
+`tokenProviderEndpoint` is available for simple deployments, but the current native clients send a bare HTTP **POST**: callers cannot add an authorization header or request body. Use it only when your server can authenticate and protect that request by other means. Never expose an unrestricted public token-creation endpoint.
 
 When `tokenProviderEndpoint` is set, the plugin sends an HTTP **POST** with an empty body. The response **must** be JSON with a `secret` string:
 
@@ -51,7 +51,7 @@ That value is a Stripe Terminal [connection token](https://docs.stripe.com/termi
 The official demo exposes `POST /connection/token` and returns `{ secret }`; adapt its authentication and authorization to your application.
 
 :::message
-In v8.3.0, Android logs the `secret` returned through `tokenProviderEndpoint`, and web logs the options passed to `setConnectionToken`. Avoid endpoint mode on Android until the upstream logging is removed, avoid production web console retention, and update to a fixed plugin release when available.
+The current Android implementation logs the `secret` returned through `tokenProviderEndpoint`, and web logs the options passed to `setConnectionToken`. Avoid endpoint mode on Android until the upstream logging is removed, avoid production web console retention, and update to a fixed plugin release when available.
 :::
 
 Web `initialize` requires a fresh plugin instance: calling it again after a successful init throws `Stripe Terminal has already been initialized`.
@@ -61,6 +61,31 @@ Web `initialize` requires a fresh plugin instance: calling it again after a succ
 Omit `tokenProviderEndpoint` and register `RequestedConnectionToken` **before** `initialize`. When the SDK needs a token, the plugin emits that event and waits for `setConnectionToken({ token })`.
 
 Fetch with your normal authorization mechanism, require a successful response, validate `secret`, and pass it as `token`. Call `setConnectionToken` only while a fetch is pending; Android and iOS reject extra calls with `Stripe Terminal do not pending fetchConnectionToken`. Never log the response or token.
+
+```ts
+import { StripeTerminal, TerminalEventsEnum } from '@capacitor-community/stripe-terminal';
+
+const tokenListener = await StripeTerminal.addListener(TerminalEventsEnum.RequestedConnectionToken, async () => {
+  try {
+    const response = await fetch('https://your-backend.example.com/terminal/token', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${await getAuthToken()}` },
+    });
+    if (!response.ok) throw new Error('Connection token request failed');
+    const { secret } = await response.json();
+    if (typeof secret !== 'string' || secret.length === 0) {
+      throw new Error('Missing connection token');
+    }
+    await StripeTerminal.setConnectionToken({ token: secret });
+  } catch (error) {
+    showConnectionError(error);
+    // Do not supply a cached token or retry without authentication.
+  }
+});
+await StripeTerminal.initialize({ isTest: true });
+```
+
+`getAuthToken` and `showConnectionError` belong to your application. Keep `tokenListener` until its application-level owner is destroyed. Catching a fetch error does not settle the pending SDK token request. Show the failure and provide an authenticated retry for that request; do not assume the plugin supplies an automatic timeout or cancellation API.
 
 <!-- !::setConnectionToken:: -->
 

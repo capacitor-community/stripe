@@ -3,6 +3,7 @@
 Stripe Identity SDK bindings for Capacitor Applications.
 
 <!-- rdlabo-docs-omit -->
+
 **Documentation:** [Read the full documentation](https://docs.rdlabo.dev/projects/capacitor-stripe-identity)
 <!-- /rdlabo-docs-omit -->
 
@@ -13,37 +14,26 @@ npm install @capacitor-community/stripe-identity
 npx cap sync
 ```
 
-### Initialize iOS
-
-set up camera authorization by adding `NSCameraUsageDescription` in `Info.plist` and add a string value that explains the usage.
-see more details on Stripe's native iOS SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=ios&type=new-integration#set-up-camera-authorization).
-
-### Initialize Android
-
-change base application theme to `Theme.MaterialComponents.DayNight` at `android/app/src/main/res/values/styles.xml`:
-
-```diff xml: res/values/styles.xml
-- <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-+ <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
-```
-
-parent can be any MaterialComponents. [See here for other options](https://m2.material.io/develop/android/theming/dark/).
-see more details on Stripe's native Android SDK page [here](https://stripe.com/docs/identity/verify-identity-documents?platform=android&type=new-integration#set-up-material-theme).
+Requires Capacitor 8. Native builds require iOS 15+ or Android API 24+. Web uses Stripe.js. Follow [Configuration](docs/configuration.md) for iOS camera usage and the primary App Icon, Android Material Components theme, and web initialization.
 
 ## Usage
 
 See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe-identity/docs/configuration) and [Identity Verification Sheet](https://docs.rdlabo.dev/projects/capacitor-stripe-identity/docs/identity-verification-sheet).
 
 <!-- rdlabo-docs-omit -->
-If you want to implement, we recommend to read https://stripe.com/docs/identity .
+
+Your backend creates the VerificationSession and ephemeral key. The app presents the sheet and handles `VerificationResult`; `Completed` means document submission, not a verified identity. Use [Stripe Identity webhooks](https://docs.stripe.com/identity/handle-verification-outcomes) on the server to decide whether verification passed.
 
 ```ts
 import { IdentityVerificationSheetEventsEnum, StripeIdentity } from '@capacitor-community/stripe-identity';
 
 // Register once per JavaScript application startup, as early as possible during bootstrap.
-const verificationResultListener = await StripeIdentity.addListener(IdentityVerificationSheetEventsEnum.VerificationResult, (result) => {
-  console.log(result);
-});
+const verificationResultListener = await StripeIdentity.addListener(
+  IdentityVerificationSheetEventsEnum.VerificationResult,
+  (result) => {
+    console.log(result);
+  },
+);
 
 // initialize is needed only for Web Platform
 await StripeIdentity.initialize({
@@ -53,7 +43,7 @@ await StripeIdentity.create({
   ephemeralKeySecret,
   verificationId,
   // clientSecret is needed only for Web Platform
-  clientSecret
+  clientSecret,
 });
 await StripeIdentity.present();
 

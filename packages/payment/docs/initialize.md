@@ -93,25 +93,7 @@ The method is not implemented on Android or web. Only pass matching Stripe retur
 
 ### Angular
 
-Initialize from the root component. See [Angular](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/angular).
-
-```ts:src/app/app.component.ts
-import { Component } from '@angular/core';
-import { Stripe } from '@capacitor-community/stripe';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
-})
-export class AppComponent {
-  constructor() {
-    void Stripe.initialize({
-      publishableKey: 'Your Publishable Key',
-    });
-  }
-}
-```
+Use an awaited `provideAppInitializer` at application startup. See the complete [Angular startup example](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/angular). Starting initialization with `void` in a component constructor can let payment actions run before the plugin is ready.
 
 ### React
 
