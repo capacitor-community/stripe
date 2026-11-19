@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { bearerAuth } from 'hono/bearer-auth';
+import { sign, verify } from 'hono/jwt';
 import { HTTPException } from 'hono/http-exception';
 import { paymentIntentRequestSchema, setupIntentRequestSchema } from './api';
 import { parseJsonBody } from './request';
@@ -33,8 +33,9 @@ export const createApp = (injectedStripe?: StripeClient) => {
     c.header('Cache-Control', 'no-store');
     const env = c.env;
     if (
-      !env?.BILLING_DEMO_TOKEN ||
-      !env.BILLING_CUSTOMER_ID ||
+      !env ||
+      !env.BILLING_SESSION_SECRET ||
+      env.BILLING_SESSION_SECRET.length < 32 ||
       !env.BILLING_BUY_BUTTON_ID ||
       !env.BILLING_ENTITLEMENT_LOOKUP_KEY ||
       !env.BILLING_PUBLISHABLE_KEY?.startsWith('pk_test_') ||
@@ -45,7 +46,47 @@ export const createApp = (injectedStripe?: StripeClient) => {
         503,
       );
     }
-    return bearerAuth<Bindings>({ token: env.BILLING_DEMO_TOKEN })(c, next);
+    if (c.req.path === '/billing/demo' && c.req.method === 'POST')
+      return next();
+    try {
+      const token = c.req.header('Authorization')?.match(/^Bearer (.+)$/)?.[1];
+      if (!token) return c.json({ error: 'Start a new Billing demo.' }, 401);
+      const claims = await verify(token, env.BILLING_SESSION_SECRET, 'HS256');
+      if (
+        claims.aud !== 'billing-demo' ||
+        typeof claims.sub !== 'string' ||
+        !claims.sub.startsWith('cus_') ||
+        typeof claims.exp !== 'number'
+      ) {
+        return c.json({ error: 'Start a new Billing demo.' }, 401);
+      }
+      c.set('billingCustomer', claims.sub);
+    } catch {
+      return c.json({ error: 'Start a new Billing demo.' }, 401);
+    }
+    return next();
+  });
+
+  // Each anonymous TEST demo gets its own customer. No shared customer's token
+  // or subscription state is distributed to other installations.
+  app.post('/billing/demo', async (c) => {
+    try {
+      const customer = await c.get('stripe').createCustomer();
+      const now = Math.floor(Date.now() / 1000);
+      const token = await sign(
+        { sub: customer.id, aud: 'billing-demo', iat: now, exp: now + 3600 },
+        c.env.BILLING_SESSION_SECRET!,
+        'HS256',
+      );
+      return c.json({
+        token,
+        publishableKey: c.env.BILLING_PUBLISHABLE_KEY!,
+        buyButtonId: c.env.BILLING_BUY_BUTTON_ID!,
+        entitlementLookupKey: c.env.BILLING_ENTITLEMENT_LOOKUP_KEY!,
+      });
+    } catch {
+      return c.json({ error: 'Unable to start the Billing test demo.' }, 502);
+    }
   });
 
   app.get('/billing/config', (c) =>
@@ -62,7 +103,7 @@ export const createApp = (injectedStripe?: StripeClient) => {
       const session = await c
         .get('stripe')
         .createBillingCustomerSession(
-          c.env.BILLING_CUSTOMER_ID!,
+          c.get('billingCustomer'),
           c.env.BILLING_API_VERSION ?? '2026-08-26.dahlia',
         );
       return c.json(session);

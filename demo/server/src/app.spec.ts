@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from './app';
+import { sign } from 'hono/jwt';
 import type { StripeClient } from './types';
 
 const stripe = {
@@ -35,8 +36,7 @@ const postJson = (path: string, body: unknown = {}) =>
 describe('demo Worker', () => {
   const billingEnv = {
     STRIPE_SECRET_KEY: 'sk_test_placeholder',
-    BILLING_DEMO_TOKEN: 'local-demo-token',
-    BILLING_CUSTOMER_ID: 'cus_billing_demo',
+    BILLING_SESSION_SECRET: 'test-only-billing-session-signing-key',
     BILLING_PUBLISHABLE_KEY: 'pk_test_placeholder',
     BILLING_BUY_BUTTON_ID: 'buy_btn_demo',
     BILLING_ENTITLEMENT_LOOKUP_KEY: 'premium',
@@ -73,9 +73,22 @@ describe('demo Worker', () => {
     expect(stripe.createBillingCustomerSession).not.toHaveBeenCalled();
   });
 
-  it('issues fresh sessions only for the server-selected Billing customer without caching secrets', async () => {
+  it('starts with one tap and refreshes sessions for that demo customer only', async () => {
+    const start = await app.request(
+      '/billing/demo',
+      { method: 'POST' },
+      billingEnv,
+    );
+    expect(start.status).toBe(200);
+    expect(start.headers.get('Cache-Control')).toBe('no-store');
+    const demo = (await start.json()) as {
+      token: string;
+      publishableKey: string;
+    };
+    expect(demo.publishableKey).toBe('pk_test_placeholder');
+    expect(JSON.stringify(demo)).not.toContain(billingEnv.STRIPE_SECRET_KEY);
     const headers = {
-      Authorization: 'Bearer local-demo-token',
+      Authorization: `Bearer ${demo.token}`,
       'Content-Type': 'application/json',
     };
     const config = await app.request(
@@ -101,16 +114,80 @@ describe('demo Worker', () => {
       expect(response.status).toBe(200);
       expect(response.headers.get('Cache-Control')).toBe('no-store');
       expect(await response.json()).toEqual({
-        customer: 'cus_billing_demo',
+        customer: 'cus_new',
         clientSecret: 'cuss_test',
         expiresAt: 4102444800,
       });
     }
     expect(stripe.createBillingCustomerSession).toHaveBeenCalledTimes(2);
     expect(stripe.createBillingCustomerSession).toHaveBeenCalledWith(
-      'cus_billing_demo',
+      'cus_new',
       '2026-08-26.dahlia',
     );
+  });
+
+  it('isolates demos across devices and rejects expired or modified credentials', async () => {
+    stripe.createCustomer
+      .mockResolvedValueOnce({ id: 'cus_first' })
+      .mockResolvedValueOnce({ id: 'cus_second' });
+    const tokens: string[] = [];
+    for (const customer of ['cus_first', 'cus_second']) {
+      const start = await app.request(
+        '/billing/demo',
+        { method: 'POST' },
+        billingEnv,
+      );
+      const { token } = (await start.json()) as { token: string };
+      tokens.push(token);
+      const session = await app.request(
+        '/billing/customer-session',
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        },
+        billingEnv,
+      );
+      expect(session.status).toBe(200);
+      expect(stripe.createBillingCustomerSession).toHaveBeenLastCalledWith(
+        customer,
+        '2026-08-26.dahlia',
+      );
+    }
+    const expired = await sign(
+      { sub: 'cus_first', aud: 'billing-demo', exp: 1 },
+      billingEnv.BILLING_SESSION_SECRET,
+      'HS256',
+    );
+    const forged = await sign(
+      { sub: 'cus_victim', aud: 'billing-demo', exp: 4102444800 },
+      'billing-demo:' + billingEnv.STRIPE_SECRET_KEY,
+      'HS256',
+    );
+    for (const token of [expired, tokens[0] + 'modified', forged]) {
+      const response = await app.request(
+        '/billing/customer-session',
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        },
+        billingEnv,
+      );
+      expect(response.status).toBe(401);
+    }
+    expect(stripe.createBillingCustomerSession).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not create demo customers with live or incomplete configuration', async () => {
+    for (const env of [
+      {},
+      { ...billingEnv, STRIPE_SECRET_KEY: 'sk_live_placeholder' },
+      { ...billingEnv, BILLING_SESSION_SECRET: '' },
+    ]) {
+      expect(
+        (await app.request('/billing/demo', { method: 'POST' }, env)).status,
+      ).toBe(503);
+    }
+    expect(stripe.createCustomer).not.toHaveBeenCalled();
   });
 
   beforeEach(() => {
