@@ -85,7 +85,7 @@ const tokenListener = await StripeTerminal.addListener(TerminalEventsEnum.Reques
 await StripeTerminal.initialize({ isTest: true });
 ```
 
-`getAuthToken` and `showConnectionError` belong to your application. Keep `tokenListener` until its application-level owner is destroyed. A failed fetch cannot be answered with an empty token; show the failure and handle the SDK operation's error/timeout. The plugin has no separate connection-token failure response method.
+`getAuthToken` and `showConnectionError` belong to your application. Keep `tokenListener` until its application-level owner is destroyed. Catching a fetch error does not settle the pending SDK token request. Show the failure and provide an authenticated retry for that request; do not assume the plugin supplies an automatic timeout or cancellation API.
 
 <!-- !::setConnectionToken:: -->
 

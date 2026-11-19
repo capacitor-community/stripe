@@ -37,6 +37,8 @@ For a complete integration, also read [Reader Lifecycle](docs/reader-lifecycle.m
 
 Demos use test resources and simulated readers where configured. Production applications must provide their own authentication, location authorization, and fulfillment logic.
 
+<!-- rdlabo-docs-omit -->
+
 ## API
 
 <docgen-index>

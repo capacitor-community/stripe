@@ -14,7 +14,7 @@ npm install @capacitor-community/stripe-identity
 npx cap sync
 ```
 
-Requires Capacitor 8, iOS 15+, or Android API 24+. Web uses Stripe.js. Follow [Configuration](docs/configuration.md) for iOS camera usage and the primary App Icon, Android Material Components theme, and web initialization.
+Requires Capacitor 8. Native builds require iOS 15+ or Android API 24+. Web uses Stripe.js. Follow [Configuration](docs/configuration.md) for iOS camera usage and the primary App Icon, Android Material Components theme, and web initialization.
 
 ## Usage
 

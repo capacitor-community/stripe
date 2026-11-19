@@ -59,11 +59,11 @@ For Capacitor v7, use plugin v7. The v8 guides describe the code in this reposit
 
 The Android plugins default to `compileSdkVersion = 36` and `targetSdkVersion = 36`. If you install more than one plugin, your app must satisfy the highest minimum (API 26 when using Terminal).
 
-These default SDK updates preserve the existing Capacitor 8 Gradle/AGP/Kotlin setup. Optional Android overrides are `stripeAndroidVersion` (Payment), `identityVersion` (Identity), and `stripeterminalCoreVersion`, `stripeterminalTapToPayVersion`, and `stripeterminalAppOnDevicesVersion` (Terminal). Keep Terminal versions aligned and check upstream compatibility before overriding them.
+Optional Android SDK overrides are `stripeAndroidVersion` (Payment), `identityVersion` (Identity), and `stripeterminalCoreVersion`, `stripeterminalTapToPayVersion`, and `stripeterminalAppOnDevicesVersion` (Terminal). Keep Terminal versions aligned and check upstream compatibility before overriding them.
 
 Payment and Identity stay below Stripe iOS 26.16, whose [SPM manifest requires Swift tools 6.1](https://github.com/stripe/stripe-ios-spm/blob/26.16.1/Package.swift). Their CocoaPods dependencies stay on 26.15.0 because [26.15.1 removed CocoaPods distribution](https://github.com/stripe/stripe-ios/blob/26.15.1/CHANGELOG.md). Terminal stays below 6.0: [iOS 6.0 requires iOS 16](https://github.com/stripe/stripe-terminal-ios/releases/tag/6.0.0), and [Android 6.0 updates Kotlin to 2.3.21](https://github.com/stripe/stripe-terminal-android/blob/6.0.0/CHANGELOG.md).
 
-Web Payment stays on Stripe.js 9 because [Stripe.js 10 removed Payment Request Button](https://github.com/stripe/stripe-js/releases/tag/v10.0.0). Identity's Stripe.js dependency is independent. Stripe Android 23.26 includes the upstream LiteRT dependency fix; overrides to older Identity SDKs may still need their AGP workaround.
+Web Payment stays on Stripe.js 9 because [Stripe.js 10 removed Payment Request Button](https://github.com/stripe/stripe-js/releases/tag/v10.0.0). Identity's Stripe.js dependency is independent. When overriding Identity to an older Android SDK, check that SDK's AGP compatibility.
 
 ### Existing CocoaPods projects
 
