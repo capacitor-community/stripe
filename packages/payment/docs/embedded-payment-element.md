@@ -27,9 +27,11 @@ pod 'CapacitorCommunityStripe/Embedded', :path => '../../node_modules/@capacitor
 ```
 
 ```ts
+import { EmbeddedPaymentElementEventsEnum, Stripe } from '@capacitor-community/stripe';
+
 const host = document.querySelector<HTMLElement>('#payment-methods')!;
 const pay = document.querySelector<HTMLButtonElement>('#pay')!;
-const listener = await Stripe.addListener('embeddedPaymentElementChange', ({ ready, height }) => {
+const listener = await Stripe.addListener(EmbeddedPaymentElementEventsEnum.Change, ({ ready, height }) => {
   pay.disabled = !ready;
   if (height) host.style.height = `${height}px`;
 });
@@ -43,8 +45,8 @@ await Stripe.mountEmbeddedPaymentElement({
 
 pay.onclick = async () => {
   pay.disabled = true;
-  const { result } = await Stripe.confirmEmbeddedPaymentElement();
-  showPaymentStatus(result);
+  const { paymentResult } = await Stripe.confirmEmbeddedPaymentElement();
+  showPaymentStatus(paymentResult);
 };
 ```
 
@@ -52,9 +54,11 @@ Mount after the host is visible. Use a unique selector for a rectangular block i
 
 ```ts
 await listener.remove();
-await Stripe.destroyEmbeddedPaymentElement();
+await Stripe.unmountEmbeddedPaymentElement();
 ```
 
 A full document navigation releases the native selector. If your app restores a checkout document from the back-forward cache, mount the selector again on `pageshow` when `event.persisted` is true.
+
+Confirmation returns the Completed, Canceled, or Failed member of `EmbeddedPaymentElementEventsEnum` in `paymentResult`. The matching event is also emitted. Subscribe to `EmbeddedPaymentElementEventsEnum.Failed` to receive the SDK error message in `{ error }`.
 
 The confirmation result describes the client-side flow. Fulfill the order from a verified Stripe webhook. See [server integration](server-integration.md).

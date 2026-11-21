@@ -45,7 +45,7 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
     throw this.unimplemented('Embedded Payment Element requires iOS or Android.');
   }
 
-  async destroyEmbeddedPaymentElement(): Promise<void> {
+  async unmountEmbeddedPaymentElement(): Promise<void> {
     throw this.unimplemented('Embedded Payment Element requires iOS or Android.');
   }
 

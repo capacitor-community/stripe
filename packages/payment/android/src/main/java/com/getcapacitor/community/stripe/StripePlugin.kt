@@ -71,7 +71,7 @@ class StripePlugin : Plugin() {
     fun confirmEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread { embedded.confirm(call) }
 
     @PluginMethod
-    fun destroyEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread {
+    fun unmountEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread {
         embedded.destroy()
         call.resolve()
     }
@@ -82,8 +82,8 @@ class StripePlugin : Plugin() {
     }
 
     override fun load() {
-        embedded = EmbeddedPaymentElementExecutor(activity, bridge.webView, pluginHandle.id) { state ->
-            notifyListeners("embeddedPaymentElementChange", state)
+        embedded = EmbeddedPaymentElementExecutor(activity, bridge.webView, pluginHandle.id) { event, data ->
+            notifyListeners(event, data)
         }
 
         this.metaData = MetaData { this.context };

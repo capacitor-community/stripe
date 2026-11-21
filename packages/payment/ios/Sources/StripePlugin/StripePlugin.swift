@@ -15,7 +15,7 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "mountEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "updateEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "confirmEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "destroyEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "unmountEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "createPaymentFlow", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "presentPaymentFlow", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "confirmPaymentFlow", returnType: CAPPluginReturnPromise),
@@ -121,7 +121,7 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
         }
     }
 
-    @objc func destroyEmbeddedPaymentElement(_ call: CAPPluginCall) {
+    @objc func unmountEmbeddedPaymentElement(_ call: CAPPluginCall) {
         Task { @MainActor in
             embedded?.destroy()
             embedded = nil

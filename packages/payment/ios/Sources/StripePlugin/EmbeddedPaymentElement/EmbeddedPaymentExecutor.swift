@@ -26,11 +26,12 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
         guard let webView = plugin?.bridge?.webView, let presenter = plugin?.bridge?.viewController,
               let name = plugin?.jsName, let selector = call.getString("selector"), !selector.isEmpty,
               let amount = call.getInt("amount"), amount > 0, let currency = call.getString("currency"),
-              currency.count == 3, let secret = call.getString("paymentIntentClientSecret"), !secret.isEmpty
+              currency.range(of: #"^[A-Za-z]{3}$"#, options: .regularExpression) != nil,
+              let merchant = call.getString("merchantDisplayName"), !merchant.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let secret = call.getString("paymentIntentClientSecret"), !secret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         else { throw error("Provide a payment intent, amount, currency and a mounted DOM selector.") }
 
         var configuration = EmbeddedPaymentElement.Configuration()
-        if let merchant = call.getString("merchantDisplayName") { configuration.merchantDisplayName = merchant }
+        configuration.merchantDisplayName = merchant
         configuration.returnURL = call.getString("returnURL")
         let intent = EmbeddedPaymentElement.IntentConfiguration(
             mode: .payment(amount: amount, currency: currency),
@@ -47,7 +48,7 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
         webView.addSubview(clipView)
         projection = try NativeUIProjection(
             webView: webView, plugin: name, projectionSelector: selector,
-            receiveListeners: .init(update: ["embeddedPaymentElementChange"]),
+            receiveListeners: .init(update: [EmbeddedPaymentElementEvents.Change.rawValue]),
             failedFallback: .native,
             canCapture: { [weak presenter] in presenter?.presentedViewController == nil },
             view: { [weak clipView] in clipView }
@@ -86,15 +87,20 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
         publishChange()
         let result = await element.confirm()
         confirming = false
+        let event: EmbeddedPaymentElementEvents
+        var data: [String: Any] = [:]
         switch result {
         case .completed:
             completed = true
-            call.resolve(["result": "completed"])
+            event = .Completed
         case .canceled:
-            call.resolve(["result": "canceled"])
+            event = .Canceled
         case .failed(let error):
-            call.resolve(["result": "failed", "error": error.localizedDescription])
+            event = .Failed
+            data["error"] = error.localizedDescription
         }
+        if !destroyed { plugin?.notifyListeners(event.rawValue, data: data) }
+        call.resolve(["paymentResult": event.rawValue])
         publishChange()
     }
 
@@ -127,7 +133,7 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
                 withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel
             ).height)
         }
-        let event = "embeddedPaymentElementChange"
+        let event = EmbeddedPaymentElementEvents.Change.rawValue
         #if canImport(WebViewNativeUIEngine)
         projection?.receive(event, data: data)
         #endif

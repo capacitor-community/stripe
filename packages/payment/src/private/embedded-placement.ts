@@ -123,6 +123,9 @@ export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugi
   const mount = (options: EmbeddedPaymentElementOptions) =>
     serialize(async () => {
       if (stop) throw new Error('Destroy the mounted Embedded Payment Element before mounting another.');
+      if (!Number.isSafeInteger(options.amount) || options.amount <= 0) {
+        throw new Error('Provide a positive integer amount in the smallest currency unit.');
+      }
       const hosts = document.querySelectorAll(options.selector);
       const host = hosts[0];
       if (hosts.length !== 1 || !(host instanceof HTMLElement) || !host.getBoundingClientRect().width) {
@@ -137,7 +140,7 @@ export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugi
           lifecycle.abort();
           stop?.();
           stop = undefined;
-          void bridge.destroyEmbeddedPaymentElement().catch(() => undefined);
+          void bridge.unmountEmbeddedPaymentElement().catch(() => undefined);
         },
         { once: true, signal: lifecycle.signal },
       );
@@ -158,12 +161,12 @@ export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugi
     serialize(async () => {
       stop?.();
       stop = undefined;
-      await bridge.destroyEmbeddedPaymentElement();
+      await bridge.unmountEmbeddedPaymentElement();
     });
   return new Proxy(bridge, {
     get(target, key) {
       if (key === 'mountEmbeddedPaymentElement') return mount;
-      if (key === 'destroyEmbeddedPaymentElement') return destroy;
+      if (key === 'unmountEmbeddedPaymentElement') return destroy;
       return Reflect.get(target, key);
     },
   });

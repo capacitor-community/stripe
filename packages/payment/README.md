@@ -74,8 +74,10 @@ If the original call still exists, behavior is unchanged: the Promise is settled
 * [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod-)
 * [`mountEmbeddedPaymentElement(...)`](#mountembeddedpaymentelement)
 * [`confirmEmbeddedPaymentElement()`](#confirmembeddedpaymentelement)
-* [`destroyEmbeddedPaymentElement()`](#destroyembeddedpaymentelement)
-* [`addListener('embeddedPaymentElementChange', ...)`](#addlistenerembeddedpaymentelementchange-)
+* [`unmountEmbeddedPaymentElement()`](#unmountembeddedpaymentelement)
+* [`addListener(EmbeddedPaymentElementEventsEnum.Change, ...)`](#addlistenerembeddedpaymentelementeventsenumchange-)
+* [`addListener(EmbeddedPaymentElementEventsEnum.Completed | EmbeddedPaymentElementEventsEnum.Canceled, ...)`](#addlistenerembeddedpaymentelementeventsenumcompleted--embeddedpaymentelementeventsenumcanceled-)
+* [`addListener(EmbeddedPaymentElementEventsEnum.Failed, ...)`](#addlistenerembeddedpaymentelementeventsenumfailed-)
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`createGooglePay(...)`](#creategooglepay)
 * [`presentGooglePay()`](#presentgooglepay)
@@ -372,20 +374,20 @@ Place the native payment method selector in an existing HTML container on iOS or
 ### confirmEmbeddedPaymentElement()
 
 ```typescript
-confirmEmbeddedPaymentElement() => Promise<{ result: 'completed' | 'canceled' | 'failed'; }>
+confirmEmbeddedPaymentElement() => Promise<{ paymentResult: EmbeddedPaymentElementResultInterface; }>
 ```
 
 Confirm the selected payment method and wait for Stripe's result.
 
-**Returns:** <code>Promise&lt;{ result: 'completed' | 'canceled' | 'failed'; }&gt;</code>
+**Returns:** <code>Promise&lt;{ paymentResult: <a href="#embeddedpaymentelementresultinterface">EmbeddedPaymentElementResultInterface</a>; }&gt;</code>
 
 --------------------
 
 
-### destroyEmbeddedPaymentElement()
+### unmountEmbeddedPaymentElement()
 
 ```typescript
-destroyEmbeddedPaymentElement() => Promise<void>
+unmountEmbeddedPaymentElement() => Promise<void>
 ```
 
 Remove the embedded selector when leaving checkout.
@@ -393,18 +395,50 @@ Remove the embedded selector when leaving checkout.
 --------------------
 
 
-### addListener('embeddedPaymentElementChange', ...)
+### addListener(EmbeddedPaymentElementEventsEnum.Change, ...)
 
 ```typescript
-addListener(eventName: 'embeddedPaymentElementChange', listenerFunc: (state: EmbeddedPaymentElementState) => void) => Promise<PluginListenerHandle>
+addListener(eventName: EmbeddedPaymentElementEventsEnum.Change, listenerFunc: (state: EmbeddedPaymentElementState) => void) => Promise<PluginListenerHandle>
 ```
 
 Observe selection and content size changes. Register before mounting.
 
 | Param              | Type                                                                                                    |
 | ------------------ | ------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code>'embeddedPaymentElementChange'</code>                                                             |
+| **`eventName`**    | <code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Change</a></code>    |
 | **`listenerFunc`** | <code>(state: <a href="#embeddedpaymentelementstate">EmbeddedPaymentElementState</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(EmbeddedPaymentElementEventsEnum.Completed | EmbeddedPaymentElementEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: EmbeddedPaymentElementEventsEnum.Completed | EmbeddedPaymentElementEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Completed</a> \| <a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                                                                                                                                           |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(EmbeddedPaymentElementEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: EmbeddedPaymentElementEventsEnum.Failed, listenerFunc: (payload: { error: string; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>(payload: { error: string; }) =&gt; void</code>                                                |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -1110,6 +1144,11 @@ Final result returned after presenting Apple Pay.
 <code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code>
 
 
+#### EmbeddedPaymentElementResultInterface
+
+<code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Completed</a> | <a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Canceled</a> | <a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Failed</a></code>
+
+
 #### GooglePayResultInterface
 
 Final result returned after presenting Google Pay.
@@ -1159,6 +1198,16 @@ Final result returned after presenting PaymentSheet.
 | **`Failed`**                   | <code>'applePayFailed'</code>                   |
 | **`DidSelectShippingContact`** | <code>'applePayDidSelectShippingContact'</code> |
 | **`DidCreatePaymentMethod`**   | <code>'applePayDidCreatePaymentMethod'</code>   |
+
+
+#### EmbeddedPaymentElementEventsEnum
+
+| Members         | Value                                          |
+| --------------- | ---------------------------------------------- |
+| **`Change`**    | <code>'embeddedPaymentElementChange'</code>    |
+| **`Completed`** | <code>'embeddedPaymentElementCompleted'</code> |
+| **`Canceled`**  | <code>'embeddedPaymentElementCanceled'</code>  |
+| **`Failed`**    | <code>'embeddedPaymentElementFailed'</code>    |
 
 
 #### GooglePayEventsEnum

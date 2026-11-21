@@ -4,20 +4,25 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Stripe } from '@capacitor-community/stripe';
+import {
+  EmbeddedPaymentElementEventsEnum,
+  Stripe,
+} from '@capacitor-community/stripe';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { vi } from 'vitest';
 import { environment } from '../../environments/environment';
 import { EmbeddedControlsComponent } from './embedded-controls.component';
 
-vi.mock('@capacitor-community/stripe', () => ({
-  Stripe: {
-    addListener: vi.fn(),
-    mountEmbeddedPaymentElement: vi.fn(),
-    confirmEmbeddedPaymentElement: vi.fn(),
-    destroyEmbeddedPaymentElement: vi.fn(),
-  },
-}));
+vi.mock('@capacitor-community/stripe', async (importOriginal) =>
+  Object.assign({}, await importOriginal(), {
+    Stripe: {
+      addListener: vi.fn(),
+      mountEmbeddedPaymentElement: vi.fn(),
+      confirmEmbeddedPaymentElement: vi.fn(),
+      unmountEmbeddedPaymentElement: vi.fn(),
+    },
+  }),
+);
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -55,8 +60,12 @@ it('allows retry after a canceled confirmation and disables payment after succes
   ).find((item) => item.textContent.trim() === 'confirm') as HTMLIonItemElement;
   expect(button.disabled).toBe(false);
   vi.mocked(Stripe.confirmEmbeddedPaymentElement)
-    .mockResolvedValueOnce({ result: 'canceled' })
-    .mockResolvedValueOnce({ result: 'completed' });
+    .mockResolvedValueOnce({
+      paymentResult: EmbeddedPaymentElementEventsEnum.Canceled,
+    })
+    .mockResolvedValueOnce({
+      paymentResult: EmbeddedPaymentElementEventsEnum.Completed,
+    });
   button.click();
   await fixture.whenStable();
   expect(button.disabled).toBe(false);
@@ -65,10 +74,10 @@ it('allows retry after a canceled confirmation and disables payment after succes
   expect(button.disabled).toBe(true);
   expect(
     fixture.nativeElement.querySelector('[role=status]').textContent,
-  ).toContain('completed');
+  ).toContain(EmbeddedPaymentElementEventsEnum.Completed);
   await fixture.componentInstance.destroy();
   expect(remove).toHaveBeenCalledOnce();
-  expect(Stripe.destroyEmbeddedPaymentElement).toHaveBeenCalledOnce();
+  expect(Stripe.unmountEmbeddedPaymentElement).toHaveBeenCalledOnce();
 });
 
 it('does not attach a late payment intent to a page that has been left', async () => {
@@ -100,21 +109,24 @@ it('releases its listener without destroying another mounted element', async () 
     .flush({ paymentIntent: 'test-secret' });
   await loading;
   expect(remove).toHaveBeenCalledOnce();
-  expect(Stripe.destroyEmbeddedPaymentElement).not.toHaveBeenCalled();
+  expect(Stripe.unmountEmbeddedPaymentElement).not.toHaveBeenCalled();
   expect(page.active()).toBe(false);
 });
 
-it.each(['completed', 'canceled'] as const)(
+it.each([
+  EmbeddedPaymentElementEventsEnum.Completed,
+  EmbeddedPaymentElementEventsEnum.Canceled,
+] as const)(
   'scores a success scenario against the actual %s result and releases the element',
   async (result) => {
     vi.mocked(Stripe.addListener).mockResolvedValue({ remove: vi.fn() });
     vi.mocked(Stripe.confirmEmbeddedPaymentElement).mockResolvedValue({
-      result,
+      paymentResult: result,
     });
     const fixture = TestBed.createComponent(EmbeddedControlsComponent);
     fixture.componentRef.setInput('scenarios', true);
     const page = fixture.componentInstance;
-    const loading = page.mount('completed');
+    const loading = page.mount(EmbeddedPaymentElementEventsEnum.Completed);
     TestBed.inject(HttpTestingController)
       .expectOne(environment.api + 'intent/without-customer')
       .flush({ paymentIntent: 'test-secret' });
@@ -124,8 +136,8 @@ it.each(['completed', 'canceled'] as const)(
       page
         .eventItems()
         .find((item) => item.name === 'confirmEmbeddedPaymentElement')?.result,
-    ).toBe(result === 'completed');
-    expect(Stripe.destroyEmbeddedPaymentElement).toHaveBeenCalledOnce();
+    ).toBe(result === EmbeddedPaymentElementEventsEnum.Completed);
+    expect(Stripe.unmountEmbeddedPaymentElement).toHaveBeenCalledOnce();
     expect(page.active()).toBe(false);
   },
 );

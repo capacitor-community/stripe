@@ -35,8 +35,9 @@ internal class EmbeddedPaymentElementExecutor(
     private val activity: AppCompatActivity,
     private val webView: WebView,
     private val pluginId: String,
-    private val notify: (JSObject) -> Unit
+    private val notify: (String, JSObject) -> Unit
 ) {
+    // Engine installs its document-start channel before the first WebView navigation.
     private val installation = runCatching { NativeUIProjection.install(webView) }
     private var fragment: EmbeddedPaymentElementFragment? = null
     private var host: FrameLayout? = null
@@ -62,7 +63,7 @@ internal class EmbeddedPaymentElementExecutor(
         val currency = call.getString("currency")
         val amount = call.data.optLong("amount", -1)
         if (selector.isNullOrBlank() || secret.isNullOrBlank() || merchant.isNullOrBlank() ||
-            currency.isNullOrBlank() || amount <= 0) return call.reject("Missing embedded payment configuration.")
+            currency == null || !currency.matches(Regex("[A-Za-z]{3}")) || amount <= 0) return call.reject("Missing embedded payment configuration.")
 
         try {
             installation.getOrThrow()
@@ -86,13 +87,18 @@ internal class EmbeddedPaymentElementExecutor(
                 createIntentCallback = CreateIntentCallback { _, _ -> CreateIntentResult.Success(secret) },
                 resultCallback = { result ->
                     if (fragment === owner) {
-                        val status = when (result) {
-                            is EmbeddedPaymentElement.Result.Completed -> "completed"
-                            is EmbeddedPaymentElement.Result.Canceled -> "canceled"
-                            is EmbeddedPaymentElement.Result.Failed -> "failed"
+                        val event = when (result) {
+                            is EmbeddedPaymentElement.Result.Completed -> EmbeddedPaymentElementEvents.Completed
+                            is EmbeddedPaymentElement.Result.Canceled -> EmbeddedPaymentElementEvents.Canceled
+                            is EmbeddedPaymentElement.Result.Failed -> EmbeddedPaymentElementEvents.Failed
                         }
-                        completed = status == "completed"
-                        confirming?.resolve(JSObject().put("result", status))
+                        completed = event == EmbeddedPaymentElementEvents.Completed
+                        val data = JSObject()
+                        if (result is EmbeddedPaymentElement.Result.Failed) {
+                            data.put("error", result.error.localizedMessage ?: result.error.toString())
+                        }
+                        notify(event.webEventName, data)
+                        confirming?.resolve(JSObject().put("paymentResult", event.webEventName))
                         confirming = null
                         emit()
                     }
@@ -138,7 +144,7 @@ internal class EmbeddedPaymentElementExecutor(
             frame.addView(content, FrameLayout.LayoutParams(webView.width, ViewGroup.LayoutParams.WRAP_CONTENT))
             projection = NativeUIProjection(
                 window = activity.window, webView = webView, plugin = pluginId, projectionSelector = selector,
-                receiveListeners = NativeUIProjection.ReceiveListeners(update = listOf("embeddedPaymentElementChange")),
+                receiveListeners = NativeUIProjection.ReceiveListeners(update = listOf(EmbeddedPaymentElementEvents.Change.webEventName)),
                 failedFallback = NativeUIProjection.FailedFallback.NATIVE,
                 captureMode = NativeUIProjection.CaptureMode.VIEW,
                 view = { content }
@@ -198,8 +204,8 @@ internal class EmbeddedPaymentElementExecutor(
     private fun emit() {
         val state = JSObject().put("ready", ready && !completed && confirming == null)
         if (height > 0) state.put("height", height)
-        projection?.receive("embeddedPaymentElementChange", state)
-        notify(state)
+        projection?.receive(EmbeddedPaymentElementEvents.Change.webEventName, state)
+        notify(EmbeddedPaymentElementEvents.Change.webEventName, state)
     }
 
     fun destroy() {

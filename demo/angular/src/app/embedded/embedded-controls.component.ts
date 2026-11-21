@@ -1,7 +1,10 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PluginListenerHandle } from '@capacitor/core';
-import { Stripe } from '@capacitor-community/stripe';
+import {
+  EmbeddedPaymentElementEventsEnum,
+  Stripe,
+} from '@capacitor-community/stripe';
 import {
   IonList,
   IonListHeader,
@@ -26,6 +29,7 @@ import { ITestItems } from '../shared/interfaces';
   imports: [IonList, IonListHeader, IonItem, IonLabel, IonIcon],
 })
 export class EmbeddedControlsComponent {
+  readonly events = EmbeddedPaymentElementEventsEnum;
   readonly scenarios = input(false);
   readonly selector = () =>
     this.scenarios() ? '#embedded-scenario' : '#embedded-demo';
@@ -45,7 +49,11 @@ export class EmbeddedControlsComponent {
     addIcons({ checkmarkCircle, notificationsCircleOutline, playOutline });
   }
 
-  async mount(expected?: 'completed' | 'canceled') {
+  async mount(
+    expected?:
+      | EmbeddedPaymentElementEventsEnum.Completed
+      | EmbeddedPaymentElementEventsEnum.Canceled,
+  ) {
     const session = ++this.#session;
     this.active.set(true);
     this.busy.set(true);
@@ -56,13 +64,13 @@ export class EmbeddedControlsComponent {
         ? [
             { type: 'method', name: 'HttpClient' },
             { type: 'method', name: 'mountEmbeddedPaymentElement' },
-            { type: 'event', name: 'embeddedPaymentElementChange' },
+            { type: 'event', name: EmbeddedPaymentElementEventsEnum.Change },
             {
               type: 'method',
               name: 'confirmEmbeddedPaymentElement',
               expect: [expected],
             },
-            { type: 'method', name: 'destroyEmbeddedPaymentElement' },
+            { type: 'method', name: 'unmountEmbeddedPaymentElement' },
           ]
         : [],
     );
@@ -78,14 +86,14 @@ export class EmbeddedControlsComponent {
       this.#helper.updateItem(this.eventItems, step, true);
       step = 'mountEmbeddedPaymentElement';
       const listener = await Stripe.addListener(
-        'embeddedPaymentElementChange',
+        EmbeddedPaymentElementEventsEnum.Change,
         ({ ready, height }) => {
           if (session !== this.#session) return;
           this.ready.set(ready);
           if (height && height > 0) this.height.set(height);
           this.#helper.updateItem(
             this.eventItems,
-            'embeddedPaymentElementChange',
+            EmbeddedPaymentElementEventsEnum.Change,
             true,
           );
         },
@@ -119,16 +127,17 @@ export class EmbeddedControlsComponent {
     const session = this.#session;
     this.busy.set(true);
     try {
-      const { result } = await Stripe.confirmEmbeddedPaymentElement();
+      const { paymentResult } = await Stripe.confirmEmbeddedPaymentElement();
       if (session !== this.#session) return;
-      this.message.set(result);
+      this.message.set(paymentResult);
       this.#helper.updateItem(
         this.eventItems,
         'confirmEmbeddedPaymentElement',
         true,
-        result,
+        paymentResult,
       );
-      if (result === 'completed') this.ready.set(false);
+      if (paymentResult === EmbeddedPaymentElementEventsEnum.Completed)
+        this.ready.set(false);
     } catch {
       if (session !== this.#session) return;
       this.message.set('Confirmation failed.');
@@ -158,7 +167,7 @@ export class EmbeddedControlsComponent {
         listener?.remove(),
         mounting?.then(
           async () => {
-            await Stripe.destroyEmbeddedPaymentElement();
+            await Stripe.unmountEmbeddedPaymentElement();
             return true;
           },
           () => false,
@@ -167,7 +176,7 @@ export class EmbeddedControlsComponent {
       if (destroyed && session === this.#session)
         this.#helper.updateItem(
           this.eventItems,
-          'destroyEmbeddedPaymentElement',
+          'unmountEmbeddedPaymentElement',
           true,
         );
     } catch {
@@ -175,7 +184,7 @@ export class EmbeddedControlsComponent {
         this.message.set('Could not destroy the payment element.');
         this.#helper.updateItem(
           this.eventItems,
-          'destroyEmbeddedPaymentElement',
+          'unmountEmbeddedPaymentElement',
           false,
         );
       }
