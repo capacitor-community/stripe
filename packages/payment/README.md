@@ -20,6 +20,8 @@ Requires iOS 15+ or Android API 24+. Web needs compatible `@stripe/stripe-js@^9.
 
 See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/configuration) to install the plugin, then [PaymentSheet](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-sheet), [PaymentFlow](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-flow), [Apple Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/apple-pay), and [Google Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/google-pay).
 
+For a custom order screen on iOS or Android, [embed the native payment method selector](docs/embedded-payment-element.md) alongside your own order summary and pay button.
+
 Your backend creates the PaymentIntent or SetupIntent, chooses the Customer, and verifies webhooks before fulfillment. Your app receives client-safe credentials, initializes Payment, creates its selected UI, and presents it. See [Server Integration](docs/server-integration.md) and [Initialize](docs/initialize.md). Installing Payment does not initialize Identity, Terminal, or Billing.
 
 <!-- rdlabo-docs-omit -->
@@ -70,6 +72,10 @@ If the original call still exists, behavior is unchanged: the Promise is settled
 * [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed-)
 * [`addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenerapplepayeventsenumdidselectshippingcontact-)
 * [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod-)
+* [`mountEmbeddedPaymentElement(...)`](#mountembeddedpaymentelement)
+* [`confirmEmbeddedPaymentElement()`](#confirmembeddedpaymentelement)
+* [`destroyEmbeddedPaymentElement()`](#destroyembeddedpaymentelement)
+* [`addListener('embeddedPaymentElementChange', ...)`](#addlistenerembeddedpaymentelementchange-)
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`createGooglePay(...)`](#creategooglepay)
 * [`presentGooglePay()`](#presentgooglepay)
@@ -344,6 +350,63 @@ iOS only. Emitted after Apple Pay creates its Stripe PaymentMethod.
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 **Since:** 4.1.0
+
+--------------------
+
+
+### mountEmbeddedPaymentElement(...)
+
+```typescript
+mountEmbeddedPaymentElement(options: EmbeddedPaymentElementOptions) => Promise<void>
+```
+
+Place the native payment method selector in an existing HTML container on iOS or Android.
+
+| Param         | Type                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#embeddedpaymentelementoptions">EmbeddedPaymentElementOptions</a></code> |
+
+--------------------
+
+
+### confirmEmbeddedPaymentElement()
+
+```typescript
+confirmEmbeddedPaymentElement() => Promise<{ result: 'completed' | 'canceled' | 'failed'; }>
+```
+
+Confirm the selected payment method and wait for Stripe's result.
+
+**Returns:** <code>Promise&lt;{ result: 'completed' | 'canceled' | 'failed'; }&gt;</code>
+
+--------------------
+
+
+### destroyEmbeddedPaymentElement()
+
+```typescript
+destroyEmbeddedPaymentElement() => Promise<void>
+```
+
+Remove the embedded selector when leaving checkout.
+
+--------------------
+
+
+### addListener('embeddedPaymentElementChange', ...)
+
+```typescript
+addListener(eventName: 'embeddedPaymentElementChange', listenerFunc: (state: EmbeddedPaymentElementState) => void) => Promise<PluginListenerHandle>
+```
+
+Observe selection and content size changes. Register before mounting.
+
+| Param              | Type                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'embeddedPaymentElementChange'</code>                                                             |
+| **`listenerFunc`** | <code>(state: <a href="#embeddedpaymentelementstate">EmbeddedPaymentElementState</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -910,6 +973,26 @@ Apple Pay shipping-contact data.
 | Prop          | Type                                                        | Description                                       | Since |
 | ------------- | ----------------------------------------------------------- | ------------------------------------------------- | ----- |
 | **`contact`** | <code><a href="#shippingcontact">ShippingContact</a></code> | Contact attached to the Apple Pay payment method. | 4.1.0 |
+
+
+#### EmbeddedPaymentElementOptions
+
+| Prop                            | Type                | Description                                                                    |
+| ------------------------------- | ------------------- | ------------------------------------------------------------------------------ |
+| **`selector`**                  | <code>string</code> | Unique selector for a visible, sized HTML container in the main document.      |
+| **`amount`**                    | <code>number</code> | Total in the currency's minor unit, matching the server-created PaymentIntent. |
+| **`currency`**                  | <code>string</code> | Three-letter currency code matching the PaymentIntent.                         |
+| **`merchantDisplayName`**       | <code>string</code> |                                                                                |
+| **`paymentIntentClientSecret`** | <code>string</code> |                                                                                |
+| **`returnURL`**                 | <code>string</code> | Registered app URL for redirect-based payments on iOS.                         |
+
+
+#### EmbeddedPaymentElementState
+
+| Prop         | Type                 | Description                                                    |
+| ------------ | -------------------- | -------------------------------------------------------------- |
+| **`ready`**  | <code>boolean</code> | Whether a payment option is selected.                          |
+| **`height`** | <code>number</code>  | Preferred native content height in CSS pixels, when available. |
 
 
 #### CreateGooglePayOption

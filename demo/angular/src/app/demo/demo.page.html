@@ -5,6 +5,11 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  @if (nativeCheckout) {
+    <ion-item routerLink="/checkout" [detail]="true">
+      <ion-label>Custom checkout</ion-label>
+    </ion-item>
+  }
   <ion-list>
     <ion-list-header><ion-label>PaymentSheet</ion-label></ion-list-header>
     <ion-item

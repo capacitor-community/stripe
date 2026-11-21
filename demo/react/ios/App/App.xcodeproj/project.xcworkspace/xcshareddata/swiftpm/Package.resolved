@@ -11,12 +11,21 @@
       }
     },
     {
+      "identity" : "engine",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/webview-native-ui/engine.git",
+      "state" : {
+        "revision" : "9817d1ef0302b5a09a4aff5b6e67352293176a0f",
+        "version" : "1.0.11"
+      }
+    },
+    {
       "identity" : "stripe-ios-spm",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stripe/stripe-ios-spm.git",
       "state" : {
-        "revision" : "1e26d594ede1fdf49c9904be690d4715fb37821f",
-        "version" : "26.6.0"
+        "revision" : "64c15e98b8d4ef52b24db12aa7d97de02769e0b0",
+        "version" : "26.15.1"
       }
     }
   ],

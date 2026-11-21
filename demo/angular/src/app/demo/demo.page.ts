@@ -10,6 +10,8 @@ import {
 } from '@capacitor-community/stripe';
 
 import { environment } from '../../environments/environment';
+import { Capacitor } from '@capacitor/core';
+import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -28,6 +30,7 @@ import {
   templateUrl: 'demo.page.html',
   styleUrls: ['demo.page.scss'],
   imports: [
+    RouterLink,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -39,6 +42,7 @@ import {
   ],
 })
 export class DemoPage implements OnInit {
+  readonly nativeCheckout = Capacitor.isNativePlatform();
   private http = inject(HttpClient);
 
   readonly processSheet = signal<'willReady' | 'Ready'>('willReady');

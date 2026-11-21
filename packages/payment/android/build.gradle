@@ -18,6 +18,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.13.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -26,7 +27,10 @@ if (project.extensions.findByName('kotlin') == null) {
     apply plugin: 'kotlin-android'
 }
 
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
 android {
+    buildFeatures { compose true }
     namespace = "com.getcapacitor.community.stripe"
     compileSdk = project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 36
     defaultConfig {
@@ -66,6 +70,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
+    implementation 'io.github.webview-native-ui:engine:1.0.11'
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
