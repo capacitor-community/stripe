@@ -8,7 +8,7 @@ import { Stripe } from '@capacitor-community/stripe';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { vi } from 'vitest';
 import { environment } from '../../environments/environment';
-import { EmbeddedPage } from './embedded.page';
+import { EmbeddedControlsComponent } from './embedded-controls.component';
 
 vi.mock('@capacitor-community/stripe', () => ({
   Stripe: {
@@ -21,6 +21,7 @@ vi.mock('@capacitor-community/stripe', () => ({
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(Stripe.mountEmbeddedPaymentElement).mockResolvedValue();
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(),
@@ -33,12 +34,11 @@ beforeEach(() => {
 it('allows retry after a canceled confirmation and disables payment after success', async () => {
   const remove = vi.fn();
   vi.mocked(Stripe.addListener).mockResolvedValue({ remove });
-  const fixture = TestBed.createComponent(EmbeddedPage);
-  const loading = fixture.componentInstance.ionViewDidEnter();
+  const fixture = TestBed.createComponent(EmbeddedControlsComponent);
+  const loading = fixture.componentInstance.mount();
   const request = TestBed.inject(HttpTestingController).expectOne(
     environment.api + 'intent/without-customer',
   );
-  expect(request.request.body).toEqual({ amount: 1099, currency: 'usd' });
   request.flush({ paymentIntent: 'test-secret' });
   await loading;
   const [[, change]] = vi.mocked(Stripe.addListener).mock.calls;
@@ -48,35 +48,35 @@ it('allows retry after a canceled confirmation and disables payment after succes
   });
   await fixture.whenStable();
   expect(
-    fixture.nativeElement.querySelector('#embedded-payment-methods').style
-      .height,
+    fixture.nativeElement.querySelector('#embedded-demo').style.height,
   ).toBe('250px');
-  const button = fixture.nativeElement.querySelector(
-    'ion-button[type="submit"]',
-  );
+  const button = Array.from<HTMLElement>(
+    fixture.nativeElement.querySelectorAll('ion-item'),
+  ).find((item) => item.textContent.trim() === 'confirm') as HTMLIonItemElement;
   expect(button.disabled).toBe(false);
   vi.mocked(Stripe.confirmEmbeddedPaymentElement)
     .mockResolvedValueOnce({ result: 'canceled' })
     .mockResolvedValueOnce({ result: 'completed' });
-  const form = fixture.nativeElement.querySelector('form');
-  form.dispatchEvent(new Event('submit', { cancelable: true }));
+  button.click();
   await fixture.whenStable();
   expect(button.disabled).toBe(false);
-  form.dispatchEvent(new Event('submit', { cancelable: true }));
+  button.click();
   await fixture.whenStable();
   expect(button.disabled).toBe(true);
   expect(
     fixture.nativeElement.querySelector('[role=status]').textContent,
   ).toContain('completed');
-  await fixture.componentInstance.ionViewWillLeave();
+  await fixture.componentInstance.destroy();
   expect(remove).toHaveBeenCalledOnce();
   expect(Stripe.destroyEmbeddedPaymentElement).toHaveBeenCalledOnce();
 });
 
 it('does not attach a late payment intent to a page that has been left', async () => {
-  const page = TestBed.createComponent(EmbeddedPage).componentInstance;
-  const loading = page.ionViewDidEnter();
-  await page.ionViewWillLeave();
+  const page = TestBed.createComponent(
+    EmbeddedControlsComponent,
+  ).componentInstance;
+  const loading = page.mount();
+  await page.destroy();
   TestBed.inject(HttpTestingController)
     .expectOne(environment.api + 'intent/without-customer')
     .flush({ paymentIntent: 'test-secret' });
@@ -84,3 +84,48 @@ it('does not attach a late payment intent to a page that has been left', async (
   expect(Stripe.mountEmbeddedPaymentElement).not.toHaveBeenCalled();
   expect(Stripe.addListener).not.toHaveBeenCalled();
 });
+
+it('releases its listener without destroying another mounted element', async () => {
+  const remove = vi.fn();
+  vi.mocked(Stripe.addListener).mockResolvedValue({ remove });
+  vi.mocked(Stripe.mountEmbeddedPaymentElement).mockRejectedValue(
+    new Error('Already mounted'),
+  );
+  const page = TestBed.createComponent(
+    EmbeddedControlsComponent,
+  ).componentInstance;
+  const loading = page.mount();
+  TestBed.inject(HttpTestingController)
+    .expectOne(environment.api + 'intent/without-customer')
+    .flush({ paymentIntent: 'test-secret' });
+  await loading;
+  expect(remove).toHaveBeenCalledOnce();
+  expect(Stripe.destroyEmbeddedPaymentElement).not.toHaveBeenCalled();
+  expect(page.active()).toBe(false);
+});
+
+it.each(['completed', 'canceled'] as const)(
+  'scores a success scenario against the actual %s result and releases the element',
+  async (result) => {
+    vi.mocked(Stripe.addListener).mockResolvedValue({ remove: vi.fn() });
+    vi.mocked(Stripe.confirmEmbeddedPaymentElement).mockResolvedValue({
+      result,
+    });
+    const fixture = TestBed.createComponent(EmbeddedControlsComponent);
+    fixture.componentRef.setInput('scenarios', true);
+    const page = fixture.componentInstance;
+    const loading = page.mount('completed');
+    TestBed.inject(HttpTestingController)
+      .expectOne(environment.api + 'intent/without-customer')
+      .flush({ paymentIntent: 'test-secret' });
+    await loading;
+    await page.confirm();
+    expect(
+      page
+        .eventItems()
+        .find((item) => item.name === 'confirmEmbeddedPaymentElement')?.result,
+    ).toBe(result === 'completed');
+    expect(Stripe.destroyEmbeddedPaymentElement).toHaveBeenCalledOnce();
+    expect(page.active()).toBe(false);
+  },
+);

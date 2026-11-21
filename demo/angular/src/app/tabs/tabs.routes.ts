@@ -24,6 +24,11 @@ export const routes: Routes = [
         component: FlowPage,
       },
       {
+        path: 'embedded',
+        loadComponent: () =>
+          import('../embedded/embedded.page').then((m) => m.EmbeddedPage),
+      },
+      {
         path: 'identify',
         component: IdentityPage,
       },
@@ -33,7 +38,8 @@ export const routes: Routes = [
       },
       {
         path: 'billing',
-        loadComponent: () => import('../billing/billing.page').then(m => m.BillingPage),
+        loadComponent: () =>
+          import('../billing/billing.page').then((m) => m.BillingPage),
       },
       {
         path: '',

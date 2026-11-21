@@ -1,0 +1,76 @@
+<ion-list>
+  @if (scenarios()) {
+    <ion-list-header><ion-label>PROCESS</ion-label></ion-list-header>
+    <ion-item
+      button="true"
+      detail="true"
+      [disabled]="active()"
+      (click)="mount('completed')"
+      ><ion-label>Expect Happy Path</ion-label></ion-item
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      [disabled]="active()"
+      (click)="mount('canceled')"
+      ><ion-label>Expect User Cancel</ion-label></ion-item
+    >
+  } @else {
+    <ion-list-header
+      ><ion-label>Embedded Payment Element</ion-label></ion-list-header
+    >
+    <ion-item
+      button="true"
+      detail="true"
+      [disabled]="active()"
+      (click)="mount()"
+      ><ion-label>mount</ion-label></ion-item
+    >
+  }
+  <div
+    [id]="selector().slice(1)"
+    [style.height.px]="active() ? height() : 0"
+  ></div>
+  <ion-item
+    button="true"
+    detail="true"
+    [disabled]="busy() || !ready()"
+    (click)="confirm()"
+    ><ion-label>confirm</ion-label></ion-item
+  >
+  <ion-item
+    button="true"
+    detail="true"
+    [disabled]="busy() || !active()"
+    (click)="destroy()"
+    ><ion-label>destroy</ion-label></ion-item
+  >
+</ion-list>
+@if (message()) {
+  <p role="status">{{ message() }}</p>
+}
+@if (eventItems().length > 0) {
+  <ion-list>
+    <ion-list-header><ion-label>EXPECT</ion-label></ion-list-header>
+    @for (item of eventItems(); track item; let i = $index) {
+      <ion-item [lines]="eventItems().length - 1 === i ? 'full' : undefined">
+        <ion-icon
+          slot="start"
+          [name]="
+            item.type === 'method'
+              ? 'play-outline'
+              : 'notifications-circle-outline'
+          "
+        ></ion-icon>
+        <ion-label>{{ item.name }}</ion-label>
+        @if (item.result !== undefined) {
+          <ion-icon
+            slot="end"
+            name="checkmark-circle"
+            [color]="item.result ? 'success' : 'danger'"
+          ></ion-icon>
+        }
+      </ion-item>
+    }
+  </ion-list>
+}

@@ -51,6 +51,8 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge): () => void {
   let frame = 0;
   let last = '';
   let dirty = true;
+  let retry: ReturnType<typeof setTimeout>;
+  let stopped = false;
   let previous: DOMRect | undefined;
   const update = () => {
     frame = requestAnimationFrame(update);
@@ -72,7 +74,14 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge): () => void {
     if (key === last) return;
     last = key;
     void bridge.updateEmbeddedPaymentElement(placement).catch(() => {
-      if (last === key) last = '';
+      if (stopped || last !== key) return;
+      clearTimeout(retry);
+      retry = setTimeout(() => {
+        if (last === key) {
+          last = '';
+          dirty = true;
+        }
+      }, 250);
     });
   };
   const schedule = () => {
@@ -93,6 +102,8 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge): () => void {
   window.addEventListener('resize', schedule, { signal: events.signal });
   update();
   return () => {
+    stopped = true;
+    clearTimeout(retry);
     cancelAnimationFrame(frame);
     events.abort();
     intersection.disconnect();
