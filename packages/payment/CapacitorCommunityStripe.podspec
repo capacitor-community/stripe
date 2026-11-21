@@ -10,7 +10,14 @@ Pod::Spec.new do |s|
   s.homepage = package['repository']['url']
   s.author = package['author']
   s.source = { :git => package['repository']['url'], :tag => s.version.to_s }
-  s.source_files = 'ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}'
+  s.default_subspec = 'Core'
+  s.subspec 'Core' do |core|
+    core.source_files = 'ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}'
+  end
+  s.subspec 'Embedded' do |embedded|
+    embedded.dependency 'CapacitorCommunityStripe/Core'
+    embedded.dependency 'WebViewNativeUIEngine', '1.0.11'
+  end
   s.ios.deployment_target = '15.0'
   s.dependency 'Capacitor'
   s.dependency 'StripePaymentSheet', '~> 26.15.0'

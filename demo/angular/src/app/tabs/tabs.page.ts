@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { Component } from '@angular/core';
 import { addIcons } from 'ionicons';
 import {
@@ -20,6 +21,8 @@ import {
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
 })
 export class TabsPage {
+  readonly nativeEmbedded = Capacitor.isNativePlatform();
+
   constructor() {
     addIcons({
       chevronForwardCircleOutline,

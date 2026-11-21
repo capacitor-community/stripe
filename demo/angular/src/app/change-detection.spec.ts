@@ -9,17 +9,18 @@ import { HelperService } from './shared/helper.service';
 import { SheetPage } from './sheet/sheet.page';
 
 const listeners = vi.hoisted(() => new Map<string, () => void>());
-vi.mock('@capacitor-community/stripe', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@capacitor-community/stripe')>()),
-  Stripe: {
-    addListener: vi.fn(async (name: string, callback: () => void) => {
-      listeners.set(name, callback);
-      return { remove: vi.fn() };
-    }),
-    isApplePayAvailable: vi.fn().mockResolvedValue(undefined),
-    isGooglePayAvailable: vi.fn().mockResolvedValue(undefined),
-  },
-}));
+vi.mock('@capacitor-community/stripe', async (importOriginal) =>
+  Object.assign({}, await importOriginal(), {
+    Stripe: {
+      addListener: vi.fn(async (name: string, callback: () => void) => {
+        listeners.set(name, callback);
+        return { remove: vi.fn() };
+      }),
+      isApplePayAvailable: vi.fn().mockResolvedValue(undefined),
+      isGooglePayAvailable: vi.fn().mockResolvedValue(undefined),
+    },
+  }),
+);
 
 beforeEach(() => {
   listeners.clear();

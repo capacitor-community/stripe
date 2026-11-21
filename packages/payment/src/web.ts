@@ -37,6 +37,18 @@ export class StripeWeb extends WebPlugin implements StripePlugin {
   private requestGooglePay: StripeRequestButton | undefined;
   private requestGooglePayOptions: CreateGooglePayOption | undefined;
 
+  async mountEmbeddedPaymentElement(): Promise<void> {
+    throw this.unimplemented('Embedded Payment Element requires iOS or Android.');
+  }
+
+  async confirmEmbeddedPaymentElement(): Promise<never> {
+    throw this.unimplemented('Embedded Payment Element requires iOS or Android.');
+  }
+
+  async unmountEmbeddedPaymentElement(): Promise<void> {
+    throw this.unimplemented('Embedded Payment Element requires iOS or Android.');
+  }
+
   async initialize(options: StripeInitializationOptions): Promise<void> {
     if (typeof options.publishableKey !== 'string' || options.publishableKey.trim().length === 0) {
       throw new Error('you must provide a valid key');

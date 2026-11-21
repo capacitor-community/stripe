@@ -11,6 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0"),
+        .package(url: "https://github.com/webview-native-ui/engine.git", exact: "1.0.11"),
         .package(url: "https://github.com/stripe/stripe-ios-spm.git", .upToNextMinor(from: "26.15.1"))
     ],
     targets: [
@@ -19,6 +20,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "WebViewNativeUIEngine", package: "engine"),
                 .product(name: "StripePaymentSheet", package: "stripe-ios-spm"),
                 .product(name: "StripeApplePay", package: "stripe-ios-spm")
             ],

@@ -8,6 +8,7 @@ import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
+import com.getcapacitor.community.stripe.embedded.EmbeddedPaymentElementExecutor
 import com.getcapacitor.community.stripe.googlepay.GooglePayExecutor
 import com.getcapacitor.community.stripe.helper.MetaData
 import com.getcapacitor.community.stripe.models.EventNotifier
@@ -58,7 +59,33 @@ class StripePlugin : Plugin() {
         logTag
     )
 
+    private lateinit var embedded: EmbeddedPaymentElementExecutor
+
+    @PluginMethod
+    fun mountEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread { embedded.mount(call) }
+
+    @PluginMethod
+    fun updateEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread { embedded.update(call) }
+
+    @PluginMethod
+    fun confirmEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread { embedded.confirm(call) }
+
+    @PluginMethod
+    fun unmountEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread {
+        embedded.destroy()
+        call.resolve()
+    }
+
+    override fun handleOnDestroy() {
+        embedded.destroy()
+        super.handleOnDestroy()
+    }
+
     override fun load() {
+        embedded = EmbeddedPaymentElementExecutor(activity, bridge.webView, pluginHandle.id) { event, data ->
+            notifyListeners(event, data)
+        }
+
         this.metaData = MetaData { this.context };
         if (metaData.enableGooglePay) {
             this.publishableKey = metaData.publishableKey

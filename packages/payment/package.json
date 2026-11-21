@@ -70,6 +70,7 @@
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/swiftlint-config": "^2.0.0",
     "@rdlabo/capacitor-docgen": "^0.4.1",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^24.10.1",
     "@types/react": "^16.14.3",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
@@ -102,5 +103,8 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "@webview-native-ui/engine": "1.0.11"
   }
 }
