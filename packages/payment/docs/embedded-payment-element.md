@@ -55,4 +55,6 @@ await listener.remove();
 await Stripe.destroyEmbeddedPaymentElement();
 ```
 
+A full document navigation releases the native selector. If your app restores a checkout document from the back-forward cache, mount the selector again on `pageshow` when `event.persisted` is true.
+
 The confirmation result describes the client-side flow. Fulfill the order from a verified Stripe webhook. See [server integration](server-integration.md).

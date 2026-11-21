@@ -118,8 +118,30 @@ export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugi
         throw new Error('The Embedded Payment Element selector must match one laid-out HTML container.');
       }
       if (document.querySelector('ion-app')) enableSupportIonicOverlays();
-      await bridge.mountEmbeddedPaymentElement(options);
-      stop = track(host, bridge);
+      // Capacitor retains native plugin instances across full document navigations.
+      const lifecycle = new AbortController();
+      window.addEventListener(
+        'pagehide',
+        () => {
+          lifecycle.abort();
+          stop?.();
+          stop = undefined;
+          void bridge.destroyEmbeddedPaymentElement().catch(() => undefined);
+        },
+        { once: true, signal: lifecycle.signal },
+      );
+      try {
+        await bridge.mountEmbeddedPaymentElement(options);
+        if (lifecycle.signal.aborted) throw new Error('The checkout page was closed.');
+        const untrack = track(host, bridge);
+        stop = () => {
+          lifecycle.abort();
+          untrack();
+        };
+      } catch (error) {
+        lifecycle.abort();
+        throw error;
+      }
     });
   const destroy = () =>
     serialize(async () => {
