@@ -61,4 +61,6 @@ A full document navigation releases the native selector. If your app restores a 
 
 Confirmation returns the Completed, Canceled, or Failed member of `EmbeddedPaymentElementEventsEnum` in `paymentResult`. The matching event is also emitted. Subscribe to `EmbeddedPaymentElementEventsEnum.Failed` to receive the SDK error message in `{ error }`.
 
+If the element is unmounted while confirmation is pending, the confirmation promise rejects and the plugin stops delivering its result events. The payment may still complete at Stripe.
+
 The confirmation result describes the client-side flow. Fulfill the order from a verified Stripe webhook. See [server integration](server-integration.md).

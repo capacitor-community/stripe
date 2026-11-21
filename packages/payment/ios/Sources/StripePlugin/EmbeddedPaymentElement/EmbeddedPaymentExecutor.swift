@@ -10,7 +10,7 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
     private let clipView = PaymentElementContainer()
     private var element: EmbeddedPaymentElement?
     private var destroyed = false
-    private var confirming = false
+    private var confirming: CAPPluginCall?
     private var completed = false
     private var lastWidth: CGFloat?
     #if canImport(WebViewNativeUIEngine)
@@ -80,13 +80,14 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
     }
 
     func confirm(_ call: CAPPluginCall) async {
-        guard let element, !confirming, !completed, element.paymentOption != nil else {
+        guard let element, confirming == nil, !completed, element.paymentOption != nil else {
             return call.reject("Select a payment method before confirming an available payment.")
         }
-        confirming = true
+        confirming = call
         publishChange()
         let result = await element.confirm()
-        confirming = false
+        guard confirming === call else { return }
+        confirming = nil
         let event: EmbeddedPaymentElementEvents
         var data: [String: Any] = [:]
         switch result {
@@ -99,13 +100,15 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
             event = .Failed
             data["error"] = error.localizedDescription
         }
-        if !destroyed { plugin?.notifyListeners(event.rawValue, data: data) }
+        plugin?.notifyListeners(event.rawValue, data: data)
         call.resolve(["paymentResult": event.rawValue])
         publishChange()
     }
 
     func destroy() {
         destroyed = true
+        confirming?.reject("Embedded payment element was removed.")
+        confirming = nil
         #if canImport(WebViewNativeUIEngine)
         projection?.destroy()
         projection = nil
@@ -126,7 +129,7 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
 
     private func publishChange() {
         guard let element else { return }
-        var data: [String: Any] = ["ready": element.paymentOption != nil && !confirming && !completed]
+        var data: [String: Any] = ["ready": element.paymentOption != nil && confirming == nil && !completed]
         if let width = lastWidth {
             data["height"] = ceil(element.view.systemLayoutSizeFitting(
                 CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),

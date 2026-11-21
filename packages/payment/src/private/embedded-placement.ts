@@ -47,12 +47,11 @@ function measure(host: HTMLElement, { x, y, width, height }: DOMRect): Placement
   };
 }
 
-function track(host: HTMLElement, bridge: EmbeddedNativeBridge): () => void {
+function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSignal): void {
   let frame = 0;
   let last = '';
   let dirty = true;
   let retry: ReturnType<typeof setTimeout>;
-  let stopped = false;
   let previous: DOMRect | undefined;
   const update = () => {
     frame = requestAnimationFrame(update);
@@ -74,7 +73,7 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge): () => void {
     if (key === last) return;
     last = key;
     void bridge.updateEmbeddedPaymentElement(placement).catch(() => {
-      if (stopped || last !== key) return;
+      if (signal.aborted || last !== key) return;
       clearTimeout(retry);
       retry = setTimeout(() => {
         if (last === key) {
@@ -90,30 +89,31 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge): () => void {
   const resize = new ResizeObserver(schedule);
   const styles = new MutationObserver(schedule);
   const intersection = new IntersectionObserver(schedule);
+  signal.addEventListener(
+    'abort',
+    () => {
+      clearTimeout(retry);
+      cancelAnimationFrame(frame);
+      intersection.disconnect();
+      resize.disconnect();
+      styles.disconnect();
+    },
+    { once: true },
+  );
   intersection.observe(host);
-  const events = new AbortController();
   // Scroll events in Ionic's shadow scroll container do not bubble into the document.
   for (const element of [host, ...projectionAncestors(host)]) {
     resize.observe(element);
     styles.observe(element, { attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
-    element.addEventListener('scroll', schedule, { passive: true, signal: events.signal });
+    element.addEventListener('scroll', schedule, { passive: true, signal });
   }
-  window.addEventListener('scroll', schedule, { passive: true, signal: events.signal });
-  window.addEventListener('resize', schedule, { signal: events.signal });
+  window.addEventListener('scroll', schedule, { passive: true, signal });
+  window.addEventListener('resize', schedule, { signal });
   update();
-  return () => {
-    stopped = true;
-    clearTimeout(retry);
-    cancelAnimationFrame(frame);
-    events.abort();
-    intersection.disconnect();
-    resize.disconnect();
-    styles.disconnect();
-  };
 }
 
 export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugin {
-  let stop: (() => void) | undefined;
+  let active: AbortController | undefined;
   let pending: Promise<void> = Promise.resolve();
   const serialize = (operation: () => Promise<void>) => {
     const result = pending.then(operation);
@@ -122,7 +122,7 @@ export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugi
   };
   const mount = (options: EmbeddedPaymentElementOptions) =>
     serialize(async () => {
-      if (stop) throw new Error('Destroy the mounted Embedded Payment Element before mounting another.');
+      if (active) throw new Error('Unmount the mounted Embedded Payment Element before mounting another.');
       if (!Number.isSafeInteger(options.amount) || options.amount <= 0) {
         throw new Error('Provide a positive integer amount in the smallest currency unit.');
       }
@@ -138,29 +138,28 @@ export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugi
         'pagehide',
         () => {
           lifecycle.abort();
-          stop?.();
-          stop = undefined;
+          active = undefined;
           void bridge.unmountEmbeddedPaymentElement().catch(() => undefined);
         },
         { once: true, signal: lifecycle.signal },
       );
+      let mounted = false;
       try {
         await bridge.mountEmbeddedPaymentElement(options);
         if (lifecycle.signal.aborted) throw new Error('The checkout page was closed.');
-        const untrack = track(host, bridge);
-        stop = () => {
-          lifecycle.abort();
-          untrack();
-        };
+        mounted = true;
+        track(host, bridge, lifecycle.signal);
+        active = lifecycle;
       } catch (error) {
         lifecycle.abort();
+        if (mounted) await bridge.unmountEmbeddedPaymentElement();
         throw error;
       }
     });
   const destroy = () =>
     serialize(async () => {
-      stop?.();
-      stop = undefined;
+      active?.abort();
+      active = undefined;
       await bridge.unmountEmbeddedPaymentElement();
     });
   return new Proxy(bridge, {
