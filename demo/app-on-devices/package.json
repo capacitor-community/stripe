@@ -51,7 +51,7 @@
     "prettier": "^3.8.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.61.1",
-    "vitest": "^4.0.0"
+    "vitest": "^4.1.12"
   },
   "description": "An Ionic project",
   "overrides": {
