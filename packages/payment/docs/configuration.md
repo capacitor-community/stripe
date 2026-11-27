@@ -38,7 +38,7 @@ Add these entries inside the root `dict` in `Info.plist` so PaymentSheet can sca
 
 The plugin loads automatically on iOS. Apple Pay also needs an Apple Merchant ID and certificate. Follow [Apple Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/apple-pay).
 
-For PayPal, 3D Secure, and other redirect-based payment methods, register a custom URL scheme, set `returnURL` when you create PaymentSheet or PaymentFlow, and call `handleURLCallback` from your app URL handler. Without a return URL, Stripe does not offer otherwise eligible redirect-based payment methods on iOS. See [Initialize](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/initialize#redirect-based-payment-methods-on-ios).
+For PayPal, 3D Secure, and other redirect-based payment methods, register a custom URL scheme, set `returnURL` when you create PaymentSheet, PaymentFlow, or an Embedded Payment Element, and call `handleURLCallback` from your app URL handler. Without a return URL, Stripe does not offer otherwise eligible redirect-based payment methods on iOS. See [Initialize](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/initialize#redirect-based-payment-methods-on-ios).
 
 ## Web configuration
 

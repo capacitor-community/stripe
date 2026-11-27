@@ -137,7 +137,7 @@ authentication.
 
 iOS only. Call this from your app URL handler when Stripe redirects back
 to the application. Configure the same custom URL scheme as `returnURL`
-when creating PaymentSheet or PaymentFlow.
+when creating PaymentSheet, PaymentFlow, or an Embedded Payment Element.
 
 | Param      | Type                                                                          |
 | ---------- | ----------------------------------------------------------------------------- |

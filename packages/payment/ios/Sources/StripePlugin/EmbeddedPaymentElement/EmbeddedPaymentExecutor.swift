@@ -27,11 +27,13 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
               let name = plugin?.jsName, let selector = call.getString("selector"), !selector.isEmpty,
               let amount = call.getInt("amount"), amount > 0, let currency = call.getString("currency"),
               currency.range(of: #"^[A-Za-z]{3}$"#, options: .regularExpression) != nil,
-              let merchant = call.getString("merchantDisplayName"), !merchant.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let secret = call.getString("paymentIntentClientSecret"), !secret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+              let secret = call.getString("paymentIntentClientSecret"), !secret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         else { throw error("Provide a payment intent, amount, currency and a mounted DOM selector.") }
 
         var configuration = EmbeddedPaymentElement.Configuration()
-        configuration.merchantDisplayName = merchant
+        if let merchant = call.getString("merchantDisplayName"), !merchant.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            configuration.merchantDisplayName = merchant
+        }
         configuration.returnURL = call.getString("returnURL")
         let intent = EmbeddedPaymentElement.IntentConfiguration(
             mode: .payment(amount: amount, currency: currency),

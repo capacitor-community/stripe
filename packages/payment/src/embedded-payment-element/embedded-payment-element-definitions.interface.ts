@@ -12,7 +12,8 @@ export interface EmbeddedPaymentElementOptions {
   amount: number;
   /** Three-letter currency code matching the PaymentIntent. */
   currency: string;
-  merchantDisplayName: string;
+  /** Merchant name shown at checkout. Defaults to the app name. */
+  merchantDisplayName?: string;
   paymentIntentClientSecret: string;
   /** Registered app URL for redirect-based payments on iOS. */
   returnURL?: string;

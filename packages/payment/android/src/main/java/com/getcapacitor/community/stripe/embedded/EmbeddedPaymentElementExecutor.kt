@@ -59,10 +59,9 @@ internal class EmbeddedPaymentElementExecutor(
         if (fragment != null) return call.reject("An embedded payment element is already mounted.")
         val selector = call.getString("selector")
         val secret = call.getString("paymentIntentClientSecret")
-        val merchant = call.getString("merchantDisplayName")
         val currency = call.getString("currency")
         val amount = call.data.optLong("amount", -1)
-        if (selector.isNullOrBlank() || secret.isNullOrBlank() || merchant.isNullOrBlank() ||
+        if (selector.isNullOrBlank() || secret.isNullOrBlank() ||
             currency == null || !currency.matches(Regex("[A-Za-z]{3}")) || amount <= 0) return call.reject("Missing embedded payment configuration.")
 
         try {
@@ -82,6 +81,8 @@ internal class EmbeddedPaymentElementExecutor(
             parent.addView(frame, 0, 0)
             val owner = EmbeddedPaymentElementFragment().also { fragment = it }
             val intent = PaymentSheet.IntentConfiguration(PaymentSheet.IntentConfiguration.Mode.Payment(amount, currency))
+            val merchant = call.getString("merchantDisplayName")?.takeIf { it.isNotBlank() }
+                ?: activity.applicationInfo.loadLabel(activity.packageManager).toString()
             val config = EmbeddedPaymentElement.Configuration.Builder(merchant).build()
             val builder = EmbeddedPaymentElement.Builder(
                 createIntentCallback = CreateIntentCallback { _, _ -> CreateIntentResult.Success(secret) },

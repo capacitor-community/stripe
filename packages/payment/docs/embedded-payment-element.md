@@ -59,6 +59,10 @@ pay.onclick = async () => {
 };
 ```
 
+Await `create()` to get the mounted element and catch setup errors. The Change event’s `ready` flag tells you when you can call `confirm()`.
+
+For redirect-based payments on iOS, pass `returnURL` to `create()` and forward the incoming URL to `Stripe.handleURLCallback()`. See [iOS return URL setup](initialize.md#redirect-based-payment-methods-on-ios).
+
 On Web, `create()` rejects with Capacitor’s `UNIMPLEMENTED` error. On iOS and Android, mount one element at a time and await `destroy()` before replacing it. Register the Change listener before calling `create()` to receive the initial state.
 
 Mount after the host is visible. Pass a rectangular block in the main document with a nonzero width and height. An empty block can use the minimum height shown above. Keep its axes aligned with the viewport and allow it to expand when Stripe reports its content height. The mount lasts until the order screen closes. On page exit, including Ionic navigation that caches the page, release both resources:
