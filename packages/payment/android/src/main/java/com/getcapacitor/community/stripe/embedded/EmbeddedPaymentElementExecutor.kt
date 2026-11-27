@@ -120,6 +120,7 @@ internal class EmbeddedPaymentElementExecutor(
                                 }
                             }
                             is EmbeddedPaymentElement.ConfigureResult.Succeeded -> {
+                                if (fragment !== owner) return@LaunchedEffect
                                 element = sdk
                                 mounting?.resolve()
                                 mounting = null
@@ -137,7 +138,7 @@ internal class EmbeddedPaymentElementExecutor(
             val content = owner.requireView()
             content.addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
                 val value = ((bottom - top) / webView.resources.displayMetrics.density).roundToInt()
-                if (value > 0 && height != value) {
+                if (fragment === owner && value > 0 && height != value) {
                     height = value
                     emit()
                 }

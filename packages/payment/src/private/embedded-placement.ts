@@ -57,8 +57,12 @@ function track(
   host: HTMLElement,
   bridge: EmbeddedNativeBridge,
   signal: AbortSignal,
+  selector: string,
   visibleArea: EmbeddedPaymentElementOptions['visibleArea'],
 ): void {
+  // The Engine can display a snapshot inside the host while the native view is clipped separately.
+  const snapshotStyle = visibleArea ? document.createElement('style') : undefined;
+  if (snapshotStyle) document.head.append(snapshotStyle);
   let frame = 0;
   let last = '';
   let dirty = true;
@@ -91,6 +95,16 @@ function track(
     const placement = measure(host, rect, area);
     const key = JSON.stringify(placement);
     if (key === last) return;
+    if (snapshotStyle) {
+      const { clip } = placement;
+      const top = clip.y - rect.y;
+      const left = clip.x - rect.x;
+      const right = rect.width - left - clip.width;
+      const bottom = rect.height - top - clip.height;
+      snapshotStyle.textContent = area
+        ? `${selector}[data-native-ui-snapshot-visible] { clip-path: inset(${top}px ${right}px ${bottom}px ${left}px); }`
+        : '';
+    }
     last = key;
     retryAt = Infinity;
     void bridge.updateEmbeddedPaymentElement(placement).catch(() => {
@@ -106,6 +120,7 @@ function track(
   signal.addEventListener(
     'abort',
     () => {
+      snapshotStyle?.remove();
       cancelAnimationFrame(frame);
       intersection.disconnect();
       resize.disconnect();
@@ -186,7 +201,7 @@ export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge): {
       await bridge.mountEmbeddedPaymentElement({ ...paymentOptions, selector });
       if (lifecycle.signal.aborted) throw new Error('The checkout page was closed.');
       mounted = true;
-      track(element, bridge, lifecycle.signal, visibleArea);
+      track(element, bridge, lifecycle.signal, selector, visibleArea);
       return {
         confirm: async () => {
           if (lifecycle.signal.aborted) throw new Error('The payment element has been destroyed.');
