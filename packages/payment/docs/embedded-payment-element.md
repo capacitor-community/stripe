@@ -75,3 +75,22 @@ Confirmation returns the Completed, Canceled, or Failed member of `EmbeddedPayme
 If the element is unmounted while confirmation is pending, the confirmation promise rejects and the plugin stops delivering its result events. The payment may still complete at Stripe.
 
 The confirmation result describes the client-side flow. Fulfill the order from a verified Stripe webhook. See [server integration](server-integration.md).
+
+## Keep the selector clear of app bars
+
+When content scrolls under a translucent header or floating tab bar, pass a
+`visibleArea` callback to `create()`. Return the available rectangle in viewport
+CSS pixels. Placement tracks moving bars even when the host stays still.
+Only the intersection can display the native selector or receive its touches.
+Return `undefined` to use the usual viewport and scroll-container clipping.
+
+```ts
+const payment = await EmbeddedPaymentElement.create(host, {
+  ...paymentOptions,
+  visibleArea: () => {
+    const top = header.getBoundingClientRect().bottom;
+    const bottom = tabBar.getBoundingClientRect().top;
+    return { x: 0, y: top, width: window.innerWidth, height: Math.max(0, bottom - top) };
+  },
+});
+```

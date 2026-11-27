@@ -6,6 +6,8 @@ import type {
 } from './embedded-payment-element-events.enum';
 
 export interface EmbeddedPaymentElementOptions {
+  /** Viewport area in CSS pixels available to the native view. Return undefined to use the viewport. */
+  visibleArea?: () => Pick<DOMRect, 'x' | 'y' | 'width' | 'height'> | undefined;
   /** Total in the currency's minor unit, matching the server-created PaymentIntent. */
   amount: number;
   /** Three-letter currency code matching the PaymentIntent. */

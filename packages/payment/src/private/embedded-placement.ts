@@ -16,18 +16,26 @@ interface Placement extends Frame {
 }
 
 export interface EmbeddedNativeBridge extends StripePlugin {
-  mountEmbeddedPaymentElement(options: EmbeddedPaymentElementOptions & { selector: string }): Promise<void>;
+  mountEmbeddedPaymentElement(
+    options: Omit<EmbeddedPaymentElementOptions, 'visibleArea'> & { selector: string },
+  ): Promise<void>;
   confirmEmbeddedPaymentElement: MountedEmbeddedPaymentElement['confirm'];
   unmountEmbeddedPaymentElement(): Promise<void>;
   updateEmbeddedPaymentElement(placement: Placement): Promise<void>;
 }
 
 /** DOM geometry is in viewport CSS pixels on both platforms. */
-function measure(host: HTMLElement, { x, y, width, height }: DOMRect): Placement {
+function measure(host: HTMLElement, { x, y, width, height }: DOMRect, area?: Frame): Placement {
   let left = Math.max(0, x);
   let top = Math.max(0, y);
   let right = Math.min(innerWidth, x + width);
   let bottom = Math.min(innerHeight, y + height);
+  if (area && [area.x, area.y, area.width, area.height].every(Number.isFinite)) {
+    left = Math.max(left, area.x);
+    top = Math.max(top, area.y);
+    right = Math.min(right, area.x + area.width);
+    bottom = Math.min(bottom, area.y + area.height);
+  }
   for (const parent of projectionAncestors(host)) {
     const style = getComputedStyle(parent);
     const rect = parent.getBoundingClientRect();
@@ -50,11 +58,17 @@ function measure(host: HTMLElement, { x, y, width, height }: DOMRect): Placement
   };
 }
 
-function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSignal): void {
+function track(
+  host: HTMLElement,
+  bridge: EmbeddedNativeBridge,
+  signal: AbortSignal,
+  visibleArea: EmbeddedPaymentElementOptions['visibleArea'],
+): void {
   let frame = 0;
   let last = '';
   let dirty = true;
   let retryAt = Infinity;
+  let previousArea: string | undefined;
   let previous: DOMRect | undefined;
   const update = (now: number) => {
     frame = requestAnimationFrame(update);
@@ -64,7 +78,10 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
     }
     // A sibling can move the host without resizing or scrolling any observed element.
     const rect = host.getBoundingClientRect();
+    const area = visibleArea?.();
+    const areaKey = area && [area.x, area.y, area.width, area.height].join(',');
     if (
+      previousArea === areaKey &&
       !dirty &&
       previous &&
       rect.x === previous.x &&
@@ -73,9 +90,10 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
       rect.height === previous.height
     )
       return;
+    previousArea = areaKey;
     previous = rect;
     dirty = false;
-    const placement = measure(host, rect);
+    const placement = measure(host, rect, area);
     const key = JSON.stringify(placement);
     if (key === last) return;
     last = key;
@@ -169,10 +187,11 @@ export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge): {
         },
         { once: true, signal: lifecycle.signal },
       );
-      await bridge.mountEmbeddedPaymentElement({ ...options, selector });
+      const { visibleArea, ...paymentOptions } = options;
+      await bridge.mountEmbeddedPaymentElement({ ...paymentOptions, selector });
       if (lifecycle.signal.aborted) throw new Error('The checkout page was closed.');
       mounted = true;
-      track(element, bridge, lifecycle.signal);
+      track(element, bridge, lifecycle.signal, visibleArea);
       return {
         confirm: async () => {
           if (lifecycle.signal.aborted) throw new Error('The payment element has been destroyed.');
