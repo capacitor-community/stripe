@@ -1,3 +1,4 @@
+import { Capacitor, CapacitorException, ExceptionCode } from '@capacitor/core';
 import { getUnprojectedVisibility, projectionAncestors } from '@webview-native-ui/engine';
 
 import type { StripePlugin } from '../definitions';
@@ -111,7 +112,9 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
   update(performance.now());
 }
 
-export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge) {
+export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge): {
+  create(element: HTMLElement, options: EmbeddedPaymentElementOptions): Promise<MountedEmbeddedPaymentElement>;
+} {
   let active = false;
   let releasing: Promise<void> | undefined;
   let nextHost = 0;
@@ -120,19 +123,20 @@ export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge) {
     element: HTMLElement,
     options: EmbeddedPaymentElementOptions,
   ): Promise<MountedEmbeddedPaymentElement> {
+    if (!Capacitor.isNativePlatform()) {
+      throw new CapacitorException('Embedded Payment Element requires iOS or Android.', ExceptionCode.Unimplemented);
+    }
     if (releasing) await releasing;
     if (active) throw new Error('Destroy the mounted Embedded Payment Element before creating another.');
     if (!Number.isSafeInteger(options.amount) || options.amount <= 0) {
       throw new Error('Provide a positive integer amount in the smallest currency unit.');
     }
-    if (
-      typeof document === 'undefined' ||
-      !(element instanceof HTMLElement) ||
-      element.getRootNode() !== document ||
-      !element.getBoundingClientRect().width
-    ) {
+    if (typeof document === 'undefined' || !(element instanceof HTMLElement) || element.getRootNode() !== document) {
       throw new Error('Provide a laid-out HTML container in the main document.');
     }
+
+    const { width, height } = element.getBoundingClientRect();
+    if (!width || !height) throw new Error('Provide a container with a nonzero width and height.');
 
     const lifecycle = new AbortController();
     let attribute: string;

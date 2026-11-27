@@ -971,7 +971,7 @@ Apple Pay shipping-contact data.
 
 | Prop         | Type                 | Description                                                    |
 | ------------ | -------------------- | -------------------------------------------------------------- |
-| **`ready`**  | <code>boolean</code> | Whether a payment option is selected.                          |
+| **`ready`**  | <code>boolean</code> | Whether confirm() can start with the selected payment option.  |
 | **`height`** | <code>number</code>  | Preferred native content height in CSS pixels, when available. |
 
 

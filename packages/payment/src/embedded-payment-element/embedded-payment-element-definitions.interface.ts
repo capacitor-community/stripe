@@ -17,7 +17,7 @@ export interface EmbeddedPaymentElementOptions {
 }
 
 export interface EmbeddedPaymentElementState {
-  /** Whether a payment option is selected. */
+  /** Whether confirm() can start with the selected payment option. */
   ready: boolean;
   /** Preferred native content height in CSS pixels, when available. */
   height?: number;
