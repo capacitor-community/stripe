@@ -4,12 +4,7 @@ import { getUnprojectedVisibility, projectionAncestors } from '@webview-native-u
 import type { StripePlugin } from '../definitions';
 import type { EmbeddedPaymentElementOptions, MountedEmbeddedPaymentElement } from '../embedded-payment-element';
 
-interface Frame {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+type Frame = Pick<DOMRect, 'x' | 'y' | 'width' | 'height'>;
 interface Placement extends Frame {
   clip: Frame;
   visible: boolean;
