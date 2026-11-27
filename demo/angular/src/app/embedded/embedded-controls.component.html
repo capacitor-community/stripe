@@ -24,13 +24,10 @@
       detail="true"
       [disabled]="phase() !== 'idle'"
       (click)="mount()"
-      ><ion-label>mount</ion-label></ion-item
+      ><ion-label>create</ion-label></ion-item
     >
   }
-  <div
-    [id]="hostId()"
-    [style.height.px]="phase() !== 'idle' ? height() : 0"
-  ></div>
+  <div #paymentHost [style.height.px]="phase() !== 'idle' ? height() : 0"></div>
   <ion-item
     button="true"
     detail="true"
@@ -43,7 +40,7 @@
     detail="true"
     [disabled]="phase() !== 'mounted'"
     (click)="destroy()"
-    ><ion-label>unmount</ion-label></ion-item
+    ><ion-label>destroy</ion-label></ion-item
   >
 </ion-list>
 @if (message()) {

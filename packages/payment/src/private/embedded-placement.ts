@@ -2,7 +2,7 @@ import { getUnprojectedVisibility, projectionAncestors } from '@webview-native-u
 import { enableSupportIonicOverlays } from '@webview-native-ui/engine/ionic';
 
 import type { StripePlugin } from '../definitions';
-import type { EmbeddedPaymentElementOptions } from '../embedded-payment-element';
+import type { EmbeddedPaymentElementOptions, MountedEmbeddedPaymentElement } from '../embedded-payment-element';
 
 interface Frame {
   x: number;
@@ -16,6 +16,9 @@ interface Placement extends Frame {
 }
 
 export interface EmbeddedNativeBridge extends StripePlugin {
+  mountEmbeddedPaymentElement(options: EmbeddedPaymentElementOptions & { selector: string }): Promise<void>;
+  confirmEmbeddedPaymentElement: MountedEmbeddedPaymentElement['confirm'];
+  unmountEmbeddedPaymentElement(): Promise<void>;
   updateEmbeddedPaymentElement(placement: Placement): Promise<void>;
 }
 
@@ -109,61 +112,82 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
   update(performance.now());
 }
 
-export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugin {
-  let active: AbortController | undefined;
-  let pending: Promise<void> = Promise.resolve();
-  const serialize = (operation: () => Promise<void>) => {
-    const result = pending.then(operation);
-    pending = result.catch(() => undefined);
-    return result;
-  };
-  const mount = (options: EmbeddedPaymentElementOptions) =>
-    serialize(async () => {
-      if (active) throw new Error('Unmount the mounted Embedded Payment Element before mounting another.');
-      if (!Number.isSafeInteger(options.amount) || options.amount <= 0) {
-        throw new Error('Provide a positive integer amount in the smallest currency unit.');
+export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge) {
+  let active = false;
+  let releasing: Promise<void> | undefined;
+  let nextHost = 0;
+
+  async function create(
+    element: HTMLElement,
+    options: EmbeddedPaymentElementOptions,
+  ): Promise<MountedEmbeddedPaymentElement> {
+    if (releasing) await releasing;
+    if (active) throw new Error('Destroy the mounted Embedded Payment Element before creating another.');
+    if (!Number.isSafeInteger(options.amount) || options.amount <= 0) {
+      throw new Error('Provide a positive integer amount in the smallest currency unit.');
+    }
+    if (
+      typeof document === 'undefined' ||
+      !(element instanceof HTMLElement) ||
+      element.getRootNode() !== document ||
+      !element.getBoundingClientRect().width
+    ) {
+      throw new Error('Provide a laid-out HTML container in the main document.');
+    }
+    if (document.querySelector('ion-app')) enableSupportIonicOverlays();
+
+    const lifecycle = new AbortController();
+    let attribute: string;
+    do {
+      attribute = 'data-stripe-embedded-' + ++nextHost;
+    } while (document.querySelector('[' + attribute + ']'));
+    const selector = '[' + attribute + ']';
+    let teardown: Promise<void> | undefined;
+    const destroy = () => {
+      if (!teardown) {
+        lifecycle.abort();
+        element.removeAttribute(attribute);
+        teardown = bridge.unmountEmbeddedPaymentElement().finally(() => {
+          active = false;
+          releasing = undefined;
+        });
+        releasing = teardown;
       }
-      const hosts = document.querySelectorAll(options.selector);
-      const host = hosts[0];
-      if (hosts.length !== 1 || !(host instanceof HTMLElement) || !host.getBoundingClientRect().width) {
-        throw new Error('The Embedded Payment Element selector must match one laid-out HTML container.');
-      }
-      if (document.querySelector('ion-app')) enableSupportIonicOverlays();
-      // Capacitor retains native plugin instances across full document navigations.
-      const lifecycle = new AbortController();
+      return teardown;
+    };
+
+    active = true;
+    let mounted = false;
+    try {
+      element.setAttribute(attribute, '');
       window.addEventListener(
         'pagehide',
         () => {
-          lifecycle.abort();
-          active = undefined;
-          void bridge.unmountEmbeddedPaymentElement().catch(() => undefined);
+          void destroy().catch(() => undefined);
         },
         { once: true, signal: lifecycle.signal },
       );
-      let mounted = false;
-      try {
-        await bridge.mountEmbeddedPaymentElement(options);
-        if (lifecycle.signal.aborted) throw new Error('The checkout page was closed.');
-        mounted = true;
-        track(host, bridge, lifecycle.signal);
-        active = lifecycle;
-      } catch (error) {
+      await bridge.mountEmbeddedPaymentElement({ ...options, selector });
+      if (lifecycle.signal.aborted) throw new Error('The checkout page was closed.');
+      mounted = true;
+      track(element, bridge, lifecycle.signal);
+      return {
+        confirm: async () => {
+          if (lifecycle.signal.aborted) throw new Error('The payment element has been destroyed.');
+          return bridge.confirmEmbeddedPaymentElement();
+        },
+        destroy,
+      };
+    } catch (error) {
+      if (mounted || teardown) await destroy();
+      else {
         lifecycle.abort();
-        if (mounted) await bridge.unmountEmbeddedPaymentElement();
-        throw error;
+        element.removeAttribute(attribute);
+        active = false;
       }
-    });
-  const destroy = () =>
-    serialize(async () => {
-      active?.abort();
-      active = undefined;
-      await bridge.unmountEmbeddedPaymentElement();
-    });
-  return new Proxy(bridge, {
-    get(target, key) {
-      if (key === 'mountEmbeddedPaymentElement') return mount;
-      if (key === 'unmountEmbeddedPaymentElement') return destroy;
-      return Reflect.get(target, key);
-    },
-  });
+      throw error;
+    }
+  }
+
+  return { create };
 }

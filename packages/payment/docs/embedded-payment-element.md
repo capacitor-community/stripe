@@ -27,7 +27,7 @@ pod 'CapacitorCommunityStripe/Embedded', :path => '../../node_modules/@capacitor
 ```
 
 ```ts
-import { EmbeddedPaymentElementEventsEnum, Stripe } from '@capacitor-community/stripe';
+import { EmbeddedPaymentElement, EmbeddedPaymentElementEventsEnum, Stripe } from '@capacitor-community/stripe';
 
 const host = document.querySelector<HTMLElement>('#payment-methods')!;
 const pay = document.querySelector<HTMLButtonElement>('#pay')!;
@@ -35,8 +35,7 @@ const listener = await Stripe.addListener(EmbeddedPaymentElementEventsEnum.Chang
   pay.disabled = !ready;
   if (height) host.style.height = `${height}px`;
 });
-await Stripe.mountEmbeddedPaymentElement({
-  selector: '#payment-methods',
+const payment = await EmbeddedPaymentElement.create(host, {
   merchantDisplayName: 'My store',
   amount: order.amount,
   currency: order.currency,
@@ -45,16 +44,16 @@ await Stripe.mountEmbeddedPaymentElement({
 
 pay.onclick = async () => {
   pay.disabled = true;
-  const { paymentResult } = await Stripe.confirmEmbeddedPaymentElement();
+  const { paymentResult } = await payment.confirm();
   showPaymentStatus(paymentResult);
 };
 ```
 
-Mount after the host is visible. Use a unique selector for a rectangular block in the main document. Keep its axes aligned with the viewport and allow it to expand when Stripe reports its content height. Ionic modal and alert coverage is enabled automatically in an Ionic app. The mount lasts until the order screen closes. On page exit, including Ionic navigation that caches the page, release both resources:
+Mount after the host is visible. Pass a rectangular block in the main document. Keep its axes aligned with the viewport and allow it to expand when Stripe reports its content height. Ionic modal and alert coverage is enabled automatically in an Ionic app. The mount lasts until the order screen closes. On page exit, including Ionic navigation that caches the page, release both resources:
 
 ```ts
 await listener.remove();
-await Stripe.unmountEmbeddedPaymentElement();
+await payment.destroy();
 ```
 
 A full document navigation releases the native selector. If your app restores a checkout document from the back-forward cache, mount the selector again on `pageshow` when `event.persisted` is true.

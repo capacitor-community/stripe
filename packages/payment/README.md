@@ -72,9 +72,6 @@ If the original call still exists, behavior is unchanged: the Promise is settled
 * [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed-)
 * [`addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenerapplepayeventsenumdidselectshippingcontact-)
 * [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod-)
-* [`mountEmbeddedPaymentElement(...)`](#mountembeddedpaymentelement)
-* [`confirmEmbeddedPaymentElement()`](#confirmembeddedpaymentelement)
-* [`unmountEmbeddedPaymentElement()`](#unmountembeddedpaymentelement)
 * [`addListener(EmbeddedPaymentElementEventsEnum.Change, ...)`](#addlistenerembeddedpaymentelementeventsenumchange-)
 * [`addListener(EmbeddedPaymentElementEventsEnum.Completed | EmbeddedPaymentElementEventsEnum.Canceled, ...)`](#addlistenerembeddedpaymentelementeventsenumcompleted--embeddedpaymentelementeventsenumcanceled-)
 * [`addListener(EmbeddedPaymentElementEventsEnum.Failed, ...)`](#addlistenerembeddedpaymentelementeventsenumfailed-)
@@ -352,45 +349,6 @@ iOS only. Emitted after Apple Pay creates its Stripe PaymentMethod.
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 **Since:** 4.1.0
-
---------------------
-
-
-### mountEmbeddedPaymentElement(...)
-
-```typescript
-mountEmbeddedPaymentElement(options: EmbeddedPaymentElementOptions) => Promise<void>
-```
-
-Place the native payment method selector in an existing HTML container on iOS or Android.
-
-| Param         | Type                                                                                    |
-| ------------- | --------------------------------------------------------------------------------------- |
-| **`options`** | <code><a href="#embeddedpaymentelementoptions">EmbeddedPaymentElementOptions</a></code> |
-
---------------------
-
-
-### confirmEmbeddedPaymentElement()
-
-```typescript
-confirmEmbeddedPaymentElement() => Promise<{ paymentResult: EmbeddedPaymentElementResultInterface; }>
-```
-
-Confirm the selected payment method and wait for Stripe's result.
-
-**Returns:** <code>Promise&lt;{ paymentResult: <a href="#embeddedpaymentelementresultinterface">EmbeddedPaymentElementResultInterface</a>; }&gt;</code>
-
---------------------
-
-
-### unmountEmbeddedPaymentElement()
-
-```typescript
-unmountEmbeddedPaymentElement() => Promise<void>
-```
-
-Remove the embedded selector when leaving checkout.
 
 --------------------
 
@@ -1009,18 +967,6 @@ Apple Pay shipping-contact data.
 | **`contact`** | <code><a href="#shippingcontact">ShippingContact</a></code> | Contact attached to the Apple Pay payment method. | 4.1.0 |
 
 
-#### EmbeddedPaymentElementOptions
-
-| Prop                            | Type                | Description                                                                    |
-| ------------------------------- | ------------------- | ------------------------------------------------------------------------------ |
-| **`selector`**                  | <code>string</code> | Unique selector for a visible, sized HTML container in the main document.      |
-| **`amount`**                    | <code>number</code> | Total in the currency's minor unit, matching the server-created PaymentIntent. |
-| **`currency`**                  | <code>string</code> | Three-letter currency code matching the PaymentIntent.                         |
-| **`merchantDisplayName`**       | <code>string</code> |                                                                                |
-| **`paymentIntentClientSecret`** | <code>string</code> |                                                                                |
-| **`returnURL`**                 | <code>string</code> | Registered app URL for redirect-based payments on iOS.                         |
-
-
 #### EmbeddedPaymentElementState
 
 | Prop         | Type                 | Description                                                    |
@@ -1142,11 +1088,6 @@ Controls which billing details PaymentSheet collects from the customer.
 Final result returned after presenting Apple Pay.
 
 <code><a href="#applepayeventsenum">ApplePayEventsEnum.Completed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Canceled</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.Failed</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.DidSelectShippingContact</a> | <a href="#applepayeventsenum">ApplePayEventsEnum.DidCreatePaymentMethod</a></code>
-
-
-#### EmbeddedPaymentElementResultInterface
-
-<code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Completed</a> | <a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Canceled</a> | <a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Failed</a></code>
 
 
 #### GooglePayResultInterface
