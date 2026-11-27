@@ -94,17 +94,19 @@ function track(
     dirty = false;
     const placement = measure(host, rect, area);
     const key = JSON.stringify(placement);
-    if (key === last) return;
     if (snapshotStyle) {
       const { clip } = placement;
       const top = clip.y - rect.y;
       const left = clip.x - rect.x;
       const right = rect.width - left - clip.width;
       const bottom = rect.height - top - clip.height;
-      snapshotStyle.textContent = area
-        ? `${selector}[data-native-ui-snapshot-visible] { clip-path: inset(${top}px ${right}px ${bottom}px ${left}px); }`
-        : '';
+      const rule =
+        area && (top || right || bottom || left)
+          ? `${selector}[data-native-ui-snapshot-visible] { clip-path: inset(${top}px ${right}px ${bottom}px ${left}px); }`
+          : '';
+      if (snapshotStyle.textContent !== rule) snapshotStyle.textContent = rule;
     }
+    if (key === last) return;
     last = key;
     retryAt = Infinity;
     void bridge.updateEmbeddedPaymentElement(placement).catch(() => {
