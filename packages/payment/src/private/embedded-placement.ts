@@ -51,10 +51,14 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
   let frame = 0;
   let last = '';
   let dirty = true;
-  let retry: ReturnType<typeof setTimeout>;
+  let retryAt = Infinity;
   let previous: DOMRect | undefined;
-  const update = () => {
+  const update = (now: number) => {
     frame = requestAnimationFrame(update);
+    if (now >= retryAt) {
+      last = '';
+      dirty = true;
+    }
     // A sibling can move the host without resizing or scrolling any observed element.
     const rect = host.getBoundingClientRect();
     if (
@@ -72,15 +76,9 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
     const key = JSON.stringify(placement);
     if (key === last) return;
     last = key;
+    retryAt = Infinity;
     void bridge.updateEmbeddedPaymentElement(placement).catch(() => {
-      if (signal.aborted || last !== key) return;
-      clearTimeout(retry);
-      retry = setTimeout(() => {
-        if (last === key) {
-          last = '';
-          dirty = true;
-        }
-      }, 250);
+      if (last === key) retryAt = performance.now() + 250;
     });
   };
   const schedule = () => {
@@ -92,7 +90,6 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
   signal.addEventListener(
     'abort',
     () => {
-      clearTimeout(retry);
       cancelAnimationFrame(frame);
       intersection.disconnect();
       resize.disconnect();
@@ -109,7 +106,7 @@ function track(host: HTMLElement, bridge: EmbeddedNativeBridge, signal: AbortSig
   }
   window.addEventListener('scroll', schedule, { passive: true, signal });
   window.addEventListener('resize', schedule, { signal });
-  update();
+  update(performance.now());
 }
 
 export function withEmbeddedPlacement(bridge: EmbeddedNativeBridge): StripePlugin {

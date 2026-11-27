@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PluginListenerHandle } from '@capacitor/core';
 import {
@@ -31,10 +31,10 @@ import { ITestItems } from '../shared/interfaces';
 export class EmbeddedControlsComponent {
   readonly events = EmbeddedPaymentElementEventsEnum;
   readonly scenarios = input(false);
-  readonly selector = () =>
-    this.scenarios() ? '#embedded-scenario' : '#embedded-demo';
-  readonly active = signal(false);
-  readonly busy = signal(false);
+  readonly hostId = computed(() =>
+    this.scenarios() ? 'embedded-scenario' : 'embedded-demo',
+  );
+  readonly phase = signal<'idle' | 'working' | 'mounted'>('idle');
   readonly ready = signal(false);
   readonly height = signal(180);
   readonly message = signal('');
@@ -55,8 +55,7 @@ export class EmbeddedControlsComponent {
       | EmbeddedPaymentElementEventsEnum.Canceled,
   ) {
     const session = ++this.#session;
-    this.active.set(true);
-    this.busy.set(true);
+    this.phase.set('working');
     this.height.set(180);
     this.message.set('');
     this.eventItems.set(
@@ -74,12 +73,13 @@ export class EmbeddedControlsComponent {
           ]
         : [],
     );
+    const order = { amount: 1099, currency: 'usd' };
     let step = 'HttpClient';
     try {
       const { paymentIntent } = await firstValueFrom(
         this.#http.post<{ paymentIntent: string }>(
           environment.api + 'intent/without-customer',
-          { amount: 1099, currency: 'usd' },
+          order,
         ),
       );
       if (session !== this.#session) return;
@@ -104,54 +104,41 @@ export class EmbeddedControlsComponent {
       }
       this.#listener = listener;
       this.#mounting = Stripe.mountEmbeddedPaymentElement({
-        selector: this.selector(),
-        amount: 1099,
-        currency: 'usd',
+        selector: '#' + this.hostId(),
+        ...order,
         merchantDisplayName: 'rdlabo',
         paymentIntentClientSecret: paymentIntent,
       });
       await this.#mounting;
-      if (session === this.#session)
-        this.#helper.updateItem(this.eventItems, step, true);
+      if (session !== this.#session) return;
+      this.phase.set('mounted');
+      this.#helper.updateItem(this.eventItems, step, true);
     } catch {
       if (session !== this.#session) return;
       this.#helper.updateItem(this.eventItems, step, false);
       this.message.set('Could not mount the payment element.');
       await this.destroy();
-    } finally {
-      if (session === this.#session) this.busy.set(false);
     }
   }
 
   async confirm() {
     const session = this.#session;
-    this.busy.set(true);
-    try {
-      const { paymentResult } = await Stripe.confirmEmbeddedPaymentElement();
-      if (session !== this.#session) return;
-      this.message.set(paymentResult);
-      this.#helper.updateItem(
-        this.eventItems,
-        'confirmEmbeddedPaymentElement',
-        true,
-        paymentResult,
-      );
-      if (paymentResult === EmbeddedPaymentElementEventsEnum.Completed)
-        this.ready.set(false);
-    } catch {
-      if (session !== this.#session) return;
-      this.message.set('Confirmation failed.');
-      this.#helper.updateItem(
-        this.eventItems,
-        'confirmEmbeddedPaymentElement',
-        false,
-      );
-    } finally {
-      if (session === this.#session) {
-        if (this.scenarios()) await this.destroy();
-        else this.busy.set(false);
-      }
-    }
+    this.phase.set('working');
+    const result = await Stripe.confirmEmbeddedPaymentElement().catch(
+      () => undefined,
+    );
+    if (session !== this.#session) return;
+    const paymentResult = result?.paymentResult;
+    this.message.set(paymentResult ?? 'Confirmation failed.');
+    this.#helper.updateItem(
+      this.eventItems,
+      'confirmEmbeddedPaymentElement',
+      !!result,
+      paymentResult,
+    );
+    if (paymentResult === this.events.Completed) this.ready.set(false);
+    if (this.scenarios()) await this.destroy();
+    else this.phase.set('mounted');
   }
 
   async destroy() {
@@ -161,7 +148,7 @@ export class EmbeddedControlsComponent {
     const mounting = this.#mounting;
     this.#mounting = undefined;
     this.ready.set(false);
-    this.busy.set(true);
+    this.phase.set('working');
     try {
       const [, destroyed] = await Promise.all([
         listener?.remove(),
@@ -189,10 +176,7 @@ export class EmbeddedControlsComponent {
         );
       }
     } finally {
-      if (session === this.#session) {
-        this.active.set(false);
-        this.busy.set(false);
-      }
+      if (session === this.#session) this.phase.set('idle');
     }
   }
 }

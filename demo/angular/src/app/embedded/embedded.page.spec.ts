@@ -110,7 +110,7 @@ it('releases its listener without destroying another mounted element', async () 
   await loading;
   expect(remove).toHaveBeenCalledOnce();
   expect(Stripe.unmountEmbeddedPaymentElement).not.toHaveBeenCalled();
-  expect(page.active()).toBe(false);
+  expect(page.phase()).toBe('idle');
 });
 
 it.each([
@@ -138,6 +138,6 @@ it.each([
         .find((item) => item.name === 'confirmEmbeddedPaymentElement')?.result,
     ).toBe(result === EmbeddedPaymentElementEventsEnum.Completed);
     expect(Stripe.unmountEmbeddedPaymentElement).toHaveBeenCalledOnce();
-    expect(page.active()).toBe(false);
+    expect(page.phase()).toBe('idle');
   },
 );

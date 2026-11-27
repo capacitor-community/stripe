@@ -4,14 +4,14 @@
     <ion-item
       button="true"
       detail="true"
-      [disabled]="active()"
+      [disabled]="phase() !== 'idle'"
       (click)="mount(events.Completed)"
       ><ion-label>Expect Happy Path</ion-label></ion-item
     >
     <ion-item
       button="true"
       detail="true"
-      [disabled]="active()"
+      [disabled]="phase() !== 'idle'"
       (click)="mount(events.Canceled)"
       ><ion-label>Expect User Cancel</ion-label></ion-item
     >
@@ -22,26 +22,26 @@
     <ion-item
       button="true"
       detail="true"
-      [disabled]="active()"
+      [disabled]="phase() !== 'idle'"
       (click)="mount()"
       ><ion-label>mount</ion-label></ion-item
     >
   }
   <div
-    [id]="selector().slice(1)"
-    [style.height.px]="active() ? height() : 0"
+    [id]="hostId()"
+    [style.height.px]="phase() !== 'idle' ? height() : 0"
   ></div>
   <ion-item
     button="true"
     detail="true"
-    [disabled]="busy() || !ready()"
+    [disabled]="phase() !== 'mounted' || !ready()"
     (click)="confirm()"
     ><ion-label>confirm</ion-label></ion-item
   >
   <ion-item
     button="true"
     detail="true"
-    [disabled]="busy() || !active()"
+    [disabled]="phase() !== 'mounted'"
     (click)="destroy()"
     ><ion-label>unmount</ion-label></ion-item
   >
