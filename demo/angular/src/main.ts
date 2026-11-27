@@ -4,6 +4,7 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 
+import { enableSupportIonicOverlays } from '@webview-native-ui/engine/ionic';
 import { environment } from './environments/environment';
 
 import { defineCustomElements } from 'stripe-pwa-elements/loader';
@@ -24,6 +25,7 @@ if (environment.production) {
   enableProdMode();
 }
 
+enableSupportIonicOverlays();
 
 bootstrapApplication(AppComponent, {
   providers: [

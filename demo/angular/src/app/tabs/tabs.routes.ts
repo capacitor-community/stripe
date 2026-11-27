@@ -38,8 +38,7 @@ export const routes: Routes = [
       },
       {
         path: 'billing',
-        loadComponent: () =>
-          import('../billing/billing.page').then((m) => m.BillingPage),
+        loadComponent: () => import('../billing/billing.page').then(m => m.BillingPage),
       },
       {
         path: '',

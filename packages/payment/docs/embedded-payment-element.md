@@ -17,6 +17,16 @@ pod 'WebViewNativeUIEngine', :path => '../../node_modules/@webview-native-ui/eng
 pod 'CapacitorCommunityStripe/Embedded', :path => '../../node_modules/@capacitor-community/stripe'
 ```
 
+## Ionic overlays
+
+For Ionic apps that present modals, alerts or other overlays above the payment selector, install `@webview-native-ui/engine@1.0.11` as an app dependency and enable overlay tracking once at startup, before presenting any overlays.
+
+```ts
+import { enableSupportIonicOverlays } from '@webview-native-ui/engine/ionic';
+
+enableSupportIonicOverlays();
+```
+
 ## Mount and confirm
 
 [Initialize Stripe](initialize.md) once. Have your backend calculate the order total, create a PaymentIntent and return its client secret, amount in minor units and currency. Use those same values when mounting the selector.
@@ -49,7 +59,7 @@ pay.onclick = async () => {
 };
 ```
 
-Mount after the host is visible. Pass a rectangular block in the main document. Keep its axes aligned with the viewport and allow it to expand when Stripe reports its content height. Ionic modal and alert coverage is enabled automatically in an Ionic app. The mount lasts until the order screen closes. On page exit, including Ionic navigation that caches the page, release both resources:
+Mount after the host is visible. Pass a rectangular block in the main document. Keep its axes aligned with the viewport and allow it to expand when Stripe reports its content height. The mount lasts until the order screen closes. On page exit, including Ionic navigation that caches the page, release both resources:
 
 ```ts
 await listener.remove();

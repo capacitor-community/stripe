@@ -1,5 +1,4 @@
 import { getUnprojectedVisibility, projectionAncestors } from '@webview-native-ui/engine';
-import { enableSupportIonicOverlays } from '@webview-native-ui/engine/ionic';
 
 import type { StripePlugin } from '../definitions';
 import type { EmbeddedPaymentElementOptions, MountedEmbeddedPaymentElement } from '../embedded-payment-element';
@@ -134,7 +133,6 @@ export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge) {
     ) {
       throw new Error('Provide a laid-out HTML container in the main document.');
     }
-    if (document.querySelector('ion-app')) enableSupportIonicOverlays();
 
     const lifecycle = new AbortController();
     let attribute: string;
