@@ -10,6 +10,7 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
     private let clipView = PaymentElementContainer()
     private var element: EmbeddedPaymentElement?
     private var destroyed = false
+    private(set) var documentReplaced = false
     private var confirming: CAPPluginCall?
     private var completed = false
     private var lastWidth: CGFloat?
@@ -63,17 +64,17 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
 
     func update(_ call: CAPPluginCall) {
         guard let view = element?.view, let visible = call.getBool("visible"), visible,
-              let x = call.getDouble("x"), let y = call.getDouble("y"),
+              let left = call.getDouble("x"), let top = call.getDouble("y"),
               let width = call.getDouble("width"), let height = call.getDouble("height"),
               let clip = call.getObject("clip"),
-              let cx = clip["x"] as? Double, let cy = clip["y"] as? Double,
-              let cw = clip["width"] as? Double, let ch = clip["height"] as? Double,
-              width > 0, height > 0, cw > 0, ch > 0 else {
+              let clipLeft = clip["x"] as? Double, let clipTop = clip["y"] as? Double,
+              let clipWidth = clip["width"] as? Double, let clipHeight = clip["height"] as? Double,
+              width > 0, height > 0, clipWidth > 0, clipHeight > 0 else {
             clipView.frame = .zero
             return
         }
-        clipView.frame = CGRect(x: x, y: y, width: width, height: height)
-        clipView.visibleBounds = CGRect(x: cx - x, y: cy - y, width: cw, height: ch)
+        clipView.frame = CGRect(x: left, y: top, width: width, height: height)
+        clipView.visibleBounds = CGRect(x: clipLeft - left, y: clipTop - top, width: clipWidth, height: clipHeight)
         view.frame = clipView.bounds
         if width != lastWidth {
             lastWidth = width
@@ -107,9 +108,10 @@ final class EmbeddedPaymentExecutor: EmbeddedPaymentElementDelegate {
         publishChange()
     }
 
-    func destroy() {
+    func destroy(documentReplaced: Bool = false) {
         destroyed = true
-        confirming?.reject("Embedded payment element was removed.")
+        self.documentReplaced = documentReplaced
+        if !documentReplaced { confirming?.reject("Embedded payment element was removed.") }
         confirming = nil
         #if canImport(WebViewNativeUIEngine)
         projection?.destroy()

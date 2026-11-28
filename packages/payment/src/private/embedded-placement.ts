@@ -1,10 +1,15 @@
 import { Capacitor, CapacitorException, ExceptionCode } from '@capacitor/core';
-import { getUnprojectedVisibility, projectionAncestors } from '@webview-native-ui/engine';
+import {
+  bindSnapshotVisibleArea,
+  measureProjectionFrame,
+  observeProjectionLayout,
+  projectionAncestors,
+  type Frame,
+} from '@webview-native-ui/engine';
 
 import type { StripePlugin } from '../definitions';
 import type { EmbeddedPaymentElementOptions, MountedEmbeddedPaymentElement } from '../embedded-payment-element';
 
-type Frame = Pick<DOMRect, 'x' | 'y' | 'width' | 'height'>;
 interface Placement extends Frame {
   clip: Frame;
   visible: boolean;
@@ -19,50 +24,13 @@ export interface EmbeddedNativeBridge extends StripePlugin {
   updateEmbeddedPaymentElement(placement: Placement): Promise<void>;
 }
 
-/** DOM geometry is in viewport CSS pixels on both platforms. */
-function measure(host: HTMLElement, { x, y, width, height }: DOMRect, area?: Frame): Placement {
-  let left = Math.max(0, x);
-  let top = Math.max(0, y);
-  let right = Math.min(innerWidth, x + width);
-  let bottom = Math.min(innerHeight, y + height);
-  if (area && [area.x, area.y, area.width, area.height].every(Number.isFinite)) {
-    left = Math.max(left, area.x);
-    top = Math.max(top, area.y);
-    right = Math.min(right, area.x + area.width);
-    bottom = Math.min(bottom, area.y + area.height);
-  }
-  for (const parent of projectionAncestors(host)) {
-    const style = getComputedStyle(parent);
-    const rect = parent.getBoundingClientRect();
-    if (style.overflowX !== 'visible') {
-      left = Math.max(left, rect.left + parent.clientLeft);
-      right = Math.min(right, rect.left + parent.clientLeft + parent.clientWidth);
-    }
-    if (style.overflowY !== 'visible') {
-      top = Math.max(top, rect.top + parent.clientTop);
-      bottom = Math.min(bottom, rect.top + parent.clientTop + parent.clientHeight);
-    }
-  }
-  return {
-    x,
-    y,
-    width,
-    height,
-    clip: { x: left, y: top, width: Math.max(0, right - left), height: Math.max(0, bottom - top) },
-    visible: host.isConnected && right > left && bottom > top && getUnprojectedVisibility(host) === 'visible',
-  };
-}
-
 function track(
   host: HTMLElement,
   bridge: EmbeddedNativeBridge,
   signal: AbortSignal,
-  selector: string,
   visibleArea: EmbeddedPaymentElementOptions['visibleArea'],
 ): void {
-  // The Engine can display a snapshot inside the host while the native view is clipped separately.
-  const snapshotStyle = visibleArea ? document.createElement('style') : undefined;
-  if (snapshotStyle) document.head.append(snapshotStyle);
+  const stopClipping = visibleArea && bindSnapshotVisibleArea(host, visibleArea);
   let frame = 0;
   let last = '';
   let dirty = true;
@@ -92,20 +60,9 @@ function track(
     previousArea = areaKey;
     previous = rect;
     dirty = false;
-    const placement = measure(host, rect, area);
+    const { frame: bounds, clip, visible } = measureProjectionFrame(host, { bounds: rect, visibleArea: area });
+    const placement = { ...bounds, clip, visible };
     const key = JSON.stringify(placement);
-    if (snapshotStyle) {
-      const { clip } = placement;
-      const top = clip.y - rect.y;
-      const left = clip.x - rect.x;
-      const right = rect.width - left - clip.width;
-      const bottom = rect.height - top - clip.height;
-      const rule =
-        area && (top || right || bottom || left)
-          ? `${selector}[data-native-ui-snapshot-visible] { clip-path: inset(${top}px ${right}px ${bottom}px ${left}px); }`
-          : '';
-      if (snapshotStyle.textContent !== rule) snapshotStyle.textContent = rule;
-    }
     if (key === last) return;
     last = key;
     retryAt = Infinity;
@@ -117,28 +74,24 @@ function track(
     dirty = true;
   };
   const resize = new ResizeObserver(schedule);
-  const styles = new MutationObserver(schedule);
+  const ancestors = new Set<Element>([host, ...projectionAncestors(host)]);
+  const stopObservingLayout = observeProjectionLayout(window, [host], (scroll) => {
+    if (!(scroll?.target instanceof Element) || ancestors.has(scroll.target)) schedule();
+  });
   const intersection = new IntersectionObserver(schedule);
   signal.addEventListener(
     'abort',
     () => {
-      snapshotStyle?.remove();
+      stopClipping?.();
       cancelAnimationFrame(frame);
       intersection.disconnect();
       resize.disconnect();
-      styles.disconnect();
+      stopObservingLayout();
     },
     { once: true },
   );
   intersection.observe(host);
-  // Scroll events in Ionic's shadow scroll container do not bubble into the document.
-  for (const element of [host, ...projectionAncestors(host)]) {
-    resize.observe(element);
-    styles.observe(element, { attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
-    element.addEventListener('scroll', schedule, { passive: true, signal });
-  }
-  window.addEventListener('scroll', schedule, { passive: true, signal });
-  window.addEventListener('resize', schedule, { signal });
+  for (const element of ancestors) resize.observe(element);
   update(performance.now());
 }
 
@@ -203,7 +156,7 @@ export function embeddedPaymentElementAPI(bridge: EmbeddedNativeBridge): {
       await bridge.mountEmbeddedPaymentElement({ ...paymentOptions, selector });
       if (lifecycle.signal.aborted) throw new Error('The checkout page was closed.');
       mounted = true;
-      track(element, bridge, lifecycle.signal, selector, visibleArea);
+      track(element, bridge, lifecycle.signal, visibleArea);
       return {
         confirm: async () => {
           if (lifecycle.signal.aborted) throw new Error('The payment element has been destroyed.');

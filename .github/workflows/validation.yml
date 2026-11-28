@@ -221,10 +221,10 @@ jobs:
         working-directory: ./packages/payment
       - name: Prepare iOS Simulator
         run: node .github/scripts/prepare-ios-simulator.mjs
-      - name: Test Apple Pay shipping updates
+      - name: Test Payment on iOS
         working-directory: ./packages/payment
         run:
-          xcodebuild -scheme CapacitorCommunityStripe -destination "$IOS_TEST_DESTINATION" -only-testing:StripePluginTests/ApplePayShippingTests
+          xcodebuild -scheme CapacitorCommunityStripe -destination "$IOS_TEST_DESTINATION" -only-testing:StripePluginTests
           CODE_SIGNING_ALLOWED=NO test
     if:
       ${{ (needs.ci-reuse.result != 'success' && !cancelled()) || ((success()) && needs.ci-reuse.outputs.reuse != 'true')

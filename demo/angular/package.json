@@ -29,7 +29,7 @@
     "@capacitor/core": "^8.5.1",
     "@capacitor/ios": "^8.5.1",
     "@ionic/angular": "^8.8.18",
-    "@webview-native-ui/engine": "1.0.11",
+    "@webview-native-ui/engine": "1.1.0",
     "rxjs": "~7.8.0",
     "stripe-pwa-elements": "^4.1.0",
     "tslib": "^2.3.0"

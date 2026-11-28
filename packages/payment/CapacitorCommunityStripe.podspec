@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   end
   s.subspec 'Embedded' do |embedded|
     embedded.dependency 'CapacitorCommunityStripe/Core'
-    embedded.dependency 'WebViewNativeUIEngine', '1.0.11'
+    embedded.dependency 'WebViewNativeUIEngine', '1.1.0'
   end
   s.ios.deployment_target = '15.0'
   s.dependency 'Capacitor'

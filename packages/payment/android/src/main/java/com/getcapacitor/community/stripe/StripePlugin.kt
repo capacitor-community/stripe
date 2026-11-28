@@ -62,13 +62,13 @@ class StripePlugin : Plugin() {
     private lateinit var embedded: EmbeddedPaymentElementExecutor
 
     @PluginMethod
-    fun mountEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread { embedded.mount(call) }
+    fun mountEmbeddedPaymentElement(call: PluginCall) = embedded.mount(call)
 
     @PluginMethod
     fun updateEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread { embedded.update(call) }
 
     @PluginMethod
-    fun confirmEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread { embedded.confirm(call) }
+    fun confirmEmbeddedPaymentElement(call: PluginCall) = embedded.confirm(call)
 
     @PluginMethod
     fun unmountEmbeddedPaymentElement(call: PluginCall) = activity.runOnUiThread {

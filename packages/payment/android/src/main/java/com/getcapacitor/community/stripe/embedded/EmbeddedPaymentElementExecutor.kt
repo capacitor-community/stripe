@@ -1,6 +1,5 @@
 package com.getcapacitor.community.stripe.embedded
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +18,9 @@ import com.stripe.android.paymentelement.rememberEmbeddedPaymentElement
 import com.stripe.android.paymentsheet.CreateIntentCallback
 import com.stripe.android.paymentsheet.CreateIntentResult
 import com.stripe.android.paymentsheet.PaymentSheet
+import io.github.webview_native_ui.engine.NativeUIActivityLifecycle
 import io.github.webview_native_ui.engine.NativeUIProjection
-import org.json.JSONObject
+import io.github.webview_native_ui.engine.NativeUIPixelFrame
 import kotlin.math.roundToInt
 
 /** The fragment scopes Stripe's saved state, activity result registrations and Compose UI to one checkout. */
@@ -55,7 +55,11 @@ internal class EmbeddedPaymentElementExecutor(
         }
     }
 
-    fun mount(call: PluginCall) {
+    fun mount(call: PluginCall) = NativeUIActivityLifecycle.runOnUiThread(activity, { call.reject("Activity unavailable.") }) {
+        mountOnUiThread(call)
+    }
+
+    private fun mountOnUiThread(call: PluginCall) {
         if (fragment != null) return call.reject("An embedded payment element is already mounted.")
         val selector = call.getString("selector")
         val secret = call.getString("paymentIntentClientSecret")
@@ -162,15 +166,15 @@ internal class EmbeddedPaymentElementExecutor(
         val frame = host ?: return call.resolve()
         val content = fragment?.view ?: return call.resolve()
         val scale = webView.resources.displayMetrics.density
-        val bounds = pixelBounds(call.data, scale)
-        val clip = call.data.optJSONObject("clip")?.let { pixelBounds(it, scale) }
+        val bounds = NativeUIPixelFrame.fromCss(call.data, scale)
+        val clip = NativeUIPixelFrame.fromCss(call.data.optJSONObject("clip"), scale)
         val shown = call.getBoolean("visible")
         if (bounds == null || clip == null || shown == null) return call.reject("Invalid payment element placement.")
-        val width = bounds.width().coerceAtLeast(1)
-        val clippedWidth = if (shown) clip.width() else 0
-        val clippedHeight = if (shown) clip.height() else 0
-        frame.x = webView.x + clip.left
-        frame.y = webView.y + clip.top
+        val width = bounds.width.coerceAtLeast(1)
+        val clippedWidth = if (shown) clip.width else 0
+        val clippedHeight = if (shown) clip.height else 0
+        frame.x = webView.x + clip.x
+        frame.y = webView.y + clip.y
         frame.layoutParams.let {
             if (it.width != clippedWidth || it.height != clippedHeight) {
                 it.width = clippedWidth
@@ -178,8 +182,8 @@ internal class EmbeddedPaymentElementExecutor(
                 frame.layoutParams = it
             }
         }
-        content.translationX = (bounds.left - clip.left).toFloat()
-        content.translationY = (bounds.top - clip.top).toFloat()
+        content.translationX = (bounds.x - clip.x).toFloat()
+        content.translationY = (bounds.y - clip.y).toFloat()
         content.layoutParams.let {
             if (it.width != width) {
                 it.width = width
@@ -189,7 +193,11 @@ internal class EmbeddedPaymentElementExecutor(
         call.resolve()
     }
 
-    fun confirm(call: PluginCall) {
+    fun confirm(call: PluginCall) = NativeUIActivityLifecycle.runOnUiThread(activity, { call.reject("Activity unavailable.") }) {
+        confirmOnUiThread(call)
+    }
+
+    private fun confirmOnUiThread(call: PluginCall) {
         val sdk = element
         if (sdk == null || !ready || completed || confirming != null) return call.reject("Payment is not ready to confirm.")
         confirming = call
@@ -232,20 +240,6 @@ internal class EmbeddedPaymentElementExecutor(
     }
 
     private companion object {
-        fun pixelBounds(data: JSONObject, scale: Float): Rect? {
-            // MeasureSpec reserves two bits; this bound also keeps sums and offsets in Int range.
-            val max = 0x3fffffff.toDouble()
-            fun coordinate(key: String, minimum: Double): Int? {
-                val value = (data.opt(key) as? Number)?.toDouble()?.times(scale) ?: return null
-                return if (value in minimum..max) value.roundToInt() else null
-            }
-            val left = coordinate("x", -max) ?: return null
-            val top = coordinate("y", -max) ?: return null
-            val width = coordinate("width", 0.0) ?: return null
-            val height = coordinate("height", 0.0) ?: return null
-            return Rect(left, top, left + width, top + height)
-        }
-
         const val TAG = "capacitor-stripe-embedded-payment"
     }
 }

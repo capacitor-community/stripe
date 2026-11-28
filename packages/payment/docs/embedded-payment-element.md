@@ -7,7 +7,7 @@ Use Stripe’s native Embedded Payment Element in an iOS or Android app when the
 Android and Swift Package Manager use the Engine dependency supplied by the plugin. CocoaPods users who want embedded checkout must install the matching local pod as well:
 
 ```sh
-npm install --save-exact @webview-native-ui/engine@1.0.11
+npm install --save-exact @webview-native-ui/engine@1.1.0
 ```
 
 Inside the existing app target in the Podfile, after the call to `capacitor_pods`, add these lines and run `npx cap sync ios`. Adjust both paths for a nonstandard project layout.
@@ -19,7 +19,7 @@ pod 'CapacitorCommunityStripe/Embedded', :path => '../../node_modules/@capacitor
 
 ## Ionic overlays
 
-For Ionic apps that present modals, alerts or other overlays above the payment selector, install `@webview-native-ui/engine@1.0.11` as an app dependency and enable overlay tracking once at startup, before presenting any overlays.
+For Ionic apps that present modals, alerts or other overlays above the payment selector, install `@webview-native-ui/engine@1.1.0` as an app dependency and enable overlay tracking once at startup, before presenting any overlays.
 
 ```ts
 import { enableSupportIonicOverlays } from '@webview-native-ui/engine/ionic';
@@ -77,6 +77,8 @@ A full document navigation releases the native selector. If your app restores a 
 Confirmation returns the Completed, Canceled, or Failed member of `EmbeddedPaymentElementEventsEnum` in `paymentResult`. The matching event is also emitted. Subscribe to `EmbeddedPaymentElementEventsEnum.Failed` to receive the SDK error message in `{ error }`.
 
 If the element is unmounted while confirmation is pending, the confirmation promise rejects and the plugin stops delivering its result events. The payment may still complete at Stripe.
+
+On Android, the Activity can be recreated while the customer is authenticating. The restored checkout can miss the confirmation result. Keep the order ID across recreation and ask your backend for the status of the original PaymentIntent before enabling Pay again. Show the order as paid or processing when appropriate, and offer a retry only when the backend confirms the order still requires payment.
 
 The confirmation result describes the client-side flow. Fulfill the order from a verified Stripe webhook. See [server integration](server-integration.md).
 
