@@ -20,6 +20,8 @@ Requires iOS 15+ or Android API 24+. Web needs compatible `@stripe/stripe-js@^9.
 
 See [Configuration](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/configuration) to install the plugin, then [PaymentSheet](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-sheet), [PaymentFlow](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/payment-flow), [Apple Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/apple-pay), and [Google Pay](https://docs.rdlabo.dev/projects/capacitor-stripe/docs/google-pay).
 
+For a custom order screen on iOS or Android, [embed the native payment method selector](docs/embedded-payment-element.md) alongside your own order summary and pay button.
+
 Your backend creates the PaymentIntent or SetupIntent, chooses the Customer, and verifies webhooks before fulfillment. Your app receives client-safe credentials, initializes Payment, creates its selected UI, and presents it. See [Server Integration](docs/server-integration.md) and [Initialize](docs/initialize.md). Installing Payment does not initialize Identity, Terminal, or Billing.
 
 <!-- rdlabo-docs-omit -->
@@ -70,6 +72,9 @@ If the original call still exists, behavior is unchanged: the Promise is settled
 * [`addListener(ApplePayEventsEnum.Failed, ...)`](#addlistenerapplepayeventsenumfailed-)
 * [`addListener(ApplePayEventsEnum.DidSelectShippingContact, ...)`](#addlistenerapplepayeventsenumdidselectshippingcontact-)
 * [`addListener(ApplePayEventsEnum.DidCreatePaymentMethod, ...)`](#addlistenerapplepayeventsenumdidcreatepaymentmethod-)
+* [`addListener(EmbeddedPaymentElementEventsEnum.Change, ...)`](#addlistenerembeddedpaymentelementeventsenumchange-)
+* [`addListener(EmbeddedPaymentElementEventsEnum.Completed | EmbeddedPaymentElementEventsEnum.Canceled, ...)`](#addlistenerembeddedpaymentelementeventsenumcompleted--embeddedpaymentelementeventsenumcanceled-)
+* [`addListener(EmbeddedPaymentElementEventsEnum.Failed, ...)`](#addlistenerembeddedpaymentelementeventsenumfailed-)
 * [`isGooglePayAvailable()`](#isgooglepayavailable)
 * [`createGooglePay(...)`](#creategooglepay)
 * [`presentGooglePay()`](#presentgooglepay)
@@ -132,7 +137,7 @@ authentication.
 
 iOS only. Call this from your app URL handler when Stripe redirects back
 to the application. Configure the same custom URL scheme as `returnURL`
-when creating PaymentSheet or PaymentFlow.
+when creating PaymentSheet, PaymentFlow, or an Embedded Payment Element.
 
 | Param      | Type                                                                          |
 | ---------- | ----------------------------------------------------------------------------- |
@@ -344,6 +349,56 @@ iOS only. Emitted after Apple Pay creates its Stripe PaymentMethod.
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 **Since:** 4.1.0
+
+--------------------
+
+
+### addListener(EmbeddedPaymentElementEventsEnum.Change, ...)
+
+```typescript
+addListener(eventName: EmbeddedPaymentElementEventsEnum.Change, listenerFunc: (state: EmbeddedPaymentElementState) => void) => Promise<PluginListenerHandle>
+```
+
+Observe selection and content size changes. Register before mounting.
+
+| Param              | Type                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Change</a></code>    |
+| **`listenerFunc`** | <code>(state: <a href="#embeddedpaymentelementstate">EmbeddedPaymentElementState</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(EmbeddedPaymentElementEventsEnum.Completed | EmbeddedPaymentElementEventsEnum.Canceled, ...)
+
+```typescript
+addListener(eventName: EmbeddedPaymentElementEventsEnum.Completed | EmbeddedPaymentElementEventsEnum.Canceled, listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Completed</a> \| <a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Canceled</a></code> |
+| **`listenerFunc`** | <code>() =&gt; void</code>                                                                                                                                                                           |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener(EmbeddedPaymentElementEventsEnum.Failed, ...)
+
+```typescript
+addListener(eventName: EmbeddedPaymentElementEventsEnum.Failed, listenerFunc: (payload: { error: string; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code><a href="#embeddedpaymentelementeventsenum">EmbeddedPaymentElementEventsEnum.Failed</a></code> |
+| **`listenerFunc`** | <code>(payload: { error: string; }) =&gt; void</code>                                                |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
@@ -912,6 +967,14 @@ Apple Pay shipping-contact data.
 | **`contact`** | <code><a href="#shippingcontact">ShippingContact</a></code> | Contact attached to the Apple Pay payment method. | 4.1.0 |
 
 
+#### EmbeddedPaymentElementState
+
+| Prop         | Type                 | Description                                                    |
+| ------------ | -------------------- | -------------------------------------------------------------- |
+| **`ready`**  | <code>boolean</code> | Whether confirm() can start with the selected payment option.  |
+| **`height`** | <code>number</code>  | Preferred native content height in CSS pixels, when available. |
+
+
 #### CreateGooglePayOption
 
 | Prop                            | Type                                              | Description                                                    | Since |
@@ -1076,6 +1139,16 @@ Final result returned after presenting PaymentSheet.
 | **`Failed`**                   | <code>'applePayFailed'</code>                   |
 | **`DidSelectShippingContact`** | <code>'applePayDidSelectShippingContact'</code> |
 | **`DidCreatePaymentMethod`**   | <code>'applePayDidCreatePaymentMethod'</code>   |
+
+
+#### EmbeddedPaymentElementEventsEnum
+
+| Members         | Value                                          |
+| --------------- | ---------------------------------------------- |
+| **`Change`**    | <code>'embeddedPaymentElementChange'</code>    |
+| **`Completed`** | <code>'embeddedPaymentElementCompleted'</code> |
+| **`Canceled`**  | <code>'embeddedPaymentElementCanceled'</code>  |
+| **`Failed`**    | <code>'embeddedPaymentElementFailed'</code>    |
 
 
 #### GooglePayEventsEnum

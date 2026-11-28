@@ -24,6 +24,11 @@ export const routes: Routes = [
         component: FlowPage,
       },
       {
+        path: 'embedded',
+        loadComponent: () =>
+          import('../embedded/embedded.page').then((m) => m.EmbeddedPage),
+      },
+      {
         path: 'identify',
         component: IdentityPage,
       },

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import type { ViewWillLeave } from '@ionic/angular/standalone';
+import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
 import {
   Address,
   ApplePayEventsEnum,
@@ -10,6 +11,8 @@ import {
 } from '@capacitor-community/stripe';
 
 import { environment } from '../../environments/environment';
+import { Capacitor } from '@capacitor/core';
+import { EmbeddedControlsComponent } from '../embedded/embedded-controls.component';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -28,6 +31,7 @@ import {
   templateUrl: 'demo.page.html',
   styleUrls: ['demo.page.scss'],
   imports: [
+    EmbeddedControlsComponent,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -38,7 +42,8 @@ import {
     IonItem,
   ],
 })
-export class DemoPage implements OnInit {
+export class DemoPage implements OnInit, ViewWillLeave {
+  readonly nativeCheckout = Capacitor.isNativePlatform();
   private http = inject(HttpClient);
 
   readonly processSheet = signal<'willReady' | 'Ready'>('willReady');
@@ -48,7 +53,11 @@ export class DemoPage implements OnInit {
   readonly isApplePayAvailable = signal(false);
   readonly isGooglePayAvailable = signal(false);
 
-  constructor() {}
+  readonly embedded = viewChild(EmbeddedControlsComponent);
+
+  ionViewWillLeave() {
+    return this.embedded()?.destroy();
+  }
 
   async ngOnInit() {
     Stripe.addListener(PaymentSheetEventsEnum.Loaded, () => {

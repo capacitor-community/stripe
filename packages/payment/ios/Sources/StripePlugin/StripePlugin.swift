@@ -2,6 +2,9 @@ import Foundation
 import Capacitor
 import StripePaymentSheet
 import StripeApplePay
+#if canImport(WebViewNativeUIEngine)
+import WebViewNativeUIEngine
+#endif
 
 @objc(StripePlugin)
 public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
@@ -12,6 +15,10 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "handleURLCallback", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "createPaymentSheet", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "presentPaymentSheet", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "mountEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "updateEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "confirmEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "unmountEmbeddedPaymentElement", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "createPaymentFlow", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "presentPaymentFlow", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "confirmPaymentFlow", returnType: CAPPluginReturnPromise),
@@ -25,6 +32,10 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
     ]
     private let paymentSheetExecutor = PaymentSheetExecutor()
     private let paymentFlowExecutor = PaymentFlowExecutor()
+    private var embedded: EmbeddedPaymentExecutor?
+    #if canImport(WebViewNativeUIEngine)
+    private var embeddedNavigation: NativeUIDocumentObservation?
+    #endif
     private let applePayExecutor = ApplePayExecutor()
 
     @objc func initialize(_ call: CAPPluginCall) {
@@ -82,6 +93,63 @@ public class StripePlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func presentPaymentSheet(_ call: CAPPluginCall) {
         self.paymentSheetExecutor.presentPaymentSheet(call)
+    }
+
+    @objc func mountEmbeddedPaymentElement(_ call: CAPPluginCall) {
+        Task { @MainActor in
+            guard let executor = beginEmbeddedPayment() else { return call.reject("A payment element is already mounted.") }
+            do {
+                try await executor.mount(call)
+                if !executor.documentReplaced { call.resolve() }
+            } catch {
+                if embedded === executor {
+                    endEmbeddedPayment()
+                }
+                if !executor.documentReplaced { call.reject(error.localizedDescription) }
+            }
+        }
+    }
+
+    @MainActor
+    func beginEmbeddedPayment() -> EmbeddedPaymentExecutor? {
+        guard embedded == nil else { return nil }
+        #if canImport(WebViewNativeUIEngine)
+        if embeddedNavigation == nil, let webView {
+            embeddedNavigation = NativeUIDocumentObservation(webView: webView) { [weak self] in
+                self?.endEmbeddedPayment(documentReplaced: true)
+            }
+        }
+        #endif
+        let executor = EmbeddedPaymentExecutor(plugin: self)
+        embedded = executor
+        return executor
+    }
+
+    @MainActor
+    private func endEmbeddedPayment(documentReplaced: Bool = false) {
+        embedded?.destroy(documentReplaced: documentReplaced)
+        embedded = nil
+    }
+
+    @objc func updateEmbeddedPaymentElement(_ call: CAPPluginCall) {
+        Task { @MainActor in
+            embedded?.update(call)
+            call.resolve()
+        }
+    }
+
+    @objc func confirmEmbeddedPaymentElement(_ call: CAPPluginCall) {
+        Task { @MainActor in
+            guard let embedded else { return call.reject("Mount a payment element first.") }
+            await embedded.confirm(call)
+        }
+    }
+
+    @objc func unmountEmbeddedPaymentElement(_ call: CAPPluginCall) {
+        Task { @MainActor in
+            endEmbeddedPayment()
+            call.resolve()
+        }
     }
 
     @objc func createPaymentFlow(_ call: CAPPluginCall) {

@@ -77,7 +77,7 @@ await Stripe.createPaymentSheet({
 });
 ```
 
-Use the same setup with `createPaymentFlow`. The custom scheme in `Info.plist`, the scheme in `returnURL`, and the URL checked by the listener must match. Payment-method availability also depends on the Intent, currency, country, Stripe account, Dashboard settings, and Stripe SDK support.
+Use the same setup with `createPaymentFlow` and `EmbeddedPaymentElement.create()`. The custom scheme in `Info.plist`, the scheme in `returnURL`, and the URL checked by the listener must match. Payment-method availability also depends on the Intent, currency, country, Stripe account, Dashboard settings, and Stripe SDK support.
 
 ### handleURLCallback
 

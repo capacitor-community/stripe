@@ -1,0 +1,102 @@
+# Embed payment methods in an order screen
+
+Use Stripe’s native Embedded Payment Element in an iOS or Android app when the order summary and pay button belong to your Web layout. Selecting a payment method can open a native Stripe sheet to collect its details.
+
+## Install
+
+Android and Swift Package Manager use the Engine dependency supplied by the plugin. CocoaPods users who want embedded checkout must install the matching local pod as well:
+
+```sh
+npm install --save-exact @webview-native-ui/engine@1.1.0
+```
+
+Inside the existing app target in the Podfile, after the call to `capacitor_pods`, add these lines and run `npx cap sync ios`. Adjust both paths for a nonstandard project layout.
+
+```ruby
+pod 'WebViewNativeUIEngine', :path => '../../node_modules/@webview-native-ui/engine'
+pod 'CapacitorCommunityStripe/Embedded', :path => '../../node_modules/@capacitor-community/stripe'
+```
+
+## Ionic overlays
+
+For Ionic apps that present modals, alerts or other overlays above the payment selector, install `@webview-native-ui/engine@1.1.0` as an app dependency and enable overlay tracking once at startup, before presenting any overlays.
+
+```ts
+import { enableSupportIonicOverlays } from '@webview-native-ui/engine/ionic';
+
+enableSupportIonicOverlays();
+```
+
+## Mount and confirm
+
+[Initialize Stripe](initialize.md) once. Have your backend calculate the order total, create a PaymentIntent and return its client secret, amount in minor units and currency. Use those same values when mounting the selector.
+
+```html
+<div id="payment-methods" style="min-height: 1px"></div>
+<button id="pay" disabled>Pay</button>
+```
+
+```ts
+import { EmbeddedPaymentElement, EmbeddedPaymentElementEventsEnum, Stripe } from '@capacitor-community/stripe';
+
+const host = document.querySelector<HTMLElement>('#payment-methods')!;
+const pay = document.querySelector<HTMLButtonElement>('#pay')!;
+const listener = await Stripe.addListener(EmbeddedPaymentElementEventsEnum.Change, ({ ready, height }) => {
+  pay.disabled = !ready;
+  if (height) host.style.height = `${height}px`;
+});
+const payment = await EmbeddedPaymentElement.create(host, {
+  merchantDisplayName: 'My store',
+  amount: order.amount,
+  currency: order.currency,
+  paymentIntentClientSecret: order.clientSecret,
+});
+
+pay.onclick = async () => {
+  pay.disabled = true;
+  const { paymentResult } = await payment.confirm();
+  showPaymentStatus(paymentResult);
+};
+```
+
+Await `create()` to get the mounted element and catch setup errors. The Change event’s `ready` flag tells you when you can call `confirm()`.
+
+For redirect-based payments on iOS, pass `returnURL` to `create()` and forward the incoming URL to `Stripe.handleURLCallback()`. See [iOS return URL setup](initialize.md#redirect-based-payment-methods-on-ios).
+
+On Web, `create()` rejects with Capacitor’s `UNIMPLEMENTED` error. On iOS and Android, mount one element at a time and await `destroy()` before replacing it. Register the Change listener before calling `create()` to receive the initial state.
+
+Mount after the host is visible. Pass a rectangular block in the main document with a nonzero width and height. An empty block can use the minimum height shown above. Keep its axes aligned with the viewport and allow it to expand when Stripe reports its content height. The mount lasts until the order screen closes. On page exit, including Ionic navigation that caches the page, release both resources:
+
+```ts
+await listener.remove();
+await payment.destroy();
+```
+
+A full document navigation releases the native selector. If your app restores a checkout document from the back-forward cache, mount the selector again on `pageshow` when `event.persisted` is true.
+
+Confirmation returns the Completed, Canceled, or Failed member of `EmbeddedPaymentElementEventsEnum` in `paymentResult`. The matching event is also emitted. Subscribe to `EmbeddedPaymentElementEventsEnum.Failed` to receive the SDK error message in `{ error }`.
+
+If the element is unmounted while confirmation is pending, the confirmation promise rejects and the plugin stops delivering its result events. The payment may still complete at Stripe.
+
+On Android, the Activity can be recreated while the customer is authenticating. The restored checkout can miss the confirmation result. Keep the order ID across recreation and ask your backend for the status of the original PaymentIntent before enabling Pay again. Show the order as paid or processing when appropriate, and offer a retry only when the backend confirms the order still requires payment.
+
+The confirmation result describes the client-side flow. Fulfill the order from a verified Stripe webhook. See [server integration](server-integration.md).
+
+## Keep the selector clear of app bars
+
+When content scrolls under a translucent header or floating tab bar, pass a
+`visibleArea` callback to `create()`. Return the available rectangle in viewport
+CSS pixels. Placement tracks moving bars even when the host stays still.
+Only the intersection can display the native selector or receive its touches.
+Return `undefined` to use the usual viewport and scroll-container clipping.
+
+```ts
+const payment = await EmbeddedPaymentElement.create(host, {
+  ...paymentOptions,
+  visibleArea: () => {
+    const top = header.getBoundingClientRect().bottom;
+    const bottom = tabBar.getBoundingClientRect().top;
+    return { x: 0, y: top, width: window.innerWidth, height: Math.max(0, bottom - top) };
+  },
+});
+```

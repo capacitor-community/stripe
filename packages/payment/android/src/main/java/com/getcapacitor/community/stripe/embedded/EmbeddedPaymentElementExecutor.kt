@@ -1,0 +1,245 @@
+package com.getcapacitor.community.stripe.embedded
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
+import com.getcapacitor.JSObject
+import com.getcapacitor.PluginCall
+import com.stripe.android.PaymentConfiguration
+import com.stripe.android.paymentelement.EmbeddedPaymentElement
+import com.stripe.android.paymentelement.rememberEmbeddedPaymentElement
+import com.stripe.android.paymentsheet.CreateIntentCallback
+import com.stripe.android.paymentsheet.CreateIntentResult
+import com.stripe.android.paymentsheet.PaymentSheet
+import io.github.webview_native_ui.engine.NativeUIActivityLifecycle
+import io.github.webview_native_ui.engine.NativeUIProjection
+import io.github.webview_native_ui.engine.NativeUIPixelFrame
+import kotlin.math.roundToInt
+
+/** The fragment scopes Stripe's saved state, activity result registrations and Compose UI to one checkout. */
+class EmbeddedPaymentElementFragment : Fragment() {
+    internal var render: ((ComposeView) -> Unit)? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, state: Bundle?): View? =
+        render?.let { ComposeView(requireContext()).apply(it) }
+}
+
+internal class EmbeddedPaymentElementExecutor(
+    private val activity: AppCompatActivity,
+    private val webView: WebView,
+    private val pluginId: String,
+    private val notify: (String, JSObject) -> Unit
+) {
+    // Engine installs its document-start channel before the first WebView navigation.
+    private val installation = runCatching { NativeUIProjection.install(webView) }
+    private var fragment: EmbeddedPaymentElementFragment? = null
+    private var host: FrameLayout? = null
+    private var projection: NativeUIProjection? = null
+    private var element: EmbeddedPaymentElement? = null
+    private var mounting: PluginCall? = null
+    private var confirming: PluginCall? = null
+    private var ready = false
+    private var height = 0
+    private var completed = false
+
+    init {
+        activity.supportFragmentManager.findFragmentByTag(TAG)?.let {
+            activity.supportFragmentManager.beginTransaction().remove(it).commitNow()
+        }
+    }
+
+    fun mount(call: PluginCall) = NativeUIActivityLifecycle.runOnUiThread(activity, { call.reject("Activity unavailable.") }) {
+        mountOnUiThread(call)
+    }
+
+    private fun mountOnUiThread(call: PluginCall) {
+        if (fragment != null) return call.reject("An embedded payment element is already mounted.")
+        val selector = call.getString("selector")
+        val secret = call.getString("paymentIntentClientSecret")
+        val currency = call.getString("currency")
+        val amount = call.data.optLong("amount", -1)
+        if (selector.isNullOrBlank() || secret.isNullOrBlank() ||
+            currency == null || !currency.matches(Regex("[A-Za-z]{3}")) || amount <= 0) return call.reject("Missing embedded payment configuration.")
+
+        try {
+            installation.getOrThrow()
+            PaymentConfiguration.getInstance(activity)
+            val parent = webView.parent as ViewGroup
+            val frame = object : FrameLayout(activity) {
+                // Measure the full SDK list even when a scroll container clips its visible portion.
+                override fun measureChildWithMargins(child: View, w: Int, usedW: Int, h: Int, usedH: Int) {
+                    child.measure(
+                        MeasureSpec.makeMeasureSpec(child.layoutParams.width.coerceAtLeast(1), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+                    )
+                }
+            }.also { host = it }
+            // A zero-sized host keeps the view out of the touch path until its first DOM placement.
+            parent.addView(frame, 0, 0)
+            val owner = EmbeddedPaymentElementFragment().also { fragment = it }
+            val intent = PaymentSheet.IntentConfiguration(PaymentSheet.IntentConfiguration.Mode.Payment(amount, currency))
+            val merchant = call.getString("merchantDisplayName")?.takeIf { it.isNotBlank() }
+                ?: activity.applicationInfo.loadLabel(activity.packageManager).toString()
+            val config = EmbeddedPaymentElement.Configuration.Builder(merchant).build()
+            val builder = EmbeddedPaymentElement.Builder(
+                createIntentCallback = CreateIntentCallback { _, _ -> CreateIntentResult.Success(secret) },
+                resultCallback = { result ->
+                    if (fragment === owner) {
+                        val event = when (result) {
+                            is EmbeddedPaymentElement.Result.Completed -> EmbeddedPaymentElementEvents.Completed
+                            is EmbeddedPaymentElement.Result.Canceled -> EmbeddedPaymentElementEvents.Canceled
+                            is EmbeddedPaymentElement.Result.Failed -> EmbeddedPaymentElementEvents.Failed
+                        }
+                        completed = event == EmbeddedPaymentElementEvents.Completed
+                        val data = JSObject()
+                        if (result is EmbeddedPaymentElement.Result.Failed) {
+                            data.put("error", result.error.localizedMessage ?: result.error.toString())
+                        }
+                        notify(event.webEventName, data)
+                        confirming?.resolve(JSObject().put("paymentResult", event.webEventName))
+                        confirming = null
+                        emit()
+                    }
+                }
+            )
+
+            mounting = call
+            owner.render = { view ->
+                view.setContent {
+                    val sdk = rememberEmbeddedPaymentElement(builder)
+                    LaunchedEffect(sdk) {
+                        when (val result = sdk.configure(intent, config)) {
+                            is EmbeddedPaymentElement.ConfigureResult.Failed -> webView.post {
+                                if (fragment === owner) {
+                                    mounting?.reject(result.error.localizedMessage ?: "Stripe could not configure the element.")
+                                    mounting = null
+                                    destroy()
+                                }
+                            }
+                            is EmbeddedPaymentElement.ConfigureResult.Succeeded -> {
+                                if (fragment !== owner) return@LaunchedEffect
+                                element = sdk
+                                mounting?.resolve()
+                                mounting = null
+                                sdk.paymentOption.collect {
+                                    ready = it != null
+                                    emit()
+                                }
+                            }
+                        }
+                    }
+                    sdk.Content()
+                }
+            }
+            activity.supportFragmentManager.beginTransaction().add(owner, TAG).commitNow()
+            val content = owner.requireView()
+            content.addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
+                val value = ((bottom - top) / webView.resources.displayMetrics.density).roundToInt()
+                if (fragment === owner && value > 0 && height != value) {
+                    height = value
+                    emit()
+                }
+            }
+            frame.addView(content, FrameLayout.LayoutParams(webView.width, ViewGroup.LayoutParams.WRAP_CONTENT))
+            projection = NativeUIProjection(
+                window = activity.window, webView = webView, plugin = pluginId, projectionSelector = selector,
+                receiveListeners = NativeUIProjection.ReceiveListeners(update = listOf(EmbeddedPaymentElementEvents.Change.webEventName)),
+                failedFallback = NativeUIProjection.FailedFallback.NATIVE,
+                captureMode = NativeUIProjection.CaptureMode.VIEW,
+                view = { content }
+            )
+        } catch (e: Exception) {
+            mounting = null
+            destroy()
+            call.reject(e.localizedMessage ?: "Could not mount embedded payment element.", e)
+        }
+    }
+
+    fun update(call: PluginCall) {
+        val frame = host ?: return call.resolve()
+        val content = fragment?.view ?: return call.resolve()
+        val scale = webView.resources.displayMetrics.density
+        val bounds = NativeUIPixelFrame.fromCss(call.data, scale)
+        val clip = NativeUIPixelFrame.fromCss(call.data.optJSONObject("clip"), scale)
+        val shown = call.getBoolean("visible")
+        if (bounds == null || clip == null || shown == null) return call.reject("Invalid payment element placement.")
+        val width = bounds.width.coerceAtLeast(1)
+        val clippedWidth = if (shown) clip.width else 0
+        val clippedHeight = if (shown) clip.height else 0
+        frame.x = webView.x + clip.x
+        frame.y = webView.y + clip.y
+        frame.layoutParams.let {
+            if (it.width != clippedWidth || it.height != clippedHeight) {
+                it.width = clippedWidth
+                it.height = clippedHeight
+                frame.layoutParams = it
+            }
+        }
+        content.translationX = (bounds.x - clip.x).toFloat()
+        content.translationY = (bounds.y - clip.y).toFloat()
+        content.layoutParams.let {
+            if (it.width != width) {
+                it.width = width
+                content.layoutParams = it
+            }
+        }
+        call.resolve()
+    }
+
+    fun confirm(call: PluginCall) = NativeUIActivityLifecycle.runOnUiThread(activity, { call.reject("Activity unavailable.") }) {
+        confirmOnUiThread(call)
+    }
+
+    private fun confirmOnUiThread(call: PluginCall) {
+        val sdk = element
+        if (sdk == null || !ready || completed || confirming != null) return call.reject("Payment is not ready to confirm.")
+        confirming = call
+        emit()
+        try {
+            sdk.confirm()
+        } catch (error: Exception) {
+            confirming = null
+            emit()
+            call.reject(error.localizedMessage ?: "Could not confirm payment.", error)
+        }
+    }
+
+    private fun emit() {
+        val state = JSObject().put("ready", ready && !completed && confirming == null)
+        if (height > 0) state.put("height", height)
+        projection?.receive(EmbeddedPaymentElementEvents.Change.webEventName, state)
+        notify(EmbeddedPaymentElementEvents.Change.webEventName, state)
+    }
+
+    fun destroy() {
+        val owner = fragment
+        fragment = null
+        projection?.close()
+        projection = null
+        mounting?.reject("Embedded payment element was removed.")
+        confirming?.reject("Embedded payment element was removed.")
+        mounting = null
+        confirming = null
+        owner?.render = null
+        if (owner?.isAdded == true && !activity.supportFragmentManager.isDestroyed) {
+            activity.supportFragmentManager.beginTransaction().remove(owner).commitNowAllowingStateLoss()
+        }
+        host?.let { (it.parent as? ViewGroup)?.removeView(it) }
+        host = null
+        element = null
+        ready = false
+        completed = false
+        height = 0
+    }
+
+    private companion object {
+        const val TAG = "capacitor-stripe-embedded-payment"
+    }
+}

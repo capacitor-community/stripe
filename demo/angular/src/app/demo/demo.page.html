@@ -5,6 +5,9 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  @if (nativeCheckout) {
+    <app-embedded-controls />
+  }
   <ion-list>
     <ion-list-header><ion-label>PaymentSheet</ion-label></ion-list-header>
     <ion-item

@@ -15,6 +15,13 @@
       <ion-label>FLOW</ion-label>
     </ion-tab-button>
 
+    @if (nativeEmbedded) {
+      <ion-tab-button tab="embedded">
+        <ion-icon name="tablet-landscape-outline"></ion-icon>
+        <ion-label>EMBEDDED</ion-label>
+      </ion-tab-button>
+    }
+
     <ion-tab-button tab="identify">
       <ion-icon name="copy-outline"></ion-icon>
       <ion-label>IDENTIFY</ion-label>
